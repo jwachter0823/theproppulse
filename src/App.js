@@ -338,7 +338,7 @@ body,#root{background:var(--bg);color:var(--t1);font-family:'Plus Jakarta Sans',
 .tick-sep{color:var(--t4);font-size:10px}
 
 /* ── NAV ── */
-.nav{position:sticky;top:0;z-index:100;background:rgba(15,22,35,0.88);backdrop-filter:blur(24px) saturate(1.3);border-bottom:1px solid var(--bdr);height:58px;display:flex;align-items:center;padding:0 28px;gap:16px}
+.nav{position:sticky;top:0;z-index:200;background:rgba(15,22,35,0.88);backdrop-filter:blur(24px) saturate(1.3);border-bottom:1px solid var(--bdr);height:58px;display:flex;align-items:center;padding:0 28px;gap:16px}
 .nav-logo{display:flex;align-items:center;gap:9px;cursor:pointer;flex-shrink:0}
 .nav-logo img{height:30px;width:30px;border-radius:6px;object-fit:cover}
 .nav-logo-text{font-size:17px;font-weight:800;letter-spacing:-.3px}
@@ -613,11 +613,11 @@ body,#root{background:var(--bg);color:var(--t1);font-family:'Plus Jakarta Sans',
 /* ── MOBILE NAV ── */
 .nav-burger{display:none;background:none;border:none;cursor:pointer;padding:6px;flex-direction:column;gap:4px}
 .nav-burger span{display:block;width:20px;height:2px;background:var(--t2);border-radius:2px;transition:all .2s}
-.mobile-menu{position:fixed;top:56px;left:0;right:0;background:var(--bg1);border-bottom:1px solid var(--bdr2);padding:8px 14px 14px;z-index:199;display:flex;flex-direction:column;gap:2px;box-shadow:0 12px 40px rgba(0,0,0,0.5);animation:menuIn .15s ease-out}
-@keyframes menuIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-.mobile-menu-item{background:none;border:none;color:var(--t2);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:600;padding:14px 16px;border-radius:10px;text-align:left;cursor:pointer;transition:all .15s}
+.mobile-menu{position:fixed;top:72px;left:0;right:0;bottom:0;background:#0a0f1a;padding:12px 20px 20px;z-index:198;display:flex;flex-direction:column;gap:4px;animation:menuIn .2s ease-out;overflow-y:auto}
+@keyframes menuIn{from{opacity:0}to{opacity:1}}
+.mobile-menu-item{background:none;border:none;color:var(--t2);font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:600;padding:16px 20px;border-radius:12px;text-align:left;cursor:pointer;transition:all .15s;border-bottom:1px solid var(--bdr)}
 .mobile-menu-item:hover,.mobile-menu-item.on{background:var(--bg3);color:var(--t1)}
-.mobile-menu-item.on{color:var(--brand2)}
+.mobile-menu-item.on{color:var(--brand2);border-left:3px solid var(--brand2)}
 
 @media(max-width:900px){
   .nav-tabs{display:none}
@@ -800,9 +800,10 @@ const Ticker = () => {
 const NavBar = ({tab,setTab,setPage}) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navItems = [["firms","Firms"],["challenges","Challenges"],["offers","Offers"],["giveaways","🎟️ Giveaways"],["reviews","Reviews"],["blog","Blog"]];
-  const go = (k) => { setPage("home"); setTab(k); setMobileOpen(false); };
+  const go = (k) => { setPage("home"); setTab(k); setMobileOpen(false); document.body.style.overflow=''; };
+  const toggleMenu = () => { setMobileOpen(p=>{document.body.style.overflow=!p?'hidden':'';return !p;}); };
   return (<>
-  <nav className="nav">
+  <nav className="nav" style={mobileOpen?{background:'#0a0f1a',backdropFilter:'none'}:{}}>
     <div className="nav-logo" onClick={()=>go("firms")}>
       <img src={LOGO_URL} alt="P" onError={e=>{e.target.style.display='none'}}/>
       <span className="nav-logo-text">The<span>PropPulse</span></span>
@@ -814,8 +815,8 @@ const NavBar = ({tab,setTab,setPage}) => {
     </div>
     <div className="nav-right">
       <button className="nav-cta" onClick={()=>go("offers")}>🔥 Deals</button>
-      <button className="nav-burger" onClick={()=>setMobileOpen(!mobileOpen)} aria-label="Menu">
-        <span/><span/><span/>
+      <button className="nav-burger" onClick={toggleMenu} aria-label="Menu">
+        {mobileOpen ? <span style={{fontSize:22,color:"var(--t1)",lineHeight:1}}>✕</span> : <><span/><span/><span/></>}
       </button>
     </div>
   </nav>
