@@ -1035,68 +1035,52 @@ const NavBar = ({tab,setTab,setPage,user,onLogin,onLogout}) => {
         {tabs.map(([k,l])=><button key={k} className={`nav-tab${tab===k?' on':''}`} onClick={()=>go(k)}>{l}</button>)}
       </div>
       <button className="nav-code" onClick={copyPulse}>{copied?'\u2713 Copied!':'PULSE'}</button>
-      {user?<div className="nav-user" style={{position:'relative'}}>
+      {user?<div className="nav-user">
         <div className="nav-avatar" onClick={()=>setShowProfile(p=>!p)}>{(user.email||"U")[0].toUpperCase()}</div>
-        {showProfile&&<>
-          <div className="panel-overlay" onClick={()=>{setShowProfile(false);setChangingPw(false)}}/>
-          <div className="panel">
-            <button className="panel-close" onClick={()=>setShowProfile(false)}>{'\u2715'}</button>
-            <div className="panel-header">
-              <div className="panel-avatar">{(user.email||"U")[0].toUpperCase()}</div>
-              <div className="panel-name">{String(user.user_metadata?.display_name||user.email||"Trader")}</div>
-              <div className="panel-email">{String(user.email||"")}</div>
-            </div>
-
-            <div className="panel-pts" onClick={()=>go("points")}>
-              <div className="panel-pts-top">
-                <span className="panel-pts-label">Pulse Points</span>
-                <span className="panel-pts-val">{userPts}</span>
-              </div>
-              <div className="panel-bar-bg">
-                <div className="panel-bar-fill" style={{width:Math.min(100,userPts/5)+'%'}}/>
-              </div>
-              <div style={{display:'flex',justifyContent:'space-between',fontSize:10,color:'#475569',marginTop:6}}>
-                <span>{Math.max(0,500-userPts)} pts to next reward</span>
-                <span style={{color:'#fbbf24'}}>Free 50K Eval</span>
-              </div>
-            </div>
-
-            <div className="panel-section-label">Pulse Points</div>
-            <button className="panel-item" onClick={()=>go("points")}>
-              <span className="panel-icon">{'\u2B50'}</span><span>My Dashboard</span>
-            </button>
-            <button className="panel-item" onClick={()=>go("points")}>
-              <span className="panel-icon">{'\u{1F4E4}'}</span><span>Submit Purchase</span>
-            </button>
-            <button className="panel-item" onClick={()=>go("points")}>
-              <span className="panel-icon">{'\u{1F381}'}</span><span>Rewards Store</span>
-            </button>
-            <button className="panel-item" onClick={()=>go("points")}>
-              <span className="panel-icon">{'\u{1F4DC}'}</span><span>Points History</span>
-            </button>
-
-            <div className="panel-section-label">Account</div>
-            <button className="panel-item" onClick={()=>setChangingPw(p=>!p)}>
-              <span className="panel-icon">{'\u{1F512}'}</span><span>Change Password</span>
-            </button>
-            {changingPw&&<div style={{padding:'0 16px 12px'}}>
-              <input className="auth-input" type="password" placeholder="New password (min 6 chars)" value={newPw} onChange={e=>setNewPw(e.target.value)} style={{marginBottom:6,fontSize:12}}/>
-              {pwMsg&&<div style={{fontSize:11,color:pwMsg.includes("updated")?'#10b981':'#ff4757',marginBottom:6}}>{pwMsg}</div>}
-              <button className="pp-submit" style={{padding:'6px 14px',fontSize:11,marginTop:0,width:'100%'}} onClick={handleChangePw}>Update Password</button>
-            </div>}
-
-            <div style={{flex:1}}/>
-            <div className="panel-divider"/>
-            <button className="panel-item panel-logout" onClick={()=>{setShowProfile(false);onLogout();}}>
-              <span className="panel-icon">{'\u274C'}</span><span>Sign Out</span>
-            </button>
-            <div style={{height:16}}/>
-          </div>
-        </>}
       </div>
       :<button className="nav-login" onClick={onLogin}>Sign In</button>}
       <button className="nav-burger" onClick={()=>{setMob(p=>{document.body.style.overflow=!p?'hidden':'';return !p;})}}>{mob?'\u2715':'\u2261'}</button>
     </nav>
+    {showProfile&&user&&<>
+      <div className="panel-overlay" onClick={()=>{setShowProfile(false);setChangingPw(false)}}/>
+      <div className="panel">
+        <button className="panel-close" onClick={()=>setShowProfile(false)}>{'\u2715'}</button>
+        <div className="panel-header">
+          <div className="panel-avatar">{(user.email||"U")[0].toUpperCase()}</div>
+          <div className="panel-name">{String(user.user_metadata?.display_name||user.email||"Trader")}</div>
+          <div className="panel-email">{String(user.email||"")}</div>
+        </div>
+        <div className="panel-pts" onClick={()=>go("points")}>
+          <div className="panel-pts-top">
+            <span className="panel-pts-label">Pulse Points</span>
+            <span className="panel-pts-val">{userPts}</span>
+          </div>
+          <div className="panel-bar-bg">
+            <div className="panel-bar-fill" style={{width:Math.min(100,userPts/5)+'%'}}/>
+          </div>
+          <div style={{display:'flex',justifyContent:'space-between',fontSize:10,color:'#475569',marginTop:6}}>
+            <span>{Math.max(0,500-userPts)} pts to next reward</span>
+            <span style={{color:'#fbbf24'}}>Free 50K Eval</span>
+          </div>
+        </div>
+        <div className="panel-section-label">Pulse Points</div>
+        <button className="panel-item" onClick={()=>go("points")}><span className="panel-icon">{'\u2B50'}</span><span>My Dashboard</span></button>
+        <button className="panel-item" onClick={()=>go("points")}><span className="panel-icon">{'\u{1F4E4}'}</span><span>Submit Purchase</span></button>
+        <button className="panel-item" onClick={()=>go("points")}><span className="panel-icon">{'\u{1F381}'}</span><span>Rewards Store</span></button>
+        <button className="panel-item" onClick={()=>go("points")}><span className="panel-icon">{'\u{1F4DC}'}</span><span>Points History</span></button>
+        <div className="panel-section-label">Account</div>
+        <button className="panel-item" onClick={()=>setChangingPw(p=>!p)}><span className="panel-icon">{'\u{1F512}'}</span><span>Change Password</span></button>
+        {changingPw&&<div style={{padding:'0 16px 12px'}}>
+          <input className="auth-input" type="password" placeholder="New password (min 6 chars)" value={newPw} onChange={e=>setNewPw(e.target.value)} style={{marginBottom:6,fontSize:12}}/>
+          {pwMsg&&<div style={{fontSize:11,color:pwMsg.includes("updated")?'#10b981':'#ff4757',marginBottom:6}}>{pwMsg}</div>}
+          <button className="pp-submit" style={{padding:'6px 14px',fontSize:11,marginTop:0,width:'100%'}} onClick={handleChangePw}>Update Password</button>
+        </div>}
+        <div style={{flex:1}}/>
+        <div className="panel-divider"/>
+        <button className="panel-item panel-logout" onClick={()=>{setShowProfile(false);onLogout();}}><span className="panel-icon">{'\u274C'}</span><span>Sign Out</span></button>
+        <div style={{height:16}}/>
+      </div>
+    </>}
     {mob&&<div className="mob-menu">{tabs.map(([k,l])=><button key={k} className={tab===k?'on':''} onClick={()=>go(k)}>{l}</button>)}</div>}
     {copied&&<div className="toast">PULSE code copied to clipboard!</div>}
   </>);
