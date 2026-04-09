@@ -340,7 +340,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .nav-code{font-family:var(--mono);font-size:12px;font-weight:700;color:#050810;background:linear-gradient(135deg,#fbbf24,#f59e0b);border:none;padding:7px 16px;border-radius:6px;cursor:pointer;transition:all .2s;margin-left:8px;box-shadow:var(--glow-gold-sm)}
 .nav-code:hover{box-shadow:var(--glow-gold);transform:translateY(-1px)}
 .nav-burger{display:none;background:none;border:none;color:var(--em);font-size:22px;cursor:pointer;padding:4px 8px;text-shadow:var(--glow-sm)}
-.mob-menu{position:fixed;top:58px;left:0;right:0;bottom:0;background:var(--bg);z-index:99;padding:24px 16px 20px;display:flex;flex-direction:column;gap:4px;overflow-y:auto}
+.mob-menu{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:99;padding:96px 16px 20px;display:flex;flex-direction:column;gap:4px;overflow-y:auto}
 .mob-menu button{background:none;border:none;color:var(--t3);font-family:var(--sans);font-size:17px;font-weight:600;padding:16px 18px;text-align:left;border-radius:10px;cursor:pointer;border-bottom:1px solid var(--bdr)}
 .mob-menu button:hover{color:var(--em);text-shadow:var(--glow-sm)}
 .mob-menu button.on{color:var(--em);background:var(--emA2);text-shadow:var(--glow-sm);box-shadow:inset 0 0 20px rgba(6,182,212,0.05)}
@@ -1564,6 +1564,7 @@ const PulsePointsTab = ({user,onLogin}) => {
 
   const handleSubmit = async () => {
     if(!firm||!accSize){setSubmitMsg("Select a firm and account size");return;}
+    if(!screenshot){setSubmitMsg("Screenshot required — upload proof of purchase to submit");return;}
     setSubmitting(true);setSubmitMsg("");
     const pts=POINT_VALUES[accSize]||100;
     const hasClick=clicks.some(c=>c.firm===firm);
@@ -1671,7 +1672,7 @@ const PulsePointsTab = ({user,onLogin}) => {
           <option value="">Select size...</option>
           {Object.keys(POINT_VALUES).map(s=><option key={s} value={s}>{s} ({POINT_VALUES[s]} pts)</option>)}
         </select>
-        <label>Proof of Purchase (email confirmation screenshot)</label>
+        <label>Proof of Purchase <span style={{color:'var(--red)'}}>*</span> (order confirmation or email screenshot)</label>
         <input type="file" accept="image/*" onChange={async e=>{
           const file=e.target.files?.[0];
           if(!file)return;
@@ -1688,7 +1689,7 @@ const PulsePointsTab = ({user,onLogin}) => {
         <label>Order # or Notes (optional)</label>
         <input className="auth-input" placeholder="Order confirmation number, email used, etc." value={notes} onChange={e=>setNotes(e.target.value)} style={{marginBottom:0}}/>
         {submitMsg&&!submitMsg.includes("Upload")&&<div style={{fontSize:12,marginTop:8,color:submitMsg.includes("Error")?'var(--red)':'var(--green)'}}>{submitMsg}</div>}
-        <button className="pp-submit" onClick={handleSubmit} disabled={submitting}>{submitting?"Submitting...":"Submit for Points"}</button>
+        <button className="pp-submit" onClick={handleSubmit} disabled={submitting||!screenshot}>{submitting?"Submitting...":!screenshot?"Upload Screenshot to Submit":"Submit for Points"}</button>
       </div>
     </div>}
 
