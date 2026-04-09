@@ -1600,7 +1600,7 @@ const PulsePointsTab = ({user,onLogin}) => {
     if(r.type==="call"&&!claimForm.discord) return;
     setClaimSubmitting(true);
     const details=JSON.stringify({...claimForm,type:r.type,evalSize:r.evalSize||null});
-    await supabase.from("rewards").insert({user_id:user.id,reward_name:r.name,points_cost:r.pts,fulfillment_details:details,user_email:user.email});
+    await supabase.from("rewards").insert({user_id:user.id,reward_name:r.name,points_cost:r.pts,fulfillment_details:details,user_email:user.email,status:"pending"});
     await supabase.from("points_history").insert({user_id:user.id,amount:-r.pts,reason:"Reward: "+r.name});
     await supabase.from("profiles").update({points:profile.points-r.pts,rewards_claimed:(profile.rewards_claimed||0)+1}).eq("id",user.id);
     setClaimSubmitting(false);setClaimModal(null);setClaimForm({});loadData();
