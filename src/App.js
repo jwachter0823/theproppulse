@@ -609,6 +609,21 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .nav-avatar:hover{border-color:var(--em);box-shadow:var(--glow-sm)}
 .nav-login{font-size:12px;font-weight:600;color:var(--em);background:none;border:1px solid var(--bdr3);padding:6px 14px;border-radius:6px;cursor:pointer;transition:all .15s}
 .nav-login:hover{background:var(--emA2);box-shadow:0 0 8px rgba(6,182,212,0.08)}
+.dd-overlay{position:fixed;inset:0;z-index:199}
+.dd-menu{position:absolute;top:calc(100% + 8px);right:0;width:280px;background:var(--bg1);border:1px solid var(--bdr2);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.5),var(--glow-box);z-index:200;overflow:hidden}
+.dd-header{display:flex;align-items:center;gap:12px;padding:16px;background:var(--bg2);border-bottom:1px solid var(--bdr)}
+.dd-avatar-lg{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--em),#0891b2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#050810;flex-shrink:0}
+.dd-name{font-size:14px;font-weight:700;color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dd-email{font-size:11px;color:var(--t4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px}
+.dd-points{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.dd-points:hover{background:var(--bg2)}
+.dd-pts-label{font-size:12px;font-weight:600;color:var(--t3)}
+.dd-pts-val{font-family:var(--mono);font-size:16px;font-weight:800;color:var(--gold);text-shadow:var(--glow-gold-sm)}
+.dd-divider{height:1px;background:var(--bdr);margin:0}
+.dd-item{display:flex;align-items:center;gap:8px;width:100%;background:none;border:none;color:var(--t2);font-family:var(--sans);font-size:13px;font-weight:500;padding:10px 16px;cursor:pointer;transition:all .12s;text-align:left}
+.dd-item:hover{background:var(--bg2);color:var(--em)}
+.dd-logout{color:var(--red)}
+.dd-logout:hover{background:rgba(255,71,87,0.06);color:var(--red)}
 
 /* ── MOBILE ── */
 @media(max-width:768px){
@@ -959,9 +974,28 @@ const Ticker = () => {
 const NavBar = ({tab,setTab,setPage,user,onLogin,onLogout}) => {
   const [mob,setMob] = useState(false);
   const [copied,setCopied] = useState(false);
+  const [showProfile,setShowProfile] = useState(false);
+  const [userPts,setUserPts] = useState(0);
+  const [changingPw,setChangingPw] = useState(false);
+  const [newPw,setNewPw] = useState("");
+  const [pwMsg,setPwMsg] = useState("");
   const tabs = [["firms","Firms"],["challenges","Challenges"],["offers","Offers"],["giveaways","Giveaway"],["blog","Research"],["points","\u2B50 Pulse Points"]];
-  const go = k => {setPage("home");setTab(k);setMob(false);document.body.style.overflow='';};
+  const go = k => {setPage("home");setTab(k);setMob(false);document.body.style.overflow='';setShowProfile(false);};
   const copyPulse = () => {copyToClipboard("PULSE");setCopied(true);setTimeout(()=>setCopied(false),1800);};
+
+  useEffect(()=>{
+    if(!user) return;
+    supabase.from("profiles").select("points").eq("id",user.id).single().then(({data})=>{if(data)setUserPts(data.points||0)});
+  },[user,tab]);
+
+  const handleChangePw = async ()=>{
+    if(newPw.length<6){setPwMsg("Min 6 characters");return;}
+    setPwMsg("Updating...");
+    const {error}=await supabase.auth.updateUser({password:newPw});
+    if(error) setPwMsg(error.message);
+    else{setPwMsg("Password updated!");setNewPw("");setTimeout(()=>{setChangingPw(false);setPwMsg("")},1500);}
+  };
+
   return (<>
     <nav className="nav">
       <div className="nav-logo" onClick={()=>go("firms")}>
@@ -972,8 +1006,34 @@ const NavBar = ({tab,setTab,setPage,user,onLogin,onLogout}) => {
         {tabs.map(([k,l])=><button key={k} className={`nav-tab${tab===k?' on':''}`} onClick={()=>go(k)}>{l}</button>)}
       </div>
       <button className="nav-code" onClick={copyPulse}>{copied?'\u2713 Copied!':'PULSE'}</button>
-      {user?<div className="nav-user">
-        <div className="nav-avatar" onClick={onLogout} title="Sign out">{(user.email||"U")[0].toUpperCase()}</div>
+      {user?<div className="nav-user" style={{position:'relative'}}>
+        <div className="nav-avatar" onClick={()=>setShowProfile(p=>!p)}>{(user.email||"U")[0].toUpperCase()}</div>
+        {showProfile&&<>
+          <div className="dd-overlay" onClick={()=>{setShowProfile(false);setChangingPw(false)}}/>
+          <div className="dd-menu">
+            <div className="dd-header">
+              <div className="dd-avatar-lg">{(user.email||"U")[0].toUpperCase()}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div className="dd-name">{user.user_metadata?.display_name||"Trader"}</div>
+                <div className="dd-email">{user.email}</div>
+              </div>
+            </div>
+            <div className="dd-points" onClick={()=>go("points")}>
+              <span className="dd-pts-label">Pulse Points</span>
+              <span className="dd-pts-val">{userPts}</span>
+            </div>
+            <div className="dd-divider"/>
+            <button className="dd-item" onClick={()=>go("points")}>{'\u2B50'} My Points Dashboard</button>
+            <button className="dd-item" onClick={()=>setChangingPw(p=>!p)}>{'\u{1F512}'} Change Password</button>
+            {changingPw&&<div style={{padding:'0 14px 10px'}}>
+              <input className="auth-input" type="password" placeholder="New password (min 6 chars)" value={newPw} onChange={e=>setNewPw(e.target.value)} style={{marginBottom:6,fontSize:12}}/>
+              {pwMsg&&<div style={{fontSize:11,color:pwMsg.includes("updated")?'var(--green)':'var(--red)',marginBottom:6}}>{pwMsg}</div>}
+              <button className="pp-submit" style={{padding:'6px 14px',fontSize:11,marginTop:0}} onClick={handleChangePw}>Update Password</button>
+            </div>}
+            <div className="dd-divider"/>
+            <button className="dd-item dd-logout" onClick={()=>{setShowProfile(false);onLogout();}}>{'\u{1F6AA}'} Sign Out</button>
+          </div>
+        </>}
       </div>
       :<button className="nav-login" onClick={onLogin}>Sign In</button>}
       <button className="nav-burger" onClick={()=>{setMob(p=>{document.body.style.overflow=!p?'hidden':'';return !p;})}}>{mob?'\u2715':'\u2261'}</button>
