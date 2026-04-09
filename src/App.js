@@ -1,4 +1,10 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  "https://lwvtosuwfdllahoyqakx.supabase.co",
+  "sb_publishable_rtdT12-lHyiizdCgHRQ2dA_5n_1DTAu"
+);
 
 // ─── LOGOS (base64 embedded) ────────────────────────────────────────────────
 const LOGOS = {
@@ -543,6 +549,67 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 @keyframes tI{from{opacity:0;transform:translateX(-50%) translateY(14px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 @keyframes tO{to{opacity:0;transform:translateX(-50%) translateY(14px)}}
 
+/* ── AUTH MODAL ── */
+.auth-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.auth-modal{background:var(--bg1);border:1px solid var(--bdr2);border-radius:16px;padding:32px;max-width:400px;width:100%;position:relative;box-shadow:var(--glow-box),0 20px 60px rgba(0,0,0,0.5)}
+.auth-modal h2{font-size:22px;font-weight:800;margin-bottom:6px;text-align:center}
+.auth-modal h2 span{color:var(--gold);text-shadow:var(--glow-gold-sm)}
+.auth-modal p{color:var(--t4);font-size:13px;text-align:center;margin-bottom:20px}
+.auth-close{position:absolute;top:12px;right:16px;background:none;border:none;color:var(--t4);font-size:20px;cursor:pointer}
+.auth-close:hover{color:var(--em)}
+.auth-input{width:100%;background:var(--bg3);border:1px solid var(--bdr2);border-radius:8px;padding:11px 14px;color:var(--t1);font-family:var(--sans);font-size:14px;margin-bottom:10px;outline:none;transition:border-color .15s}
+.auth-input:focus{border-color:var(--em);box-shadow:0 0 8px rgba(6,182,212,0.1)}
+.auth-btn{width:100%;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#050810;font-family:var(--sans);font-size:14px;font-weight:700;padding:12px;border:none;border-radius:8px;cursor:pointer;margin-top:6px;box-shadow:var(--glow-gold-sm);transition:all .2s}
+.auth-btn:hover{box-shadow:var(--glow-gold);transform:translateY(-1px)}
+.auth-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.auth-toggle{color:var(--t4);font-size:12px;text-align:center;margin-top:14px}
+.auth-toggle button{background:none;border:none;color:var(--em);font-weight:700;cursor:pointer;text-decoration:underline}
+.auth-err{background:rgba(255,71,87,0.1);border:1px solid rgba(255,71,87,0.2);color:var(--red);font-size:12px;padding:8px 12px;border-radius:6px;margin-bottom:10px}
+
+/* ── PULSE POINTS ── */
+.pp{max-width:800px;margin:0 auto}
+.pp-header{text-align:center;margin-bottom:28px}
+.pp-header h2{font-size:22px;font-weight:800;margin-bottom:4px}
+.pp-header h2 span{color:var(--gold);text-shadow:var(--glow-gold-sm)}
+.pp-balance{display:inline-flex;align-items:center;gap:10px;background:var(--glass);border:1px solid rgba(251,191,36,0.15);border-radius:14px;padding:16px 28px;margin:16px 0}
+.pp-balance-n{font-family:var(--mono);font-size:36px;font-weight:900;color:var(--gold);text-shadow:var(--glow-gold)}
+.pp-balance-l{font-size:12px;color:var(--t4);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.pp-tabs{display:flex;justify-content:center;gap:4px;margin-bottom:20px}
+.pp-tab{background:var(--bg2);border:1px solid var(--bdr);color:var(--t4);font-size:12px;font-weight:600;padding:7px 16px;border-radius:7px;cursor:pointer;transition:all .15s}
+.pp-tab:hover{color:var(--em);border-color:var(--bdr2)}
+.pp-tab.on{background:var(--emA2);border-color:var(--bdr3);color:var(--em);text-shadow:var(--glow-sm)}
+.pp-card{background:var(--glass);border:1px solid var(--bdr2);border-radius:12px;padding:20px;margin-bottom:12px;box-shadow:0 0 1px rgba(6,182,212,0.1)}
+.pp-card h3{font-size:15px;font-weight:700;margin-bottom:14px;color:var(--em2);text-shadow:0 0 8px rgba(6,182,212,0.15)}
+.pp-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bdr);gap:12px}
+.pp-row:last-child{border-bottom:none}
+.pp-status{font-family:var(--mono);font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;text-transform:uppercase}
+.pp-status.pending{background:rgba(251,191,36,0.1);color:var(--gold)}
+.pp-status.approved{background:rgba(16,185,129,0.1);color:var(--green)}
+.pp-status.rejected{background:rgba(255,71,87,0.1);color:var(--red)}
+.pp-form label{display:block;font-size:12px;font-weight:600;color:var(--t3);margin-bottom:5px;margin-top:12px}
+.pp-form select{width:100%;background:var(--bg3);border:1px solid var(--bdr2);border-radius:8px;padding:10px 14px;color:var(--t1);font-family:var(--sans);font-size:13px;outline:none;appearance:none}
+.pp-form select:focus{border-color:var(--em)}
+.pp-submit{background:linear-gradient(135deg,var(--em),#0891b2);color:#050810;font-family:var(--sans);font-size:13px;font-weight:700;padding:10px 24px;border:none;border-radius:8px;cursor:pointer;margin-top:16px;box-shadow:var(--glow-sm);transition:all .2s}
+.pp-submit:hover{box-shadow:var(--glow);transform:translateY(-1px)}
+.pp-submit:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.pp-rewards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.pp-reward{background:var(--glass);border:1px solid var(--bdr2);border-radius:10px;padding:16px;text-align:center;transition:all .2s}
+.pp-reward:hover{border-color:rgba(251,191,36,0.2);box-shadow:0 0 12px rgba(251,191,36,0.06)}
+.pp-reward-pts{font-family:var(--mono);font-size:22px;font-weight:800;color:var(--gold);text-shadow:var(--glow-gold-sm)}
+.pp-reward-name{font-size:13px;font-weight:600;margin:6px 0 10px;color:var(--t2)}
+.pp-reward-btn{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#050810;font-size:11px;font-weight:700;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;box-shadow:var(--glow-gold-sm);transition:all .2s}
+.pp-reward-btn:hover{box-shadow:var(--glow-gold)}
+.pp-reward-btn:disabled{opacity:0.4;cursor:not-allowed}
+.pp-login-prompt{text-align:center;padding:40px 20px}
+.pp-login-prompt h3{font-size:18px;font-weight:700;margin-bottom:8px}
+.pp-login-prompt p{color:var(--t4);font-size:13px;margin-bottom:16px}
+.nav-user{display:flex;align-items:center;gap:8px;margin-left:4px}
+.nav-pts{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--gold);text-shadow:0 0 4px rgba(251,191,36,0.3)}
+.nav-avatar{width:28px;height:28px;border-radius:50%;background:var(--bg3);border:1px solid var(--bdr2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--em);cursor:pointer;transition:all .15s}
+.nav-avatar:hover{border-color:var(--em);box-shadow:var(--glow-sm)}
+.nav-login{font-size:12px;font-weight:600;color:var(--em);background:none;border:1px solid var(--bdr3);padding:6px 14px;border-radius:6px;cursor:pointer;transition:all .15s}
+.nav-login:hover{background:var(--emA2);box-shadow:0 0 8px rgba(6,182,212,0.08)}
+
 /* ── MOBILE ── */
 @media(max-width:768px){
   .wrap{padding:0 16px}
@@ -567,6 +634,10 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   .foot-in{flex-direction:column;gap:20px}
   .offer-row{flex-wrap:wrap;gap:12px}
   .offer-pct{min-width:70px;font-size:16px}
+  .pp-rewards{grid-template-columns:1fr 1fr}
+  .pp-balance-n{font-size:28px}
+  .auth-modal{margin:16px;padding:24px}
+  .nav-login{display:none}
 }
 @media(max-width:420px){
   .hero h1{font-size:20px}
@@ -885,10 +956,10 @@ const Ticker = () => {
   );
 };
 
-const NavBar = ({tab,setTab,setPage}) => {
+const NavBar = ({tab,setTab,setPage,user,onLogin,onLogout}) => {
   const [mob,setMob] = useState(false);
   const [copied,setCopied] = useState(false);
-  const tabs = [["firms","Firms"],["challenges","Challenges"],["offers","Offers"],["giveaways","Giveaway"],["blog","Research"]];
+  const tabs = [["firms","Firms"],["challenges","Challenges"],["offers","Offers"],["giveaways","Giveaway"],["blog","Research"],["points","\u2B50 Pulse Points"]];
   const go = k => {setPage("home");setTab(k);setMob(false);document.body.style.overflow='';};
   const copyPulse = () => {copyToClipboard("PULSE");setCopied(true);setTimeout(()=>setCopied(false),1800);};
   return (<>
@@ -901,6 +972,10 @@ const NavBar = ({tab,setTab,setPage}) => {
         {tabs.map(([k,l])=><button key={k} className={`nav-tab${tab===k?' on':''}`} onClick={()=>go(k)}>{l}</button>)}
       </div>
       <button className="nav-code" onClick={copyPulse}>{copied?'\u2713 Copied!':'PULSE'}</button>
+      {user?<div className="nav-user">
+        <div className="nav-avatar" onClick={onLogout} title="Sign out">{(user.email||"U")[0].toUpperCase()}</div>
+      </div>
+      :<button className="nav-login" onClick={onLogin}>Sign In</button>}
       <button className="nav-burger" onClick={()=>{setMob(p=>{document.body.style.overflow=!p?'hidden':'';return !p;})}}>{mob?'\u2715':'\u2261'}</button>
     </nav>
     {mob&&<div className="mob-menu">{tabs.map(([k,l])=><button key={k} className={tab===k?'on':''} onClick={()=>go(k)}>{l}</button>)}</div>}
@@ -1257,11 +1332,249 @@ const DetailPage = ({firm,goBack}) => {
 const Footer = ({setPage,setTab}) => (
   <footer className="foot"><div className="wrap"><div className="foot-in">
     <div className="foot-brand"><div className="foot-brand-n">The<span>PropPulse</span></div><div className="foot-brand-d">Your futures prop firm command center. Compare, track, and find the right firm.</div></div>
-    <div className="foot-col"><h4>Platform</h4><a onClick={()=>{setPage("home");setTab("firms")}}>Firms</a><a onClick={()=>{setPage("home");setTab("challenges")}}>Challenges</a><a onClick={()=>{setPage("home");setTab("offers")}}>Offers</a><a onClick={()=>{setPage("home");setTab("giveaways")}}>Giveaway</a></div>
+    <div className="foot-col"><h4>Platform</h4><a onClick={()=>{setPage("home");setTab("firms")}}>Firms</a><a onClick={()=>{setPage("home");setTab("challenges")}}>Challenges</a><a onClick={()=>{setPage("home");setTab("offers")}}>Offers</a><a onClick={()=>{setPage("home");setTab("giveaways")}}>Giveaway</a><a onClick={()=>{setPage("home");setTab("points")}}>Pulse Points</a></div>
     <div className="foot-col"><h4>Resources</h4><a onClick={()=>{setPage("home");setTab("blog")}}>Research</a><a>Education</a><a>FAQ</a></div>
     <div className="foot-col"><h4>Company</h4><a>About</a><a>Contact</a><a>Privacy</a><a>Terms</a></div>
   </div><div className="foot-bot">© 2026 ThePropPulse.com — Not financial advice. Data for informational purposes only.</div></div></footer>
 );
+
+// ── AUTH MODAL ──
+const AuthModal = ({onClose,onAuth}) => {
+  const [mode,setMode]=useState("login");
+  const [email,setEmail]=useState("");
+  const [pass,setPass]=useState("");
+  const [name,setName]=useState("");
+  const [err,setErr]=useState("");
+  const [loading,setLoading]=useState(false);
+
+  const handleSubmit = async () => {
+    setErr("");setLoading(true);
+    try {
+      if(mode==="signup"){
+        const {data,error}=await supabase.auth.signUp({email,password:pass,options:{data:{display_name:name}}});
+        if(error) throw error;
+        if(data.user){
+          await supabase.from("profiles").update({display_name:name}).eq("id",data.user.id);
+          onAuth(data.user);onClose();
+        }
+      } else {
+        const {data,error}=await supabase.auth.signInWithPassword({email,password:pass});
+        if(error) throw error;
+        onAuth(data.user);onClose();
+      }
+    } catch(e){setErr(e.message)}
+    setLoading(false);
+  };
+
+  return (<div className="auth-overlay" onClick={onClose}>
+    <div className="auth-modal" onClick={e=>e.stopPropagation()}>
+      <button className="auth-close" onClick={onClose}>{'\u2715'}</button>
+      <h2>{mode==="login"?"Welcome Back":"Join"} <span>Pulse Points</span></h2>
+      <p>{mode==="login"?"Sign in to track your points":"Sign up and start earning free accounts"}</p>
+      {err&&<div className="auth-err">{err}</div>}
+      {mode==="signup"&&<input className="auth-input" placeholder="Display name" value={name} onChange={e=>setName(e.target.value)}/>}
+      <input className="auth-input" type="email" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)}/>
+      <input className="auth-input" type="password" placeholder="Password" value={pass} onChange={e=>setPass(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handleSubmit()}/>
+      <button className="auth-btn" onClick={handleSubmit} disabled={loading}>{loading?"Loading...":mode==="login"?"Sign In":"Create Account"}</button>
+      <div className="auth-toggle">
+        {mode==="login"?<>Don't have an account? <button onClick={()=>{setMode("signup");setErr("")}}>Sign up</button></>
+        :<>Already have an account? <button onClick={()=>{setMode("login");setErr("")}}>Sign in</button></>}
+      </div>
+    </div>
+  </div>);
+};
+
+// ── PULSE POINTS TAB ──
+const POINT_VALUES = {"25K":50,"50K":100,"75K":125,"100K":150,"150K":200,"200K":250,"250K":300,"300K":350};
+const REWARD_TIERS = [
+  {name:"Free 50K Evaluation",pts:500,desc:"Any partner firm"},
+  {name:"Free 100K Evaluation",pts:900,desc:"Any partner firm"},
+  {name:"Free 150K Evaluation",pts:1200,desc:"Any partner firm"},
+  {name:"Exclusive Merch Pack",pts:300,desc:"ThePropPulse gear"},
+  {name:"1-on-1 Strategy Call",pts:800,desc:"30min with a funded trader"},
+];
+
+const PulsePointsTab = ({user,onLogin}) => {
+  const [profile,setProfile]=useState(null);
+  const [subs,setSubs]=useState([]);
+  const [history,setHistory]=useState([]);
+  const [rewards,setRewards]=useState([]);
+  const [ppTab,setPpTab]=useState("submit");
+  const [firm,setFirm]=useState("");
+  const [accSize,setAccSize]=useState("");
+  const [notes,setNotes]=useState("");
+  const [submitting,setSubmitting]=useState(false);
+  const [submitMsg,setSubmitMsg]=useState("");
+  const [adminSubs,setAdminSubs]=useState([]);
+
+  const loadData = useCallback(async ()=>{
+    if(!user) return;
+    const {data:p}=await supabase.from("profiles").select("*").eq("id",user.id).single();
+    setProfile(p);
+    const {data:s}=await supabase.from("submissions").select("*").eq("user_id",user.id).order("created_at",{ascending:false});
+    setSubs(s||[]);
+    const {data:h}=await supabase.from("points_history").select("*").eq("user_id",user.id).order("created_at",{ascending:false});
+    setHistory(h||[]);
+    const {data:r}=await supabase.from("rewards").select("*").eq("user_id",user.id).order("created_at",{ascending:false});
+    setRewards(r||[]);
+    if(p&&p.is_admin){
+      const {data:as}=await supabase.from("submissions").select("*").order("created_at",{ascending:false});
+      setAdminSubs(as||[]);
+    }
+  },[user]);
+
+  useEffect(()=>{loadData()},[loadData]);
+
+  const handleSubmit = async () => {
+    if(!firm||!accSize){setSubmitMsg("Select a firm and account size");return;}
+    setSubmitting(true);setSubmitMsg("");
+    const pts=POINT_VALUES[accSize]||100;
+    const {error}=await supabase.from("submissions").insert({user_id:user.id,firm,account_size:accSize,notes,points_awarded:pts});
+    if(error){setSubmitMsg("Error: "+error.message);}
+    else{setSubmitMsg("Submitted! We'll review and credit your points shortly.");setFirm("");setAccSize("");setNotes("");}
+    setSubmitting(false);loadData();
+  };
+
+  const handleApprove = async (sub) => {
+    await supabase.from("submissions").update({status:"approved",reviewed_by:user.id,reviewed_at:new Date().toISOString()}).eq("id",sub.id);
+    await supabase.from("points_history").insert({user_id:sub.user_id,amount:sub.points_awarded,reason:"Purchase: "+sub.firm+" "+sub.account_size,submission_id:sub.id});
+    const {data:p}=await supabase.from("profiles").select("points,total_earned").eq("id",sub.user_id).single();
+    if(p) await supabase.from("profiles").update({points:(p.points||0)+sub.points_awarded,total_earned:(p.total_earned||0)+sub.points_awarded}).eq("id",sub.user_id);
+    loadData();
+  };
+
+  const handleReject = async (sub) => {
+    await supabase.from("submissions").update({status:"rejected",reviewed_by:user.id,reviewed_at:new Date().toISOString()}).eq("id",sub.id);
+    loadData();
+  };
+
+  const claimReward = async (reward) => {
+    if(!profile||profile.points<reward.pts) return;
+    await supabase.from("rewards").insert({user_id:user.id,reward_name:reward.name,points_cost:reward.pts});
+    await supabase.from("points_history").insert({user_id:user.id,amount:-reward.pts,reason:"Reward: "+reward.name});
+    await supabase.from("profiles").update({points:profile.points-reward.pts,rewards_claimed:(profile.rewards_claimed||0)+1}).eq("id",user.id);
+    loadData();
+  };
+
+  if(!user) return (<div className="pp-login-prompt">
+    <div style={{fontSize:48,marginBottom:12}}>{'\u2B50'}</div>
+    <h3>Earn <span style={{color:'var(--gold)',textShadow:'var(--glow-gold-sm)'}}>Pulse Points</span></h3>
+    <p>Buy any evaluation with code PULSE, submit proof, and earn points toward free accounts.</p>
+    <button className="auth-btn" style={{maxWidth:200,margin:'0 auto'}} onClick={onLogin}>Sign In / Sign Up</button>
+    <div style={{marginTop:24}}>
+      <div className="pp-card"><h3>How It Works</h3>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:10}}>
+          <div style={{textAlign:'center',padding:12}}><div style={{fontSize:24,marginBottom:6}}>1{'\uFE0F'}{'\u20E3'}</div><div style={{fontSize:13,fontWeight:600,color:'var(--t2)'}}>Buy with code PULSE</div><div style={{fontSize:11,color:'var(--t4)',marginTop:4}}>At any partner firm</div></div>
+          <div style={{textAlign:'center',padding:12}}><div style={{fontSize:24,marginBottom:6}}>2{'\uFE0F'}{'\u20E3'}</div><div style={{fontSize:13,fontWeight:600,color:'var(--t2)'}}>Submit Proof</div><div style={{fontSize:11,color:'var(--t4)',marginTop:4}}>Firm name + account size</div></div>
+          <div style={{textAlign:'center',padding:12}}><div style={{fontSize:24,marginBottom:6}}>3{'\uFE0F'}{'\u20E3'}</div><div style={{fontSize:13,fontWeight:600,color:'var(--t2)'}}>Earn Points</div><div style={{fontSize:11,color:'var(--t4)',marginTop:4}}>50-350 pts per purchase</div></div>
+          <div style={{textAlign:'center',padding:12}}><div style={{fontSize:24,marginBottom:6}}>{'\u{1F3C6}'}</div><div style={{fontSize:13,fontWeight:600,color:'var(--t2)'}}>Claim Rewards</div><div style={{fontSize:11,color:'var(--t4)',marginTop:4}}>Free accounts & more</div></div>
+        </div>
+      </div>
+    </div>
+  </div>);
+
+  return (<div className="pp">
+    <div className="pp-header">
+      <h2>Your <span>Pulse Points</span></h2>
+      <div className="pp-balance">
+        <div><div className="pp-balance-n">{profile?.points||0}</div><div className="pp-balance-l">Points Balance</div></div>
+      </div>
+      <div style={{display:'flex',justifyContent:'center',gap:20,fontSize:12,color:'var(--t4)',marginTop:8}}>
+        <span>Total Earned: <b style={{color:'var(--gold)'}}>{profile?.total_earned||0}</b></span>
+        <span>Rewards Claimed: <b style={{color:'var(--em)'}}>{profile?.rewards_claimed||0}</b></span>
+      </div>
+    </div>
+
+    <div className="pp-tabs">
+      <button className={`pp-tab ${ppTab==="submit"?"on":""}`} onClick={()=>setPpTab("submit")}>Submit Purchase</button>
+      <button className={`pp-tab ${ppTab==="history"?"on":""}`} onClick={()=>setPpTab("history")}>History</button>
+      <button className={`pp-tab ${ppTab==="rewards"?"on":""}`} onClick={()=>setPpTab("rewards")}>Rewards</button>
+      {profile?.is_admin&&<button className={`pp-tab ${ppTab==="admin"?"on":""}`} onClick={()=>setPpTab("admin")} style={{borderColor:'rgba(255,71,87,0.3)',color:ppTab==="admin"?'var(--red)':'var(--t4)'}}>Admin</button>}
+    </div>
+
+    {ppTab==="submit"&&<div className="pp-card">
+      <h3>Submit a Purchase</h3>
+      <p style={{fontSize:12,color:'var(--t4)',marginBottom:12}}>Bought an evaluation with code PULSE? Submit it here to earn points.</p>
+      <div className="pp-form">
+        <label>Firm</label>
+        <select value={firm} onChange={e=>setFirm(e.target.value)}>
+          <option value="">Select firm...</option>
+          {FIRMS.map(f=><option key={f.name} value={f.name}>{f.name}</option>)}
+        </select>
+        <label>Account Size</label>
+        <select value={accSize} onChange={e=>setAccSize(e.target.value)}>
+          <option value="">Select size...</option>
+          {Object.keys(POINT_VALUES).map(s=><option key={s} value={s}>{s} ({POINT_VALUES[s]} pts)</option>)}
+        </select>
+        <label>Notes (optional)</label>
+        <input className="auth-input" placeholder="Order # or any details" value={notes} onChange={e=>setNotes(e.target.value)} style={{marginBottom:0}}/>
+        {submitMsg&&<div style={{fontSize:12,marginTop:8,color:submitMsg.includes("Error")?'var(--red)':'var(--green)'}}>{submitMsg}</div>}
+        <button className="pp-submit" onClick={handleSubmit} disabled={submitting}>{submitting?"Submitting...":"Submit for Points"}</button>
+      </div>
+    </div>}
+
+    {ppTab==="submit"&&subs.length>0&&<div className="pp-card" style={{marginTop:12}}>
+      <h3>Your Submissions</h3>
+      {subs.map(s=><div key={s.id} className="pp-row">
+        <div><div style={{fontSize:13,fontWeight:600}}>{s.firm}</div><div style={{fontSize:11,color:'var(--t4)'}}>{s.account_size} · {new Date(s.created_at).toLocaleDateString()}</div></div>
+        <div style={{display:'flex',alignItems:'center',gap:10}}>
+          <span style={{fontFamily:'var(--mono)',fontSize:12,color:'var(--gold)'}}>+{s.points_awarded}</span>
+          <span className={`pp-status ${s.status}`}>{s.status}</span>
+        </div>
+      </div>)}
+    </div>}
+
+    {ppTab==="history"&&<div className="pp-card">
+      <h3>Points History</h3>
+      {history.length===0?<p style={{fontSize:12,color:'var(--t4)'}}>No points yet. Submit a purchase to get started!</p>
+      :history.map(h=><div key={h.id} className="pp-row">
+        <div style={{fontSize:13,color:'var(--t2)'}}>{h.reason}</div>
+        <span style={{fontFamily:'var(--mono)',fontSize:13,fontWeight:700,color:h.amount>0?'var(--gold)':'var(--red)'}}>{h.amount>0?"+":""}{h.amount}</span>
+      </div>)}
+    </div>}
+
+    {ppTab==="rewards"&&<>
+      <div className="pp-card" style={{marginBottom:16}}><p style={{fontSize:13,color:'var(--t3)',textAlign:'center'}}>Redeem your points for free evaluations and exclusive rewards</p></div>
+      <div className="pp-rewards">
+        {REWARD_TIERS.map((r,i)=><div key={i} className="pp-reward">
+          <div className="pp-reward-pts">{r.pts}</div>
+          <div className="pp-reward-name">{r.name}</div>
+          <div style={{fontSize:10,color:'var(--t4)',marginBottom:8}}>{r.desc}</div>
+          <button className="pp-reward-btn" disabled={!profile||profile.points<r.pts} onClick={()=>claimReward(r)}>{profile&&profile.points>=r.pts?"Claim":"Need "+(r.pts-(profile?.points||0))+" more"}</button>
+        </div>)}
+      </div>
+      {rewards.length>0&&<div className="pp-card" style={{marginTop:16}}>
+        <h3>Claimed Rewards</h3>
+        {rewards.map(r=><div key={r.id} className="pp-row">
+          <div style={{fontSize:13,fontWeight:600}}>{r.reward_name}</div>
+          <div style={{display:'flex',alignItems:'center',gap:8}}>
+            <span style={{fontFamily:'var(--mono)',fontSize:11,color:'var(--gold)'}}>-{r.points_cost} pts</span>
+            <span className={`pp-status ${r.status}`}>{r.status}</span>
+          </div>
+        </div>)}
+      </div>}
+    </>}
+
+    {ppTab==="admin"&&profile?.is_admin&&<div className="pp-card">
+      <h3 style={{color:'var(--red)'}}>Admin: Review Submissions</h3>
+      {adminSubs.filter(s=>s.status==="pending").length===0&&<p style={{fontSize:12,color:'var(--t4)'}}>No pending submissions.</p>}
+      {adminSubs.map(s=><div key={s.id} className="pp-row" style={{flexWrap:'wrap'}}>
+        <div style={{flex:1,minWidth:200}}>
+          <div style={{fontSize:13,fontWeight:600}}>{s.firm} · {s.account_size}</div>
+          <div style={{fontSize:11,color:'var(--t4)'}}>{s.user_id.slice(0,8)}... · {new Date(s.created_at).toLocaleDateString()}{s.notes&&" · "+s.notes}</div>
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:6}}>
+          <span className={`pp-status ${s.status}`}>{s.status}</span>
+          <span style={{fontFamily:'var(--mono)',fontSize:11,color:'var(--gold)'}}>+{s.points_awarded}</span>
+          {s.status==="pending"&&<>
+            <button style={{background:'rgba(16,185,129,0.15)',border:'1px solid rgba(16,185,129,0.3)',color:'var(--green)',fontSize:11,fontWeight:700,padding:'4px 10px',borderRadius:5,cursor:'pointer'}} onClick={()=>handleApprove(s)}>Approve</button>
+            <button style={{background:'rgba(255,71,87,0.15)',border:'1px solid rgba(255,71,87,0.3)',color:'var(--red)',fontSize:11,fontWeight:700,padding:'4px 10px',borderRadius:5,cursor:'pointer'}} onClick={()=>handleReject(s)}>Reject</button>
+          </>}
+        </div>
+      </div>)}
+    </div>}
+  </div>);
+};
 
 // ── APP ──────────────────────────────────────────────────────────────────────
 export default function App() {
@@ -1271,6 +1584,16 @@ export default function App() {
   const [sort,setSort]=useState("pulse");
   const [sf,setSF]=useState(null);
   const [blogPost,setBlogPost]=useState(null);
+  const [user,setUser]=useState(null);
+  const [showAuth,setShowAuth]=useState(false);
+
+  useEffect(()=>{
+    supabase.auth.getSession().then(({data:{session}})=>{if(session)setUser(session.user)});
+    const {data:{subscription}}=supabase.auth.onAuthStateChange((_,session)=>{setUser(session?.user||null)});
+    return ()=>subscription.unsubscribe();
+  },[]);
+
+  const handleLogout = async ()=>{await supabase.auth.signOut();setUser(null);setTab("firms");};
 
   const sorted=useMemo(()=>{
     const a=[...FIRMS];
@@ -1286,14 +1609,14 @@ export default function App() {
   const goBlog=p=>{setBlogPost(p);setPage("blogpost");window.scrollTo({top:0,behavior:"smooth"})};
   const blogBack=()=>{setPage("home");setTab("blog");window.scrollTo({top:0,behavior:"smooth"})};
 
-  if(page==="blogpost") return (<><style>{css}</style><div className="ambient"><div className="ambient-gold"/></div><div className="edge-glow"/><div className="side-glow-l"/><div className="side-glow-r"/><div className="top-glow"/><div className="page"><Ticker/><NavBar tab={tab} setTab={setTab} setPage={setPage}/><BlogPostPage post={blogPost} goBack={blogBack}/><div style={{height:40}}/><Footer setPage={setPage} setTab={setTab}/></div></>);
-  if(page==="detail") return (<><style>{css}</style><div className="ambient"><div className="ambient-gold"/></div><div className="edge-glow"/><div className="side-glow-l"/><div className="side-glow-r"/><div className="top-glow"/><div className="page"><Ticker/><NavBar tab={tab} setTab={setTab} setPage={setPage}/><DetailPage firm={sf} goBack={goBack}/><Footer setPage={setPage} setTab={setTab}/></div></>);
+  if(page==="blogpost") return (<><style>{css}</style><div className="ambient"><div className="ambient-gold"/></div><div className="edge-glow"/><div className="side-glow-l"/><div className="side-glow-r"/><div className="top-glow"/><div className="page"><Ticker/><NavBar tab={tab} setTab={setTab} setPage={setPage} user={user} onLogin={()=>setShowAuth(true)} onLogout={handleLogout}/><BlogPostPage post={blogPost} goBack={blogBack}/><div style={{height:40}}/><Footer setPage={setPage} setTab={setTab}/></div></>);
+  if(page==="detail") return (<><style>{css}</style><div className="ambient"><div className="ambient-gold"/></div><div className="edge-glow"/><div className="side-glow-l"/><div className="side-glow-r"/><div className="top-glow"/><div className="page"><Ticker/><NavBar tab={tab} setTab={setTab} setPage={setPage} user={user} onLogin={()=>setShowAuth(true)} onLogout={handleLogout}/><DetailPage firm={sf} goBack={goBack}/><Footer setPage={setPage} setTab={setTab}/></div></>);
 
   return (<><style>{css}</style>
     <div className="ambient"><div className="ambient-gold"/></div><div className="edge-glow"/><div className="side-glow-l"/><div className="side-glow-r"/><div className="top-glow"/>
     <div className="page">
     <Ticker/>
-    <NavBar tab={tab} setTab={setTab} setPage={setPage}/>
+    <NavBar tab={tab} setTab={setTab} setPage={setPage} user={user} onLogin={()=>setShowAuth(true)} onLogout={handleLogout}/>
     <div className="wrap">
       <div className="hero">
         <div className="hero-code">PULSE</div>
@@ -1311,7 +1634,7 @@ export default function App() {
     <div className="wrap">
 
       <div className="ctabs">
-        {[["firms","Firms"],["challenges","Challenges"],["offers","Offers"],["giveaways","Giveaway"],["blog","Research"]].map(([k,l])=>(
+        {[["firms","Firms"],["challenges","Challenges"],["offers","Offers"],["giveaways","Giveaway"],["blog","Research"],["points","\u2B50 Pulse Points"]].map(([k,l])=>(
           <button key={k} className={`ctab${tab===k?' on':''}`} onClick={()=>setTab(k)}>{l}</button>
         ))}
       </div>
@@ -1329,8 +1652,10 @@ export default function App() {
       {tab==="offers"&&<OffersTab/>}
       {tab==="giveaways"&&<GiveawaysTab/>}
       {tab==="blog"&&<BlogTab onSelect={goBlog}/>}
+      {tab==="points"&&<PulsePointsTab user={user} onLogin={()=>setShowAuth(true)}/>}
     </div>
     <Footer setPage={setPage} setTab={setTab}/>
     </div>
+    {showAuth&&<AuthModal onClose={()=>setShowAuth(false)} onAuth={u=>{setUser(u);setShowAuth(false)}}/>}
   </>);
 }
