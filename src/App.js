@@ -20,7 +20,7 @@ const FIRMS = [
   { id:2, name:"My Funded Futures", initials:"MFF", logoUrl:"https://www.google.com/s2/favicons?domain=myfundedfutures.com&sz=128", founded:2023, rating:4.9, reviews:16890, pulse:91, trend:"up", maxAlloc:"$450K", country:"US", flag:"🇺🇸", platforms:["NinjaTrader","Tradovate","Rithmic","+4"], challenge:"1-Step Eval", steps:1, split:"80/20 → 90/10", target:"$5,000", dailyDD:"$1,250", maxDD:"$2,500", minPayout:"$250", paySpeed:"1–3 days", reset:"$99", hq:"Dallas, TX", color:"#a855f7", brandGrad:"linear-gradient(135deg,#a855f7,#7c3aed)", desc:"Simplicity and transparency are the name of the game. Straightforward rules, quick payouts, and a rapidly growing community of funded traders.", instantFund:false, sizes:["50K","100K","150K"], payoutType:"Daily (Rapid) / Bi-Weekly", minDaysPass:"1 day", drawdownType:"EOD / Intraday", hasDLL:false, hasConsistency:true, consistencyPct:"40% (Core)", newsTrading:true, eaAllowed:true },
   { id:3, name:"Alpha Futures", initials:"AF", logoUrl:"https://www.google.com/s2/favicons?domain=alphafutures.io&sz=128", founded:2023, rating:4.9, reviews:3320, pulse:88, trend:"up", maxAlloc:"$500K", country:"GB", flag:"🇬🇧", platforms:["NinjaTrader","Tradovate","TradingView"], challenge:"1-Step Eval", steps:1, split:"100% first $15K → 90/10", target:"$5,000", dailyDD:"$1,500", maxDD:"$3,000", minPayout:"$250", paySpeed:"1–3 days", reset:"$85", hq:"London, UK", color:"#8b5cf6", brandGrad:"linear-gradient(135deg,#8b5cf6,#6d28d9)", desc:"UK-based futures prop firm with generous first-payout rules. 100% profit on your first $15K with only 3 minimum trading days required.", instantFund:false, sizes:["50K","100K","150K"], payoutType:"Bi-Weekly", minDaysPass:"1–2 days", drawdownType:"EOD Trailing", hasDLL:false, hasConsistency:true, consistencyPct:"50% (Eval)", newsTrading:true, eaAllowed:false },
   { id:4, name:"Apex Trader Funding", initials:"ATF", logoUrl:"https://www.google.com/s2/favicons?domain=apextraderfunding.com&sz=128", founded:2021, rating:4.4, reviews:17860, pulse:82, trend:"flat", maxAlloc:"$3M", country:"US", flag:"🇺🇸", platforms:["NinjaTrader","Rithmic","Tradovate","+11"], challenge:"1-Step Eval", steps:1, split:"100% first $25K → 90/10", target:"$6,000", dailyDD:"None", maxDD:"$2,500", minPayout:"$500", paySpeed:"3–5 days", reset:"$80", hq:"Austin, TX", color:"#f97316", brandGrad:"linear-gradient(135deg,#f97316,#ea580c)", desc:"The largest futures prop firm by volume with the highest max allocation in the industry at $3M. Aggressive promos, simple rules, and no daily drawdown limit.", instantFund:false, sizes:["25K","50K","75K","100K","150K","250K","300K"], payoutType:"After 5 Trading Days", minDaysPass:"1 day", drawdownType:"EOD / Intraday", hasDLL:false, hasConsistency:true, consistencyPct:"50%", newsTrading:true, eaAllowed:true },
-  { id:5, name:"Top One Futures", initials:"T1", logoUrl:"https://www.google.com/s2/favicons?domain=toponefutures.com&sz=128", founded:2024, rating:4.7, reviews:3041, pulse:87, trend:"up", maxAlloc:"$2.6M", country:"US", flag:"🇺🇸", platforms:["NinjaTrader","Tradovate","TradingView"], challenge:"1-Step Eval", steps:1, split:"90/10", target:"$5,000", dailyDD:"$1,500", maxDD:"$2,500", minPayout:"$300", paySpeed:"1–3 days", reset:"$90", hq:"Miami, FL", color:"#10b981", brandGrad:"linear-gradient(135deg,#10b981,#059669)", desc:"Rapidly growing with one of the highest max allocations in futures. Competitive rules and a strong trader community.", instantFund:true, sizes:["25K","50K","100K","150K"], payoutType:"Varies by Plan", minDaysPass:"1 day", drawdownType:"EOD Trailing", hasDLL:true, hasConsistency:true, consistencyPct:"Varies", newsTrading:true, eaAllowed:true },
+  { id:5, name:"Top One Futures", initials:"T1", logoUrl:"https://www.google.com/s2/favicons?domain=toponefutures.com&sz=128", founded:2024, rating:4.7, reviews:3041, pulse:87, trend:"up", maxAlloc:"$2.6M", country:"US", flag:"🇺🇸", platforms:["NinjaTrader","Tradovate","TradingView"], challenge:"1-Step Eval", steps:1, split:"90/10", target:"$5,000", dailyDD:"$1,500", maxDD:"$2,500", minPayout:"$300", paySpeed:"1–3 days", reset:"$90", hq:"Miami, FL", color:"#06b6d4", brandGrad:"linear-gradient(135deg,#06b6d4,#0891b2)", desc:"Rapidly growing with one of the highest max allocations in futures. Competitive rules and a strong trader community.", instantFund:true, sizes:["25K","50K","100K","150K"], payoutType:"Varies by Plan", minDaysPass:"1 day", drawdownType:"EOD Trailing", hasDLL:true, hasConsistency:true, consistencyPct:"Varies", newsTrading:true, eaAllowed:true },
   { id:6, name:"FundedNext Futures", initials:"FN", logoUrl:"https://www.google.com/s2/favicons?domain=fundednext.com&sz=128", founded:2022, rating:4.4, reviews:63192, pulse:79, trend:"flat", maxAlloc:"$700K", country:"AE", flag:"🇦🇪", platforms:["NinjaTrader","Tradovate","TradingView"], challenge:"1-Step Eval", steps:1, split:"80/20 → 90/10", target:"$5,000", dailyDD:"$1,200", maxDD:"$2,500", minPayout:"$500", paySpeed:"3–5 days", reset:"$95", hq:"Dubai, UAE", color:"#06b6d4", brandGrad:"linear-gradient(135deg,#06b6d4,#0891b2)", desc:"Part of the FundedNext ecosystem, now offering futures. Backed by one of the most recognized brands in prop trading.", instantFund:false, sizes:["50K","100K","150K","200K"], payoutType:"Within 24 Hours", minDaysPass:"No minimum", drawdownType:"EOD Trailing", hasDLL:true, hasConsistency:false, consistencyPct:"None", newsTrading:true, eaAllowed:true },
   { id:7, name:"Lucid Trading", initials:"LT", logoUrl:"https://www.google.com/s2/favicons?domain=lucidtrading.com&sz=128", founded:2024, rating:4.8, reviews:2710, pulse:72, trend:"new", maxAlloc:"$750K", country:"US", flag:"🇺🇸", platforms:["NinjaTrader","Tradovate","Bookmap","+8"], challenge:"1-Step Eval", steps:1, split:"80/20 → 90/10", target:"$4,000", dailyDD:"$1,000", maxDD:"$2,000", minPayout:"$500", paySpeed:"3–5 days", reset:"$75", hq:"New York, NY", color:"#14b8a6", brandGrad:"linear-gradient(135deg,#14b8a6,#0d9488)", desc:"The newest entrant in the futures prop space. Building their reputation through competitive pricing and transparent operations.", instantFund:true, sizes:["25K","50K","100K","150K"], payoutType:"5-Day (Pro) / 8-Day (Direct)", minDaysPass:"1 day", drawdownType:"EOD Trailing", hasDLL:false, hasConsistency:false, consistencyPct:"None (Flex)", newsTrading:true, eaAllowed:true },
   { id:8, name:"Topstep", initials:"TS", logoUrl:"https://www.google.com/s2/favicons?domain=topstep.com&sz=128", founded:2012, rating:3.4, reviews:13746, pulse:85, trend:"flat", maxAlloc:"$750K", country:"US", flag:"🇺🇸", platforms:["NinjaTrader"], challenge:"Trading Combine", steps:1, split:"100% first $10K → 90/10", target:"$6,000", dailyDD:"$1,000", maxDD:"$2,000", minPayout:"$200", paySpeed:"3–7 days", reset:"$149", hq:"Chicago, IL", color:"#6366f1", brandGrad:"linear-gradient(135deg,#6366f1,#4f46e5)", desc:"The original futures prop firm, operating since 2012. Pioneered the evaluation model that the entire industry now follows. Trusted and established.", instantFund:false, sizes:["50K","100K","150K"], payoutType:"After Combine Pass", minDaysPass:"No minimum", drawdownType:"EOD Trailing", hasDLL:true, hasConsistency:true, consistencyPct:"50%", newsTrading:true, eaAllowed:false },
@@ -32,7 +32,7 @@ const DEALS = [
   { firm:"Tradeify", pct:"40% OFF", code:"PULSE", color:"#0ea5e9", desc:"40% off all accounts (up to 5 uses) then 30% off on subsequent purchases", tag:"NEW OFFER", expires:"May 1" },
   { firm:"Apex Trader Funding", pct:"90% OFF", code:"PULSE", color:"#f97316", desc:"90% off all evaluations", tag:"NEW OFFER", expires:"Apr 10" },
   { firm:"My Funded Futures", pct:"50% OFF", code:"PULSE", color:"#a855f7", desc:"50% off all Pro accounts for new users", tag:"", expires:"" },
-  { firm:"Top One Futures", pct:"60% OFF", code:"PULSE", color:"#10b981", desc:"60% off all evaluation and instant funding accounts", tag:"", expires:"" },
+  { firm:"Top One Futures", pct:"60% OFF", code:"PULSE", color:"#06b6d4", desc:"60% off all evaluation and instant funding accounts", tag:"", expires:"" },
   { firm:"Lucid Trading", pct:"50% OFF", code:"PULSE", color:"#14b8a6", desc:"50% off on Flex & Pro accounts (First 2 orders)", tag:"NEW OFFER", expires:"Apr 4" },
   { firm:"Take Profit Trader", pct:"40% OFF", code:"PULSE", color:"#eab308", desc:"40% off all evaluation account sizes", tag:"", expires:"" },
   { firm:"Alpha Futures", pct:"15% OFF", code:"PULSE", color:"#8b5cf6", desc:"15% off all evaluations", tag:"", expires:"" },
@@ -41,14 +41,6 @@ const DEALS = [
   { firm:"Topstep", pct:"50% OFF", code:"PULSE", color:"#64748b", desc:"50% off Trading Combine — first month only", tag:"", expires:"" },
 ];
 
-const REVIEWS = [
-  { id:1, user:"TradingMike_NQ", firm:"Tradeify", rating:5, text:"Got funded in 3 days and received my first payout within 48 hours. The straight-to-funded model is a game changer.", date:"Mar 20, 2026", verified:true },
-  { id:2, user:"FuturesJenny", firm:"Apex Trader Funding", rating:4, text:"Great promos and easy rules. Payout took a bit longer than expected but the 100% profit on first $25K is hard to beat.", date:"Mar 19, 2026", verified:true },
-  { id:3, user:"NQ_Scalper_Pro", firm:"Topstep", rating:4, text:"Been with Topstep for years. Reliable, consistent, and the Trading Combine is fair. Not the cheapest but solid.", date:"Mar 17, 2026", verified:true },
-  { id:4, user:"ChicagoTraderX", firm:"My Funded Futures", rating:5, text:"MFF is underrated. Clean interface, fast payouts, and their support team actually responds.", date:"Mar 15, 2026", verified:true },
-  { id:5, user:"DeltaFlow", firm:"Bulenox", rating:4, text:"Solid firm with good pricing. Reset fees are the lowest I've seen. Minor UI issues on dashboard but overall great.", date:"Mar 12, 2026", verified:true },
-  { id:6, user:"ESMiniTrader", firm:"Alpha Futures", rating:5, text:"New firm but already impressing. 100% first $15K payout and only 3 minimum trading days.", date:"Mar 10, 2026", verified:true },
-];
 
 const BLOG = [
   { id:1, title:"The State of Futures Prop Firms in 2026", date:"Mar 22, 2026", cat:"Industry", time:"6 min", color:"#a855f7",
@@ -129,7 +121,7 @@ Stagger your payout requests. If all 5 accounts hit their targets the same week,
 
 Track your total evaluation spend as a business expense. If you're spending $500-800/month on evaluations across firms, that's your cost of capital. The goal: generate more in payouts per month than you spend on evaluations. Most profitable stackers hit this breakeven within 2-3 months and then it's pure profit from there.`},
 
-  { id:4, title:"March 2026 Prop Firm Rule Changes: Everything You Need to Know", date:"Mar 10, 2026", cat:"News", time:"4 min", color:"#10b981",
+  { id:4, title:"March 2026 Prop Firm Rule Changes: Everything You Need to Know", date:"Mar 10, 2026", cat:"News", time:"4 min", color:"#06b6d4",
     excerpt:"Apex's massive overhaul, Lucid's February updates, and Tradeify's Select launch — every rule change that matters.",
     body:`Several major firms made significant rule changes in early 2026. Here's what happened and how it affects your trading.
 
@@ -278,979 +270,325 @@ const CHALLENGES = [
   {firm:"Bulenox",plan:"Eval",size:"250K",target:"$15,000",maxLoss:"$5,500",dll:"$2,500",drawdown:"EOD or Trailing",minDays:"No min",consistency:"40%",split:"100% first $10K",payout:"Weekly",standard:true,instant:false,news:true,ea:true,price:"$535 one-time"},
 ];
 
-const LOGO_URL = "/mnt/user-data/outputs/logo.png";
+const LOGO_URL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAOM0lEQVR4nNVYaZBc1XX+zr1v656lZ5dmRgKhDSKEigHsRGBAlKHIAhTYjJzCLhwSMARTBQ6ywAkYQSqF7RjbgbIjQpxyhQQnErFNAjZeZIyhJAtLAsyO5EhixDCa6Znp/W33npMfr4UkNCA5KSzlq+p+3a9fn/d976z3Ev4fYY2IM1ps9DqgFX5kR786t+1J52iTOlL82bgsfK3Kl5kW/6OJwoIA5ioAOOYFXLaj2uf1etftDfjKRMlgDAki0Fif8ovAMSrg9C1b3P55S/ocx/mjhq9XFR1emJBQAoIBwVpJ2wRl4BgU8Id7osW1Dn1ZSWE40TQUK1FWCJYVUhYwAMeqMGw0ji0BV26W7vHjzA3FTrqypjBoBb4FQRKCFQBGYBmwYPiGKjvHyyXgfylgjYh6aQL5qTxaKjG8VEFzHBEA5P1Ass8xlF8QLwAhjqD8QBBFCA6wE0SAO1ktrl/aV3vpua0V313wLdfmX3Hzclqq1OUhsIBSgFkhtQpIBEYEOtLTo2f0h7+xgNO3iNs+C6c9MoUPRcqeqhqYnyrqsIw8XFeBSCKx0IEHiIZQCs1aKdcVZVNRrpY6ABeAhiBVSIOGdz2An2y99owUwG6IvLFsR3lHqnPnW1GwTGAIlDWltEEFk4ISkb2Akt9AgNA5u5KTpgO+fYehFabC3RbiMRFEAaQIUASlGKQBLQKCyn5LBaQISmkQAE2AQwKHgDz4l7rDe+3AO130+uTAWK7wRROrIW5Y2ATI2einVvGttkbXGgo+bgJ+c9/1hxWw5EXxVKu9aCece2pTMs9GAgaBlAIRAEegNLIHQgA5gHYIUAARQAog3TySgAAoDbhKKm6S/P2PulreJnP/a6M922cV7jOGzq8ZYFI067DxlJTGrxq7ZMEbWLdu26zgDx7ybaAnj0TA6VskX8rz9dUabqs3pEAxwCAI7ScDAlgL4GSeIAcQVwCHQEQg3fQANQUqgqNFHCTfDirxf6C7lQFg40hxMOxs+xK76tI4BpKchamn22JbXTVy8fyRnrOebosf6Fm2t1bahE1zw30c1buRH14nutxmryhO4a9qY6rAk4CtEqQOcI1gy4AtA1wlmDpg6gJbJ1DDjEkU/ZJjC04YnAikeeRUIEbgN9Kn3eLUX25e1F0BgBfHx1vndrfeOhA4ly/URItcYLGbbB+ola8cWdG/FURSDwevDuW4de3Lu26BCB02hLYuxoJykf4iLEqHCgEBAYQsLiAQZjBloaIdZE/cT4qBalxzfLWxyWj5QOo6BGj4er9d0kbcVG3beNbcKQDYvl387iD8dBC4n8qBPBERhn1V1cJPrF0+8AqGRedP2XFxonru5nbHr3fT7V3fNbXZL8q9Ly+l5F0ECIWV9M8be9WJUgLYNgULIAQIEYgUoAiiGMYhaI9DnYT35rrKP3nmvBMiAI+/V3gCwM6dO4Pu3viGIPDu0BBPC4FEdknCN5ef6XkeAHKvvvBBq064x3Z5PvUrIM+q4anVk2W7HWvkv2YMocUbMFAt45PmLSgpASgTpCTgskDKAqkIpE7gOkMaAIUCvxFvaJ+uff1Pntxlnn15ZNHhyIuI7u6bfUU+cD+nFeUgALEtp6XomvFtm368ciVZAHB9ZU2X9jGoQb2A5BVSRk+D1NVzhtExowcmrb0gHKNOKisgFYgIZN+PRM3qgyyDPBHXxq96pdev/d7qoeqiSvcNrudcPDIyctHcufuT7R3kqVaLzs0H7l0g6YIALBirlMPrZve0bzjw2sqWh7e0XHH9w1Ff541ooSxUY1Ca2BWNqrN4Bg8ISYxzME6gikAaAqkBqAGoE1AFUAVsBZAqoGvJLrdSumFi9dDY4mrjwnzevcX3aEmh0HPGuzx8qtWis73AWUuKBgkEyzJZbzRuHxtr+8Ghl69hr6f4j6rAifjI8jAh2DpayPL5hwpYA6JY9aIKcBWQCoFrgNSyI9cAqQqoxFAVU9el6tfKI2NPTU1NDbqBd5vWepaI6tFaffiJJ544xMN79uxd5vnO1x2tFgEAs9hyqX7bxN62B5cupWQmxdNvvfi6buNx8lTWfw0DIRHHOGXGECJYQUigBoEsIJydV0QQEUAAOGAnKX0vfOv5bz7/t7O9vJ+/23PUBwEQETnaVR8++eST1wIY22d3cnJyTktL692uppMBgRXU6mFyZ29vx/3A/iidARZ518AQxAiIAdECjtB6qAfugHAqNYCBlCGRAKEAdYFUGagKpMbQ9cqTanp09RP3L7bz5y/8rBt4HyMRMHODCHAUnaqUt3Sf2d27d3fmcvkvOI6+QAASoUaS2nuTqLb2MOQxZ/lFs8lwn0osVAKomICYAIPqoR4gkpZ/S35c76W8DWNBla1OrSCMRaUpIAKQrTpp/Surlv/n2FDnzcO5nH+DUuKkKW+v16MHCoWWLxKhNQj8PwWwYWxsLF8odH7Z8/THCMphCOIk/Zc4bHypr6+v9l7kASBu8S9NjeRUQsC+ScATkNCrdLg/ZxCSbHIgAPTSSy+pQqGgOzo65rue/6DrqCERNMLQfG7jxte+ec65Jz7juc4SZlR/PfLGBwb6Bj/SknNuJ6Ecw6b1JH14/M03r1q0aFF8uDsP3CNzyz4/mlZlGQyBhCCOQHVJFOTl9+mff/h8y5K5A+0Dfe0dClG7r72857mBhfWIECjiVhJqc103z8yBAjwhBNbaFu2ok7RSZwGgOLbfKZUmrx0YGCiWa42bWnP+PYCoKDKPe54zpBTNAsTEcfqdvbXqjSf09Y0djvz8L0ihqPivkwif4gS+MAAWUEDQ/bIl35lc6gRtXVyyzLl6ovJKBU5BtdcaUWsjDttaW3NtucDtFpaeehR3+67TzoQWTjnPkLxLKi+CWmp5crwyvWrewEARAIjND6z1bnQcNS+X8y6EgCAMK/KLOMYt83p79x6O/CnfkM6Ruv1aVJJhxNoXEcACWgimTVIvkMcmp3PjM4fQOtHDwzMbnrjzZ1QdfZ3mn99JZw8NkV9u0ZXJCfpseVk0DGD9SvDERLG1vb3wDdd1Po4s7DhN7Qt79kxcsmDBwBszGh5ep3tXDOfsdNgpjne2ie3no7I6EREBQlBMEM2AJ1AL5OWufvno6OX+oTkwZ+NIjvtnXVMj3ceGBQaAAcAADIMNwCmABmfNLeLsewSo2JDXmHq0vHre5no9+mSQc+8jqBZj7dZKuX5tb2/h2Y7rRk+1fnAaO76B5zHEahLdxqBOIlrIlk7hmH8HIfmSUrM+ZUOj5C3c42W69Th19fgf6+8CJIdUoaCtd6BI+sYkpXkwGpIAYgSwAmIHbAExyM5HABKBNEWS8aBMejIRPjI2Rj/3POxVJEHYiG7p6Sk8l//E7tlhrevL3Mj9HgllQzFpKGGXNWkIabIAWAGWsoohAiECWizcfim39KubxpV+BKCZl5Sk/B5b57ykVsESkBJgAViCWMpm+lSAKiAVgAxl3kkESAmJbbmg4+ZXjlu7dt2uz6xa/Wga4ec9PW0/nTM8kkPScadF7jwSRYJssgUAJg3a15Fk35sAKpt9pNWIM8++kV/grFkyWz80fl426DV9czDmbk4vnFTqX01M3bDIyHJTQEqwMYNSQEoMqisgbXZq2/RCKsiHE3fU/q7/rmef3dkxdOq8Ms7cFLTmF6yKdOHzShwHit7RugRE2XpDiABiiAuoNsDtl6LfT491zNX/8GvBZqzcT35GD1Rj6TcJAkRNUm/3rqaYFEAdoDJBIgIZQNmsxYsVkAEiLlxSuOJX9w0NnTANrFHeh667LIw6biKlHAJBdFOACAhZqLBmkEOAx5AOgT8oVb9fr9cB/qmnWz//8jDN2PAOFrBGFMXcq6bF4ygLDbIKMAI0ZxBiAGVAlVWWvNzMDwuQaY4fhk6IbOdyAN9vPXPlkkRaViuRVmKKWVtWBIFWlhVbcZCKJ6mTo1i1Y9LrVa84HerxLsKPXv8MFQFgfCbmMwo4F8oUTadMO5pCgVgCDENs5gESgAyAaQaFKjuHZA8p8zgsVcTAwoBh0lSltgSAcrm0M4U8SGIsu2y0LzE8ZeBL7GpT9wKv4rSlFdOmJvOj0+OjfzMQApDie5B+dwG7djkSD3ZimhTH2ZOFbdZgZpAlqBDgkoZYAGyNQvjtBKN34b+jGG1VQe8KAa2HeWSYAcjEhmVPA3g6uwEhfUf0Nw74XDpC0u8qoDOZ50dl28clBiKAmMCCjKwAZAm2ZIGYICwgpCMuFx9Kvr/0PQYyes9J8/+KgwR4lZofVvweKesseW1Wpva1cU4FVFWZGGI4Unyo3v7cC+8nwcPhIAGmpF2q6XZUKeu+0qxAItlWTF2ABAAYpGs7XH7rq9H6lXZGy78lHCQgTdK8retZaLgg21yGMWXlzlIWsAKQ4tjj4p3Vn/3u5Aw2f6s4WMAUOqWhOqghkGZ9BhOEKWtehpDt56YbCPjh0aF8MA4SQBH1oUYe4ma9VwAsQJzlgGIA2pZdnvxWbdPCI6107ysOXhPHNIi6aIoJlGbrTjLY/2IRzeUna8mvHnu/q8uR4iAPiKGTOFJQKZDNJ/tmq2bLV+HLjpm6FVsvbsxk7Gjg4BAycjwlAAxnhCnLA4FA62iPltqnq1tPfPXoUJ0ZB4SQkBg9qIyAWA6Ie4YiO+pS49bavKeePnpUZ8Z+Acv3BEjVIBggVhDONrjIibYpt3F9hXevw1Gu+TPh7RCa3dHROh2qHpKsApFjU+2H67VK1lQ29+4AzjgmkvadeFsAsxnQoesJyCg/flM75a9UnF0PYNOZM+4wHyt4W4CwDCo2Zbj233PB9NqJjXOeO4q8jhgHeKCY+H77sJpSv5jYNuew233HCv4HZXiLM9R1kRAAAAAASUVORK5CYII=";
 
-// ── CSS ─────────────────────────────────────────────────────────────────────
 const css = `
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
-
-:root {
-  --bg: #0f1623;
-  --bg2: #151e30;
-  --bg3: #1b263d;
-  --bg4: #22304d;
-  --bdr: rgba(14,165,233,0.1);
-  --bdr2: rgba(14,165,233,0.2);
-  --bdr3: rgba(14,165,233,0.32);
-  --brand: #0ea5e9;
-  --brand2: #38bdf8;
-  --brand3: #7dd3fc;
-  --glow: rgba(14,165,233,0.15);
-  --glow2: rgba(14,165,233,0.08);
-  --purple: #a855f7;
-  --green: #34d399;
-  --red: #f87171;
-  --amber: #fbbf24;
-  --pink: #ec4899;
-  --orange: #f97316;
-  --t1: #f0f5ff;
-  --t2: #94adc8;
-  --t3: #657a97;
-  --t4: #445672;
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+:root{
+  --bg:#050810;--bg1:#080c16;--bg2:#0c1220;--bg3:#12192e;--bg4:#182040;
+  --glass:rgba(8,14,28,0.65);--glass2:rgba(6,10,20,0.88);
+  --bdr:rgba(6,182,212,0.08);--bdr2:rgba(6,182,212,0.15);--bdr3:rgba(6,182,212,0.35);
+  --em:#22d3ee;--em2:#67e8f9;--em3:#a5f3fc;--emA:rgba(6,182,212,0.1);--emA2:rgba(6,182,212,0.18);
+  --green:#10b981;--red:#ff4757;--amber:#ffbe0b;--gold:#fbbf24;
+  --t1:#f0f9ff;--t2:#bae6fd;--t3:#7dd3fc;--t4:#38bdf8;--t5:#0284c7;
+  --serif:'Outfit',system-ui,sans-serif;
+  --sans:'Outfit',system-ui,-apple-system,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --glow:0 0 4px #22d3ee,0 0 12px rgba(6,182,212,0.5),0 0 28px rgba(6,182,212,0.2),0 0 60px rgba(6,182,212,0.08);
+  --glow-sm:0 0 4px rgba(6,182,212,0.6),0 0 10px rgba(6,182,212,0.3);
+  --glow-box:0 0 1px rgba(6,182,212,0.3),0 0 8px rgba(6,182,212,0.15),0 0 24px rgba(6,182,212,0.08),0 0 48px rgba(6,182,212,0.04);
+  --glow-gold:0 0 4px #fbbf24,0 0 12px rgba(251,191,36,0.4),0 0 28px rgba(251,191,36,0.15);
+  --glow-gold-sm:0 0 4px rgba(251,191,36,0.5),0 0 10px rgba(251,191,36,0.25);
+  --glow-green:0 0 4px rgba(16,185,129,0.5),0 0 10px rgba(16,185,129,0.25);
+  --glow-red:0 0 4px rgba(255,71,87,0.4),0 0 10px rgba(255,71,87,0.2);
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body,#root{background:var(--bg);color:var(--t1);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:rgba(14,165,233,0.12);border-radius:3px}
+body,#root{background:var(--bg);color:var(--t1);font-family:var(--sans);font-size:15px;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(6,182,212,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(6,182,212,0.025) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(34,211,238,0.2);border-radius:3px;box-shadow:0 0 6px rgba(34,211,238,0.3)}
 
-/* ── AMBIENT GLOW BG ── */
-.glow-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.glow-bg::before{content:'';position:absolute;width:800px;height:800px;top:-300px;left:50%;transform:translateX(-50%);background:radial-gradient(circle,rgba(14,165,233,0.12) 0%,rgba(14,165,233,0.04) 35%,transparent 70%);border-radius:50%;animation:glowPulse 8s ease-in-out infinite}
-.glow-bg::after{content:'';position:absolute;width:600px;height:600px;top:-200px;right:-100px;background:radial-gradient(circle,rgba(168,85,247,0.08) 0%,transparent 65%);border-radius:50%;animation:glowPulse 12s ease-in-out infinite reverse}
-@keyframes glowPulse{0%,100%{opacity:1;transform:translateX(-50%) scale(1)}50%{opacity:.7;transform:translateX(-50%) scale(1.08)}}
-.glow-orb-left{position:absolute;width:500px;height:500px;top:100px;left:-200px;background:radial-gradient(circle,rgba(14,165,233,0.06) 0%,transparent 70%);border-radius:50%}
-.glow-orb-right{position:absolute;width:400px;height:400px;top:200px;right:-150px;background:radial-gradient(circle,rgba(168,85,247,0.05) 0%,transparent 70%);border-radius:50%}
-.page-content{position:relative;z-index:1;overflow-x:hidden;max-width:100vw}
+/* ── AMBIENT ── */
+.ambient{position:fixed;inset:0;z-index:0;pointer-events:none}
+.ambient::before{content:'';position:absolute;width:2200px;height:900px;top:-250px;left:50%;transform:translateX(-50%);background:radial-gradient(ellipse,rgba(6,182,212,0.3) 0%,rgba(34,211,238,0.12) 25%,rgba(251,191,36,0.06) 45%,transparent 65%);border-radius:50%;animation:ambPulse 8s ease-in-out infinite}
+.ambient::after{content:'';position:absolute;width:1200px;height:1200px;bottom:-300px;right:-200px;background:radial-gradient(circle,rgba(251,191,36,0.1) 0%,rgba(251,191,36,0.04) 30%,rgba(6,182,212,0.03) 50%,transparent 65%);border-radius:50%;animation:ambPulse 12s ease-in-out infinite reverse}
+@keyframes ambPulse{0%,100%{opacity:1;transform:translateX(-50%) scale(1)}50%{opacity:.7;transform:translateX(-50%) scale(1.05)}}
+.ambient-gold{position:absolute;width:1000px;height:1000px;top:25%;left:-250px;background:radial-gradient(circle,rgba(251,191,36,0.08) 0%,rgba(251,191,36,0.03) 35%,transparent 55%);border-radius:50%}
+.edge-glow{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;pointer-events:none;border-radius:28px 28px 0 0;box-shadow:inset 0 3px 0 0 rgba(34,211,238,0.5),inset 0 0 40px rgba(34,211,238,0.04),inset 0 3px 30px rgba(34,211,238,0.12)}
+.side-glow-l,.side-glow-r{position:fixed;top:0;bottom:0;width:3px;z-index:0;pointer-events:none}
+.side-glow-l{left:0;background:rgba(34,211,238,0.12);box-shadow:0 0 60px 25px rgba(6,182,212,0.12),0 0 150px 60px rgba(6,182,212,0.08),0 0 300px 120px rgba(6,182,212,0.04)}
+.side-glow-r{right:0;background:rgba(251,191,36,0.14);box-shadow:0 0 60px 25px rgba(251,191,36,0.14),0 0 150px 60px rgba(251,191,36,0.09),0 0 300px 120px rgba(251,191,36,0.05)}
+.top-glow{position:fixed;top:0;left:0;right:0;height:4px;z-index:101;pointer-events:none;background:linear-gradient(90deg,rgba(6,182,212,0.5),rgba(34,211,238,0.9),rgba(251,191,36,0.6),rgba(34,211,238,0.9),rgba(6,182,212,0.5));box-shadow:0 0 30px rgba(34,211,238,0.6),0 0 80px rgba(34,211,238,0.3),0 0 160px rgba(34,211,238,0.15)}
+.page{position:relative;z-index:1}
 
-/* ── GRADIENT OVERLAY — bright top, dark bottom ── */
-.gradient-fade{position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,rgba(20,30,55,0.0) 0%,rgba(15,22,35,0.0) 25%,rgba(10,16,28,0.6) 55%,rgba(8,12,22,0.95) 100%)}
-
-/* ── DEAL TICKER ── */
-.ticker{background:rgba(21,30,48,0.8);backdrop-filter:blur(12px);border-bottom:1px solid var(--bdr);height:38px;overflow:hidden;position:relative;z-index:2}
-.ticker-track{display:flex;align-items:center;gap:40px;height:100%;white-space:nowrap;animation:tickScroll 50s linear infinite}
-@keyframes tickScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.tick-item{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--t2);flex-shrink:0;cursor:pointer;padding:0 4px}
-.tick-item:hover{color:var(--t1)}
-.tick-pct{font-weight:800;padding:2px 7px;border-radius:4px;font-size:11px}
-.tick-name{color:var(--t1);font-weight:700}
-.tick-code{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);background:var(--bg3);padding:2px 6px;border-radius:3px}
-.tick-sep{color:var(--t4);font-size:10px}
+/* ── TICKER ── */
+.ticker{background:rgba(8,12,22,0.9);border-bottom:1px solid var(--bdr2);height:34px;overflow:hidden;box-shadow:0 2px 16px rgba(6,182,212,0.08)}
+.ticker-track{display:flex;align-items:center;gap:32px;height:100%;white-space:nowrap;animation:tScroll 60s linear infinite;padding:0 20px}
+@keyframes tScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.tick{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--t3);flex-shrink:0}
+.tick b{color:var(--gold);font-family:var(--mono);font-size:11px;font-weight:700;text-shadow:var(--glow-gold-sm)}
+.tick-name{color:var(--em2);font-weight:700;text-shadow:0 0 8px rgba(6,182,212,0.2)}
+.tick-sep{color:var(--t5);font-size:8px}
 
 /* ── NAV ── */
-.nav{position:sticky;top:0;z-index:200;background:rgba(15,22,35,0.88);backdrop-filter:blur(24px) saturate(1.3);border-bottom:1px solid var(--bdr);height:58px;display:flex;align-items:center;padding:0 28px;gap:16px}
-.nav-logo{display:flex;align-items:center;gap:9px;cursor:pointer;flex-shrink:0}
-.nav-logo img{height:30px;width:30px;border-radius:6px;object-fit:cover}
-.nav-logo-text{font-size:17px;font-weight:800;letter-spacing:-.3px}
-.nav-logo-text span{color:var(--brand2)}
-.nav-tabs{display:flex;gap:1px;margin-left:24px}
-.nav-tab{border:none;background:none;color:var(--t3);font-family:inherit;font-size:13px;font-weight:600;padding:8px 14px;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
-.nav-tab:hover{color:var(--t2)}
-.nav-tab.on{color:var(--brand2);border-bottom-color:var(--brand)}
-.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px;flex-shrink:0}
-.nav-cta{background:linear-gradient(135deg,var(--brand),#0284c7);color:#fff;font-family:inherit;font-size:12px;font-weight:700;padding:7px 16px;border-radius:8px;border:none;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px;box-shadow:0 0 12px var(--glow)}
-.nav-cta:hover{box-shadow:0 0 28px rgba(14,165,233,0.35);transform:translateY(-1px)}
+.nav{position:sticky;top:0;z-index:100;background:var(--glass2);backdrop-filter:blur(24px) saturate(1.3);border-bottom:1px solid var(--bdr2);height:56px;display:flex;align-items:center;padding:0 36px;gap:12px;box-shadow:0 4px 30px rgba(6,182,212,0.1),0 0 80px rgba(6,182,212,0.04)}
+.nav::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(251,191,36,0.3),rgba(34,211,238,0.4),rgba(251,191,36,0.3),transparent)}
+.nav-logo{display:flex;align-items:center;gap:9px;cursor:pointer;margin-right:auto}
+.nav-logo-mark{width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,#22d3ee,#0891b2);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#050810;box-shadow:var(--glow-sm)}
+.nav-logo img{width:28px;height:28px;border-radius:6px}
+.nav-logo-text{font-size:16px;font-weight:700;letter-spacing:-.4px;color:var(--t1);text-shadow:0 0 12px rgba(6,182,212,0.15)}
+.nav-logo-text span{color:var(--em);text-shadow:var(--glow-sm)}
+.nav-tabs{display:flex;gap:2px}
+.nav-tab{background:none;border:none;color:var(--t3);font-family:var(--sans);font-size:13px;font-weight:600;padding:8px 16px;border-radius:6px;cursor:pointer;transition:all .15s}
+.nav-tab:hover{color:var(--em);background:var(--emA);text-shadow:0 0 8px rgba(6,182,212,0.3)}
+.nav-tab.on{color:var(--em);background:var(--emA2);text-shadow:var(--glow-sm);box-shadow:0 0 12px rgba(6,182,212,0.08)}
+.nav-code{font-family:var(--mono);font-size:12px;font-weight:700;color:#050810;background:linear-gradient(135deg,#fbbf24,#f59e0b);border:none;padding:7px 16px;border-radius:6px;cursor:pointer;transition:all .2s;margin-left:8px;box-shadow:var(--glow-gold-sm)}
+.nav-code:hover{box-shadow:var(--glow-gold);transform:translateY(-1px)}
+.nav-burger{display:none;background:none;border:none;color:var(--em);font-size:22px;cursor:pointer;padding:4px 8px;text-shadow:var(--glow-sm)}
+.mob-menu{position:fixed;top:58px;left:0;right:0;bottom:0;background:var(--bg);z-index:99;padding:24px 16px 20px;display:flex;flex-direction:column;gap:4px;overflow-y:auto}
+.mob-menu button{background:none;border:none;color:var(--t3);font-family:var(--sans);font-size:17px;font-weight:600;padding:16px 18px;text-align:left;border-radius:10px;cursor:pointer;border-bottom:1px solid var(--bdr)}
+.mob-menu button:hover{color:var(--em);text-shadow:var(--glow-sm)}
+.mob-menu button.on{color:var(--em);background:var(--emA2);text-shadow:var(--glow-sm);box-shadow:inset 0 0 20px rgba(6,182,212,0.05)}
 
 /* ── WRAP ── */
-.wrap{max-width:1300px;margin:0 auto;padding:0 28px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 36px}
 
 /* ── HERO ── */
-.hero{text-align:center;padding:52px 0 20px}
-.hero h1{font-size:38px;font-weight:800;line-height:1.15;letter-spacing:-.8px;margin-bottom:12px}
-.hero h1 em{font-style:normal;color:var(--brand2);text-shadow:0 0 30px rgba(14,165,233,0.3)}
-.hero p{color:var(--t2);font-size:15px;max-width:520px;margin:0 auto 28px;line-height:1.55}
-.hero-nums{display:flex;justify-content:center;gap:40px;flex-wrap:wrap}
-.hero-num{text-align:center}
-.hero-num b{font-size:22px;font-weight:800;color:var(--brand2);text-shadow:0 0 20px rgba(14,165,233,0.25)}
-.hero-num small{display:block;font-size:11px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:.8px;margin-top:2px}
+.hero{position:relative;text-align:center;max-width:800px;margin:0 auto;padding:60px 0 44px}
+.hero::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;height:500px;background:radial-gradient(circle,rgba(6,182,212,0.06) 0%,rgba(251,191,36,0.03) 40%,transparent 65%);border-radius:50%;pointer-events:none}
+.hero-divider{width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(251,191,36,0.25),rgba(34,211,238,0.3),rgba(251,191,36,0.25),transparent);margin-bottom:28px}
+.hero-code{font-family:var(--mono);font-size:52px;font-weight:900;letter-spacing:12px;background:linear-gradient(180deg,#fde68a,#fbbf24,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 8px rgba(251,191,36,0.4)) drop-shadow(0 0 20px rgba(251,191,36,0.2)) drop-shadow(0 0 40px rgba(251,191,36,0.1));margin-bottom:20px;animation:heroFloat 6s ease-in-out infinite}
+@keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.hero h1{font-family:var(--sans);font-size:28px;font-weight:700;line-height:1.35;letter-spacing:-.2px;color:var(--t2);margin-bottom:14px}
+.hero h1 em{font-style:normal;font-weight:800;color:var(--em);text-shadow:var(--glow-sm)}
+.hero h1 .gold{font-weight:800;color:var(--gold);text-shadow:var(--glow-gold-sm)}
+.hero p{color:var(--t4);font-size:14px;line-height:1.6;max-width:480px;margin:0 auto 20px}
+.hero-pills{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+.hero-pill{font-size:12px;font-weight:600;padding:7px 16px;border-radius:24px;border:1px solid var(--bdr2);background:rgba(8,14,28,0.7);backdrop-filter:blur(8px);color:var(--t3);display:flex;align-items:center;gap:5px;transition:all .2s}
+.hero-pill:hover{border-color:var(--bdr3);box-shadow:var(--glow-box)}
+.hero-pill b{color:var(--gold);text-shadow:0 0 6px rgba(251,191,36,0.3)}
+.hero-pill .cy{color:var(--em);text-shadow:0 0 6px rgba(6,182,212,0.3)}
+.hero-stats{display:flex;justify-content:center;gap:36px;padding-top:22px;border-top:1px solid rgba(251,191,36,0.08)}
+.hero-stat{text-align:center}
+.hero-stat b{font-family:var(--mono);font-size:22px;font-weight:800;display:block}
+.hero-stat small{font-size:10px;color:var(--t4);font-weight:600;margin-top:3px;display:block;text-transform:uppercase;letter-spacing:.5px}
 
-/* ── OFFERS STRIP ── */
-.offers-strip{margin:28px 0;padding:22px 24px;background:linear-gradient(135deg,rgba(14,165,233,0.04) 0%,rgba(168,85,247,0.04) 100%);border:1px solid rgba(14,165,233,0.15);border-radius:16px;position:relative;overflow:hidden}
-.offers-strip::before{content:'';position:absolute;top:-1px;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--brand),var(--purple),transparent)}
-.offers-label{font-size:13px;font-weight:700;color:var(--t2);margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.offers-label span{color:var(--brand2)}
-.offers-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x mandatory}
-.offer-chip{flex-shrink:0;scroll-snap-align:start;display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--bdr);border-radius:10px;padding:10px 14px;cursor:pointer;transition:all .15s;min-width:220px}
-.offer-chip:hover{border-color:var(--bdr2);background:var(--bg3);box-shadow:0 0 16px var(--glow2)}
-.offer-chip-logo{width:36px;height:36px;border-radius:8px;background:var(--bg3);border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.offer-chip-info{flex:1;min-width:0}
-.offer-chip-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.offer-chip-deal{font-size:11px;font-weight:600;color:var(--t3);margin-top:1px}
-.offer-chip-pct{font-size:12px;font-weight:800;padding:4px 8px;border-radius:6px;flex-shrink:0}
+/* ── TABS ── */
+.ctabs{display:flex;justify-content:center;gap:2px;margin-bottom:28px;border-bottom:1px solid var(--bdr);padding-bottom:0;position:relative}
+.ctabs::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(34,211,238,0.15),transparent)}
+.ctab{background:none;border:none;color:var(--t4);font-family:var(--sans);font-size:13.5px;font-weight:600;padding:11px 18px;cursor:pointer;transition:all .15s;position:relative;border-bottom:2px solid transparent;margin-bottom:-1px}
+.ctab:hover{color:var(--em);text-shadow:0 0 8px rgba(6,182,212,0.2)}
+.ctab.on{color:var(--em);border-bottom-color:var(--gold);text-shadow:var(--glow-sm);box-shadow:0 4px 12px rgba(251,191,36,0.1)}
 
-/* ── TABS + FILTERS ── */
-.content-tabs{display:flex;justify-content:center;gap:6px;margin:24px 0 18px}
-.ct-btn{background:var(--bg2);border:1px solid var(--bdr);color:var(--t3);font-family:inherit;font-size:13px;font-weight:600;padding:9px 24px;border-radius:100px;cursor:pointer;transition:all .15s}
-.ct-btn:hover{border-color:var(--bdr2);color:var(--t1)}
-.ct-btn.on{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:0 0 18px rgba(14,165,233,0.3)}
-.view-toggle{display:flex;gap:4px;margin-bottom:16px}
-.vt-btn{background:var(--bg2);border:1px solid var(--bdr);color:var(--t3);font-family:inherit;font-size:11px;font-weight:700;padding:5px 12px;border-radius:6px;cursor:pointer;transition:all .15s}
-.vt-btn.on{background:var(--bg3);border-color:var(--bdr2);color:var(--t1)}
-.filters-row{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
-.f-btn{display:flex;align-items:center;gap:4px;background:var(--bg2);border:1px solid var(--bdr);color:var(--t3);font-family:inherit;font-size:11px;font-weight:600;padding:5px 12px;border-radius:6px;cursor:pointer;transition:all .15s}
-.f-btn:hover{border-color:var(--bdr2);color:var(--t1)}
-.f-btn.on{border-color:var(--brand);color:var(--brand);background:rgba(14,165,233,0.06)}
+/* ── SECTION HEADERS ── */
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:8px}
+.sec-title{font-size:15px;font-weight:700;background:linear-gradient(135deg,var(--em2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 6px rgba(251,191,36,0.15))}
+.sec-sub{font-size:12px;color:var(--t4);margin-top:2px}
+
+/* ── FILTERS ── */
+.filters{display:flex;gap:5px;flex-wrap:wrap}
+.f-btn{background:var(--bg2);border:1px solid var(--bdr);color:var(--t4);font-family:var(--sans);font-size:12px;font-weight:600;padding:6px 14px;border-radius:6px;cursor:pointer;transition:all .15s}
+.f-btn:hover{border-color:var(--bdr2);color:var(--em);text-shadow:0 0 6px rgba(6,182,212,0.2)}
+.f-btn.on{background:var(--emA2);border-color:var(--bdr3);color:var(--em);box-shadow:0 0 10px rgba(6,182,212,0.12),inset 0 0 12px rgba(6,182,212,0.05);text-shadow:var(--glow-sm)}
+.view-tog{display:flex;gap:2px;background:var(--bg2);border:1px solid var(--bdr2);border-radius:7px;padding:2px}
+.vt{background:none;border:none;color:var(--t5);font-family:var(--sans);font-size:12px;font-weight:600;padding:5px 12px;border-radius:5px;cursor:pointer;transition:all .12s}
+.vt:hover{color:var(--em)}
+.vt.on{background:var(--bg3);color:var(--em);text-shadow:var(--glow-sm);box-shadow:0 0 8px rgba(6,182,212,0.08)}
+
+/* ── PULSE LEADERBOARD ── */
+.lb{margin-bottom:36px}
+.lb-hdr{display:grid;grid-template-columns:28px 36px 1fr 170px 64px 56px 90px;align-items:center;gap:12px;padding:0 18px 10px;font-size:10px;font-weight:700;color:var(--em);text-transform:uppercase;letter-spacing:.8px;text-shadow:0 0 6px rgba(6,182,212,0.15)}
+.lb-row{display:grid;grid-template-columns:28px 36px 1fr 170px 64px 56px 90px;align-items:center;gap:12px;padding:13px 18px;border-radius:10px;background:var(--glass);backdrop-filter:blur(6px);border:1px solid var(--bdr);cursor:pointer;transition:all .25s;margin-bottom:5px;position:relative;overflow:hidden;box-shadow:0 0 1px rgba(6,182,212,0.1)}
+.lb-row::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(34,211,238,0.1),transparent)}
+.lb-row:hover{border-color:var(--bdr3);background:var(--bg2);box-shadow:var(--glow-box);transform:translateX(3px)}
+.lb-row:hover::before{background:linear-gradient(90deg,transparent,rgba(34,211,238,0.5),transparent)}
+.lb-rank{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--t4);text-align:center}
+.lb-row:nth-child(-n+3) .lb-rank{color:var(--em);text-shadow:var(--glow-sm);font-size:13px}
+.lb-logo{width:36px;height:36px;border-radius:8px;overflow:hidden;background:var(--bg3);border:1px solid var(--bdr2);flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 0 6px rgba(6,182,212,0.06)}
+.lb-logo img{width:100%;height:100%;object-fit:contain;padding:3px}
+.lb-logo-fb{font-size:10px;font-weight:800;color:#fff}
+.lb-name-c{min-width:0}
+.lb-name{font-size:14px;font-weight:700;color:var(--t1);display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-meta{font-size:11px;color:var(--t4);margin-top:2px}
+.lb-bar-c{position:relative;height:24px}
+.lb-bar-bg{position:absolute;inset:0;background:var(--bg4);border-radius:5px;overflow:hidden;box-shadow:inset 0 0 8px rgba(0,0,0,0.3)}
+.lb-bar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,rgba(6,182,212,0.9),rgba(34,211,238,0.6),rgba(103,232,249,0.3));transition:width .8s cubic-bezier(.22,1,.36,1);position:relative;box-shadow:0 0 8px rgba(34,211,238,0.4)}
+.lb-bar-fill::after{content:'';position:absolute;right:0;top:0;bottom:0;width:4px;background:#67e8f9;border-radius:0 5px 5px 0;box-shadow:0 0 6px #22d3ee,0 0 14px rgba(34,211,238,0.5),0 0 28px rgba(34,211,238,0.2)}
+.lb-score{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:13px;font-weight:800;color:#fff;text-shadow:0 0 4px rgba(0,0,0,0.8),0 0 8px rgba(34,211,238,0.3);z-index:1}
+.lb-rating{font-family:var(--mono);font-size:12px;font-weight:700;text-align:center;color:var(--em2);text-shadow:0 0 6px rgba(6,182,212,0.2)}
+.lb-trend{font-size:11px;font-weight:700;text-align:center}
+.lb-deal{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--gold);background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.15);padding:5px 12px;border-radius:5px;text-align:center;cursor:pointer;transition:all .2s;text-shadow:var(--glow-gold-sm)}
+.lb-deal:hover{border-color:rgba(251,191,36,0.3);background:rgba(251,191,36,0.15);box-shadow:var(--glow-gold)}
+.lb-deal-na{color:var(--t5);text-align:center;font-size:11px}
+.tp{color:var(--gold);font-size:10px;text-shadow:var(--glow-gold-sm)}
+
+/* ── FIRM CARDS ── */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px}
+.fcard{background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--bdr2);border-radius:14px;padding:24px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;border-left:3px solid var(--card-accent,var(--em));box-shadow:0 0 1px var(--card-accent,rgba(6,182,212,0.2)),0 0 12px rgba(0,0,0,0.2)}
+.fcard::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--card-accent,rgba(6,182,212,0.3)),rgba(34,211,238,0.1),transparent)}
+.fcard::after{content:'';position:absolute;top:0;left:0;bottom:0;width:100px;background:linear-gradient(90deg,var(--card-glow,rgba(6,182,212,0.04)),transparent);pointer-events:none;transition:opacity .3s}
+.fcard:hover{border-color:var(--card-accent,var(--bdr3));background:var(--bg2);transform:translateY(-4px);box-shadow:0 0 2px var(--card-accent,rgba(6,182,212,0.4)),0 0 16px var(--card-glow,rgba(6,182,212,0.15)),0 0 40px var(--card-glow,rgba(6,182,212,0.06)),0 16px 48px rgba(0,0,0,0.3)}
+.fcard:hover::before{background:linear-gradient(90deg,var(--card-accent,rgba(6,182,212,0.6)),rgba(251,191,36,0.2),transparent)}
+.fcard-top{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.fcard-logo{width:42px;height:42px;border-radius:10px;overflow:hidden;background:var(--bg3);border:1px solid var(--bdr2);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 8px rgba(6,182,212,0.06)}
+.fcard-logo img{width:100%;height:100%;object-fit:contain;padding:4px}
+.fcard-logo-fb{font-size:11px;font-weight:800;color:#fff}
+.fcard-info{flex:1;min-width:0}
+.fcard-name{font-size:15px;font-weight:700;display:flex;align-items:center;gap:5px}
+.fcard-sub{font-size:11px;color:var(--t4);margin-top:2px}
+.fcard-deal{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--gold);background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.15);padding:4px 10px;border-radius:5px;text-shadow:var(--glow-gold-sm)}
+.fcard-desc{font-size:13px;color:var(--t4);line-height:1.55;margin-bottom:16px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.fcard-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+.fcard-stat{background:var(--bg3);border:1px solid var(--bdr);border-radius:7px;padding:10px 12px}
+.fcard-sl{font-size:9px;color:var(--em);text-transform:uppercase;letter-spacing:.7px;font-weight:700;text-shadow:0 0 6px rgba(6,182,212,0.15)}
+.fcard-sv{font-family:var(--mono);font-size:12px;font-weight:700;margin-top:3px;color:var(--t1)}
+.fcard-foot{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--bdr)}
+.fcard-pulse{display:flex;align-items:center;gap:7px}
+.fcard-pl{font-size:10px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;text-shadow:0 0 6px rgba(251,191,36,0.2)}
+.fcard-pv{font-family:var(--mono);font-size:18px;font-weight:800;color:var(--gold);text-shadow:var(--glow-gold);animation:pulsGlow 3s ease-in-out infinite}
+@keyframes pulsGlow{0%,100%{text-shadow:var(--glow-gold)}50%{text-shadow:0 0 6px #fde68a,0 0 18px rgba(251,191,36,0.5),0 0 40px rgba(251,191,36,0.25),0 0 80px rgba(251,191,36,0.1)}}
+.fcard-btn{background:var(--emA2);border:1px solid var(--bdr3);color:var(--em);font-family:var(--sans);font-size:12px;font-weight:700;padding:7px 18px;border-radius:7px;cursor:pointer;transition:all .2s;text-shadow:0 0 6px rgba(6,182,212,0.2)}
+.fcard-btn:hover{background:var(--em);color:#050810;border-color:var(--em);box-shadow:var(--glow-sm)}
 
 /* ── TABLE ── */
-.tbl-wrap{border-radius:12px;overflow-x:auto;border:1px solid var(--bdr);-webkit-overflow-scrolling:touch}
-.tbl{width:100%;border-collapse:collapse}
-.tbl th{background:var(--bg2);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--t4);padding:11px 14px;text-align:left;border-bottom:1px solid var(--bdr);white-space:nowrap}
-.tbl td{padding:14px;border-bottom:1px solid var(--bdr);background:var(--bg);font-size:13px;vertical-align:middle}
-.tbl tr:hover td{background:rgba(14,165,233,0.03)}
-.tbl tr{cursor:pointer;transition:all .15s}
+.tbl-wrap{border:1px solid var(--bdr2);border-radius:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--glass);box-shadow:0 0 1px rgba(6,182,212,0.1),0 0 20px rgba(0,0,0,0.2)}
+.tbl{width:100%;border-collapse:collapse;min-width:900px}
+.tbl th{background:var(--bg2);padding:12px 16px;font-size:10px;font-weight:700;color:var(--em);text-transform:uppercase;letter-spacing:.8px;text-align:left;border-bottom:1px solid var(--bdr2);white-space:nowrap;text-shadow:0 0 6px rgba(6,182,212,0.15)}
+.tbl td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--bdr);color:var(--t2);white-space:nowrap}
+.tbl tbody tr{cursor:pointer;transition:all .15s}
+.tbl tbody tr:hover{background:rgba(6,182,212,0.05);box-shadow:inset 0 0 20px rgba(6,182,212,0.03)}
+.tbl .mono{font-family:var(--mono);font-weight:600;color:var(--em2)}
+.tbl .good{color:var(--green);font-weight:700;text-shadow:var(--glow-green)}
+.tbl .warn{color:var(--amber);text-shadow:var(--glow-gold-sm)}
 
-/* FIRM CELL */
-.fc{display:flex;align-items:center;gap:11px;min-width:180px}
-.fc-logo{width:42px;height:42px;border-radius:10px;background:var(--bg3);border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;position:relative}
-.new-tag{position:absolute;top:-6px;right:-6px;background:var(--green);color:#000;font-size:6px;font-weight:900;padding:1px 4px;border-radius:3px;text-transform:uppercase;z-index:2;letter-spacing:.3px}
-.fc-name{font-size:14px;font-weight:700}
-.fc-hq{font-size:11px;color:var(--t3);margin-top:1px}
+/* ── CHALLENGES ── */
+.ch-wrap{border:1px solid var(--bdr2);border-radius:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--glass);box-shadow:0 0 1px rgba(6,182,212,0.1),0 0 20px rgba(0,0,0,0.2)}
 
-/* PULSE SCORE */
-.pulse-score{display:flex;align-items:center;gap:6px}
-.ps-bar{width:48px;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
-.ps-fill{height:100%;border-radius:3px}
-.ps-num{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700}
-.ps-trend{font-size:10px}
-
-/* RATING */
-.rating-cell{display:flex;align-items:center;gap:6px}
-.rat-badge{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff}
-.rat-g{background:#059669} .rat-y{background:#ca8a04} .rat-o{background:#c2410c} .rat-r{background:#dc2626} .rat-na{background:var(--t4)}
-.rat-info{display:flex;flex-direction:column}
-.rat-stars{color:#facc15;font-size:10px;letter-spacing:.5px}
-.rat-ct{font-size:10px;color:var(--t3)}
-
-/* MISC CELLS */
-.country-c{display:flex;align-items:center;gap:5px;font-size:12px}
-.plat-pills{display:flex;gap:3px;flex-wrap:wrap}
-.plat-pill{background:var(--bg3);border:1px solid var(--bdr);border-radius:4px;padding:2px 6px;font-size:9px;font-weight:600;color:var(--t2)}
-.plat-more{font-size:9px;color:var(--t4);padding:2px 4px}
-.alloc-c{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px}
-.alloc-bar{width:70px;height:3px;background:var(--bg3);border-radius:2px;margin-top:3px;overflow:hidden}
-.alloc-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--brand),var(--purple));box-shadow:0 0 6px rgba(14,165,233,0.3)}
-
-/* FIRM LOGO */
-.firm-logo-img{width:100%;height:100%;object-fit:contain;border-radius:inherit;padding:4px}
-.firm-logo-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;border-radius:inherit;font-weight:800;color:#fff;font-size:11px;letter-spacing:-.3px}
-
-/* PROMO — PFM stacked style */
-.promo-c{display:inline-flex;flex-direction:column;align-items:center;gap:3px;padding:8px 14px;border-radius:10px;cursor:pointer;transition:all .2s;min-width:84px;position:relative;overflow:hidden}
-.promo-c::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,0.08) 0%,transparent 60%);border-radius:inherit;pointer-events:none}
-.promo-c:hover{transform:scale(1.05);box-shadow:0 0 16px rgba(0,0,0,0.3)}
-.promo-pct{font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:800;color:#fff;letter-spacing:-.2px}
-.promo-code-btn{font-family:'Plus Jakarta Sans',sans-serif;font-size:9px;font-weight:700;color:rgba(255,255,255,0.9);display:flex;align-items:center;gap:3px;background:rgba(0,0,0,0.25);padding:2px 8px;border-radius:4px}
-.act-btn{background:var(--bg3);border:1px solid var(--bdr2);color:var(--t1);font-family:inherit;font-size:11px;font-weight:700;padding:7px 16px;border-radius:7px;cursor:pointer;transition:all .15s}
-.act-btn:hover{background:var(--bg4);border-color:var(--brand);box-shadow:0 0 12px var(--glow2)}
-
-/* ── CARDS VIEW ── */
-.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
-.firm-card{background:var(--bg2);border:1px solid var(--bdr);border-radius:14px;padding:22px;cursor:pointer;transition:all .2s;position:relative}
-.firm-card:hover{border-color:var(--bdr3);background:var(--bg3);transform:translateY(-2px);box-shadow:0 4px 24px rgba(14,165,233,0.08),0 0 0 1px rgba(14,165,233,0.1)}
-.fcard-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
-.fcard-left{display:flex;align-items:center;gap:11px}
-.fcard-deal{font-size:11px;font-weight:800;padding:3px 8px;border-radius:5px}
-.fcard-desc{color:var(--t2);font-size:12.5px;line-height:1.5;margin-bottom:16px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.fcard-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.fcard-stat{background:var(--bg3);border-radius:7px;padding:8px 10px}
-.fcard-sl{font-size:9px;color:var(--t4);text-transform:uppercase;letter-spacing:.8px;font-weight:700}
-.fcard-sv{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;margin-top:2px}
-.fcard-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid var(--bdr)}
-.fcard-pulse{display:flex;align-items:center;gap:6px}
-.fcard-pulse-label{font-size:10px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-.fcard-pulse-score{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:800}
-.fcard-btn{background:linear-gradient(135deg,var(--brand),#0284c7);color:#fff;font-family:inherit;font-size:12px;font-weight:700;padding:7px 18px;border-radius:7px;border:none;cursor:pointer;box-shadow:0 0 12px rgba(14,165,233,0.2);transition:all .2s}
-.fcard-btn:hover{box-shadow:0 0 22px rgba(14,165,233,0.35)}
-
-/* ── CHALLENGES TABLE ── */
-.ch-tbl-wrap{border-radius:12px;overflow-x:auto;border:1px solid var(--bdr);-webkit-overflow-scrolling:touch}
-
-/* ── REVIEWS ── */
-.rev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px}
-.rev-c{background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:20px;transition:border-color .15s}
-.rev-c:hover{border-color:var(--bdr2);box-shadow:0 0 14px var(--glow2)}
-.rev-top{display:flex;justify-content:space-between;margin-bottom:6px}
-.rev-user{font-size:14px;font-weight:700}
-.rev-v{font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.8px}
-.rev-firm{font-size:11px;color:var(--t3);margin-bottom:5px}
-.rev-stars{color:#facc15;font-size:12px;letter-spacing:.5px;margin-bottom:6px}
-.rev-text{color:var(--t2);font-size:13px;line-height:1.5}
-.rev-date{font-size:10px;color:var(--t4);margin-top:8px}
-
-/* ── BLOG ── */
-.blog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
-.blog-c{background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:22px;cursor:pointer;transition:all .15s}
-.blog-c:hover{border-color:var(--bdr2);background:var(--bg3);box-shadow:0 0 14px var(--glow2)}
-.blog-cat{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;padding:3px 9px;border-radius:100px;display:inline-block;margin-bottom:10px}
-.blog-t{font-size:16px;font-weight:700;line-height:1.3;margin-bottom:7px}
-.blog-ex{color:var(--t2);font-size:12.5px;line-height:1.5;margin-bottom:10px}
-.blog-f{display:flex;justify-content:space-between;font-size:11px;color:var(--t4)}
-
-/* ── DETAIL ── */
-.det{padding:36px 0 80px}
-.det-back{display:inline-flex;align-items:center;gap:6px;background:none;border:1px solid var(--bdr);color:var(--t2);font-family:inherit;font-size:12px;font-weight:600;padding:7px 16px;border-radius:7px;cursor:pointer;margin-bottom:24px}
-.det-back:hover{border-color:var(--bdr2);color:var(--t1)}
-.det-hero{display:flex;align-items:center;gap:20px;margin-bottom:28px}
-.det-logo{width:60px;height:60px;border-radius:14px;background:var(--bg3);border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:30px}
-.det-name{font-size:28px;font-weight:800;letter-spacing:-.5px}
-.det-sub{font-size:13px;color:var(--t2);margin-top:2px}
-.det-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px;margin-bottom:24px}
-.det-stat{background:var(--bg2);border:1px solid var(--bdr);border-radius:10px;padding:14px}
-.det-stat-l{font-size:10px;color:var(--t4);text-transform:uppercase;letter-spacing:1px;font-weight:700}
-.det-stat-v{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;margin-top:3px}
-.det-desc{background:var(--bg2);border:1px solid var(--bdr);border-radius:10px;padding:20px;color:var(--t2);font-size:14px;line-height:1.7}
-.det-section{background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;overflow:hidden}
-.det-section .info-row{display:flex;justify-content:space-between;align-items:flex-start;padding:14px 20px;border-bottom:1px solid var(--bdr)}
-.det-section .info-row:last-child{border-bottom:none}
-.det-section .info-label{color:var(--t3);font-size:13px;font-weight:600;min-width:140px;flex-shrink:0}
-.det-section .info-val{font-size:13px;font-weight:600;color:var(--t1);text-align:right;line-height:1.5;max-width:65%}
-.det-section .info-val.hl{color:var(--brand2)}
-.det-pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
-@media(max-width:700px){.det-pros-cons{grid-template-columns:1fr}}
-.det-deal{margin-top:20px;padding:16px;background:var(--bg2);border:1px solid var(--bdr2);border-radius:10px;display:flex;align-items:center;gap:16px}
+/* ── OFFERS ── */
+.offers-list{display:flex;flex-direction:column;gap:8px}
+.offer-row{display:flex;align-items:center;gap:18px;padding:16px 20px;background:var(--glass);backdrop-filter:blur(6px);border:1px solid var(--bdr2);border-radius:12px;transition:all .2s;position:relative;overflow:hidden;box-shadow:0 0 1px rgba(6,182,212,0.1)}
+.offer-row::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--card-accent,rgba(251,191,36,0.15)),transparent)}
+.offer-row:hover{border-color:var(--bdr3);background:var(--bg2);box-shadow:var(--glow-box)}
+.offer-row:hover::before{background:linear-gradient(90deg,var(--card-accent,rgba(251,191,36,0.5)),rgba(34,211,238,0.2),transparent)}
+.offer-pct{font-family:var(--mono);font-size:18px;font-weight:800;color:var(--gold);min-width:90px;text-shadow:var(--glow-gold)}
+.offer-info{flex:1;min-width:0}
+.offer-firm{font-size:14px;font-weight:700;color:var(--t1);display:flex;align-items:center;gap:7px}
+.offer-desc{font-size:12px;color:var(--t4);margin-top:3px;line-height:1.5}
+.offer-tag{font-size:9px;font-weight:700;color:var(--gold);background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.15);padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.4px;text-shadow:0 0 4px rgba(251,191,36,0.3)}
+.offer-code{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--em);background:var(--bg3);padding:8px 16px;border-radius:6px;border:1px solid var(--bdr3);cursor:pointer;transition:all .2s;white-space:nowrap;text-shadow:0 0 6px rgba(6,182,212,0.2)}
+.offer-code:hover{background:var(--em);color:#050810;border-color:var(--em);box-shadow:var(--glow-sm);text-shadow:none}
 
 /* ── GIVEAWAY ── */
-.gw-hero{text-align:center;padding:32px 0 24px}
-.gw-hero h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:800;letter-spacing:-.5px;margin-bottom:8px}
-.gw-hero h2 em{font-style:normal;color:var(--brand2);text-shadow:0 0 20px rgba(14,165,233,0.3)}
-.gw-hero p{color:var(--t2);font-size:14px;max-width:500px;margin:0 auto;line-height:1.55}
-.gw-prize{background:var(--bg2);border:1px solid var(--bdr2);border-radius:16px;padding:28px;text-align:center;margin:24px 0;position:relative;overflow:hidden}
-.gw-prize::before{content:'';position:absolute;top:-1px;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--brand),var(--purple),transparent)}
-.gw-prize-label{font-size:11px;font-weight:700;color:var(--brand2);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px}
-.gw-prize-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:24px;font-weight:800;margin-bottom:6px}
-.gw-prize-sub{color:var(--t2);font-size:13px}
-.gw-prize-val{font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:800;color:var(--brand2);margin:12px 0;text-shadow:0 0 24px rgba(14,165,233,0.3)}
-.gw-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:24px 0}
-.gw-step{background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:20px;text-align:center}
-.gw-step-num{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:800;color:var(--brand2);margin-bottom:6px}
-.gw-step-title{font-size:14px;font-weight:700;margin-bottom:4px}
-.gw-step-desc{font-size:12px;color:var(--t2);line-height:1.4}
-.gw-form{background:var(--bg2);border:1px solid var(--bdr2);border-radius:16px;padding:28px;margin:24px 0;max-width:560px;margin-left:auto;margin-right:auto}
-.gw-form h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;margin-bottom:16px;text-align:center}
-.gw-field{margin-bottom:14px}
-.gw-field label{display:block;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px}
-.gw-field input,.gw-field select,.gw-field textarea{width:100%;background:var(--bg3);border:1px solid var(--bdr);border-radius:8px;padding:10px 12px;color:var(--t1);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;outline:none;transition:border-color .15s}
-.gw-field input:focus,.gw-field select:focus,.gw-field textarea:focus{border-color:var(--brand)}
-.gw-field select{cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%238da4c4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
-.gw-field select option{background:var(--bg2);color:var(--t1)}
-.gw-field textarea{resize:vertical;min-height:60px}
-.gw-submit{width:100%;background:linear-gradient(135deg,var(--brand),#0284c7);color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;padding:12px;border-radius:10px;border:none;cursor:pointer;box-shadow:0 0 14px rgba(14,165,233,0.25);transition:all .2s;margin-top:8px}
-.gw-submit:hover{box-shadow:0 0 24px rgba(14,165,233,0.4);transform:translateY(-1px)}
-.gw-submit:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
-.gw-success{text-align:center;padding:32px 0}
-.gw-success-icon{font-size:48px;margin-bottom:12px}
-.gw-success h3{font-size:20px;font-weight:700;margin-bottom:8px;color:var(--green)}
-.gw-success p{color:var(--t2);font-size:13px;max-width:400px;margin:0 auto;line-height:1.5}
-.gw-rules{background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:20px;margin:24px 0}
-.gw-rules h4{font-size:14px;font-weight:700;margin-bottom:10px}
-.gw-rules ul{list-style:none;padding:0}
-.gw-rules ul li{color:var(--t2);font-size:12.5px;line-height:1.5;padding:3px 0;padding-left:18px;position:relative}
-.gw-rules ul li::before{content:'✓';position:absolute;left:0;color:var(--brand2);font-size:11px}
-.gw-entries{margin:24px 0}
-.gw-entries-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.gw-entries-count{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--brand2)}
+.gw-prize{background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--bdr2);border-radius:16px;padding:32px;text-align:center;position:relative;overflow:hidden;margin-bottom:24px;box-shadow:0 0 1px rgba(6,182,212,0.2),0 0 30px rgba(0,0,0,0.2)}
+.gw-prize::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),var(--em),var(--gold),transparent)}
+.gw-prize::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center top,rgba(6,182,212,0.06) 0%,transparent 60%);pointer-events:none}
+.gw-val{font-family:var(--mono);font-size:36px;font-weight:800;color:var(--gold);margin:10px 0;text-shadow:var(--glow-gold);animation:pulsGlow 3s ease-in-out infinite}
+.gw-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:24px 0}
+.gw-step{background:var(--glass);backdrop-filter:blur(6px);border:1px solid var(--bdr2);border-radius:12px;padding:20px;text-align:center;transition:all .2s;box-shadow:0 0 1px rgba(6,182,212,0.1)}
+.gw-step:hover{border-color:var(--bdr3);box-shadow:var(--glow-box)}
+.gw-step-n{font-family:var(--mono);font-size:22px;font-weight:800;color:var(--em);text-shadow:var(--glow-sm)}
+.gw-step-t{font-size:13px;font-weight:700;margin:6px 0 3px;color:var(--t1)}
+.gw-step-d{font-size:11px;color:var(--t4);line-height:1.45}
+.gw-btn{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#050810;font-family:var(--sans);font-size:15px;font-weight:700;padding:14px 36px;border:none;border-radius:9px;cursor:pointer;box-shadow:var(--glow-gold),0 4px 16px rgba(0,0,0,0.3);transition:all .2s}
+.gw-btn:hover{box-shadow:0 0 6px #fde68a,0 0 18px rgba(251,191,36,0.5),0 0 40px rgba(251,191,36,0.25),0 0 80px rgba(251,191,36,0.1),0 6px 20px rgba(0,0,0,0.3);transform:translateY(-2px)}
+.gw-rules{background:var(--glass);border:1px solid var(--bdr2);border-radius:12px;padding:20px;margin-top:24px}
+.gw-rules h4{font-size:13px;font-weight:700;margin-bottom:10px;color:var(--em2);text-shadow:0 0 8px rgba(6,182,212,0.15)}
+.gw-rules li{color:var(--t3);font-size:12px;line-height:1.7;list-style:none;padding-left:18px;position:relative}
+.gw-rules li::before{content:'\\2713';position:absolute;left:0;color:var(--em);font-size:10px;text-shadow:var(--glow-sm)}
 
-/* ── TOAST ── */
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--brand);color:#fff;font-size:12px;font-weight:700;padding:10px 24px;border-radius:100px;z-index:200;box-shadow:0 4px 20px var(--glow);animation:ti .3s ease-out,to .3s ease-in 1.5s forwards}
-@keyframes ti{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-@keyframes to{to{opacity:0;transform:translateX(-50%) translateY(20px)}}
+/* ── BLOG ── */
+.blog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
+.blog-card{background:var(--glass);backdrop-filter:blur(6px);border:1px solid var(--bdr2);border-radius:12px;padding:24px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;box-shadow:0 0 1px rgba(6,182,212,0.1)}
+.blog-card:hover{border-color:var(--card-accent,var(--bdr3));background:var(--bg2);transform:translateY(-2px);box-shadow:0 0 2px var(--card-accent,rgba(6,182,212,0.3)),0 0 16px var(--card-glow,rgba(6,182,212,0.1)),0 8px 28px rgba(0,0,0,0.25)}
+.blog-cat{font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.blog-title{font-family:var(--sans);font-size:18px;font-weight:700;line-height:1.35;margin-bottom:8px;color:var(--t1)}
+.blog-excerpt{font-size:13px;color:var(--t4);line-height:1.55;margin-bottom:10px}
+.blog-date{font-size:11px;color:var(--t5)}
+
+/* ── BLOG POST ── */
+.blog-body{font-size:16px;line-height:1.8;color:var(--t2)}
+.blog-h2{font-family:var(--sans);font-size:22px;font-weight:700;margin:32px 0 12px;color:var(--em2);text-shadow:0 0 10px rgba(6,182,212,0.15)}
+.blog-p{margin:0 0 18px;line-height:1.8}
+.blog-p strong{color:var(--em2);font-weight:700}
+
+/* ── DETAIL ── */
+.det{padding:36px 0 60px}
+.det-back{display:inline-flex;align-items:center;gap:6px;background:none;border:1px solid var(--bdr2);color:var(--t3);font-family:var(--sans);font-size:12px;font-weight:600;padding:7px 16px;border-radius:7px;cursor:pointer;margin-bottom:24px;transition:all .15s}
+.det-back:hover{border-color:var(--em);color:var(--em);text-shadow:var(--glow-sm);box-shadow:0 0 12px rgba(6,182,212,0.08)}
+.det-hero{display:flex;align-items:center;gap:20px;margin-bottom:28px}
+.det-name{font-family:var(--sans);font-size:30px;font-weight:800;letter-spacing:-.3px}
+.det-sub{font-size:13px;color:var(--t4);margin-top:3px}
+.det-pulse-badge{background:var(--bg2);border:1px solid var(--bdr2);border-radius:9px;padding:6px 14px;display:inline-flex;align-items:center;gap:7px;margin-top:10px;box-shadow:0 0 12px rgba(6,182,212,0.06)}
+.det-pulse-lbl{font-size:10px;color:var(--t4);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.det-pulse-v{font-family:var(--mono);font-size:20px;font-weight:800;color:var(--gold);text-shadow:var(--glow-gold)}
+.det-deal{display:flex;align-items:center;gap:16px;padding:14px 20px;background:var(--glass);border:1px solid var(--bdr2);border-radius:10px;margin-bottom:24px;box-shadow:0 0 1px rgba(6,182,212,0.15)}
+.det-desc{background:var(--glass);backdrop-filter:blur(6px);border:1px solid var(--bdr2);border-radius:12px;padding:22px;color:var(--t2);font-size:14px;line-height:1.75}
+.det-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px;margin-bottom:24px}
+.det-stat{background:var(--glass);border:1px solid var(--bdr);border-radius:9px;padding:14px 16px}
+.det-stat-l{font-size:10px;color:var(--em);text-transform:uppercase;letter-spacing:.8px;font-weight:700;text-shadow:0 0 6px rgba(6,182,212,0.15)}
+.det-stat-v{font-family:var(--mono);font-size:13px;font-weight:700;margin-top:4px;color:var(--t1)}
+.det-section{background:var(--glass);border:1px solid var(--bdr2);border-radius:12px;overflow:hidden;margin-bottom:18px;box-shadow:0 0 1px rgba(6,182,212,0.1)}
+.info-row{display:flex;justify-content:space-between;align-items:flex-start;padding:14px 20px;border-bottom:1px solid var(--bdr)}
+.info-row:last-child{border-bottom:none}
+.info-label{color:var(--t3);font-size:13px;font-weight:600;min-width:140px;flex-shrink:0}
+.info-val{font-size:13px;font-weight:600;color:var(--t1);text-align:right;line-height:1.55;max-width:62%}
+.info-val.hl{color:var(--em);text-shadow:var(--glow-sm)}
+.det-sec-title{display:flex;align-items:center;gap:7px;margin:28px 0 12px;font-size:15px;font-weight:700}
+.det-pc{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
 
 /* ── FOOTER ── */
-.foot{border-top:1px solid var(--bdr);padding:36px 28px;max-width:1300px;margin:0 auto}
+.foot{border-top:1px solid var(--bdr2);padding:36px 0;margin-top:48px;position:relative}
+.foot::before{content:'';position:absolute;top:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(251,191,36,0.3),rgba(34,211,238,0.3),rgba(251,191,36,0.3),transparent)}
 .foot-in{display:flex;justify-content:space-between;gap:36px;flex-wrap:wrap}
-.foot-br{max-width:260px}
-.foot-n{font-size:15px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:6px}
-.foot-d{font-size:11px;color:var(--t3);line-height:1.5}
-.foot-c h4{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--t4);margin-bottom:8px}
-.foot-c a{display:block;font-size:12px;color:var(--t2);text-decoration:none;margin-bottom:4px;cursor:pointer}
-.foot-c a:hover{color:var(--brand2)}
-.foot-b{text-align:center;margin-top:24px;padding-top:14px;border-top:1px solid var(--bdr);font-size:10px;color:var(--t4)}
+.foot-brand{max-width:260px}
+.foot-brand-n{font-size:15px;font-weight:700;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.foot-brand-n span{color:var(--gold);text-shadow:var(--glow-gold-sm)}
+.foot-brand-d{font-size:11px;color:var(--t5);line-height:1.6}
+.foot-col h4{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--em);margin-bottom:8px;text-shadow:0 0 6px rgba(6,182,212,0.15)}
+.foot-col a{display:block;font-size:12px;color:var(--t4);text-decoration:none;margin-bottom:4px;cursor:pointer;transition:color .12s}
+.foot-col a:hover{color:var(--em);text-shadow:0 0 8px rgba(6,182,212,0.2)}
+.foot-bot{text-align:center;margin-top:24px;padding-top:14px;border-top:1px solid var(--bdr);font-size:10px;color:var(--t5)}
 
-/* ── OFFERS PAGE ── */
-.offers-page-hdr{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px}
-.offers-page-count{font-size:14px;font-weight:700}.offers-page-count span{color:var(--brand2)}
-.offers-filters{display:flex;gap:6px;flex-wrap:wrap}
-.offer-card{background:var(--bg2);border:1px solid var(--bdr);border-radius:14px;display:flex;align-items:stretch;overflow:hidden;transition:all .2s;margin-bottom:12px}
-.offer-card:hover{border-color:var(--bdr2);box-shadow:0 4px 24px rgba(0,0,0,0.3)}
-.offer-pct-box{min-width:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px;position:relative}
-.offer-pct-box .tag{position:absolute;top:10px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:800;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,0.15);color:#fff;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
-.offer-pct-num{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:900;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.3)}
-.offer-pct-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
-.offer-body{flex:1;padding:20px 24px;display:flex;flex-direction:column;justify-content:center;gap:6px;border-left:1px solid var(--bdr)}
-.offer-body-top{display:flex;align-items:center;gap:10px}
-.offer-firm-name{font-size:16px;font-weight:700}
-.offer-desc{color:var(--t2);font-size:13px;line-height:1.4}
-.offer-right{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:8px;padding:20px 24px;min-width:200px}
-.offer-code-btn{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--bdr2);border-radius:8px;padding:8px 14px;cursor:pointer;transition:all .15s}
-.offer-code-btn:hover{border-color:var(--brand);box-shadow:0 0 12px var(--glow2)}
-.offer-code-label{font-size:10px;color:var(--t3);font-weight:600}
-.offer-code-val{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:800;color:var(--t1)}
-.offer-code-copy{font-size:12px;color:var(--t3)}
-.offer-expires{font-size:11px;color:var(--t3)}
-.offer-expires span{color:var(--amber)}
-.offer-apply-btn{background:linear-gradient(135deg,var(--brand),#0284c7);color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;padding:10px 24px;border-radius:8px;border:none;cursor:pointer;transition:all .2s;box-shadow:0 0 10px rgba(14,165,233,0.2)}
-.offer-apply-btn:hover{box-shadow:0 0 20px rgba(14,165,233,0.4);transform:translateY(-1px)}
-@media(max-width:700px){
-  .offer-card{flex-direction:column}
-  .offer-pct-box{min-width:auto;padding:16px;flex-direction:row;gap:12px}
-  .offer-pct-box .tag{position:static;transform:none}
-  .offer-body{border-left:none;border-top:1px solid var(--bdr);padding:14px 16px}
-  .offer-right{flex-direction:row;padding:12px 16px;min-width:auto;border-top:1px solid var(--bdr);justify-content:space-between}
-}
+/* ── TOAST ── */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#050810;font-size:12px;font-weight:700;padding:10px 24px;border-radius:8px;z-index:999;box-shadow:var(--glow-gold),0 4px 16px rgba(0,0,0,.4);animation:tI .25s ease-out,tO .25s ease-in 1.4s forwards}
+@keyframes tI{from{opacity:0;transform:translateX(-50%) translateY(14px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes tO{to{opacity:0;transform:translateX(-50%) translateY(14px)}}
 
-/* ── BLOG READING ── */
-.top-pick-badge{display:inline-flex;align-items:center;position:relative;cursor:default;vertical-align:middle;margin-left:4px;color:#f59e0b;filter:drop-shadow(0 0 3px rgba(245,158,11,0.4))}
-.top-pick-badge svg{width:14px;height:14px}
-.top-pick-badge::after{content:'Pulse Top Pick';position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1e293b;color:#f59e0b;font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;border:1px solid rgba(245,158,11,0.3);box-shadow:0 4px 12px rgba(0,0,0,0.4)}
-.top-pick-badge:hover::after{opacity:1}
-.blog-body{color:var(--t1);font-size:15px;line-height:1.8}
-.blog-h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:19px;font-weight:700;margin:28px 0 12px;color:var(--t1);letter-spacing:-.3px}
-.blog-p{margin:0 0 18px;color:var(--t2);font-size:15px;line-height:1.8}
-.blog-p strong{color:var(--t1);font-weight:700}
-.blog-c:hover{border-color:var(--bdr2);transform:translateY(-2px);transition:all .2s}
-@media(max-width:700px){.blog-body{font-size:14px}.blog-h2{font-size:17px}.blog-p{font-size:14px}}
-
-/* ── MOBILE NAV ── */
-.nav-burger{display:none;background:none;border:none;cursor:pointer;padding:6px;flex-direction:column;gap:4px}
-.nav-burger span{display:block;width:20px;height:2px;background:var(--t2);border-radius:2px;transition:all .2s}
-.mobile-menu{position:fixed;top:72px;left:0;right:0;bottom:0;background:#0a0f1a;padding:12px 20px 20px;z-index:198;display:flex;flex-direction:column;gap:4px;animation:menuIn .2s ease-out;overflow-y:auto}
-@keyframes menuIn{from{opacity:0}to{opacity:1}}
-.mobile-menu-item{background:none;border:none;color:var(--t2);font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:600;padding:16px 20px;border-radius:12px;text-align:left;cursor:pointer;transition:all .15s;border-bottom:1px solid var(--bdr)}
-.mobile-menu-item:hover,.mobile-menu-item.on{background:var(--bg3);color:var(--t1)}
-.mobile-menu-item.on{color:var(--brand2);border-left:3px solid var(--brand2)}
-
-@media(max-width:900px){
+/* ── MOBILE ── */
+@media(max-width:768px){
+  .wrap{padding:0 16px}
+  .nav{padding:0 16px;gap:6px}
   .nav-tabs{display:none}
-  .nav-burger{display:flex}
-  .cards-grid{grid-template-columns:1fr}
-  .rev-grid,.blog-grid{grid-template-columns:1fr}
-  .det-pros-cons{grid-template-columns:1fr}
-  .gw-steps{grid-template-columns:1fr 1fr}
-  .tbl-wrap{margin:0 -20px;border-radius:0}
+  .nav-burger{display:block}
+  .hero{padding:32px 0 24px}
+  .hero h1{font-size:24px}
+  .hero-code{font-size:36px;letter-spacing:8px}
+  .hero-row{gap:4px}
+  .hero-chip{font-size:11px;padding:5px 10px}
+  .hero-stats{gap:18px;flex-wrap:wrap}
+  .lb-hdr{display:none}
+  .lb-row{grid-template-columns:24px 30px 1fr 110px;gap:8px;padding:10px 14px}
+  .lb-rating,.lb-trend,.lb-deal{display:none}
+  .cards{grid-template-columns:1fr}
+  .fcard-grid{grid-template-columns:1fr 1fr}
+  .ctabs{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .ctab{white-space:nowrap;flex-shrink:0}
+  .det-pc{grid-template-columns:1fr}
+  .blog-grid{grid-template-columns:1fr}
+  .foot-in{flex-direction:column;gap:20px}
+  .offer-row{flex-wrap:wrap;gap:12px}
+  .offer-pct{min-width:70px;font-size:16px}
 }
-@media(max-width:700px){
-  *{box-sizing:border-box}
-  body{overflow-x:hidden}
-  .wrap{padding:0 14px;max-width:100vw;overflow-x:hidden}
-  .nav{padding:0 14px;gap:6px}
-  .nav-logo img{width:28px;height:28px}
-  .nav-logo-text{font-size:13px}
-  .nav-cta{font-size:10px;padding:6px 10px}
-  .hero{padding:24px 0 16px}
-  .hero h1{font-size:22px;line-height:1.3}
-  .hero p{font-size:12px;padding:0 8px}
-  .hero-nums{gap:12px;flex-wrap:wrap;justify-content:center}
-  .hero-nums div{min-width:55px}
-  .hero-nums span:first-child{font-size:16px}
-  .hero-nums span:last-child{font-size:8px}
-  .content-tabs{flex-wrap:nowrap;gap:4px;margin:14px 0 10px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;scrollbar-width:none}
-  .content-tabs::-webkit-scrollbar{display:none}
-  .ct-btn{padding:7px 12px;font-size:11px;white-space:nowrap;flex-shrink:0}
-  .filters-row{flex-wrap:nowrap;gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;scrollbar-width:none}
-  .filters-row::-webkit-scrollbar{display:none}
-  .f-btn{font-size:10px;padding:6px 10px;white-space:nowrap;flex-shrink:0}
-  .view-toggle{margin-top:6px}
-  .vt-btn{font-size:10px;padding:5px 10px}
-  /* Table — force horizontal scroll */
-  .tbl-wrap,.ch-tbl-wrap{margin:0 -14px;border-radius:0;overflow-x:auto;-webkit-overflow-scrolling:touch}
-  .tbl{font-size:11px;min-width:700px}
-  .tbl th{font-size:8px;padding:8px 6px;white-space:nowrap}
-  .tbl td{padding:8px 6px;font-size:11px}
-  /* Offers strip */
-  .offers-strip{margin:0 -14px;border-radius:0;padding:14px}
-  .offers-row{gap:6px;padding:0 8px}
-  .offers-label{font-size:11px;padding:0 8px;margin-bottom:8px}
-  .offer-chip{min-width:180px;padding:8px 10px}
-  .offer-chip-name{font-size:12px}
-  .offer-chip-pct{font-size:10px;padding:3px 6px}
-  /* Offers page cards */
-  .offer-card{flex-direction:column}
-  .offer-pct-box{min-width:auto;padding:16px;flex-direction:row;gap:12px;justify-content:flex-start}
-  .offer-pct-box .tag{position:static;transform:none}
-  .offer-pct-num{font-size:22px}
-  .offer-body{border-left:none;border-top:1px solid var(--bdr);padding:14px 16px}
-  .offer-firm-name{font-size:14px}
-  .offer-desc{font-size:12px}
-  .offer-right{flex-direction:row;flex-wrap:wrap;padding:12px 16px;min-width:auto;border-top:1px solid var(--bdr);justify-content:space-between;gap:6px}
-  .offer-apply-btn{padding:8px 16px;font-size:12px}
-  /* Cards */
-  .firm-card{padding:16px}
-  .fcard-stats{grid-template-columns:1fr 1fr}
-  .fc-name{font-size:13px}
-  /* Detail page */
-  .det{padding:20px 0 60px}
-  .det-back{font-size:12px;padding:8px 12px;min-height:40px;margin-bottom:16px}
-  .det-hero{flex-direction:column;gap:12px;align-items:flex-start;margin-bottom:20px}
+@media(max-width:420px){
+  .hero h1{font-size:20px}
+  .hero-code{font-size:28px;letter-spacing:6px}
+  .lb-row{grid-template-columns:22px 1fr 90px;gap:6px}
+  .lb-logo{display:none}
   .det-name{font-size:22px}
-  .det-sub{font-size:12px}
-  .det-grid{grid-template-columns:1fr 1fr;gap:8px}
-  .det-stat{padding:10px}
-  .det-stat-l{font-size:8px}
-  .det-stat-v{font-size:12px}
-  .det-section .info-row{flex-direction:column;gap:4px;padding:12px 14px}
-  .det-section .info-val{text-align:left;max-width:100%;font-size:12px;line-height:1.5}
-  .det-section .info-label{font-size:11px;min-width:auto}
-  .det-deal{flex-direction:column;gap:8px;text-align:center;padding:14px}
-  .det-deal .act-btn{margin:0 auto}
-  .det-desc{padding:14px;font-size:13px}
-  /* Giveaway */
-  .gw-steps{grid-template-columns:1fr}
-  .gw-form{padding:16px;margin:14px 0}
-  .gw-prize{padding:20px}
-  .gw-prize-val{font-size:24px}
-  .gw-prize-title{font-size:17px}
-  .gw-hero h2{font-size:20px}
-  .gw-hero p{font-size:12px}
-  .gw-field input,.gw-field select,.gw-field textarea{font-size:16px}
-  .gw-submit{font-size:13px;padding:11px}
-  .gw-rules{padding:14px}
-  .gw-rules ul li{font-size:11px}
-  /* Footer */
-  .foot{padding:24px 14px}
-  .foot-in{flex-direction:column;gap:16px}
-  .foot-c{min-width:auto}
-  .foot-c h4{font-size:13px}
-  .foot-c a{font-size:12px}
-  .foot-b{font-size:9px}
-  /* Ticker */
-  .ticker{font-size:10px;padding:6px 0}
-  /* Blog post */
-  .blog-body{font-size:14px}
-  .blog-h2{font-size:16px}
-  .blog-p{font-size:13px;line-height:1.7}
-  /* Misc */
-  .section-title{font-size:15px}
+  .fcard{padding:18px}
+  .cards{grid-template-columns:1fr}
 }
-@media(max-width:400px){
-  .wrap{padding:0 8px}
-  .nav{padding:0 8px}
-  .hero h1{font-size:18px}
-  .hero p{font-size:11px}
-  .content-tabs{gap:3px}
-  .ct-btn{padding:6px 8px;font-size:10px}
-  .det-grid{grid-template-columns:1fr}
-  .det-name{font-size:18px}
-  .fcard-stats{grid-template-columns:1fr}
-  .offer-pct-num{font-size:18px}
-  .gw-field input,.gw-field select,.gw-field textarea{font-size:16px}
-}
+
 `;
 
-// Pulse Score: editorial ranking by ThePropPulse based on overall trader experience, payouts, rules, support, and trust
+// ── HELPERS ──
 const PULSE_SCORES = {"Tradeify":95,"Lucid Trading":94,"My Funded Futures":94,"Alpha Futures":93,"Top One Futures":93,"Take Profit Trader":90,"FundedNext Futures":90,"Apex Trader Funding":92,"Bulenox":87,"Topstep":83};
 const TOP_PICKS = new Set(["Tradeify","Apex Trader Funding","Top One Futures"]);
-const TopPickBadge = ({name}) => TOP_PICKS.has(name) ? <span className="top-pick-badge"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span> : null;
-// Bulletproof clipboard copy with fallback
-const copyToClipboard = (text) => {
-  if(navigator.clipboard && window.isSecureContext) {
-    return navigator.clipboard.writeText(text);
-  }
-  // Fallback for non-HTTPS / sandbox environments
-  const ta = document.createElement("textarea");
-  ta.value = text;
-  ta.style.position = "fixed";
-  ta.style.left = "-9999px";
-  ta.style.top = "-9999px";
-  document.body.appendChild(ta);
-  ta.focus();
-  ta.select();
-  try { document.execCommand("copy"); } catch(e) {}
-  document.body.removeChild(ta);
-  return Promise.resolve();
+const calcPulse = (r,rv,name) => PULSE_SCORES[name] || 75;
+const pulseColor = s => s>=92?"var(--gold)":s>=88?"#fbbf24":s>=84?"#f59e0b":"var(--t4)";
+const copyToClipboard = text => {
+  if(navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+  const ta=document.createElement("textarea");ta.value=text;ta.style.cssText="position:fixed;left:-9999px";document.body.appendChild(ta);ta.select();try{document.execCommand("copy")}catch(e){}document.body.removeChild(ta);return Promise.resolve();
 };
-
-const calcPulse = (rating, reviews, name) => PULSE_SCORES[name] || 75;
-const pulseColor = (s) => s>=90?"#34d399":s>=80?"#0ea5e9":s>=70?"#eab308":"#f87171";
-const ratClass = (r) => r>=4.5?"rat-g":r>=4?"rat-y":r>=3.5?"rat-o":r>0?"rat-r":"rat-na";
-const allocPct = (s) => { const n=s.replace(/[^0-9.MK]/g,""); let v=parseFloat(n); if(n.includes("M"))v*=1000; return Math.min((v/3000)*100,100); };
-const trendIcon = (t) => t==="up"?"▲":t==="down"?"▼":t==="new"?"★":"–";
-const trendColor = (t) => t==="up"?"#34d399":t==="down"?"#f87171":t==="new"?"#0ea5e9":"var(--t4)";
-
-// ── COMPONENTS ──────────────────────────────────────────────────────────────
-const FirmLogo = ({f,size=42}) => {
-  const logo = LOGOS[f.name];
-  const r = size>50?14:10;
-  return (
-    <div style={{width:size,height:size,flexShrink:0,position:'relative'}}>
-      {f.trend==="new"&&<span className="new-tag">NEW</span>}
-      <div style={{width:'100%',height:'100%',borderRadius:r,background:'var(--bg3)',border:'1px solid var(--bdr)',display:'flex',alignItems:'center',justifyContent:'center',overflow:'hidden'}}>
-        {logo ? (
-          <img src={logo} alt={f.name} style={{width:'100%',height:'100%',objectFit:'contain',borderRadius:r-1}}/>
-        ) : (
-          <div className="firm-logo-fallback" style={{background:f.brandGrad,fontSize:size>50?14:f.initials.length>2?9:11}}>{f.initials}</div>
-        )}
-      </div>
-    </div>
-  );
-};
-const Ticker = () => {
-  const items = [...DEALS,...DEALS,...DEALS];
-  return (
-    <div className="ticker"><div className="ticker-track">
-      {items.map((d,i)=><div key={i} className="tick-item">
-        <span className="tick-pct" style={{background:d.color+"18",color:d.color}}>{d.pct}</span>
-        <span className="tick-name">{d.firm}</span>
-        <span className="tick-code">{d.code}</span>
-        <span className="tick-sep">•</span>
-      </div>)}
-    </div></div>
-  );
-};
-
-const NavBar = ({tab,setTab,setPage}) => {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const navItems = [["firms","Firms"],["challenges","Challenges"],["offers","Offers"],["giveaways","🎟️ Giveaways"],["reviews","Reviews"],["blog","Blog"]];
-  const go = (k) => { setPage("home"); setTab(k); setMobileOpen(false); document.body.style.overflow=''; };
-  const toggleMenu = () => { setMobileOpen(p=>{document.body.style.overflow=!p?'hidden':'';return !p;}); };
-  return (<>
-  <nav className="nav" style={mobileOpen?{background:'#0a0f1a',backdropFilter:'none'}:{}}>
-    <div className="nav-logo" onClick={()=>go("firms")}>
-      <img src={LOGO_URL} alt="P" onError={e=>{e.target.style.display='none'}}/>
-      <span className="nav-logo-text">The<span>PropPulse</span></span>
-    </div>
-    <div className="nav-tabs">
-      {navItems.map(([k,l])=>(
-        <button key={k} className={`nav-tab ${tab===k?"on":""}`} onClick={()=>go(k)}>{l}</button>
-      ))}
-    </div>
-    <div className="nav-right">
-      <button className="nav-cta" onClick={()=>go("offers")}>🔥 Deals</button>
-      <button className="nav-burger" onClick={toggleMenu} aria-label="Menu">
-        {mobileOpen ? <span style={{fontSize:22,color:"var(--t1)",lineHeight:1}}>✕</span> : <><span/><span/><span/></>}
-      </button>
-    </div>
-  </nav>
-  {mobileOpen&&<div className="mobile-menu">
-    {navItems.map(([k,l])=>(
-      <button key={k} className={`mobile-menu-item ${tab===k?"on":""}`} onClick={()=>go(k)}>{l}</button>
-    ))}
-  </div>}
-  </>);
-};
-
-const OffersStrip = () => {
-  const [copied,setCopied] = useState(null);
-  return (
-    <div className="offers-strip">
-      <div className="offers-label">⚡ <span>Exclusive Futures Offers</span> — March 2026</div>
-      <div className="offers-row">
-        {DEALS.map((d,i)=>{
-          const f=FIRMS.find(f=>f.name===d.firm);
-          return (
-            <div key={i} className="offer-chip" onClick={()=>{copyToClipboard(d.code);setCopied(i);setTimeout(()=>setCopied(null),1500)}}>
-              {f?<FirmLogo f={f} size={36}/>:<span>?</span>}
-              <div className="offer-chip-info">
-                <div className="offer-chip-name">{d.firm}</div>
-                <div className="offer-chip-deal">Code: <b style={{color:d.color}}>{d.code}</b></div>
-              </div>
-              <span className="offer-chip-pct" style={{background:d.color+"15",color:d.color}}>{d.pct}</span>
-            </div>
-          );
-        })}
-      </div>
-      {copied!==null&&<div className="toast">CODE COPIED</div>}
-    </div>
-  );
-};
-
-const OffersPage = () => {
-  const [copied,setCopied] = useState(null);
-  const [filter,setFilter] = useState("all");
-  const copy = (i,code) => {copyToClipboard(code);setCopied(i);setTimeout(()=>setCopied(null),2000)};
-
-  const filtered = filter==="all" ? DEALS : filter==="new" ? DEALS.filter(d=>d.tag) : filter==="exclusive" ? DEALS.filter(d=>d.code==="PULSE") : DEALS;
-
-  return (<div>
-    <div className="offers-page-hdr">
-      <div className="offers-page-count">Futures Exclusive Offers <span>{filtered.length}</span></div>
-      <div className="offers-filters">
-        <button className={`f-btn ${filter==="all"?"on":""}`} onClick={()=>setFilter("all")}>🔥 All Offers</button>
-        <button className={`f-btn ${filter==="new"?"on":""}`} onClick={()=>setFilter("new")}>✨ New Offers</button>
-        <button className={`f-btn ${filter==="exclusive"?"on":""}`} onClick={()=>setFilter("exclusive")}>💎 Pulse Exclusive</button>
-      </div>
-    </div>
-    {filtered.map((d,i)=>{
-      const f = FIRMS.find(f=>f.name===d.firm);
-      return (
-        <div key={i} className="offer-card">
-          <div className="offer-pct-box" style={{background:`linear-gradient(135deg,${d.color},${d.color}dd)`}}>
-            {d.tag&&<span className="tag">{d.tag}</span>}
-            <div className="offer-pct-num">{d.pct.replace(" OFF","")}</div>
-            <div className="offer-pct-label">OFF</div>
-          </div>
-          <div className="offer-body">
-            <div className="offer-body-top">
-              {f&&<FirmLogo f={f} size={38}/>}
-              <div>
-                <div className="offer-firm-name">{d.firm} <TopPickBadge name={d.firm}/></div>
-                {f&&<div style={{display:"flex",alignItems:"center",gap:6,marginTop:2}}>
-                  <span className={`rat-badge ${ratClass(f.rating)}`} style={{fontSize:10,padding:"1px 6px"}}>{f.rating}</span>
-                  <span style={{fontSize:10,color:"var(--t3)"}}>{f.reviews.toLocaleString()} reviews</span>
-                </div>}
-              </div>
-            </div>
-            <div className="offer-desc">{d.desc}</div>
-          </div>
-          <div className="offer-right">
-            <div className="offer-code-btn" onClick={()=>copy(i,d.code)}>
-              <div>
-                <div className="offer-code-label">Code</div>
-                <div className="offer-code-val">{d.code}</div>
-              </div>
-              <span className="offer-code-copy">{copied===i?"✓":"📋"}</span>
-            </div>
-            {d.expires&&<div className="offer-expires">📅 Ends: <span>{d.expires}</span></div>}
-            <button className="offer-apply-btn" onClick={()=>copy(i,d.code)}>Apply</button>
-          </div>
-        </div>
-      );
-    })}
-    {copied!==null&&<div className="toast">CODE COPIED!</div>}
-  </div>);
-};
-
-const FirmTable = ({firms,onSelect}) => {
-  const [copied,setCopied] = useState(false);
-  const copyCode = (e,code) => {e.stopPropagation();copyToClipboard(code);setCopied(true);setTimeout(()=>setCopied(false),1800)};
-  return (<>
-  <div className="tbl-wrap"><table className="tbl"><thead><tr>
-    <th>FIRM</th><th>PULSE SCORE</th><th>RATING</th><th>COUNTRY</th><th>PLATFORMS</th><th>MAX ALLOCATION</th><th>PROMO</th><th></th>
-  </tr></thead><tbody>
-    {firms.map(f=>{
-      const deal=DEALS.find(d=>d.firm===f.name);
-      return (<tr key={f.id} onClick={()=>onSelect(f)}>
-        <td><div className="fc">
-          <FirmLogo f={f} size={42}/>
-          <div><div className="fc-name">{f.name} <TopPickBadge name={f.name}/></div><div className="fc-hq">{f.hq} · Est. {f.founded}</div></div>
-        </div></td>
-        <td><div className="pulse-score">
-          <span className="ps-num" style={{color:pulseColor(calcPulse(f.rating,f.reviews,f.name))}}>{calcPulse(f.rating,f.reviews,f.name)}</span>
-          <div className="ps-bar"><div className="ps-fill" style={{width:calcPulse(f.rating,f.reviews,f.name)+"%",background:pulseColor(calcPulse(f.rating,f.reviews,f.name))}}/></div>
-          <span className="ps-trend" style={{color:trendColor(f.trend)}}>{trendIcon(f.trend)}</span>
-        </div></td>
-        <td><div className="rating-cell">
-          <span className={`rat-badge ${ratClass(f.rating)}`}>{f.rating>0?f.rating:"—"}</span>
-          <div className="rat-info"><span className="rat-stars">{"★".repeat(Math.floor(f.rating))}</span><span className="rat-ct">{f.reviews>0?f.reviews+" reviews":"< 10 reviews"}</span></div>
-        </div></td>
-        <td><div className="country-c">{f.flag} {f.country}</div></td>
-        <td><div className="plat-pills">{f.platforms.map((p,i)=>p.startsWith("+")?<span key={i} className="plat-more">{p}</span>:<span key={i} className="plat-pill">{p}</span>)}</div></td>
-        <td><div className="alloc-c">{f.maxAlloc}</div><div className="alloc-bar"><div className="alloc-fill" style={{width:allocPct(f.maxAlloc)+"%"}}/></div></td>
-        <td>{deal?<div className="promo-c" style={{background:deal.color}} onClick={e=>copyCode(e,deal.code)}>
-          <span className="promo-pct">{deal.pct}</span>
-          <span className="promo-code-btn">PULSE 📋</span>
-        </div>:<span style={{color:"var(--t4)",fontSize:11}}>—</span>}</td>
-        <td><button className="act-btn" onClick={e=>{e.stopPropagation();onSelect(f)}}>View →</button></td>
-      </tr>);
-    })}
-  </tbody></table></div>
-  {copied&&<div className="toast">PULSE CODE COPIED</div>}
-  </>);
-};
-
-const FirmCards = ({firms,onSelect}) => (
-  <div className="cards-grid">{firms.map(f=>{
-    const deal=DEALS.find(d=>d.firm===f.name);
-    return (<div key={f.id} className="firm-card" onClick={()=>onSelect(f)}>
-      <div className="fcard-top">
-        <div className="fcard-left">
-          <FirmLogo f={f} size={38}/>
-          <div><div className="fc-name" style={{fontSize:15}}>{f.name} <TopPickBadge name={f.name}/></div><div className="fc-hq">{f.flag} {f.hq} · Est. {f.founded}</div></div>
-        </div>
-        {deal&&<span className="fcard-deal" style={{background:deal.color+"15",color:deal.color}}>{deal.pct}</span>}
-      </div>
-      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
-        <span className={`rat-badge ${ratClass(f.rating)}`} style={{width:26,height:26,fontSize:10}}>{f.rating>0?f.rating:"—"}</span>
-        <span className="rat-stars">{"★".repeat(Math.floor(f.rating))}</span>
-        <span className="rat-ct">{f.reviews>0?f.reviews+" reviews":"New"}</span>
-      </div>
-      <div className="fcard-desc">{f.desc}</div>
-      <div className="fcard-stats">
-        <div className="fcard-stat"><div className="fcard-sl">Max Alloc.</div><div className="fcard-sv" style={{color:f.color}}>{f.maxAlloc}</div></div>
-        <div className="fcard-stat"><div className="fcard-sl">Profit Split</div><div className="fcard-sv">{f.split.split("→")[0].trim()}</div></div>
-        <div className="fcard-stat"><div className="fcard-sl">Payout</div><div className="fcard-sv">{f.paySpeed}</div></div>
-      </div>
-      <div className="fcard-bottom">
-        <div className="fcard-pulse">
-          <span className="fcard-pulse-label">Pulse</span>
-          <span className="fcard-pulse-score" style={{color:pulseColor(calcPulse(f.rating,f.reviews,f.name))}}>{calcPulse(f.rating,f.reviews,f.name)}</span>
-          <span style={{fontSize:10,color:trendColor(f.trend)}}>{trendIcon(f.trend)}</span>
-        </div>
-        <button className="fcard-btn">View Firm →</button>
-      </div>
-    </div>);
-  })}</div>
-);
-
-const ChallengesTab = () => {
-  const [filters, setFilters] = useState({instant:false, daily:false, fiveDay:false, weekly:false, noDLL:false, noConsistency:false, newsOk:false, eaOk:false, oneDayPass:false, size:"50K"});
-  const toggle = (k) => setFilters(p=>({...p,[k]:!p[k]}));
-  const setSize = (v) => setFilters(p=>({...p,size:p.size===v?"":v}));
-
-  const filtered = useMemo(()=> {
-    const hasSpecialFilter = filters.instant || filters.daily || filters.fiveDay || filters.weekly;
-    return CHALLENGES.filter(c => {
-    // Default: only show standard plans. If instant/payout filters active, show matching non-standard too
-    if(!hasSpecialFilter && !c.standard) return false;
-    if(filters.instant && !c.instant) return false;
-    if(filters.daily && !c.payout.toLowerCase().includes("daily")) return false;
-    if(filters.fiveDay && !c.payout.toLowerCase().includes("5")) return false;
-    if(filters.weekly && !c.payout.toLowerCase().includes("weekly")) return false;
-    if(filters.noDLL && c.dll!=="None") return false;
-    if(filters.noConsistency && c.consistency!=="None") return false;
-    if(filters.newsOk && !c.news) return false;
-    if(filters.eaOk && !c.ea) return false;
-    if(filters.oneDayPass && !c.minDays.includes("1 day") && c.minDays!=="None") return false;
-    if(filters.size && c.size!==filters.size) return false;
-    return true;
-  });},[filters]);
-
-  const activeCount = Object.values(filters).filter(v=>v===true||(typeof v==="string"&&v!=="")).length;
-  const getFirm = (name) => FIRMS.find(f=>f.name===name);
-  const allSizes = [...new Set(CHALLENGES.map(c=>c.size))].sort((a,b)=>{const n=s=>parseInt(s.replace("K",""));return n(a)-n(b)});
-
-  return (<div>
-    <div style={{marginBottom:16}}>
-      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
-        <span style={{fontSize:13,fontWeight:700,color:"var(--t2)"}}>⚙ Filters {activeCount>0&&<span style={{color:"var(--brand2)",marginLeft:4}}>({activeCount} active)</span>}</span>
-        {activeCount>0&&<button className="f-btn" style={{fontSize:10,padding:"3px 10px"}} onClick={()=>setFilters({instant:false,daily:false,fiveDay:false,weekly:false,noDLL:false,noConsistency:false,newsOk:false,eaOk:false,oneDayPass:false,size:""})}>✕ Clear All</button>}
-      </div>
-      <div className="filters-row" style={{marginBottom:8}}>
-        <button className={`f-btn ${filters.instant?"on":""}`} onClick={()=>toggle("instant")}>⚡ Instant Funding</button>
-        <button className={`f-btn ${filters.oneDayPass?"on":""}`} onClick={()=>toggle("oneDayPass")}>🏃 1 Day to Pass</button>
-        <button className={`f-btn ${filters.daily?"on":""}`} onClick={()=>toggle("daily")}>📅 Daily Payouts</button>
-        <button className={`f-btn ${filters.fiveDay?"on":""}`} onClick={()=>toggle("fiveDay")}>📆 5-Day Payouts</button>
-        <button className={`f-btn ${filters.weekly?"on":""}`} onClick={()=>toggle("weekly")}>📆 Weekly Payouts</button>
-      </div>
-      <div className="filters-row" style={{marginBottom:8}}>
-        <button className={`f-btn ${filters.noDLL?"on":""}`} onClick={()=>toggle("noDLL")}>🚫 No Daily Loss Limit</button>
-        <button className={`f-btn ${filters.noConsistency?"on":""}`} onClick={()=>toggle("noConsistency")}>🚫 No Consistency Rule</button>
-        <button className={`f-btn ${filters.newsOk?"on":""}`} onClick={()=>toggle("newsOk")}>📰 News Trading OK</button>
-        <button className={`f-btn ${filters.eaOk?"on":""}`} onClick={()=>toggle("eaOk")}>🤖 EAs / Bots Allowed</button>
-      </div>
-      <div className="filters-row">
-        <span style={{fontSize:11,color:"var(--t3)",fontWeight:600,marginRight:4}}>Account Size:</span>
-        {allSizes.map(s=>(
-          <button key={s} className={`f-btn ${filters.size===s?"on":""}`} onClick={()=>setSize(s)} style={{padding:"4px 10px",fontSize:11}}>${s}</button>
-        ))}
-      </div>
-    </div>
-    <div style={{fontSize:12,color:"var(--t3)",marginBottom:10}}>Showing <b style={{color:"var(--t1)"}}>{filtered.length}</b> challenges from <b style={{color:"var(--t1)"}}>{new Set(filtered.map(c=>c.firm)).size}</b> firms</div>
-    <div className="ch-tbl-wrap"><table className="tbl" style={{minWidth:1200}}><thead><tr>
-      <th>FIRM</th><th>PLAN</th><th>SIZE</th><th>PRICE</th><th>TARGET</th><th>MAX LOSS</th><th>DLL</th><th>DRAWDOWN</th><th>MIN DAYS</th><th>SPLIT</th><th>PAYOUT</th><th>CONSISTENCY</th><th>NEWS</th><th>EAs</th>
-    </tr></thead><tbody>{filtered.length===0?(
-      <tr><td colSpan={14} style={{textAlign:"center",padding:40,color:"var(--t3)"}}>No challenges match your filters. Try removing some.</td></tr>
-    ):filtered.map((c,i)=>{
-      const f = getFirm(c.firm);
-      return (
-      <tr key={i}>
-        <td><div style={{display:"flex",alignItems:"center",gap:8}}>{f&&<FirmLogo f={f} size={26}/>}<span style={{fontWeight:700,fontSize:12}}>{c.firm} <TopPickBadge name={c.firm}/></span></div></td>
-        <td style={{fontSize:11,fontWeight:600}}>{c.plan}{c.instant&&<span style={{color:"var(--green)",marginLeft:4,fontSize:9}}>⚡</span>}</td>
-        <td style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,color:"var(--brand2)"}}>${c.size}</td>
-        <td style={{fontSize:11,fontWeight:600}}>{c.price}</td>
-        <td style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:600}}>{c.target}</td>
-        <td style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:600}}>{c.maxLoss}</td>
-        <td style={{fontSize:11}}>{c.dll==="None"?<span style={{color:"var(--green)",fontWeight:700}}>None ✓</span>:<span style={{color:"var(--amber)"}}>{c.dll}</span>}</td>
-        <td style={{fontSize:11}}>{c.drawdown}</td>
-        <td style={{fontSize:11}}>{c.minDays==="None"?<span style={{color:"var(--green)"}}>None ✓</span>:c.minDays}</td>
-        <td style={{fontSize:10}}>{c.split}</td>
-        <td style={{fontSize:10}}>{c.payout}</td>
-        <td style={{fontSize:11}}>{c.consistency==="None"?<span style={{color:"var(--green)",fontWeight:700}}>None ✓</span>:<span style={{color:"var(--amber)"}}>{c.consistency}</span>}</td>
-        <td>{c.news?<span style={{color:"var(--green)"}}>✓</span>:<span style={{color:"var(--red)"}}>✕</span>}</td>
-        <td>{c.ea?<span style={{color:"var(--green)"}}>✓</span>:<span style={{color:"var(--red)"}}>✕</span>}</td>
-      </tr>);
-    })}</tbody></table></div>
-  </div>);
-};
-
-const ReviewsTab = () => (<div className="rev-grid">{REVIEWS.map(r=>(
-  <div key={r.id} className="rev-c">
-    <div className="rev-top"><span className="rev-user">{r.user}</span>{r.verified&&<span className="rev-v">✓ Verified</span>}</div>
-    <div className="rev-firm">{r.firm}</div><div className="rev-stars">{"★".repeat(r.rating)}{"☆".repeat(5-r.rating)}</div>
-    <div className="rev-text">{r.text}</div><div className="rev-date">{r.date}</div>
-  </div>
-))}</div>);
-
-const BlogTab = ({onSelect}) => (<div className="blog-grid">{BLOG.map(p=>(
-  <div key={p.id} className="blog-c" onClick={()=>onSelect(p)} style={{cursor:"pointer"}}>
-    <span className="blog-cat" style={{background:p.color+"12",color:p.color}}>{p.cat}</span>
-    <div className="blog-t">{p.title}</div><div className="blog-ex">{p.excerpt}</div>
-    <div className="blog-f"><span>{p.date}</span><span>{p.time} read</span></div>
-  </div>
-))}</div>);
-
-const BlogPostPage = ({post,goBack}) => {
-  if(!post) return null;
-  const paras = post.body.split("\n\n");
-  return (<div className="wrap" style={{maxWidth:720,margin:"0 auto"}}>
-    <button className="det-back" onClick={goBack}>← Back to Blog</button>
-    <div style={{marginTop:8}}>
-      <span className="blog-cat" style={{background:post.color+"12",color:post.color,marginBottom:12,display:"inline-block"}}>{post.cat}</span>
-      <h1 style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:28,fontWeight:800,lineHeight:1.3,margin:"8px 0 12px",letterSpacing:"-.5px"}}>{post.title}</h1>
-      <div style={{display:"flex",alignItems:"center",gap:12,fontSize:12,color:"var(--t3)",marginBottom:28,paddingBottom:20,borderBottom:"1px solid var(--bdr)"}}>
-        <span>ThePropPulse</span><span>·</span><span>{post.date}</span><span>·</span><span>{post.time} read</span>
-      </div>
-      <div className="blog-body">
-        {paras.map((p,i)=>{
-          if(p.startsWith("**") && p.endsWith("**")) return <h2 key={i} className="blog-h2">{p.replace(/\*\*/g,"")}</h2>;
-          if(p.startsWith("**")) {
-            const parts = p.split("**");
-            return <div key={i} className="blog-p">{parts.map((s,j)=>j%2===1?<strong key={j}>{s}</strong>:<span key={j}>{s}</span>)}</div>;
-          }
-          const formatted = p.split("**").map((s,j)=>j%2===1?<strong key={j}>{s}</strong>:<span key={j}>{s}</span>);
-          return <p key={i} className="blog-p">{formatted}</p>;
-        })}
-      </div>
-      <div style={{marginTop:36,padding:24,background:"var(--bg2)",border:"1px solid var(--bdr2)",borderRadius:14,textAlign:"center"}}>
-        <div style={{fontSize:16,fontWeight:700,marginBottom:6}}>Ready to get funded?</div>
-        <div style={{fontSize:13,color:"var(--t2)",marginBottom:14}}>Use code <b style={{color:"var(--brand2)",fontFamily:"'JetBrains Mono',monospace"}}>PULSE</b> at any firm for an exclusive discount.</div>
-        <button className="gw-submit" style={{maxWidth:280,margin:"0 auto"}} onClick={goBack}>Compare All Firms →</button>
-      </div>
-    </div>
-  </div>);
-};
-
-const GiveawaysTab = () => {
-  const [form,setForm] = useState({name:"",email:"",firm:"",screenshot:"",notes:""});
-  const [submitted,setSubmitted] = useState(false);
-  const [entries,setEntries] = useState([]);
-  const [loading,setLoading] = useState(true);
-
-  // Load entries from storage on mount
-  useState(()=>{
-    (async()=>{
-      try {
-        const result = await window.storage.get("giveaway-entries");
-        if(result && result.value) setEntries(JSON.parse(result.value));
-      } catch(e){}
-      setLoading(false);
-    })();
-  });
-
-  const handleSubmit = async () => {
-    if(!form.name||!form.email||!form.firm||!form.screenshot) return;
-    const entry = {...form, id: Date.now(), date: new Date().toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})};
-    const updated = [...entries, entry];
-    setEntries(updated);
-    try { await window.storage.set("giveaway-entries", JSON.stringify(updated)); } catch(e){}
-    setSubmitted(true);
-    setForm({name:"",email:"",firm:"",screenshot:"",notes:""});
-  };
-
-  const firmNames = FIRMS.map(f=>f.name);
-
-  if(submitted) return (
-    <div className="gw-success">
-      <div className="gw-success-icon">🎉</div>
-      <h3>Entry Submitted!</h3>
-      <p>You've been entered into this week's giveaway drawing. Winners are announced every Friday on our Discord & YouTube. Good luck!</p>
-      <button className="ct-btn on" style={{marginTop:20}} onClick={()=>setSubmitted(false)}>Submit Another Entry</button>
-    </div>
-  );
-
-  return (
-    <div>
-      <div className="gw-hero">
-        <h2>Win a <em>Free Prop Firm Account</em></h2>
-        <p>Buy any futures prop firm account using code PULSE and you're automatically entered to win a free account every week.</p>
-      </div>
-
-      <div className="gw-prize">
-        <div className="gw-prize-label">🏆 This Week's Prize</div>
-        <div className="gw-prize-title">Free 150K Funded Account</div>
-        <div className="gw-prize-val">$150K</div>
-        <div className="gw-prize-sub">Winner announced Friday at 5PM EST on Discord & YouTube</div>
-      </div>
-
-      <div className="gw-steps">
-        <div className="gw-step">
-          <div className="gw-step-num">01</div>
-          <div className="gw-step-title">Purchase Any Account</div>
-          <div className="gw-step-desc">Buy a challenge or funded account from any prop firm listed on ThePropPulse.</div>
-        </div>
-        <div className="gw-step">
-          <div className="gw-step-num">02</div>
-          <div className="gw-step-title">Use Code PULSE</div>
-          <div className="gw-step-desc">Apply the code <b style={{color:"var(--brand2)"}}>PULSE</b> at checkout to get your discount and qualify.</div>
-        </div>
-        <div className="gw-step">
-          <div className="gw-step-num">03</div>
-          <div className="gw-step-title">Submit Your Proof</div>
-          <div className="gw-step-desc">Upload a screenshot of your order confirmation showing code PULSE was applied.</div>
-        </div>
-        <div className="gw-step">
-          <div className="gw-step-num">04</div>
-          <div className="gw-step-title">Win Free Accounts</div>
-          <div className="gw-step-desc">Each purchase = 1 entry. More purchases = more chances. Winners drawn every Friday.</div>
-        </div>
-      </div>
-
-      <div className="gw-form">
-        <h3>🎟️ Submit Your Entry</h3>
-        <div className="gw-field">
-          <label>Your Name</label>
-          <input type="text" placeholder="e.g. John Smith" value={form.name} onChange={e=>setForm({...form,name:e.target.value})}/>
-        </div>
-        <div className="gw-field">
-          <label>Email Address</label>
-          <input type="email" placeholder="e.g. john@email.com" value={form.email} onChange={e=>setForm({...form,email:e.target.value})}/>
-        </div>
-        <div className="gw-field">
-          <label>Which Firm Did You Purchase From?</label>
-          <select value={form.firm} onChange={e=>setForm({...form,firm:e.target.value})}>
-            <option value="">Select a firm...</option>
-            {firmNames.map(n=><option key={n} value={n}>{n}</option>)}
-          </select>
-        </div>
-        <div className="gw-field">
-          <label>Screenshot Link (Google Drive, Imgur, etc.)</label>
-          <input type="url" placeholder="Paste a link to your order confirmation screenshot" value={form.screenshot} onChange={e=>setForm({...form,screenshot:e.target.value})}/>
-        </div>
-        <div className="gw-field">
-          <label>Notes (Optional)</label>
-          <textarea placeholder="Anything else you'd like to add..." value={form.notes} onChange={e=>setForm({...form,notes:e.target.value})}/>
-        </div>
-        <button className="gw-submit" disabled={!form.name||!form.email||!form.firm||!form.screenshot} onClick={handleSubmit}>
-          Submit Entry 🎉
-        </button>
-      </div>
-
-      <div className="gw-rules">
-        <h4>📋 Giveaway Rules</h4>
-        <ul>
-          <li>Purchase must be made through a prop firm listed on ThePropPulse</li>
-          <li>Code PULSE must be applied at checkout (visible in screenshot)</li>
-          <li>One entry per purchase — buying multiple accounts = multiple entries</li>
-          <li>Screenshot must clearly show the order confirmation with the discount code</li>
-          <li>Winners are selected randomly every Friday and announced on Discord & YouTube</li>
-          <li>Prize accounts are subject to the winning firm's standard terms & conditions</li>
-          <li>Entries from the current week (Mon–Sun) are eligible for that week's drawing</li>
-          <li>ThePropPulse reserves the right to verify all entries before awarding prizes</li>
-        </ul>
-      </div>
-
-      {entries.length > 0 && (
-        <div className="gw-entries">
-          <div className="gw-entries-hdr">
-            <div className="section-title" style={{fontSize:16}}><span className="bar" style={{height:16}}/> Recent Entries</div>
-            <span className="gw-entries-count">{entries.length} total entries</span>
-          </div>
-          <div style={{display:"grid",gap:8}}>
-            {entries.slice(-5).reverse().map(e=>(
-              <div key={e.id} style={{background:"var(--bg2)",border:"1px solid var(--bdr)",borderRadius:10,padding:"12px 16px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                <div>
-                  <span style={{fontWeight:700,fontSize:13}}>{e.name}</span>
-                  <span style={{color:"var(--t3)",fontSize:12,marginLeft:8}}>purchased from <b style={{color:"var(--t1)"}}>{e.firm}</b></span>
-                </div>
-                <span style={{fontSize:11,color:"var(--t4)"}}>{e.date}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
 // ─── FIRM PROFILES (comprehensive detail data) ──────────────────────────────
 const FIRM_PROFILES = {
   "Tradeify":{
@@ -1525,74 +863,343 @@ const FIRM_PROFILES = {
   }
 };
 
+// ── COMPONENTS ────────────────────────────────────────────────────────────────
+
+
+const FirmLogo = ({f,size=32}) => {
+  const logo = LOGOS[f.name];
+  const r = size>36?9:7;
+  return (
+    <div style={{width:size,height:size,borderRadius:r,overflow:'hidden',background:'var(--bg3)',border:'1px solid var(--bdr)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+      {logo ? <img src={logo} alt={f.name} style={{width:'100%',height:'100%',objectFit:'contain',padding:3,borderRadius:r-1}}/> : <div style={{fontSize:size>36?11:9,fontWeight:800,color:'#fff',background:f.brandGrad,width:'100%',height:'100%',display:'flex',alignItems:'center',justifyContent:'center',borderRadius:r-1}}>{f.initials}</div>}
+    </div>
+  );
+};
+
+const Ticker = () => {
+  const items = [...DEALS,...DEALS,...DEALS];
+  return (
+    <div className="ticker"><div className="ticker-track">
+      {items.map((d,i)=><span key={i} className="tick"><span className="tick-name">{d.firm}</span><b>{d.pct}</b><span style={{color:'var(--t5)'}}>|</span></span>)}
+    </div></div>
+  );
+};
+
+const NavBar = ({tab,setTab,setPage}) => {
+  const [mob,setMob] = useState(false);
+  const [copied,setCopied] = useState(false);
+  const tabs = [["firms","Firms"],["challenges","Challenges"],["offers","Offers"],["giveaways","Giveaway"],["blog","Research"]];
+  const go = k => {setPage("home");setTab(k);setMob(false);document.body.style.overflow='';};
+  const copyPulse = () => {copyToClipboard("PULSE");setCopied(true);setTimeout(()=>setCopied(false),1800);};
+  return (<>
+    <nav className="nav">
+      <div className="nav-logo" onClick={()=>go("firms")}>
+        <img src={LOGO_URL} alt="P" style={{width:28,height:28,borderRadius:6}} onError={e=>{e.target.style.display='none'}}/>
+        <span className="nav-logo-text">The<span>PropPulse</span></span>
+      </div>
+      <div className="nav-tabs">
+        {tabs.map(([k,l])=><button key={k} className={`nav-tab${tab===k?' on':''}`} onClick={()=>go(k)}>{l}</button>)}
+      </div>
+      <button className="nav-code" onClick={copyPulse}>{copied?'\u2713 Copied!':'PULSE'}</button>
+      <button className="nav-burger" onClick={()=>{setMob(p=>{document.body.style.overflow=!p?'hidden':'';return !p;})}}>{mob?'\u2715':'\u2261'}</button>
+    </nav>
+    {mob&&<div className="mob-menu">{tabs.map(([k,l])=><button key={k} className={tab===k?'on':''} onClick={()=>go(k)}>{l}</button>)}</div>}
+    {copied&&<div className="toast">PULSE code copied to clipboard!</div>}
+  </>);
+};
+
+// ── PULSE LEADERBOARD ──
+const PulseLeaderboard = ({firms,onSelect}) => {
+  const [copied,setCopied] = useState(null);
+  return (<div className="lb">
+    <div className="lb-hdr"><span>#</span><span></span><span>Firm</span><span>Pulse Score</span><span>Rating</span><span>Trend</span><span>Deal</span></div>
+    {firms.map((f,i)=>{
+      const ps=calcPulse(f.rating,f.reviews,f.name);
+      const deal=DEALS.find(d=>d.firm===f.name);
+      return (<div key={f.id} className="lb-row" onClick={()=>onSelect(f)}>
+        <div className="lb-rank">{String(i+1).padStart(2,'0')}</div>
+        <div className="lb-logo"><FirmLogo f={f} size={32}/></div>
+        <div className="lb-name-c">
+          <div className="lb-name">{f.name}{TOP_PICKS.has(f.name)&&<span className="tp">{'\u2605'}</span>}</div>
+          <div className="lb-sub">{f.flag} {f.hq} · {f.maxAlloc}</div>
+        </div>
+        <div className="lb-bar-c">
+          <div className="lb-bar-bg"><div className="lb-bar-fill" style={{width:(ps/100*100)+"%"}}/></div>
+          <div className="lb-score">{ps}</div>
+        </div>
+        <div className="lb-rating" style={{color:f.rating>=4.7?'var(--green)':f.rating>=4?'var(--blue2)':'var(--t3)'}}>{f.rating>0?f.rating:'\u2014'}</div>
+        <div className="lb-trend" style={{color:f.trend==='up'?'var(--green)':f.trend==='down'?'var(--red)':f.trend==='new'?'var(--cyan)':'var(--t4)'}}>{f.trend==='up'?'\u25B2':f.trend==='down'?'\u25BC':f.trend==='new'?'NEW':'\u2013'}</div>
+        {deal?<div className="lb-deal" onClick={e=>{e.stopPropagation();copyToClipboard(deal.code);setCopied(f.id);setTimeout(()=>setCopied(null),1400)}}>{deal.pct}</div>:<div className="lb-deal-na">\u2014</div>}
+      </div>);
+    })}
+    {copied!==null&&<div className="toast">PULSE code copied</div>}
+  </div>);
+};
+
+// ── FIRM CARDS ──
+const FirmCards = ({firms,onSelect}) => (
+  <div className="cards">{firms.map(f=>{
+    const ps=calcPulse(f.rating,f.reviews,f.name);
+    const deal=DEALS.find(d=>d.firm===f.name);
+    return (<div key={f.id} className="fcard" style={{'--card-accent':f.color,'--card-glow':f.color+'20'}} onClick={()=>onSelect(f)}>
+      <div className="fcard-top">
+        <div className="fcard-logo"><FirmLogo f={f} size={42}/></div>
+        <div className="fcard-info">
+          <div className="fcard-name">{f.name}{TOP_PICKS.has(f.name)&&<span className="tp">{'\u2605'}</span>}</div>
+          <div className="fcard-sub">{f.flag} {f.hq} · Est. {f.founded}</div>
+        </div>
+        {deal&&<span className="fcard-deal">{deal.pct}</span>}
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
+        <span style={{fontFamily:'var(--mono)',fontSize:13,fontWeight:800,color:f.color,textShadow:'0 0 8px '+f.color+'60'}}>{f.rating}</span>
+        <span style={{color:'#facc15',fontSize:12,textShadow:'0 0 6px rgba(250,204,21,0.3)'}}>{'★'.repeat(Math.floor(f.rating))}</span>
+        <span style={{fontSize:11,color:'var(--t4)'}}>{f.reviews>0?f.reviews.toLocaleString()+' reviews':'New'}</span>
+      </div>
+      <div className="fcard-desc">{f.desc}</div>
+      <div className="fcard-grid">
+        <div className="fcard-stat"><div className="fcard-sl">Max Alloc</div><div className="fcard-sv" style={{color:f.color,textShadow:'0 0 8px '+f.color+'40'}}>{f.maxAlloc}</div></div>
+        <div className="fcard-stat"><div className="fcard-sl">Split</div><div className="fcard-sv">{f.split.split('\u2192')[0].trim()}</div></div>
+        <div className="fcard-stat"><div className="fcard-sl">Payout</div><div className="fcard-sv">{f.paySpeed}</div></div>
+      </div>
+      <div className="fcard-foot">
+        <div className="fcard-pulse">
+          <span className="fcard-pl">Pulse</span>
+          <span className="fcard-pv" style={{color:pulseColor(ps)}}>{ps}</span>
+        </div>
+        <button className="fcard-btn" style={{background:f.color+'15',borderColor:f.color+'30',color:f.color}}>View Details</button>
+      </div>
+    </div>);
+  })}</div>
+);
+
+// ── FIRM TABLE ──
+const FirmTable = ({firms,onSelect}) => {
+  const [copied,setCopied]=useState(false);
+  return (<>
+    <div className="tbl-wrap"><table className="tbl"><thead><tr>
+      <th>Firm</th><th>Pulse</th><th>Rating</th><th>Country</th><th>Platforms</th><th>Max Alloc</th><th>Deal</th><th></th>
+    </tr></thead><tbody>{firms.map(f=>{
+      const ps=calcPulse(f.rating,f.reviews,f.name);
+      const deal=DEALS.find(d=>d.firm===f.name);
+      return (<tr key={f.id} onClick={()=>onSelect(f)}>
+        <td><div style={{display:'flex',alignItems:'center',gap:10}}><FirmLogo f={f} size={34}/><div><div style={{fontWeight:700,fontSize:13}}>{f.name}{TOP_PICKS.has(f.name)&&<span className="tp" style={{marginLeft:3}}>{'\u2605'}</span>}</div><div style={{fontSize:10,color:'var(--t4)'}}>{f.hq} · Est. {f.founded}</div></div></div></td>
+        <td><span className="mono" style={{fontWeight:800,color:pulseColor(ps)}}>{ps}</span></td>
+        <td><span style={{fontWeight:700,color:f.rating>=4.5?'var(--green)':'var(--t2)'}}>{f.rating>0?f.rating:'\u2014'}</span><span style={{fontSize:10,color:'var(--t4)',marginLeft:4}}>{f.reviews.toLocaleString()}</span></td>
+        <td>{f.flag} {f.country}</td>
+        <td style={{fontSize:10}}>{f.platforms.slice(0,3).join(', ')}</td>
+        <td><span className="mono" style={{fontWeight:700}}>{f.maxAlloc}</span></td>
+        <td>{deal?<span className="lb-deal" onClick={e=>{e.stopPropagation();copyToClipboard(deal.code);setCopied(true);setTimeout(()=>setCopied(false),1400)}}>{deal.pct}</span>:<span style={{color:'var(--t5)',fontSize:10}}>\u2014</span>}</td>
+        <td><button className="fcard-btn" onClick={e=>{e.stopPropagation();onSelect(f)}}>View</button></td>
+      </tr>);
+    })}</tbody></table></div>
+    {copied&&<div className="toast">PULSE code copied</div>}
+  </>);
+};
+
+// ── CHALLENGES TAB ──
+const ChallengesTab = () => {
+  const [filters,setFilters]=useState({instant:false,noDLL:false,noConsistency:false,newsOk:false,eaOk:false,size:"50K"});
+  const toggle=k=>setFilters(p=>({...p,[k]:!p[k]}));
+  const setSize=v=>setFilters(p=>({...p,size:p.size===v?"":v}));
+  const allSizes=[...new Set(CHALLENGES.map(c=>c.size))].sort((a,b)=>parseInt(a)-parseInt(b));
+  const filtered=useMemo(()=>{
+    const hs=filters.instant;
+    return CHALLENGES.filter(c=>{
+      if(!hs&&!c.standard)return false;
+      if(filters.instant&&!c.instant)return false;
+      if(filters.noDLL&&c.dll!=="None"&&!c.dll.includes("None"))return false;
+      if(filters.noConsistency&&c.consistency!=="None")return false;
+      if(filters.newsOk&&!c.news)return false;
+      if(filters.eaOk&&!c.ea)return false;
+      if(filters.size&&c.size!==filters.size)return false;
+      return true;
+    });
+  },[filters]);
+  const ac=Object.values(filters).filter(v=>v===true||(typeof v==="string"&&v!=="")).length;
+  return (<div>
+    <div className="sec-hdr"><div><div className="sec-title">Challenge Comparison Tool</div><div className="sec-sub">Filter {CHALLENGES.length} challenges across {new Set(CHALLENGES.map(c=>c.firm)).size} firms</div></div>
+      {ac>0&&<button className="f-btn" style={{fontSize:10}} onClick={()=>setFilters({instant:false,noDLL:false,noConsistency:false,newsOk:false,eaOk:false,size:""})}>Clear all</button>}
+    </div>
+    <div style={{display:'flex',gap:4,flexWrap:'wrap',marginBottom:6}}>
+      <button className={`f-btn ${filters.instant?"on":""}`} onClick={()=>toggle("instant")}>Instant Funding</button>
+      <button className={`f-btn ${filters.noDLL?"on":""}`} onClick={()=>toggle("noDLL")}>No Daily Loss Limit</button>
+      <button className={`f-btn ${filters.noConsistency?"on":""}`} onClick={()=>toggle("noConsistency")}>No Consistency Rule</button>
+      <button className={`f-btn ${filters.newsOk?"on":""}`} onClick={()=>toggle("newsOk")}>News Trading OK</button>
+      <button className={`f-btn ${filters.eaOk?"on":""}`} onClick={()=>toggle("eaOk")}>EAs/Bots OK</button>
+    </div>
+    <div style={{display:'flex',gap:4,flexWrap:'wrap',marginBottom:12,alignItems:'center'}}>
+      <span style={{fontSize:10,color:'var(--t4)',fontWeight:700,marginRight:2}}>SIZE:</span>
+      {allSizes.map(s=><button key={s} className={`f-btn ${filters.size===s?"on":""}`} onClick={()=>setSize(s)} style={{padding:'3px 8px',fontSize:10}}>${s}</button>)}
+    </div>
+    <div style={{fontSize:11,color:'var(--t3)',marginBottom:8}}>Showing <b style={{color:'var(--t1)'}}>{filtered.length}</b> challenges</div>
+    <div className="ch-wrap"><table className="tbl" style={{minWidth:1100}}><thead><tr>
+      <th>Firm</th><th>Plan</th><th>Size</th><th>Price</th><th>Target</th><th>Max Loss</th><th>DLL</th><th>Drawdown</th><th>Min Days</th><th>Split</th><th>Payout</th><th>Consistency</th><th>News</th><th>EAs</th>
+    </tr></thead><tbody>{filtered.length===0?<tr><td colSpan={14} style={{textAlign:'center',padding:32,color:'var(--t4)'}}>No matches. Try fewer filters.</td></tr>:filtered.map((c,i)=>{
+      const f=FIRMS.find(ff=>ff.name===c.firm);
+      return (<tr key={i}>
+        <td><div style={{display:'flex',alignItems:'center',gap:8}}>{f&&<FirmLogo f={f} size={26}/>}<span style={{fontWeight:700,color:'var(--t1)'}}>{c.firm}</span></div></td>
+        <td style={{fontWeight:600}}>{c.plan}{c.instant&&<span style={{color:'var(--cyan)',marginLeft:4,fontSize:10}}>INSTANT</span>}</td>
+        <td className="mono" style={{color:'var(--cyan)'}}>${c.size}</td>
+        <td style={{fontWeight:600}}>{c.price}</td>
+        <td className="mono">{c.target}</td>
+        <td className="mono">{c.maxLoss}</td>
+        <td>{c.dll==="None"||c.dll.includes("None")?<span className="good">None</span>:<span className="warn">{c.dll}</span>}</td>
+        <td>{c.drawdown}</td>
+        <td>{c.minDays==="None"?<span className="good">None</span>:c.minDays}</td>
+        <td>{c.split}</td>
+        <td>{c.payout}</td>
+        <td>{c.consistency==="None"?<span className="good">None</span>:<span className="warn">{c.consistency}</span>}</td>
+        <td>{c.news?<span className="good">{'\u2713'}</span>:<span style={{color:'var(--red)'}}>{'\u2717'}</span>}</td>
+        <td>{c.ea?<span className="good">{'\u2713'}</span>:<span style={{color:'var(--red)'}}>{'\u2717'}</span>}</td>
+      </tr>);
+    })}</tbody></table></div>
+  </div>);
+};
+
+// ── OFFERS TAB ──
+const OffersTab = () => {
+  const [copied,setCopied]=useState(null);
+  return (<div>
+    <div className="sec-hdr"><div><div className="sec-title">Exclusive Offers</div><div className="sec-sub">{DEALS.length} active deals — use code PULSE at checkout</div></div></div>
+    <div className="offers-list">{DEALS.map((d,i)=>{
+      const f=FIRMS.find(ff=>ff.name===d.firm);
+      return (<div key={i} className="offer-row" style={{borderLeft:'3px solid '+(f?f.color:'var(--em)'),'--card-accent':f?f.color:'var(--em)'}}>
+        {f&&<FirmLogo f={f} size={34}/>}
+        <div className="offer-pct">{d.pct}</div>
+        <div className="offer-info">
+          <div className="offer-firm">{d.firm}{d.tag&&<span className="offer-tag">{d.tag}</span>}</div>
+          <div className="offer-desc">{d.desc}{d.expires&&<span style={{color:'var(--amber)',marginLeft:4}}>Ends {d.expires}</span>}</div>
+        </div>
+        <div className="offer-code" onClick={()=>{copyToClipboard(d.code);setCopied(i);setTimeout(()=>setCopied(null),1400)}}>{copied===i?'\u2713 Copied':d.code}</div>
+      </div>);
+    })}</div>
+    {copied!==null&&<div className="toast">Code copied</div>}
+  </div>);
+};
+
+// ── GIVEAWAY TAB ──
+const GiveawaysTab = () => (
+  <div style={{maxWidth:620,margin:'0 auto'}}>
+    <div className="sec-hdr"><div><div className="sec-title">Weekly Giveaway</div><div className="sec-sub">Buy with code PULSE for automatic entry</div></div></div>
+    <div className="gw-prize">
+      <div style={{fontSize:10,fontWeight:700,color:'var(--cyan)',textTransform:'uppercase',letterSpacing:1.5}}>This Week's Prize</div>
+      <div style={{fontSize:18,fontWeight:800,marginTop:6}}>Free 150K Funded Account</div>
+      <div className="gw-val">$150K</div>
+      <div style={{fontSize:11,color:'var(--t3)'}}>Winner announced Friday at 5PM EST on Discord & YouTube</div>
+    </div>
+    <div className="gw-steps">
+      {[["01","Purchase Any Account","From any listed firm"],["02","Use Code PULSE","Get your discount + qualify"],["03","Submit Proof","Screenshot of order"],["04","Win","Drawn every Friday"]].map(([n,t,d])=>(
+        <div key={n} className="gw-step"><div className="gw-step-n">{n}</div><div className="gw-step-t">{t}</div><div className="gw-step-d">{d}</div></div>
+      ))}
+    </div>
+    <div style={{textAlign:'center',margin:'24px 0'}}>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSeBd3EkO_rPjqMC2f7G9Z2S7dPquxJtnBCkXpKHsAULHavfXQ/viewform" target="_blank" rel="noopener noreferrer" style={{textDecoration:'none'}}>
+        <button className="gw-btn">Submit Your Entry</button>
+      </a>
+    </div>
+    <div className="gw-rules"><h4>Rules</h4><ul>
+      {["Purchase through a listed firm","Code PULSE applied at checkout","One entry per purchase — more purchases = more entries","Screenshot must show discount code","Winners drawn every Friday, announced on Discord & YouTube","Entries Mon\u2013Sun eligible for that week's drawing"].map((r,i)=><li key={i}>{r}</li>)}
+    </ul></div>
+  </div>
+);
+
+// ── BLOG TAB ──
+const BlogTab = ({onSelect}) => {
+  const catColor = c => ({Industry:'#a855f7',Comparison:'#0ea5e9',Strategy:'#06b6d4',News:'#06b6d4',Guide:'#ffbe0b',Education:'#ff6b6b'}[c]||'#06b6d4');
+  return (
+  <div>
+    <div className="sec-hdr"><div><div className="sec-title">Research & Analysis</div><div className="sec-sub">Data-driven insights for prop traders</div></div></div>
+    <div className="blog-grid">{BLOG.map(p=>{
+      const cc = catColor(p.cat);
+      return (
+      <div key={p.id} className="blog-card" style={{'--card-accent':cc,'--card-glow':cc+'20',borderLeft:'3px solid '+cc}} onClick={()=>onSelect(p)}>
+        <div className="blog-cat" style={{color:cc,textShadow:'0 0 8px '+cc+'50'}}>{p.cat}</div>
+        <div className="blog-title">{p.title}</div>
+        <div className="blog-excerpt">{p.excerpt}</div>
+        <div className="blog-date">{p.date} · {p.time} read</div>
+      </div>);
+    })}</div>
+  </div>);
+};
+
+// ── BLOG POST PAGE ──
+const BlogPostPage = ({post,goBack}) => {
+  if(!post) return null;
+  const paras = post.body.split("\n\n");
+  return (<div className="wrap" style={{maxWidth:700,margin:'0 auto'}}>
+    <button className="det-back" onClick={goBack}>{'\u2190'} Back to Research</button>
+    <div style={{marginTop:8}}>
+      <div className="blog-cat" style={{marginBottom:10,display:'inline-block'}}>{post.cat}</div>
+      <h1 style={{fontFamily:'var(--sans)',fontSize:28,fontWeight:800,lineHeight:1.3,margin:'8px 0 12px',letterSpacing:'-.3px'}}>{post.title}</h1>
+      <div style={{display:'flex',gap:10,fontSize:11,color:'var(--t4)',marginBottom:24,paddingBottom:16,borderBottom:'1px solid var(--bdr)'}}>
+        <span>ThePropPulse</span><span>·</span><span>{post.date}</span><span>·</span><span>{post.time} read</span>
+      </div>
+      <div className="blog-body">
+        {paras.map((p,i)=>{
+          if(p.startsWith("**")&&p.endsWith("**")) return <h2 key={i} className="blog-h2">{p.replace(/\*\*/g,"")}</h2>;
+          const fmt=p.split("**").map((s,j)=>j%2===1?<strong key={j}>{s}</strong>:<span key={j}>{s}</span>);
+          return <p key={i} className="blog-p">{fmt}</p>;
+        })}
+      </div>
+      <div style={{marginTop:32,padding:20,background:'var(--bg1)',border:'1px solid var(--bdr2)',borderRadius:12,textAlign:'center'}}>
+        <div style={{fontSize:15,fontWeight:700,marginBottom:4}}>Ready to get funded?</div>
+        <div style={{fontSize:12,color:'var(--t3)',marginBottom:12}}>Use code <b style={{color:'var(--cyan)',fontFamily:'var(--mono)'}}>PULSE</b> at any firm for an exclusive discount.</div>
+        <button className="gw-btn" style={{fontSize:13,padding:'10px 24px'}} onClick={goBack}>Compare All Firms</button>
+      </div>
+    </div>
+  </div>);
+};
+
+// ── DETAIL PAGE ──
 const DetailPage = ({firm,goBack}) => {
   if(!firm) return null;
-  const deal = DEALS.find(d=>d.firm===firm.name);
-  const revs = REVIEWS.filter(r=>r.firm===firm.name);
-  const profile = FIRM_PROFILES[firm.name];
-  const firmChallenges = CHALLENGES.filter(c=>c.firm===firm.name);
-  const pulse = calcPulse(firm.rating,firm.reviews,firm.name);
+  const deal=DEALS.find(d=>d.firm===firm.name);
+  const profile=FIRM_PROFILES[firm.name];
+  const firmCh=CHALLENGES.filter(c=>c.firm===firm.name);
+  const ps=calcPulse(firm.rating,firm.reviews,firm.name);
+  const [copied,setCopied]=useState(false);
 
-  const SectionTitle = ({icon,children}) => (
-    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12,marginTop:28}}>
-      <span style={{fontSize:18}}>{icon}</span>
-      <h3 style={{fontSize:16,fontWeight:800,fontFamily:"'Plus Jakarta Sans',sans-serif",margin:0}}>{children}</h3>
-    </div>
-  );
-
-  const InfoRow = ({label,value,highlight}) => (
-    <div className="info-row">
-      <span className="info-label">{label}</span>
-      <span className={`info-val${highlight?" hl":""}`}>{value}</span>
-    </div>
-  );
+  const fc = firm.color || 'var(--em)';
+  const SectionTitle=({icon,children})=>(<div className="det-sec-title"><span style={{fontSize:16}}>{icon}</span><span style={{color:fc,textShadow:'0 0 8px '+fc+'40'}}>{children}</span></div>);
+  const InfoRow=({label,value,highlight})=>(<div className="info-row"><span className="info-label">{label}</span><span className={`info-val${highlight?' hl':''}`} style={highlight?{color:fc,textShadow:'0 0 6px '+fc+'30'}:{}}>{value}</span></div>);
 
   return (<div className="wrap det">
-    <button className="det-back" onClick={goBack}>← Back to All Firms</button>
-
-    {/* Hero */}
+    <button className="det-back" onClick={goBack}>{'\u2190'} Back to All Firms</button>
     <div className="det-hero">
-      <FirmLogo f={firm} size={64}/>
+      <FirmLogo f={firm} size={56}/>
       <div style={{flex:1}}>
-        <div className="det-name" style={{color:firm.color}}>{firm.name} <TopPickBadge name={firm.name}/></div>
-        <div className="det-sub">{firm.flag} {firm.hq} · Est. {firm.founded} · <a href={"https://"+profile?.website} target="_blank" rel="noopener" style={{color:"var(--brand2)"}}>{profile?.website}</a></div>
-        <div style={{display:"flex",alignItems:"center",gap:12,marginTop:8,flexWrap:"wrap"}}>
-          <div style={{background:"var(--bg2)",border:"1px solid var(--bdr2)",borderRadius:10,padding:"6px 14px",display:"flex",alignItems:"center",gap:8}}>
-            <span style={{fontSize:11,color:"var(--t3)",fontWeight:600}}>Pulse Score</span>
-            <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:20,fontWeight:800,color:pulseColor(pulse)}}>{pulse}</span>
-          </div>
-          <span className={`rat-badge ${ratClass(firm.rating)}`}>{firm.rating>0?firm.rating:"—"}</span>
-          <span className="rat-stars" style={{fontSize:14}}>{"★".repeat(Math.floor(firm.rating))}</span>
-          <span style={{fontSize:12,color:"var(--t3)"}}>{firm.reviews.toLocaleString()} Trustpilot reviews</span>
+        <div className="det-name" style={{color:fc,textShadow:'0 0 12px '+fc+'30'}}>{firm.name}{TOP_PICKS.has(firm.name)&&<span className="tp" style={{marginLeft:6,fontSize:12}}>{'\u2605'}</span>}</div>
+        <div className="det-sub">{firm.flag} {firm.hq} · Est. {firm.founded}{profile&&<> · <a href={'https://'+profile.website} target="_blank" rel="noopener" style={{color:fc}}>{profile.website}</a></>}</div>
+        <div style={{display:'flex',alignItems:'center',gap:10,marginTop:8,flexWrap:'wrap'}}>
+          <div className="det-pulse-badge" style={{borderColor:fc+'30'}}><span className="det-pulse-lbl">Pulse</span><span className="det-pulse-v" style={{color:pulseColor(ps)}}>{ps}</span></div>
+          <span style={{fontFamily:'var(--mono)',fontSize:13,fontWeight:800,color:fc,textShadow:'0 0 8px '+fc+'50'}}>{firm.rating>0?firm.rating:'\u2014'}</span>
+          <span style={{color:'#facc15',fontSize:12,textShadow:'0 0 6px rgba(250,204,21,0.3)'}}>{'★'.repeat(Math.floor(firm.rating))}</span>
+          <span style={{fontSize:11,color:'var(--t4)'}}>{firm.reviews.toLocaleString()} reviews</span>
         </div>
       </div>
     </div>
 
-    {/* Deal banner */}
-    {deal&&<div className="det-deal" style={{marginTop:16}}>
-      <span style={{fontSize:24,fontWeight:900,fontFamily:"'JetBrains Mono',monospace",color:deal.color}}>{deal.pct}</span>
-      <div><span style={{color:"var(--t2)",fontSize:13}}>Use code </span><b style={{color:"var(--t1)",fontFamily:"'JetBrains Mono',monospace",fontSize:15}}>{deal.code}</b></div>
-      <button className="act-btn" style={{marginLeft:"auto"}} onClick={()=>copyToClipboard(deal.code)}>📋 Copy Code</button>
+    {deal&&<div className="det-deal" style={{borderLeft:'3px solid '+fc}}>
+      <span style={{fontFamily:'var(--mono)',fontSize:18,fontWeight:800,color:'var(--gold)',textShadow:'var(--glow-gold)'}}>{deal.pct}</span>
+      <div><span style={{color:'var(--t3)',fontSize:12}}>Code </span><b style={{fontFamily:'var(--mono)',fontSize:14,color:fc}}>{deal.code}</b></div>
+      <button className="fcard-btn" style={{marginLeft:'auto',background:fc+'15',borderColor:fc+'30',color:fc}} onClick={()=>{copyToClipboard(deal.code);setCopied(true);setTimeout(()=>setCopied(false),1500)}}>{copied?'\u2713 Copied':'Copy Code'}</button>
     </div>}
 
-    {profile ? <>
-      {/* Tagline + Description */}
-      <div className="det-desc" style={{marginTop:20}}>
-        <div style={{fontStyle:"italic",color:"var(--brand2)",fontSize:14,marginBottom:8}}>"{profile.tagline}"</div>
+    {profile?<>
+      <div className="det-desc" style={{marginBottom:20,borderLeft:'3px solid '+fc}}>
+        <div style={{fontFamily:'var(--sans)',fontStyle:'italic',color:fc,fontSize:14,marginBottom:6,textShadow:'0 0 8px '+fc+'30'}}>"{profile.tagline}"</div>
         {profile.description}
       </div>
 
-      {/* Quick Stats Grid */}
       <SectionTitle icon="📊">Quick Stats</SectionTitle>
       <div className="det-grid">
-        {[["Account Sizes",profile.accountSizes],["Max Allocation",firm.maxAlloc],["Total Payouts",profile.totalPayouts],["Plans",profile.plans.join(", ")],["Platforms",profile.platforms.slice(0,4).join(", ")],["Founded",firm.founded+" · "+firm.hq]].map(([l,v])=>(
-          <div className="det-stat" key={l}><div className="det-stat-l">{l}</div><div className="det-stat-v">{v}</div></div>
+        {[["Account Sizes",profile.accountSizes],["Max Allocation",firm.maxAlloc],["Total Payouts",profile.totalPayouts],["Plans",profile.plans.join(", ")],["Platforms",profile.platforms.slice(0,4).join(", ")],["Founded",firm.founded+" · "+firm.hq]].map(([l,v],idx)=>(
+          <div className="det-stat" key={l} style={{borderTop:'2px solid '+(idx===0?fc:idx===1?'var(--gold)':idx===2?'var(--em)':'var(--bdr)')}}><div className="det-stat-l" style={idx<3?{color:fc}:{}}>{l}</div><div className="det-stat-v">{v}</div></div>
         ))}
       </div>
 
-      {/* Payout Structure */}
       <SectionTitle icon="💰">Payout Structure</SectionTitle>
-      <div className="det-section">
+      <div className="det-section" style={{borderLeft:'3px solid '+fc}}>
         <InfoRow label="Profit Split" value={profile.profitSplit} highlight/>
         <InfoRow label="Payout Speed" value={profile.payoutSpeed}/>
         <InfoRow label="Payout Frequency" value={profile.payoutFreq}/>
@@ -1600,29 +1207,27 @@ const DetailPage = ({firm,goBack}) => {
         <InfoRow label="Path to Live" value={profile.livePath}/>
       </div>
 
-      {/* Challenge Plans */}
-      {firmChallenges.length>0&&<>
+      {firmCh.length>0&&<>
         <SectionTitle icon="🏆">Challenge Plans & Pricing</SectionTitle>
-        <div className="ch-tbl-wrap"><table className="tbl" style={{minWidth:800}}><thead><tr>
-          <th>PLAN</th><th>SIZE</th><th>PRICE</th><th>TARGET</th><th>MAX LOSS</th><th>DLL</th><th>CONSISTENCY</th><th>SPLIT</th><th>PAYOUT</th>
-        </tr></thead><tbody>{firmChallenges.map((c,i)=>(
+        <div className="ch-wrap"><table className="tbl" style={{minWidth:800}}><thead><tr>
+          <th>Plan</th><th>Size</th><th>Price</th><th>Target</th><th>Max Loss</th><th>DLL</th><th>Consistency</th><th>Split</th><th>Payout</th>
+        </tr></thead><tbody>{firmCh.map((c,i)=>(
           <tr key={i}>
-            <td style={{fontWeight:600,fontSize:12}}>{c.plan}{c.instant&&<span style={{color:"var(--green)",marginLeft:4}}>⚡</span>}</td>
-            <td style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,color:"var(--brand2)"}}>${c.size}</td>
-            <td style={{fontSize:12,fontWeight:600}}>{c.price}</td>
-            <td style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:600}}>{c.target}</td>
-            <td style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:600}}>{c.maxLoss}</td>
-            <td style={{fontSize:11}}>{c.dll==="None"?<span style={{color:"var(--green)"}}>None ✓</span>:<span style={{color:"var(--amber)"}}>{c.dll}</span>}</td>
-            <td style={{fontSize:11}}>{c.consistency==="None"?<span style={{color:"var(--green)"}}>None ✓</span>:<span style={{color:"var(--amber)"}}>{c.consistency}</span>}</td>
-            <td style={{fontSize:11}}>{c.split}</td>
-            <td style={{fontSize:11}}>{c.payout}</td>
+            <td style={{fontWeight:600}}>{c.plan}{c.instant&&<span style={{color:'var(--cyan)',marginLeft:3}}>INSTANT</span>}</td>
+            <td className="mono" style={{color:'var(--cyan)'}}>${c.size}</td>
+            <td style={{fontWeight:600}}>{c.price}</td>
+            <td className="mono">{c.target}</td>
+            <td className="mono">{c.maxLoss}</td>
+            <td>{c.dll==="None"?<span className="good">None</span>:<span className="warn">{c.dll}</span>}</td>
+            <td>{c.consistency==="None"?<span className="good">None</span>:<span className="warn">{c.consistency}</span>}</td>
+            <td>{c.split}</td>
+            <td>{c.payout}</td>
           </tr>
         ))}</tbody></table></div>
       </>}
 
-      {/* Trading Rules */}
       <SectionTitle icon="📋">Trading Rules</SectionTitle>
-      <div className="det-section">
+      <div className="det-section" style={{borderLeft:'3px solid '+fc}}>
         <InfoRow label="Drawdown Type" value={profile.drawdown}/>
         <InfoRow label="Daily Loss Limit" value={profile.dailyLossLimit}/>
         <InfoRow label="Consistency Rule" value={profile.consistencyRule}/>
@@ -1634,110 +1239,97 @@ const DetailPage = ({firm,goBack}) => {
         <InfoRow label="Instruments" value={profile.instruments}/>
       </div>
 
-      {/* Pros & Cons */}
-      <div className="det-pros-cons">
-        <div style={{background:"var(--bg2)",border:"1px solid var(--bdr)",borderRadius:12,padding:20}}>
-          <h4 style={{color:"var(--green)",fontSize:14,fontWeight:700,marginBottom:10}}>✅ Pros</h4>
-          {profile.pros.map((p,i)=><div key={i} style={{fontSize:12,color:"var(--t2)",padding:"4px 0",paddingLeft:14,position:"relative"}}><span style={{position:"absolute",left:0,color:"var(--green)"}}>+</span>{p}</div>)}
+      <div className="det-pc">
+        <div style={{background:'var(--bg1)',border:'1px solid var(--bdr)',borderRadius:10,padding:16,borderTop:'2px solid var(--green)'}}>
+          <h4 style={{color:'var(--green)',fontSize:13,fontWeight:700,marginBottom:8,textShadow:'0 0 8px rgba(16,185,129,0.3)'}}>Pros</h4>
+          {profile.pros.map((p,i)=><div key={i} style={{fontSize:12,color:'var(--t2)',padding:'4px 0',paddingLeft:16,position:'relative'}}><span style={{position:'absolute',left:0,color:'var(--green)',textShadow:'0 0 4px rgba(16,185,129,0.4)'}}>+</span>{p}</div>)}
         </div>
-        <div style={{background:"var(--bg2)",border:"1px solid var(--bdr)",borderRadius:12,padding:20}}>
-          <h4 style={{color:"var(--amber)",fontSize:14,fontWeight:700,marginBottom:10}}>⚠️ Considerations</h4>
-          {profile.cons.map((c,i)=><div key={i} style={{fontSize:12,color:"var(--t2)",padding:"4px 0",paddingLeft:14,position:"relative"}}><span style={{position:"absolute",left:0,color:"var(--amber)"}}>–</span>{c}</div>)}
+        <div style={{background:'var(--bg1)',border:'1px solid var(--bdr)',borderRadius:10,padding:16,borderTop:'2px solid var(--amber)'}}>
+          <h4 style={{color:'var(--amber)',fontSize:13,fontWeight:700,marginBottom:8,textShadow:'0 0 8px rgba(255,190,11,0.3)'}}>Considerations</h4>
+          {profile.cons.map((c,i)=><div key={i} style={{fontSize:12,color:'var(--t2)',padding:'4px 0',paddingLeft:16,position:'relative'}}><span style={{position:'absolute',left:0,color:'var(--amber)',textShadow:'0 0 4px rgba(255,190,11,0.4)'}}>–</span>{c}</div>)}
         </div>
       </div>
     </>:<div className="det-desc">{firm.desc}</div>}
-
-    {/* Reviews */}
-    {revs.length>0&&<div style={{marginTop:28}}><SectionTitle icon="💬">Trader Reviews</SectionTitle><div className="rev-grid">{revs.map(r=>(
-      <div key={r.id} className="rev-c"><div className="rev-top"><span className="rev-user">{r.user}</span>{r.verified&&<span className="rev-v">✓ Verified</span>}</div>
-        <div className="rev-stars">{"★".repeat(r.rating)}{"☆".repeat(5-r.rating)}</div><div className="rev-text">{r.text}</div><div className="rev-date">{r.date}</div></div>
-    ))}</div></div>}
   </div>);
 };
 
+// ── FOOTER ──
 const Footer = ({setPage,setTab}) => (
-  <footer className="foot"><div className="foot-in">
-    <div className="foot-br"><div className="foot-n"><span style={{color:"var(--brand2)"}}>⚡</span> ThePropPulse</div><div className="foot-d">Your futures prop firm command center. Compare, track, and find the right firm.</div></div>
-    <div className="foot-c"><h4>Platform</h4><a onClick={()=>{setPage("home");setTab("firms")}}>Firms</a><a onClick={()=>{setPage("home");setTab("challenges")}}>Challenges</a><a onClick={()=>{setPage("home");setTab("offers")}}>Offers</a><a onClick={()=>{setPage("home");setTab("giveaways")}}>Giveaways</a><a onClick={()=>{setPage("home");setTab("reviews")}}>Reviews</a></div>
-    <div className="foot-c"><h4>Resources</h4><a onClick={()=>{setPage("home");setTab("blog")}}>Blog</a><a>Education</a><a>FAQ</a></div>
-    <div className="foot-c"><h4>Company</h4><a>About</a><a>Contact</a><a>Privacy</a><a>Terms</a></div>
-  </div><div className="foot-b">© 2026 ThePropPulse.com — Not financial advice. Data for informational purposes only.</div></footer>
+  <footer className="foot"><div className="wrap"><div className="foot-in">
+    <div className="foot-brand"><div className="foot-brand-n">The<span>PropPulse</span></div><div className="foot-brand-d">Your futures prop firm command center. Compare, track, and find the right firm.</div></div>
+    <div className="foot-col"><h4>Platform</h4><a onClick={()=>{setPage("home");setTab("firms")}}>Firms</a><a onClick={()=>{setPage("home");setTab("challenges")}}>Challenges</a><a onClick={()=>{setPage("home");setTab("offers")}}>Offers</a><a onClick={()=>{setPage("home");setTab("giveaways")}}>Giveaway</a></div>
+    <div className="foot-col"><h4>Resources</h4><a onClick={()=>{setPage("home");setTab("blog")}}>Research</a><a>Education</a><a>FAQ</a></div>
+    <div className="foot-col"><h4>Company</h4><a>About</a><a>Contact</a><a>Privacy</a><a>Terms</a></div>
+  </div><div className="foot-bot">© 2026 ThePropPulse.com — Not financial advice. Data for informational purposes only.</div></div></footer>
 );
 
 // ── APP ──────────────────────────────────────────────────────────────────────
 export default function App() {
-  const [page,setPage] = useState("home");
-  const [tab,setTab] = useState("firms");
-  const [view,setView] = useState("table");
-  const [sort,setSort] = useState("pulse");
-  const [sf,setSF] = useState(null);
-  const [blogPost,setBlogPost] = useState(null);
+  const [page,setPage]=useState("home");
+  const [tab,setTab]=useState("firms");
+  const [view,setView]=useState("cards");
+  const [sort,setSort]=useState("pulse");
+  const [sf,setSF]=useState(null);
+  const [blogPost,setBlogPost]=useState(null);
 
-  const sorted = useMemo(()=>{
+  const sorted=useMemo(()=>{
     const a=[...FIRMS];
-    if(sort==="pulse") a.sort((x,y)=>calcPulse(y.rating,y.reviews,y.name)-calcPulse(x.rating,x.reviews,x.name));
-    if(sort==="rating") a.sort((x,y)=>y.rating-x.rating);
-    if(sort==="newest") a.sort((x,y)=>y.founded-x.founded);
-    if(sort==="alloc") a.sort((x,y)=>allocPct(y.maxAlloc)-allocPct(x.maxAlloc));
+    if(sort==="pulse")a.sort((x,y)=>calcPulse(y.rating,y.reviews,y.name)-calcPulse(x.rating,x.reviews,x.name));
+    if(sort==="rating")a.sort((x,y)=>y.rating-x.rating);
+    if(sort==="newest")a.sort((x,y)=>y.founded-x.founded);
+    if(sort==="alloc")a.sort((x,y)=>{const n=s=>{const v=parseFloat(s.replace(/[^0-9.]/g,''));return s.includes('M')?v*1000:v;};return n(y.maxAlloc)-n(x.maxAlloc)});
     return a;
   },[sort]);
 
-  const goDetail=(f)=>{setSF(f);setPage("detail");window.scrollTo({top:0,behavior:"smooth"})};
+  const goDetail=f=>{setSF(f);setPage("detail");window.scrollTo({top:0,behavior:"smooth"})};
   const goBack=()=>{setPage("home");window.scrollTo({top:0,behavior:"smooth"})};
-  const goBlog=(p)=>{setBlogPost(p);setPage("blogpost");window.scrollTo({top:0,behavior:"smooth"})};
+  const goBlog=p=>{setBlogPost(p);setPage("blogpost");window.scrollTo({top:0,behavior:"smooth"})};
   const blogBack=()=>{setPage("home");setTab("blog");window.scrollTo({top:0,behavior:"smooth"})};
 
-  if(page==="blogpost") return (<><style>{css}</style><div className="glow-bg"><div className="glow-orb-left"/><div className="glow-orb-right"/></div><div className="gradient-fade"/><div className="page-content"><Ticker/><NavBar tab={tab} setTab={setTab} setPage={setPage}/><BlogPostPage post={blogPost} goBack={blogBack}/><div style={{height:60}}/><Footer setPage={setPage} setTab={setTab}/></div></>);
-  if(page==="detail") return (<><style>{css}</style><div className="glow-bg"><div className="glow-orb-left"/><div className="glow-orb-right"/></div><div className="gradient-fade"/><div className="page-content"><Ticker/><NavBar tab={tab} setTab={setTab} setPage={setPage}/><DetailPage firm={sf} goBack={goBack}/><Footer setPage={setPage} setTab={setTab}/></div></>);
+  if(page==="blogpost") return (<><style>{css}</style><div className="ambient"><div className="ambient-gold"/></div><div className="edge-glow"/><div className="side-glow-l"/><div className="side-glow-r"/><div className="top-glow"/><div className="page"><Ticker/><NavBar tab={tab} setTab={setTab} setPage={setPage}/><BlogPostPage post={blogPost} goBack={blogBack}/><div style={{height:40}}/><Footer setPage={setPage} setTab={setTab}/></div></>);
+  if(page==="detail") return (<><style>{css}</style><div className="ambient"><div className="ambient-gold"/></div><div className="edge-glow"/><div className="side-glow-l"/><div className="side-glow-r"/><div className="top-glow"/><div className="page"><Ticker/><NavBar tab={tab} setTab={setTab} setPage={setPage}/><DetailPage firm={sf} goBack={goBack}/><Footer setPage={setPage} setTab={setTab}/></div></>);
 
   return (<><style>{css}</style>
-    <div className="glow-bg"><div className="glow-orb-left"/><div className="glow-orb-right"/></div>
-    <div className="gradient-fade"/>
-    <div className="page-content">
+    <div className="ambient"><div className="ambient-gold"/></div><div className="edge-glow"/><div className="side-glow-l"/><div className="side-glow-r"/><div className="top-glow"/>
+    <div className="page">
     <Ticker/>
     <NavBar tab={tab} setTab={setTab} setPage={setPage}/>
     <div className="wrap">
       <div className="hero">
-        <h1>Compare the Best <em>Futures</em><br/><em>Prop Firms</em> of 2026</h1>
-        <p>Track deals, compare challenges, and read verified reviews — all in one place. Built by traders, for traders.</p>
-        <div className="hero-nums">
-          <div className="hero-num"><b>10+</b><small>Verified Firms</small></div>
-          <div className="hero-num"><b>50+</b><small>Challenges</small></div>
-          <div className="hero-num"><b>6K+</b><small>Trader Reviews</small></div>
-          <div className="hero-num"><b>$0</b><small>Always Free</small></div>
+        <div className="hero-code">PULSE</div>
+        <h1>Your Code to <em>Every Futures Prop Firm</em></h1>
+        <p>One discount code. Every major firm. Exposed rules, real Pulse Scores, and a free 150K account given away every week.</p>
+        <div className="hero-stats">
+          <div className="hero-stat"><b style={{color:'var(--gold)',textShadow:'var(--glow-gold-sm)'}}>50%</b><small>Avg Discount</small></div>
+          <div className="hero-stat"><b style={{color:'var(--em)',textShadow:'var(--glow-sm)'}}>10</b><small>Partner Firms</small></div>
+          <div className="hero-stat"><b style={{color:'var(--gold)',textShadow:'var(--glow-gold-sm)'}}>$150K</b><small>Given Away Weekly</small></div>
+          <div className="hero-stat"><b style={{color:'var(--em)',textShadow:'var(--glow-sm)'}}>45+</b><small>Challenges</small></div>
         </div>
       </div>
+      <div className="hero-divider"/>
+    </div>
+    <div className="wrap">
 
-      <OffersStrip/>
-
-      <div className="content-tabs">
-        {[["firms","Firms"],["challenges","Challenges"],["offers","Offers"],["giveaways","🎟️ Giveaways"],["reviews","Reviews"],["blog","Blog"]].map(([k,l])=>(
-          <button key={k} className={`ct-btn ${tab===k?"on":""}`} onClick={()=>setTab(k)}>{l}</button>
+      <div className="ctabs">
+        {[["firms","Firms"],["challenges","Challenges"],["offers","Offers"],["giveaways","Giveaway"],["blog","Research"]].map(([k,l])=>(
+          <button key={k} className={`ctab${tab===k?' on':''}`} onClick={()=>setTab(k)}>{l}</button>
         ))}
       </div>
 
       {tab==="firms"&&<>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8,marginBottom:14}}>
-          <div className="filters-row" style={{marginBottom:0}}>
-            <button className={`f-btn ${sort==="pulse"?"on":""}`} onClick={()=>setSort("pulse")}>⚡ Pulse Score</button>
-            <button className={`f-btn ${sort==="rating"?"on":""}`} onClick={()=>setSort("rating")}>★ Top Rated</button>
-            <button className={`f-btn ${sort==="newest"?"on":""}`} onClick={()=>setSort("newest")}>🆕 Newest</button>
-            <button className={`f-btn ${sort==="alloc"?"on":""}`} onClick={()=>setSort("alloc")}>💰 Highest Alloc.</button>
-          </div>
-          <div className="view-toggle">
-            <button className={`vt-btn ${view==="table"?"on":""}`} onClick={()=>setView("table")}>☰ Table</button>
-            <button className={`vt-btn ${view==="cards"?"on":""}`} onClick={()=>setView("cards")}>▦ Cards</button>
-          </div>
+        <div className="filters" style={{marginBottom:16,justifyContent:'center'}}>
+          <button className={`f-btn ${sort==="pulse"?"on":""}`} onClick={()=>setSort("pulse")}>Pulse Score</button>
+          <button className={`f-btn ${sort==="rating"?"on":""}`} onClick={()=>setSort("rating")}>Top Rated</button>
+          <button className={`f-btn ${sort==="newest"?"on":""}`} onClick={()=>setSort("newest")}>Newest</button>
+          <button className={`f-btn ${sort==="alloc"?"on":""}`} onClick={()=>setSort("alloc")}>Highest Alloc</button>
         </div>
-        {view==="table"?<FirmTable firms={sorted} onSelect={goDetail}/>:<FirmCards firms={sorted} onSelect={goDetail}/>}
+        <FirmCards firms={sorted} onSelect={goDetail}/>
       </>}
       {tab==="challenges"&&<ChallengesTab/>}
-      {tab==="offers"&&<OffersPage/>}
+      {tab==="offers"&&<OffersTab/>}
       {tab==="giveaways"&&<GiveawaysTab/>}
-      {tab==="reviews"&&<ReviewsTab/>}
       {tab==="blog"&&<BlogTab onSelect={goBlog}/>}
     </div>
-    <div style={{height:60}}/>
     <Footer setPage={setPage} setTab={setTab}/>
     </div>
   </>);
