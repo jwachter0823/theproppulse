@@ -309,7 +309,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .ambient::after{content:'';position:absolute;width:1400px;height:1400px;bottom:-400px;right:-300px;background:radial-gradient(circle,rgba(251,191,36,0.14) 0%,rgba(251,191,36,0.06) 25%,rgba(6,182,212,0.04) 45%,transparent 60%);border-radius:50%;animation:ambPulse 12s ease-in-out infinite reverse}
 @keyframes ambPulse{0%,100%{opacity:1;transform:translateX(-50%) scale(1)}50%{opacity:.7;transform:translateX(-50%) scale(1.05)}}
 .ambient-gold{position:absolute;width:1200px;height:1200px;top:20%;left:-300px;background:radial-gradient(circle,rgba(251,191,36,0.1) 0%,rgba(251,191,36,0.04) 30%,transparent 55%);border-radius:50%}
-.edge-glow{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;pointer-events:none;border-radius:28px 28px 0 0;box-shadow:inset 0 3px 0 0 rgba(34,211,238,0.5),inset 0 0 40px rgba(34,211,238,0.04),inset 0 3px 30px rgba(34,211,238,0.12)}
+.edge-glow{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;pointer-events:none;box-shadow:inset 0 3px 0 0 rgba(34,211,238,0.5),inset 0 0 40px rgba(34,211,238,0.04),inset 0 3px 30px rgba(34,211,238,0.12)}
 .side-glow-l,.side-glow-r{position:fixed;top:0;bottom:0;width:3px;z-index:0;pointer-events:none}
 .side-glow-l{left:0;background:rgba(34,211,238,0.18);box-shadow:0 0 100px 40px rgba(6,182,212,0.18),0 0 250px 100px rgba(6,182,212,0.12),0 0 500px 180px rgba(6,182,212,0.06)}
 .side-glow-r{right:0;background:rgba(251,191,36,0.18);box-shadow:0 0 100px 40px rgba(251,191,36,0.18),0 0 250px 100px rgba(251,191,36,0.12),0 0 500px 180px rgba(251,191,36,0.06)}
