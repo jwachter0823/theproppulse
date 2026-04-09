@@ -1152,12 +1152,12 @@ const BlogPostPage = ({post,goBack}) => {
 
 // ── DETAIL PAGE ──
 const DetailPage = ({firm,goBack}) => {
+  const [copied,setCopied]=useState(false);
   if(!firm) return null;
   const deal=DEALS.find(d=>d.firm===firm.name);
   const profile=FIRM_PROFILES[firm.name];
   const firmCh=CHALLENGES.filter(c=>c.firm===firm.name);
   const ps=calcPulse(firm.rating,firm.reviews,firm.name);
-  const [copied,setCopied]=useState(false);
 
   const fc = firm.color || 'var(--em)';
   const SectionTitle=({icon,children})=>(<div className="det-sec-title"><span style={{fontSize:16}}>{icon}</span><span style={{color:fc,textShadow:'0 0 8px '+fc+'40'}}>{children}</span></div>);
