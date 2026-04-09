@@ -47,6 +47,22 @@ const DEALS = [
   { firm:"Topstep", pct:"50% OFF", code:"PULSE", color:"#64748b", desc:"50% off Trading Combine — first month only", tag:"", expires:"" },
 ];
 
+const AFFILIATE_LINKS = {
+  "Apex Trader Funding":"https://apextraderfunding.com/member/aff/go/jwachter0823",
+  "Tradeify":"https://tradeify.co/?ref=CUCNCROP",
+  "Top One Futures":"https://toponefutures.com/?linkId=lp_707970&sourceId=timelesstrading&tenantId=toponefutures",
+  "Bulenox":"https://bulenox.com/member/aff/go/jwachter0823",
+  "Alpha Futures":"https://app.alpha-futures.com/signup/Joey021384/",
+  "My Funded Futures":"https://myfundedfutures.com/challenge?ref=1788",
+};
+
+const trackClick = async (firmName, userId) => {
+  if(userId){
+    await supabase.from("click_tracking").insert({user_id:userId,firm:firmName}).catch(()=>{});
+  }
+  const url = AFFILIATE_LINKS[firmName];
+  if(url) window.open(url,"_blank");
+};
 
 const BLOG = [
   { id:1, title:"The State of Futures Prop Firms in 2026", date:"Mar 22, 2026", cat:"Industry", time:"6 min", color:"#a855f7",
@@ -670,6 +686,24 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 const PULSE_SCORES = {"Tradeify":95,"Lucid Trading":94,"My Funded Futures":94,"Alpha Futures":93,"Top One Futures":93,"Take Profit Trader":90,"FundedNext Futures":90,"Apex Trader Funding":92,"Bulenox":87,"Topstep":83};
 const TOP_PICKS = new Set(["Tradeify","Apex Trader Funding","Top One Futures"]);
 const calcPulse = (r,rv,name) => PULSE_SCORES[name] || 75;
+
+const AFFILIATE_LINKS = {
+  "Apex Trader Funding":"https://apextraderfunding.com/member/aff/go/jwachter0823",
+  "Tradeify":"https://tradeify.co/?ref=CUCNCROP",
+  "Top One Futures":"https://toponefutures.com/?linkId=lp_707970&sourceId=timelesstrading&tenantId=toponefutures",
+  "Bulenox":"https://bulenox.com/member/aff/go/jwachter0823",
+  "Alpha Futures":"https://app.alpha-futures.com/signup/Joey021384/",
+  "My Funded Futures":"https://myfundedfutures.com/challenge?ref=1788"
+};
+
+const trackClick = async (firmName) => {
+  const {data:{session}} = await supabase.auth.getSession();
+  if(session?.user) {
+    await supabase.from("click_tracking").insert({user_id:session.user.id, firm:firmName});
+  }
+  const url = AFFILIATE_LINKS[firmName];
+  if(url) window.open(url,"_blank");
+};
 const pulseColor = s => s>=92?"var(--gold)":s>=88?"#fbbf24":s>=84?"#f59e0b":"var(--t4)";
 const copyToClipboard = text => {
   if(navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
@@ -1072,12 +1106,13 @@ const PulseLeaderboard = ({firms,onSelect}) => {
 };
 
 // ── FIRM CARDS ──
-const FirmCards = ({firms,onSelect}) => (
+const FirmCards = ({firms,onSelect,user}) => (
   <div className="cards">{firms.map(f=>{
     const ps=calcPulse(f.rating,f.reviews,f.name);
     const deal=DEALS.find(d=>d.firm===f.name);
-    return (<div key={f.id} className="fcard" style={{'--card-accent':f.color,'--card-glow':f.color+'20'}} onClick={()=>onSelect(f)}>
-      <div className="fcard-top">
+    const hasAff=!!AFFILIATE_LINKS[f.name];
+    return (<div key={f.id} className="fcard" style={{'--card-accent':f.color,'--card-glow':f.color+'20'}}>
+      <div className="fcard-top" onClick={()=>onSelect(f)} style={{cursor:'pointer'}}>
         <div className="fcard-logo"><FirmLogo f={f} size={42}/></div>
         <div className="fcard-info">
           <div className="fcard-name">{f.name}{TOP_PICKS.has(f.name)&&<span className="tp">{'\u2605'}</span>}</div>
@@ -1085,12 +1120,12 @@ const FirmCards = ({firms,onSelect}) => (
         </div>
         {deal&&<span className="fcard-deal">{deal.pct}</span>}
       </div>
-      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}} onClick={()=>onSelect(f)}>
         <span style={{fontFamily:'var(--mono)',fontSize:13,fontWeight:800,color:f.color,textShadow:'0 0 8px '+f.color+'60'}}>{f.rating}</span>
         <span style={{color:'#facc15',fontSize:12,textShadow:'0 0 6px rgba(250,204,21,0.3)'}}>{'★'.repeat(Math.floor(f.rating))}</span>
         <span style={{fontSize:11,color:'var(--t4)'}}>{f.reviews>0?f.reviews.toLocaleString()+' reviews':'New'}</span>
       </div>
-      <div className="fcard-desc">{f.desc}</div>
+      <div className="fcard-desc" onClick={()=>onSelect(f)}>{f.desc}</div>
       <div className="fcard-grid">
         <div className="fcard-stat"><div className="fcard-sl">Max Alloc</div><div className="fcard-sv" style={{color:f.color,textShadow:'0 0 8px '+f.color+'40'}}>{f.maxAlloc}</div></div>
         <div className="fcard-stat"><div className="fcard-sl">Split</div><div className="fcard-sv">{f.split.split('\u2192')[0].trim()}</div></div>
@@ -1101,7 +1136,10 @@ const FirmCards = ({firms,onSelect}) => (
           <span className="fcard-pl">Pulse</span>
           <span className="fcard-pv" style={{color:pulseColor(ps)}}>{ps}</span>
         </div>
-        <button className="fcard-btn" style={{background:f.color+'15',borderColor:f.color+'30',color:f.color}}>View Details</button>
+        <div style={{display:'flex',gap:6}}>
+          {hasAff&&<button className="fcard-btn" style={{background:'linear-gradient(135deg,#fbbf24,#f59e0b)',borderColor:'transparent',color:'#050810',fontWeight:700}} onClick={e=>{e.stopPropagation();trackClick(f.name,user?.id)}}>Get Deal</button>}
+          <button className="fcard-btn" style={{background:f.color+'15',borderColor:f.color+'30',color:f.color}} onClick={()=>onSelect(f)}>View Details</button>
+        </div>
       </div>
     </div>);
   })}</div>
@@ -1192,12 +1230,13 @@ const ChallengesTab = () => {
 };
 
 // ── OFFERS TAB ──
-const OffersTab = () => {
+const OffersTab = ({user}) => {
   const [copied,setCopied]=useState(null);
   return (<div>
     <div className="sec-hdr"><div><div className="sec-title">Exclusive Offers</div><div className="sec-sub">{DEALS.length} active deals — use code PULSE at checkout</div></div></div>
     <div className="offers-list">{DEALS.map((d,i)=>{
       const f=FIRMS.find(ff=>ff.name===d.firm);
+      const hasAff=!!AFFILIATE_LINKS[d.firm];
       return (<div key={i} className="offer-row" style={{borderLeft:'3px solid '+(f?f.color:'var(--em)'),'--card-accent':f?f.color:'var(--em)'}}>
         {f&&<FirmLogo f={f} size={34}/>}
         <div className="offer-pct">{d.pct}</div>
@@ -1206,6 +1245,7 @@ const OffersTab = () => {
           <div className="offer-desc">{d.desc}{d.expires&&<span style={{color:'var(--amber)',marginLeft:4}}>Ends {d.expires}</span>}</div>
         </div>
         <div className="offer-code" onClick={()=>{copyToClipboard(d.code);setCopied(i);setTimeout(()=>setCopied(null),1400)}}>{copied===i?'\u2713 Copied':d.code}</div>
+        {hasAff&&<button style={{background:'linear-gradient(135deg,#fbbf24,#f59e0b)',border:'none',color:'#050810',fontFamily:'var(--sans)',fontSize:12,fontWeight:700,padding:'8px 16px',borderRadius:6,cursor:'pointer',whiteSpace:'nowrap',boxShadow:'var(--glow-gold-sm)'}} onClick={()=>trackClick(d.firm,user?.id)}>Get Deal</button>}
       </div>);
     })}</div>
     {copied!==null&&<div className="toast">Code copied</div>}
@@ -1317,7 +1357,10 @@ const DetailPage = ({firm,goBack}) => {
     {deal&&<div className="det-deal" style={{borderLeft:'3px solid '+fc}}>
       <span style={{fontFamily:'var(--mono)',fontSize:18,fontWeight:800,color:'var(--gold)',textShadow:'var(--glow-gold)'}}>{deal.pct}</span>
       <div><span style={{color:'var(--t3)',fontSize:12}}>Code </span><b style={{fontFamily:'var(--mono)',fontSize:14,color:fc}}>{deal.code}</b></div>
-      <button className="fcard-btn" style={{marginLeft:'auto',background:fc+'15',borderColor:fc+'30',color:fc}} onClick={()=>{copyToClipboard(deal.code);setCopied(true);setTimeout(()=>setCopied(false),1500)}}>{copied?'\u2713 Copied':'Copy Code'}</button>
+      <div style={{display:'flex',gap:6,marginLeft:'auto'}}>
+        <button className="fcard-btn" style={{background:fc+'15',borderColor:fc+'30',color:fc}} onClick={()=>{copyToClipboard(deal.code);setCopied(true);setTimeout(()=>setCopied(false),1500)}}>{copied?'\u2713 Copied':'Copy Code'}</button>
+        {AFFILIATE_LINKS[firm.name]&&<button className="fcard-btn" style={{background:'linear-gradient(135deg,#fbbf24,#f59e0b)',borderColor:'transparent',color:'#050810',fontWeight:700}} onClick={()=>trackClick(firm.name)}>Get This Deal {'\u2192'}</button>}
+      </div>
     </div>}
 
     {profile?<>
@@ -1463,9 +1506,11 @@ const PulsePointsTab = ({user,onLogin}) => {
   const [firm,setFirm]=useState("");
   const [accSize,setAccSize]=useState("");
   const [notes,setNotes]=useState("");
+  const [screenshot,setScreenshot]=useState("");
   const [submitting,setSubmitting]=useState(false);
   const [submitMsg,setSubmitMsg]=useState("");
   const [adminSubs,setAdminSubs]=useState([]);
+  const [clicks,setClicks]=useState([]);
 
   const loadData = useCallback(async ()=>{
     if(!user) return;
@@ -1477,6 +1522,8 @@ const PulsePointsTab = ({user,onLogin}) => {
     setHistory(h||[]);
     const {data:r}=await supabase.from("rewards").select("*").eq("user_id",user.id).order("created_at",{ascending:false});
     setRewards(r||[]);
+    const {data:c}=await supabase.from("click_tracking").select("*").eq("user_id",user.id).order("clicked_at",{ascending:false}).limit(50);
+    setClicks(c||[]);
     if(p&&p.is_admin){
       const {data:as}=await supabase.from("submissions").select("*").order("created_at",{ascending:false});
       setAdminSubs(as||[]);
@@ -1489,9 +1536,10 @@ const PulsePointsTab = ({user,onLogin}) => {
     if(!firm||!accSize){setSubmitMsg("Select a firm and account size");return;}
     setSubmitting(true);setSubmitMsg("");
     const pts=POINT_VALUES[accSize]||100;
-    const {error}=await supabase.from("submissions").insert({user_id:user.id,firm,account_size:accSize,notes,points_awarded:pts});
+    const hasClick=clicks.some(c=>c.firm===firm);
+    const {error}=await supabase.from("submissions").insert({user_id:user.id,firm,account_size:accSize,notes:(hasClick?"[CLICK VERIFIED] ":"")+(screenshot?"[HAS SCREENSHOT] ":"")+notes,points_awarded:pts,screenshot_url:screenshot||null});
     if(error){setSubmitMsg("Error: "+error.message);}
-    else{setSubmitMsg("Submitted! We'll review and credit your points shortly.");setFirm("");setAccSize("");setNotes("");}
+    else{setSubmitMsg("Submitted! "+(hasClick?"Click verified — faster approval!":"We'll review and credit your points shortly."));setFirm("");setAccSize("");setNotes("");setScreenshot("");}
     setSubmitting(false);loadData();
   };
 
@@ -1561,14 +1609,31 @@ const PulsePointsTab = ({user,onLogin}) => {
           <option value="">Select firm...</option>
           {FIRMS.map(f=><option key={f.name} value={f.name}>{f.name}</option>)}
         </select>
+        {firm&&<div style={{fontSize:11,marginTop:4,padding:'6px 10px',borderRadius:6,background:clicks.some(c=>c.firm===firm)?'rgba(16,185,129,0.1)':'rgba(255,190,11,0.08)',border:'1px solid '+(clicks.some(c=>c.firm===firm)?'rgba(16,185,129,0.2)':'rgba(255,190,11,0.15)'),color:clicks.some(c=>c.firm===firm)?'var(--green)':'var(--gold)'}}>
+          {clicks.some(c=>c.firm===firm)?'\u2705 Click verified — you visited '+firm+' through our link '+(() => {const c=clicks.find(cc=>cc.firm===firm);return c?new Date(c.clicked_at).toLocaleDateString():''})():'\u26A0\uFE0F No click tracked for this firm yet. Visit the firm through our site first for faster verification.'}
+        </div>}
         <label>Account Size</label>
         <select value={accSize} onChange={e=>setAccSize(e.target.value)}>
           <option value="">Select size...</option>
           {Object.keys(POINT_VALUES).map(s=><option key={s} value={s}>{s} ({POINT_VALUES[s]} pts)</option>)}
         </select>
-        <label>Notes (optional)</label>
-        <input className="auth-input" placeholder="Order # or any details" value={notes} onChange={e=>setNotes(e.target.value)} style={{marginBottom:0}}/>
-        {submitMsg&&<div style={{fontSize:12,marginTop:8,color:submitMsg.includes("Error")?'var(--red)':'var(--green)'}}>{submitMsg}</div>}
+        <label>Screenshot of Purchase</label>
+        <input type="file" accept="image/*" onChange={async e=>{
+          const file=e.target.files?.[0];
+          if(!file)return;
+          setSubmitMsg("Uploading...");
+          const ext=file.name.split('.').pop();
+          const path=user.id+'/'+Date.now()+'.'+ext;
+          const {error}=await supabase.storage.from('screenshots').upload(path,file);
+          if(error){setSubmitMsg("Upload error: "+error.message);return;}
+          const {data:u}=supabase.storage.from('screenshots').getPublicUrl(path);
+          setScreenshot(u.publicUrl);
+          setSubmitMsg("Screenshot uploaded!");
+        }} style={{fontSize:12,color:'var(--t3)',marginBottom:4}}/>
+        {screenshot&&<div style={{fontSize:11,color:'var(--green)',marginBottom:4}}>{'\u2705'} Screenshot attached</div>}
+        <label>Order # or Notes (optional)</label>
+        <input className="auth-input" placeholder="Order confirmation number, email used, etc." value={notes} onChange={e=>setNotes(e.target.value)} style={{marginBottom:0}}/>
+        {submitMsg&&!submitMsg.includes("Upload")&&<div style={{fontSize:12,marginTop:8,color:submitMsg.includes("Error")?'var(--red)':'var(--green)'}}>{submitMsg}</div>}
         <button className="pp-submit" onClick={handleSubmit} disabled={submitting}>{submitting?"Submitting...":"Submit for Points"}</button>
       </div>
     </div>}
@@ -1620,8 +1685,13 @@ const PulsePointsTab = ({user,onLogin}) => {
       {adminSubs.filter(s=>s.status==="pending").length===0&&<p style={{fontSize:12,color:'var(--t4)'}}>No pending submissions.</p>}
       {adminSubs.map(s=><div key={s.id} className="pp-row" style={{flexWrap:'wrap'}}>
         <div style={{flex:1,minWidth:200}}>
-          <div style={{fontSize:13,fontWeight:600}}>{s.firm} · {s.account_size}</div>
-          <div style={{fontSize:11,color:'var(--t4)'}}>{s.user_id.slice(0,8)}... · {new Date(s.created_at).toLocaleDateString()}{s.notes&&" · "+s.notes}</div>
+          <div style={{fontSize:13,fontWeight:600,display:'flex',alignItems:'center',gap:6}}>
+            {s.firm} · {s.account_size}
+            {s.notes?.includes("[CLICK VERIFIED]")&&<span style={{fontSize:9,background:'rgba(16,185,129,0.15)',color:'var(--green)',padding:'2px 6px',borderRadius:4,fontWeight:700}}>CLICK VERIFIED</span>}
+            {s.notes?.includes("[HAS SCREENSHOT]")&&<span style={{fontSize:9,background:'rgba(6,182,212,0.15)',color:'var(--em)',padding:'2px 6px',borderRadius:4,fontWeight:700}}>HAS PROOF</span>}
+          </div>
+          <div style={{fontSize:11,color:'var(--t4)'}}>{s.user_id.slice(0,8)}... · {new Date(s.created_at).toLocaleDateString()}{s.notes&&" · "+s.notes.replace("[CLICK VERIFIED] ","").replace("[HAS SCREENSHOT] ","")}</div>
+          {s.screenshot_url&&<a href={s.screenshot_url} target="_blank" rel="noopener" style={{fontSize:11,color:'var(--em)',display:'inline-block',marginTop:4}}>View Screenshot {'\u2192'}</a>}
         </div>
         <div style={{display:'flex',alignItems:'center',gap:6}}>
           <span className={`pp-status ${s.status}`}>{s.status}</span>
@@ -1706,10 +1776,10 @@ export default function App() {
           <button className={`f-btn ${sort==="newest"?"on":""}`} onClick={()=>setSort("newest")}>Newest</button>
           <button className={`f-btn ${sort==="alloc"?"on":""}`} onClick={()=>setSort("alloc")}>Highest Alloc</button>
         </div>
-        <FirmCards firms={sorted} onSelect={goDetail}/>
+        <FirmCards firms={sorted} onSelect={goDetail} user={user}/>
       </>}
       {tab==="challenges"&&<ChallengesTab/>}
-      {tab==="offers"&&<OffersTab/>}
+      {tab==="offers"&&<OffersTab user={user}/>}
       {tab==="giveaways"&&<GiveawaysTab/>}
       {tab==="blog"&&<BlogTab onSelect={goBlog}/>}
       {tab==="points"&&<PulsePointsTab user={user} onLogin={()=>setShowAuth(true)}/>}
