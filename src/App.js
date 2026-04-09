@@ -47,22 +47,6 @@ const DEALS = [
   { firm:"Topstep", pct:"50% OFF", code:"PULSE", color:"#64748b", desc:"50% off Trading Combine — first month only", tag:"", expires:"" },
 ];
 
-const AFFILIATE_LINKS = {
-  "Apex Trader Funding":"https://apextraderfunding.com/member/aff/go/jwachter0823",
-  "Tradeify":"https://tradeify.co/?ref=CUCNCROP",
-  "Top One Futures":"https://toponefutures.com/?linkId=lp_707970&sourceId=timelesstrading&tenantId=toponefutures",
-  "Bulenox":"https://bulenox.com/member/aff/go/jwachter0823",
-  "Alpha Futures":"https://app.alpha-futures.com/signup/Joey021384/",
-  "My Funded Futures":"https://myfundedfutures.com/challenge?ref=1788",
-};
-
-const trackClick = async (firmName, userId) => {
-  if(userId){
-    await supabase.from("click_tracking").insert({user_id:userId,firm:firmName}).catch(()=>{});
-  }
-  const url = AFFILIATE_LINKS[firmName];
-  if(url) window.open(url,"_blank");
-};
 
 const BLOG = [
   { id:1, title:"The State of Futures Prop Firms in 2026", date:"Mar 22, 2026", cat:"Industry", time:"6 min", color:"#a855f7",
