@@ -586,6 +586,8 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .pp-status{font-family:var(--mono);font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;text-transform:uppercase}
 .pp-status.pending{background:rgba(251,191,36,0.1);color:var(--gold)}
 .pp-status.approved{background:rgba(16,185,129,0.1);color:var(--green)}
+.pp-status.processing{background:rgba(34,211,238,0.1);color:var(--em)}
+.pp-status.fulfilled{background:rgba(16,185,129,0.15);color:var(--green)}
 .pp-status.rejected{background:rgba(255,71,87,0.1);color:var(--red)}
 .pp-form label{display:block;font-size:12px;font-weight:600;color:var(--t3);margin-bottom:5px;margin-top:12px}
 .pp-form select{width:100%;background:var(--bg3);border:1px solid var(--bdr2);border-radius:8px;padding:10px 14px;color:var(--t1);font-family:var(--sans);font-size:13px;outline:none;appearance:none}
@@ -1508,11 +1510,11 @@ const AuthModal = ({onClose,onAuth}) => {
 // ── PULSE POINTS TAB ──
 const POINT_VALUES = {"25K":50,"50K":100,"75K":125,"100K":150,"150K":200,"200K":250,"250K":300,"300K":350};
 const REWARD_TIERS = [
-  {name:"Free 50K Evaluation",pts:500,desc:"Any partner firm"},
-  {name:"Free 100K Evaluation",pts:900,desc:"Any partner firm"},
-  {name:"Free 150K Evaluation",pts:1200,desc:"Any partner firm"},
-  {name:"Exclusive Merch Pack",pts:300,desc:"ThePropPulse gear"},
-  {name:"1-on-1 Strategy Call",pts:800,desc:"30min with a funded trader"},
+  {name:"Free 50K Evaluation",pts:500,desc:"Any partner firm",type:"eval",evalSize:"50K"},
+  {name:"Free 100K Evaluation",pts:900,desc:"Any partner firm",type:"eval",evalSize:"100K"},
+  {name:"Free 150K Evaluation",pts:1200,desc:"Any partner firm",type:"eval",evalSize:"150K"},
+  {name:"Exclusive Merch Pack",pts:300,desc:"ThePropPulse gear",type:"merch"},
+  {name:"1-on-1 Strategy Call",pts:800,desc:"30min with a funded trader",type:"call"},
 ];
 
 const PulsePointsTab = ({user,onLogin}) => {
@@ -1529,6 +1531,14 @@ const PulsePointsTab = ({user,onLogin}) => {
   const [submitMsg,setSubmitMsg]=useState("");
   const [adminSubs,setAdminSubs]=useState([]);
   const [clicks,setClicks]=useState([]);
+  const [claimModal,setClaimModal]=useState(null);
+  const [claimForm,setClaimForm]=useState({});
+  const [claimSubmitting,setClaimSubmitting]=useState(false);
+  const [adminRewards,setAdminRewards]=useState([]);
+  const [adminTab,setAdminTab]=useState("submissions");
+  const [rewardFilter,setRewardFilter]=useState("pending");
+  const [adminNoteId,setAdminNoteId]=useState(null);
+  const [adminNote,setAdminNote]=useState("");
 
   const loadData = useCallback(async ()=>{
     if(!user) return;
@@ -1545,6 +1555,8 @@ const PulsePointsTab = ({user,onLogin}) => {
     if(p&&p.is_admin){
       const {data:as}=await supabase.from("submissions").select("*").order("created_at",{ascending:false});
       setAdminSubs(as||[]);
+      const {data:ar}=await supabase.from("rewards").select("*").order("created_at",{ascending:false});
+      setAdminRewards(ar||[]);
     }
   },[user]);
 
@@ -1574,12 +1586,36 @@ const PulsePointsTab = ({user,onLogin}) => {
     loadData();
   };
 
-  const claimReward = async (reward) => {
+  const claimReward = (reward) => {
     if(!profile||profile.points<reward.pts) return;
-    await supabase.from("rewards").insert({user_id:user.id,reward_name:reward.name,points_cost:reward.pts});
-    await supabase.from("points_history").insert({user_id:user.id,amount:-reward.pts,reason:"Reward: "+reward.name});
-    await supabase.from("profiles").update({points:profile.points-reward.pts,rewards_claimed:(profile.rewards_claimed||0)+1}).eq("id",user.id);
-    loadData();
+    setClaimForm({});
+    setClaimModal(reward);
+  };
+
+  const submitClaim = async () => {
+    if(!claimModal||!profile) return;
+    const r=claimModal;
+    if(r.type==="eval"&&!claimForm.firm) return;
+    if(r.type==="merch"&&(!claimForm.shipName||!claimForm.address||!claimForm.city||!claimForm.state||!claimForm.zip)) return;
+    if(r.type==="call"&&!claimForm.discord) return;
+    setClaimSubmitting(true);
+    const details=JSON.stringify({...claimForm,type:r.type,evalSize:r.evalSize||null});
+    await supabase.from("rewards").insert({user_id:user.id,reward_name:r.name,points_cost:r.pts,fulfillment_details:details,user_email:user.email});
+    await supabase.from("points_history").insert({user_id:user.id,amount:-r.pts,reason:"Reward: "+r.name});
+    await supabase.from("profiles").update({points:profile.points-r.pts,rewards_claimed:(profile.rewards_claimed||0)+1}).eq("id",user.id);
+    setClaimSubmitting(false);setClaimModal(null);setClaimForm({});loadData();
+  };
+
+  const handleRewardStatus = async (rw,status) => {
+    const updates={status,fulfilled_by:user.id,fulfilled_at:new Date().toISOString()};
+    if(adminNote&&adminNoteId===rw.id) updates.admin_notes=adminNote;
+    await supabase.from("rewards").update(updates).eq("id",rw.id);
+    setAdminNoteId(null);setAdminNote("");loadData();
+  };
+
+  const saveAdminNote = async (rw) => {
+    await supabase.from("rewards").update({admin_notes:adminNote}).eq("id",rw.id);
+    setAdminNoteId(null);setAdminNote("");loadData();
   };
 
   if(!user) return (<div className="pp-login-prompt">
@@ -1680,6 +1716,7 @@ const PulsePointsTab = ({user,onLogin}) => {
       <div className="pp-card" style={{marginBottom:16}}><p style={{fontSize:13,color:'var(--t3)',textAlign:'center'}}>Redeem your points for free evaluations and exclusive rewards</p></div>
       <div className="pp-rewards">
         {REWARD_TIERS.map((r,i)=><div key={i} className="pp-reward">
+          <div style={{fontSize:18,marginBottom:4}}>{r.type==="eval"?"\u{1F4CA}":r.type==="merch"?"\u{1F455}":"\u{1F4DE}"}</div>
           <div className="pp-reward-pts">{r.pts}</div>
           <div className="pp-reward-name">{r.name}</div>
           <div style={{fontSize:10,color:'var(--t4)',marginBottom:8}}>{r.desc}</div>
@@ -1687,40 +1724,194 @@ const PulsePointsTab = ({user,onLogin}) => {
         </div>)}
       </div>
       {rewards.length>0&&<div className="pp-card" style={{marginTop:16}}>
-        <h3>Claimed Rewards</h3>
-        {rewards.map(r=><div key={r.id} className="pp-row">
-          <div style={{fontSize:13,fontWeight:600}}>{r.reward_name}</div>
-          <div style={{display:'flex',alignItems:'center',gap:8}}>
-            <span style={{fontFamily:'var(--mono)',fontSize:11,color:'var(--gold)'}}>-{r.points_cost} pts</span>
-            <span className={`pp-status ${r.status}`}>{r.status}</span>
-          </div>
-        </div>)}
+        <h3>Your Claimed Rewards</h3>
+        {rewards.map(rw=>{
+          const det=rw.fulfillment_details?JSON.parse(rw.fulfillment_details):{};
+          const statusColors={pending:'var(--gold)',processing:'var(--em)',fulfilled:'var(--green)',rejected:'var(--red)'};
+          const statusLabels={pending:'Pending Review',processing:'Being Fulfilled',fulfilled:'Fulfilled \u2713',rejected:'Rejected'};
+          return (<div key={rw.id} style={{padding:'14px 0',borderBottom:'1px solid var(--bdr)'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}}>
+              <div>
+                <div style={{fontSize:14,fontWeight:700,color:'var(--t1)'}}>{rw.reward_name}</div>
+                <div style={{fontSize:11,color:'var(--t4)',marginTop:2}}>
+                  {det.type==="eval"&&<>Firm: <b style={{color:'var(--t2)'}}>{det.firm}</b> &middot; </>}
+                  {det.type==="merch"&&<>Ship to: <b style={{color:'var(--t2)'}}>{det.shipName}</b> &middot; </>}
+                  {det.type==="call"&&<>Discord: <b style={{color:'var(--t2)'}}>{det.discord}</b> &middot; </>}
+                  {new Date(rw.created_at).toLocaleDateString()}
+                </div>
+              </div>
+              <div style={{display:'flex',alignItems:'center',gap:8}}>
+                <span style={{fontFamily:'var(--mono)',fontSize:11,color:'var(--gold)'}}>-{rw.points_cost} pts</span>
+                <span style={{fontFamily:'var(--mono)',fontSize:10,fontWeight:700,padding:'3px 10px',borderRadius:5,background:(statusColors[rw.status]||'var(--t4)')+'15',color:statusColors[rw.status]||'var(--t4)',border:'1px solid '+(statusColors[rw.status]||'var(--t4)')+'30'}}>{statusLabels[rw.status]||rw.status}</span>
+              </div>
+            </div>
+            {rw.admin_notes&&<div style={{fontSize:11,color:'var(--t3)',marginTop:6,padding:'6px 10px',background:'var(--bg3)',borderRadius:6,borderLeft:'2px solid var(--em)'}}>{'\u{1F4AC}'} {rw.admin_notes}</div>}
+          </div>);
+        })}
       </div>}
     </>}
 
-    {ppTab==="admin"&&profile?.is_admin&&<div className="pp-card">
-      <h3 style={{color:'var(--red)'}}>Admin: Review Submissions</h3>
-      {adminSubs.filter(s=>s.status==="pending").length===0&&<p style={{fontSize:12,color:'var(--t4)'}}>No pending submissions.</p>}
-      {adminSubs.map(s=><div key={s.id} className="pp-row" style={{flexWrap:'wrap'}}>
-        <div style={{flex:1,minWidth:200}}>
-          <div style={{fontSize:13,fontWeight:600,display:'flex',alignItems:'center',gap:6}}>
-            {s.firm} · {s.account_size}
-            {s.notes?.includes("[CLICK VERIFIED]")&&<span style={{fontSize:9,background:'rgba(16,185,129,0.15)',color:'var(--green)',padding:'2px 6px',borderRadius:4,fontWeight:700}}>CLICK VERIFIED</span>}
-            {s.notes?.includes("[HAS SCREENSHOT]")&&<span style={{fontSize:9,background:'rgba(6,182,212,0.15)',color:'var(--em)',padding:'2px 6px',borderRadius:4,fontWeight:700}}>HAS PROOF</span>}
+    {claimModal&&<div className="auth-overlay" onClick={()=>setClaimModal(null)}><div className="auth-modal" onClick={e=>e.stopPropagation()} style={{maxWidth:440}}>
+      <button className="auth-close" onClick={()=>setClaimModal(null)}>{'\u2715'}</button>
+      <h2 style={{fontSize:18}}>Claim <span>{claimModal.name}</span></h2>
+      <p style={{marginBottom:16}}>This will deduct <b style={{color:'var(--gold)'}}>{claimModal.pts} points</b> from your balance.</p>
+
+      {claimModal.type==="eval"&&<>
+        <div style={{fontSize:12,fontWeight:600,color:'var(--t3)',marginBottom:5}}>Which firm do you want your {claimModal.evalSize} account from?</div>
+        <select className="pp-form" value={claimForm.firm||""} onChange={e=>setClaimForm(p=>({...p,firm:e.target.value}))} style={{width:'100%',background:'var(--bg3)',border:'1px solid var(--bdr2)',borderRadius:8,padding:'10px 14px',color:'var(--t1)',fontFamily:'var(--sans)',fontSize:13,marginBottom:10}}>
+          <option value="">Select firm...</option>
+          {FIRMS.map(f=><option key={f.name} value={f.name}>{f.name}</option>)}
+        </select>
+        <div style={{fontSize:12,fontWeight:600,color:'var(--t3)',marginBottom:5}}>Email for this firm (we'll send the account here)</div>
+        <input className="auth-input" placeholder={user?.email||"your@email.com"} value={claimForm.email||""} onChange={e=>setClaimForm(p=>({...p,email:e.target.value}))}/>
+        <div style={{fontSize:10,color:'var(--t4)',marginTop:2}}>Leave blank to use your account email ({user?.email})</div>
+      </>}
+
+      {claimModal.type==="merch"&&<>
+        <div style={{fontSize:12,fontWeight:600,color:'var(--t3)',marginBottom:5}}>Shipping Information</div>
+        <input className="auth-input" placeholder="Full Name" value={claimForm.shipName||""} onChange={e=>setClaimForm(p=>({...p,shipName:e.target.value}))}/>
+        <input className="auth-input" placeholder="Street Address" value={claimForm.address||""} onChange={e=>setClaimForm(p=>({...p,address:e.target.value}))}/>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+          <input className="auth-input" placeholder="City" value={claimForm.city||""} onChange={e=>setClaimForm(p=>({...p,city:e.target.value}))}/>
+          <input className="auth-input" placeholder="State" value={claimForm.state||""} onChange={e=>setClaimForm(p=>({...p,state:e.target.value}))}/>
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+          <input className="auth-input" placeholder="ZIP Code" value={claimForm.zip||""} onChange={e=>setClaimForm(p=>({...p,zip:e.target.value}))}/>
+          <input className="auth-input" placeholder="Country (default: US)" value={claimForm.country||""} onChange={e=>setClaimForm(p=>({...p,country:e.target.value}))}/>
+        </div>
+        <input className="auth-input" placeholder="T-Shirt Size (S/M/L/XL/2XL)" value={claimForm.shirtSize||""} onChange={e=>setClaimForm(p=>({...p,shirtSize:e.target.value}))}/>
+      </>}
+
+      {claimModal.type==="call"&&<>
+        <div style={{fontSize:12,fontWeight:600,color:'var(--t3)',marginBottom:5}}>How should we schedule your call?</div>
+        <input className="auth-input" placeholder="Discord username (e.g. trader#1234)" value={claimForm.discord||""} onChange={e=>setClaimForm(p=>({...p,discord:e.target.value}))}/>
+        <input className="auth-input" placeholder="Timezone (e.g. EST, CST, PST)" value={claimForm.timezone||""} onChange={e=>setClaimForm(p=>({...p,timezone:e.target.value}))}/>
+        <input className="auth-input" placeholder="Preferred days/times (e.g. Weekdays 6-9pm)" value={claimForm.availability||""} onChange={e=>setClaimForm(p=>({...p,availability:e.target.value}))}/>
+        <div style={{fontSize:12,fontWeight:600,color:'var(--t3)',marginBottom:5,marginTop:4}}>What do you want to focus on?</div>
+        <input className="auth-input" placeholder="Strategy review, risk management, prop firm tips, etc." value={claimForm.focus||""} onChange={e=>setClaimForm(p=>({...p,focus:e.target.value}))}/>
+      </>}
+
+      <div style={{fontSize:11,color:'var(--t4)',margin:'10px 0',padding:'8px 12px',background:'var(--bg3)',borderRadius:6,lineHeight:1.6}}>
+        {'\u2139\uFE0F'} After claiming, we'll process your reward within <b style={{color:'var(--em)'}}>48 hours</b>. You'll see status updates here and we'll contact you at <b style={{color:'var(--t2)'}}>{user?.email}</b> when it's ready.
+      </div>
+
+      <button className="auth-btn" onClick={submitClaim} disabled={claimSubmitting||(claimModal.type==="eval"&&!claimForm.firm)||(claimModal.type==="merch"&&(!claimForm.shipName||!claimForm.address||!claimForm.city||!claimForm.state||!claimForm.zip))||(claimModal.type==="call"&&!claimForm.discord)}>
+        {claimSubmitting?"Processing...":"Confirm — Spend "+claimModal.pts+" Points"}
+      </button>
+    </div></div>}
+
+    {ppTab==="admin"&&profile?.is_admin&&<>
+      <div style={{display:'flex',gap:4,marginBottom:16}}>
+        <button className={`f-btn ${adminTab==="submissions"?"on":""}`} onClick={()=>setAdminTab("submissions")}>Purchase Submissions ({adminSubs.filter(s=>s.status==="pending").length} pending)</button>
+        <button className={`f-btn ${adminTab==="rewards"?"on":""}`} style={adminTab==="rewards"?{borderColor:'rgba(251,191,36,0.3)',background:'rgba(251,191,36,0.1)',color:'var(--gold)'}:{}} onClick={()=>setAdminTab("rewards")}>{'\u{1F381}'} Reward Claims ({adminRewards.filter(r=>r.status==="pending").length} pending)</button>
+      </div>
+
+      {adminTab==="submissions"&&<div className="pp-card">
+        <h3 style={{color:'var(--red)'}}>Purchase Submissions</h3>
+        {adminSubs.filter(s=>s.status==="pending").length===0&&<p style={{fontSize:12,color:'var(--t4)'}}>No pending submissions.</p>}
+        {adminSubs.map(s=><div key={s.id} className="pp-row" style={{flexWrap:'wrap'}}>
+          <div style={{flex:1,minWidth:200}}>
+            <div style={{fontSize:13,fontWeight:600,display:'flex',alignItems:'center',gap:6}}>
+              {s.firm} · {s.account_size}
+              {s.notes?.includes("[CLICK VERIFIED]")&&<span style={{fontSize:9,background:'rgba(16,185,129,0.15)',color:'var(--green)',padding:'2px 6px',borderRadius:4,fontWeight:700}}>CLICK VERIFIED</span>}
+              {s.notes?.includes("[HAS SCREENSHOT]")&&<span style={{fontSize:9,background:'rgba(6,182,212,0.15)',color:'var(--em)',padding:'2px 6px',borderRadius:4,fontWeight:700}}>HAS PROOF</span>}
+            </div>
+            <div style={{fontSize:11,color:'var(--t4)'}}>{s.user_id.slice(0,8)}... · {new Date(s.created_at).toLocaleDateString()}{s.notes&&" · "+s.notes.replace("[CLICK VERIFIED] ","").replace("[HAS SCREENSHOT] ","")}</div>
+            {s.screenshot_url&&<a href={s.screenshot_url} target="_blank" rel="noopener" style={{fontSize:11,color:'var(--em)',display:'inline-block',marginTop:4}}>View Screenshot {'\u2192'}</a>}
           </div>
-          <div style={{fontSize:11,color:'var(--t4)'}}>{s.user_id.slice(0,8)}... · {new Date(s.created_at).toLocaleDateString()}{s.notes&&" · "+s.notes.replace("[CLICK VERIFIED] ","").replace("[HAS SCREENSHOT] ","")}</div>
-          {s.screenshot_url&&<a href={s.screenshot_url} target="_blank" rel="noopener" style={{fontSize:11,color:'var(--em)',display:'inline-block',marginTop:4}}>View Screenshot {'\u2192'}</a>}
+          <div style={{display:'flex',alignItems:'center',gap:6}}>
+            <span className={`pp-status ${s.status}`}>{s.status}</span>
+            <span style={{fontFamily:'var(--mono)',fontSize:11,color:'var(--gold)'}}>+{s.points_awarded}</span>
+            {s.status==="pending"&&<>
+              <button style={{background:'rgba(16,185,129,0.15)',border:'1px solid rgba(16,185,129,0.3)',color:'var(--green)',fontSize:11,fontWeight:700,padding:'4px 10px',borderRadius:5,cursor:'pointer'}} onClick={()=>handleApprove(s)}>Approve</button>
+              <button style={{background:'rgba(255,71,87,0.15)',border:'1px solid rgba(255,71,87,0.3)',color:'var(--red)',fontSize:11,fontWeight:700,padding:'4px 10px',borderRadius:5,cursor:'pointer'}} onClick={()=>handleReject(s)}>Reject</button>
+            </>}
+          </div>
+        </div>)}
+      </div>}
+
+      {adminTab==="rewards"&&<>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:8,marginBottom:16}}>
+          {[["pending","Pending","\u{1F7E1}"],["processing","Processing","\u{1F535}"],["fulfilled","Fulfilled","\u2705"],["all","All","\u{1F4CB}"]].map(([k,l,icon])=>{
+            const cnt=k==="all"?adminRewards.length:adminRewards.filter(r=>r.status===k).length;
+            return (<div key={k} onClick={()=>setRewardFilter(k)} style={{background:rewardFilter===k?'var(--emA2)':'var(--glass)',border:'1px solid '+(rewardFilter===k?'var(--bdr3)':'var(--bdr)'),borderRadius:10,padding:'12px 14px',cursor:'pointer',textAlign:'center',transition:'all .15s'}}>
+              <div style={{fontSize:16}}>{icon}</div>
+              <div style={{fontFamily:'var(--mono)',fontSize:20,fontWeight:800,color:rewardFilter===k?'var(--em)':'var(--t1)',marginTop:4}}>{cnt}</div>
+              <div style={{fontSize:10,color:'var(--t4)',fontWeight:600,textTransform:'uppercase',letterSpacing:.5}}>{l}</div>
+            </div>);
+          })}
         </div>
-        <div style={{display:'flex',alignItems:'center',gap:6}}>
-          <span className={`pp-status ${s.status}`}>{s.status}</span>
-          <span style={{fontFamily:'var(--mono)',fontSize:11,color:'var(--gold)'}}>+{s.points_awarded}</span>
-          {s.status==="pending"&&<>
-            <button style={{background:'rgba(16,185,129,0.15)',border:'1px solid rgba(16,185,129,0.3)',color:'var(--green)',fontSize:11,fontWeight:700,padding:'4px 10px',borderRadius:5,cursor:'pointer'}} onClick={()=>handleApprove(s)}>Approve</button>
-            <button style={{background:'rgba(255,71,87,0.15)',border:'1px solid rgba(255,71,87,0.3)',color:'var(--red)',fontSize:11,fontWeight:700,padding:'4px 10px',borderRadius:5,cursor:'pointer'}} onClick={()=>handleReject(s)}>Reject</button>
-          </>}
+
+        <div className="pp-card">
+          <h3 style={{color:'var(--gold)',display:'flex',alignItems:'center',gap:8}}>{'\u{1F381}'} Reward Fulfillment Queue</h3>
+          {(rewardFilter==="all"?adminRewards:adminRewards.filter(r=>r.status===rewardFilter)).length===0&&<p style={{fontSize:12,color:'var(--t4)',padding:12}}>No {rewardFilter==="all"?"":rewardFilter} rewards.</p>}
+          {(rewardFilter==="all"?adminRewards:adminRewards.filter(r=>r.status===rewardFilter)).map(rw=>{
+            let det={};try{det=rw.fulfillment_details?JSON.parse(rw.fulfillment_details):{};}catch(e){}
+            const statusColors={pending:'var(--gold)',processing:'var(--em)',fulfilled:'var(--green)',rejected:'var(--red)'};
+            return (<div key={rw.id} style={{padding:'16px 0',borderBottom:'1px solid var(--bdr)'}}>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',flexWrap:'wrap',gap:8}}>
+                <div style={{flex:1,minWidth:220}}>
+                  <div style={{fontSize:14,fontWeight:700,color:'var(--t1)',display:'flex',alignItems:'center',gap:6}}>
+                    <span>{det.type==="eval"?"\u{1F4CA}":det.type==="merch"?"\u{1F455}":det.type==="call"?"\u{1F4DE}":"\u{1F381}"}</span>
+                    {rw.reward_name}
+                    <span style={{fontFamily:'var(--mono)',fontSize:10,fontWeight:700,padding:'2px 8px',borderRadius:4,background:(statusColors[rw.status]||'var(--t4)')+'15',color:statusColors[rw.status]||'var(--t4)',border:'1px solid '+(statusColors[rw.status]||'var(--t4)')+'30',textTransform:'uppercase'}}>{rw.status}</span>
+                  </div>
+                  <div style={{fontSize:11,color:'var(--t4)',marginTop:4}}>
+                    <b style={{color:'var(--t2)'}}>{rw.user_email||rw.user_id.slice(0,12)+"..."}</b> &middot; {new Date(rw.created_at).toLocaleDateString()} {new Date(rw.created_at).toLocaleTimeString()} &middot; <span style={{color:'var(--gold)'}}>{rw.points_cost} pts</span>
+                  </div>
+
+                  <div style={{marginTop:8,padding:'10px 12px',background:'var(--bg3)',borderRadius:8,border:'1px solid var(--bdr)'}}>
+                    <div style={{fontSize:10,fontWeight:700,color:'var(--em)',textTransform:'uppercase',letterSpacing:.8,marginBottom:6}}>Fulfillment Details</div>
+                    {det.type==="eval"&&<>
+                      <div style={{fontSize:12,color:'var(--t2)',lineHeight:1.8}}>
+                        <b>Firm:</b> {det.firm||"Not specified"}<br/>
+                        <b>Account Size:</b> {det.evalSize||"N/A"}<br/>
+                        <b>Email:</b> {det.email||rw.user_email||"Use account email"}
+                      </div>
+                    </>}
+                    {det.type==="merch"&&<>
+                      <div style={{fontSize:12,color:'var(--t2)',lineHeight:1.8}}>
+                        <b>Name:</b> {det.shipName}<br/>
+                        <b>Address:</b> {det.address}, {det.city}, {det.state} {det.zip} {det.country||"US"}<br/>
+                        <b>Shirt Size:</b> {det.shirtSize||"Not specified"}
+                      </div>
+                    </>}
+                    {det.type==="call"&&<>
+                      <div style={{fontSize:12,color:'var(--t2)',lineHeight:1.8}}>
+                        <b>Discord:</b> {det.discord}<br/>
+                        <b>Timezone:</b> {det.timezone||"Not specified"}<br/>
+                        <b>Availability:</b> {det.availability||"Not specified"}<br/>
+                        <b>Focus:</b> {det.focus||"General"}
+                      </div>
+                    </>}
+                    {!det.type&&<div style={{fontSize:11,color:'var(--t4)'}}>No fulfillment details (legacy claim)</div>}
+                  </div>
+
+                  {rw.admin_notes&&<div style={{fontSize:11,color:'var(--t3)',marginTop:6,padding:'6px 10px',background:'rgba(6,182,212,0.05)',borderRadius:6,borderLeft:'2px solid var(--em)'}}>{'\u{1F4AC}'} {rw.admin_notes}</div>}
+                </div>
+
+                <div style={{display:'flex',flexDirection:'column',gap:4,minWidth:130}}>
+                  {rw.status==="pending"&&<>
+                    <button style={{background:'rgba(6,182,212,0.15)',border:'1px solid rgba(6,182,212,0.3)',color:'var(--em)',fontSize:11,fontWeight:700,padding:'6px 12px',borderRadius:6,cursor:'pointer',width:'100%'}} onClick={()=>handleRewardStatus(rw,"processing")}>Mark Processing</button>
+                    <button style={{background:'rgba(255,71,87,0.1)',border:'1px solid rgba(255,71,87,0.2)',color:'var(--red)',fontSize:11,fontWeight:700,padding:'6px 12px',borderRadius:6,cursor:'pointer',width:'100%'}} onClick={()=>handleRewardStatus(rw,"rejected")}>Reject</button>
+                  </>}
+                  {rw.status==="processing"&&<>
+                    <button style={{background:'rgba(16,185,129,0.15)',border:'1px solid rgba(16,185,129,0.3)',color:'var(--green)',fontSize:11,fontWeight:700,padding:'6px 12px',borderRadius:6,cursor:'pointer',width:'100%'}} onClick={()=>handleRewardStatus(rw,"fulfilled")}>{'\u2713'} Mark Fulfilled</button>
+                    <button style={{background:'rgba(255,71,87,0.1)',border:'1px solid rgba(255,71,87,0.2)',color:'var(--red)',fontSize:11,fontWeight:700,padding:'6px 12px',borderRadius:6,cursor:'pointer',width:'100%'}} onClick={()=>handleRewardStatus(rw,"rejected")}>Reject</button>
+                  </>}
+                  {rw.status==="fulfilled"&&<div style={{fontSize:10,color:'var(--green)',textAlign:'center',padding:6}}>{'\u2713'} Fulfilled {rw.fulfilled_at?new Date(rw.fulfilled_at).toLocaleDateString():""}</div>}
+                  <button style={{background:'none',border:'1px solid var(--bdr)',color:'var(--t4)',fontSize:10,fontWeight:600,padding:'5px 10px',borderRadius:5,cursor:'pointer',width:'100%'}} onClick={()=>{setAdminNoteId(adminNoteId===rw.id?null:rw.id);setAdminNote(rw.admin_notes||"")}}>{adminNoteId===rw.id?"Cancel":"\u{270F}\uFE0F Add Note"}</button>
+                  {adminNoteId===rw.id&&<div style={{display:'flex',gap:4}}>
+                    <input style={{flex:1,background:'var(--bg3)',border:'1px solid var(--bdr2)',borderRadius:5,padding:'5px 8px',color:'var(--t1)',fontFamily:'var(--sans)',fontSize:11}} placeholder="Admin note..." value={adminNote} onChange={e=>setAdminNote(e.target.value)}/>
+                    <button style={{background:'var(--emA2)',border:'1px solid var(--bdr3)',color:'var(--em)',fontSize:10,fontWeight:700,padding:'5px 8px',borderRadius:5,cursor:'pointer'}} onClick={()=>saveAdminNote(rw)}>Save</button>
+                  </div>}
+                </div>
+              </div>
+            </div>);
+          })}
         </div>
-      </div>)}
-    </div>}
+      </>}
+    </>}
   </div>);
 };
 
