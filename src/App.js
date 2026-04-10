@@ -603,6 +603,9 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .pp-reward-btn{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#050810;font-size:11px;font-weight:700;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;box-shadow:var(--glow-gold-sm);transition:all .2s}
 .pp-reward-btn:hover{box-shadow:var(--glow-gold)}
 .pp-reward-btn:disabled{opacity:0.4;cursor:not-allowed}
+.rw-card{transition:all .3s ease;position:relative;overflow:hidden}
+.rw-card:hover{transform:translateY(-6px);border-color:rgba(251,191,36,0.4) !important;box-shadow:0 0 8px rgba(251,191,36,0.5),0 0 24px rgba(251,191,36,0.35),0 0 60px rgba(251,191,36,0.2),0 0 120px rgba(251,191,36,0.1),0 0 200px rgba(251,191,36,0.05),0 20px 60px rgba(0,0,0,0.3) !important}
+.rw-card.instant:hover{border-color:rgba(34,211,238,0.4) !important;box-shadow:0 0 8px rgba(34,211,238,0.5),0 0 24px rgba(34,211,238,0.35),0 0 60px rgba(34,211,238,0.2),0 0 120px rgba(34,211,238,0.1),0 0 200px rgba(34,211,238,0.05),0 20px 60px rgba(0,0,0,0.3) !important}
 .pp-login-prompt{text-align:center;padding:40px 20px}
 .pp-login-prompt h3{font-size:18px;font-weight:700;margin-bottom:8px}
 .pp-login-prompt p{color:var(--t4);font-size:13px;margin-bottom:16px}
@@ -1511,10 +1514,18 @@ const AuthModal = ({onClose,onAuth}) => {
 // ── PULSE POINTS TAB ──
 const POINT_VALUES = {"25K":50,"50K":100,"75K":125,"100K":150,"150K":200,"200K":250,"250K":300,"300K":350};
 const REWARD_TIERS = [
-  {name:"Free 25K Evaluation",pts:10000,desc:"Any partner firm",type:"eval",evalSize:"25K",icon:"\u{1F4CA}",tier:"bronze"},
-  {name:"Free 50K Evaluation",pts:25000,desc:"Any partner firm",type:"eval",evalSize:"50K",icon:"\u{1F525}",tier:"silver"},
-  {name:"Free 100K Evaluation",pts:40000,desc:"Any partner firm",type:"eval",evalSize:"100K",icon:"\u{1F48E}",tier:"gold"},
-  {name:"Free 150K Evaluation",pts:60000,desc:"Any partner firm",type:"eval",evalSize:"150K",icon:"\u{1F451}",tier:"diamond"},
+  {name:"Free 25K Evaluation",pts:10000,desc:"Any partner firm",type:"eval",evalSize:"25K",icon:"\u{1F4CA}",tier:"bronze",cat:"eval"},
+  {name:"Free 50K Evaluation",pts:15000,desc:"Any partner firm",type:"eval",evalSize:"50K",icon:"\u{1F4CA}",tier:"bronze",cat:"eval"},
+  {name:"Free 75K Evaluation",pts:25000,desc:"Any partner firm",type:"eval",evalSize:"75K",icon:"\u{1F525}",tier:"silver",cat:"eval"},
+  {name:"Free 100K Evaluation",pts:30000,desc:"Any partner firm",type:"eval",evalSize:"100K",icon:"\u{1F525}",tier:"silver",cat:"eval"},
+  {name:"Free 150K Evaluation",pts:35000,desc:"Any partner firm",type:"eval",evalSize:"150K",icon:"\u{1F48E}",tier:"gold",cat:"eval"},
+  {name:"Free 200K Evaluation",pts:40000,desc:"Any partner firm",type:"eval",evalSize:"200K",icon:"\u{1F48E}",tier:"gold",cat:"eval"},
+  {name:"Free 250K Evaluation",pts:45000,desc:"Any partner firm",type:"eval",evalSize:"250K",icon:"\u{1F451}",tier:"diamond",cat:"eval"},
+  {name:"Free 300K Evaluation",pts:50000,desc:"Any partner firm",type:"eval",evalSize:"300K",icon:"\u{1F451}",tier:"diamond",cat:"eval"},
+  {name:"Instant Funded 25K",pts:50000,desc:"Skip the eval — funded immediately",type:"eval",evalSize:"25K",icon:"\u26A1",tier:"diamond",cat:"instant"},
+  {name:"Instant Funded 50K",pts:70000,desc:"Skip the eval — funded immediately",type:"eval",evalSize:"50K",icon:"\u26A1",tier:"diamond",cat:"instant"},
+  {name:"Instant Funded 100K",pts:90000,desc:"Skip the eval — funded immediately",type:"eval",evalSize:"100K",icon:"\u{1F680}",tier:"diamond",cat:"instant"},
+  {name:"Instant Funded 150K",pts:110000,desc:"Skip the eval — funded immediately",type:"eval",evalSize:"150K",icon:"\u{1F680}",tier:"diamond",cat:"instant"},
 ];
 const LOYALTY_TIERS = [
   {name:"Bronze",min:0,max:9999,color:"#cd7f32",glow:"0 0 8px rgba(205,127,50,0.4)",icon:"\u{1F949}"},
@@ -1547,6 +1558,7 @@ const PulsePointsTab = ({user,onLogin}) => {
   const [rewardFilter,setRewardFilter]=useState("pending");
   const [adminNoteId,setAdminNoteId]=useState(null);
   const [adminNote,setAdminNote]=useState("");
+  const [rewardCat,setRewardCat]=useState("eval");
 
   const loadData = useCallback(async ()=>{
     if(!user) return;
@@ -1761,69 +1773,79 @@ const PulsePointsTab = ({user,onLogin}) => {
       {/* Earn Points Table */}
       <div className="pp-card" style={{marginBottom:16}}>
         <h3 style={{display:'flex',alignItems:'center',gap:6}}>{'\u{1F4B0}'} <span style={{background:'linear-gradient(135deg,var(--em2),var(--gold))',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Points Per Purchase</span></h3>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(100px,1fr))',gap:6,marginTop:12}}>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(90px,1fr))',gap:6,marginTop:12}}>
           {Object.entries(POINT_VALUES).map(([size,pts])=>(
             <div key={size} style={{background:'var(--bg3)',border:'1px solid var(--bdr)',borderRadius:8,padding:'10px 8px',textAlign:'center'}}>
-              <div style={{fontFamily:'var(--mono)',fontSize:15,fontWeight:800,color:'var(--em)',textShadow:'var(--glow-sm)'}}>{size}</div>
+              <div style={{fontFamily:'var(--mono)',fontSize:14,fontWeight:800,color:'var(--em)',textShadow:'var(--glow-sm)'}}>{size}</div>
               <div style={{fontFamily:'var(--mono)',fontSize:12,fontWeight:700,color:'var(--gold)',marginTop:2}}>+{pts}</div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Rewards Grid */}
-      <div style={{marginBottom:16}}>
-        <div style={{fontSize:13,fontWeight:700,color:'var(--em)',marginBottom:12,display:'flex',alignItems:'center',gap:6,textShadow:'var(--glow-sm)'}}>{'\u{1F381}'} Unlock Rewards</div>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(200px,100%),1fr))',gap:10}}>
-          {REWARD_TIERS.map((r,i)=>{
-            const pts=profile?.points||0;
-            const canClaim=pts>=r.pts;
-            const progress=Math.min(100,(pts/r.pts)*100);
-            const tierData=LOYALTY_TIERS.find(t=>t.name.toLowerCase()===r.tier)||LOYALTY_TIERS[0];
-            return (<div key={i} style={{
-              background:canClaim?'linear-gradient(135deg,rgba(251,191,36,0.08),rgba(6,182,212,0.06))':'var(--glass)',
-              border:'1px solid '+(canClaim?'rgba(251,191,36,0.3)':'var(--bdr2)'),
-              borderRadius:14,padding:'20px 16px',textAlign:'center',position:'relative',overflow:'hidden',
-              transition:'all .3s',cursor:canClaim?'pointer':'default',
-              boxShadow:canClaim?'0 0 4px rgba(251,191,36,0.3),0 0 16px rgba(251,191,36,0.15),0 0 40px rgba(251,191,36,0.06)':'none',
-            }} onClick={()=>canClaim&&claimReward(r)}>
-              {/* Top glow bar */}
-              <div style={{position:'absolute',top:0,left:0,right:0,height:canClaim?3:1,background:canClaim?'linear-gradient(90deg,transparent,var(--gold),transparent)':'linear-gradient(90deg,transparent,'+tierData.color+'40,transparent)',boxShadow:canClaim?'0 0 12px rgba(251,191,36,0.5)':'none'}}/>
-              {/* Background glow */}
-              {canClaim&&<div style={{position:'absolute',top:'-50%',left:'50%',transform:'translateX(-50%)',width:200,height:200,background:'radial-gradient(circle,rgba(251,191,36,0.12) 0%,transparent 60%)',borderRadius:'50%',pointerEvents:'none',animation:'pulsGlow 3s ease-in-out infinite'}}/>}
-              {/* Tier badge */}
-              <div style={{position:'absolute',top:8,right:8,fontSize:8,fontWeight:700,color:tierData.color,background:tierData.color+'15',border:'1px solid '+tierData.color+'25',padding:'2px 6px',borderRadius:4,textTransform:'uppercase',letterSpacing:.5}}>{tierData.icon} {r.tier}</div>
-              {/* Icon */}
-              <div style={{fontSize:32,marginBottom:6,filter:canClaim?'none':'grayscale(0.5) opacity(0.6)'}}>{r.icon}</div>
-              {/* Points cost */}
-              <div style={{fontFamily:'var(--mono)',fontSize:20,fontWeight:900,color:canClaim?'var(--gold)':'var(--t3)',textShadow:canClaim?'0 0 8px rgba(251,191,36,0.6),0 0 20px rgba(251,191,36,0.3)':'none',marginBottom:2}}>{r.pts.toLocaleString()}</div>
-              <div style={{fontSize:9,color:'var(--t4)',fontWeight:600,textTransform:'uppercase',letterSpacing:.8,marginBottom:8}}>points</div>
-              {/* Name */}
-              <div style={{fontSize:13,fontWeight:700,color:canClaim?'var(--t1)':'var(--t3)',marginBottom:4}}>{r.name}</div>
-              <div style={{fontSize:10,color:'var(--t4)',marginBottom:12}}>{r.desc}</div>
-              {/* Progress bar */}
-              <div style={{height:4,background:'var(--bg4)',borderRadius:2,overflow:'hidden',marginBottom:6}}>
-                <div style={{height:'100%',background:canClaim?'linear-gradient(90deg,var(--gold),#fde68a)':'linear-gradient(90deg,'+tierData.color+'80,'+tierData.color+'40)',borderRadius:2,width:Math.min(100,progress)+'%',transition:'width .5s ease',boxShadow:canClaim?'0 0 6px rgba(251,191,36,0.4)':'none'}}/>
-              </div>
-              <div style={{fontSize:10,color:'var(--t4)',fontFamily:'var(--mono)'}}>
-                {canClaim
-                  ?<span style={{color:'var(--gold)',fontWeight:700,textShadow:'var(--glow-gold-sm)'}}>{'\u2713'} READY TO CLAIM</span>
-                  :<span>{(r.pts-pts).toLocaleString()} more needed</span>}
-              </div>
-              {/* Claim button */}
-              {canClaim&&<button style={{marginTop:10,background:'linear-gradient(135deg,#fbbf24,#f59e0b)',color:'#050810',fontFamily:'var(--sans)',fontSize:12,fontWeight:700,padding:'8px 20px',border:'none',borderRadius:7,cursor:'pointer',boxShadow:'0 0 4px rgba(251,191,36,0.5),0 0 12px rgba(251,191,36,0.3),0 0 24px rgba(251,191,36,0.15)',transition:'all .2s'}} onClick={e=>{e.stopPropagation();claimReward(r)}}>Claim Reward</button>}
-              {/* Lock icon */}
-              {!canClaim&&<div style={{fontSize:14,color:'var(--t5)',marginTop:6}}>{'\u{1F512}'}</div>}
-            </div>);
-          })}
+      {/* Category Tabs */}
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16}}>
+        <div style={{fontSize:13,fontWeight:700,color:'var(--em)',display:'flex',alignItems:'center',gap:6,textShadow:'var(--glow-sm)'}}>{'\u{1F381}'} Unlock Rewards</div>
+        <div style={{marginLeft:'auto',display:'flex',gap:4}}>
+          <button className={`f-btn ${rewardCat==="eval"?"on":""}`} onClick={()=>setRewardCat("eval")} style={{fontSize:11}}>{'\u{1F4CA}'} Evaluations</button>
+          <button className={`f-btn ${rewardCat==="instant"?"on":""}`} onClick={()=>setRewardCat("instant")} style={rewardCat==="instant"?{fontSize:11,background:'rgba(34,211,238,0.15)',borderColor:'rgba(34,211,238,0.3)',color:'var(--em)'}:{fontSize:11}}>{'\u26A1'} Instant Funding</button>
         </div>
+      </div>
+
+      {/* Rewards Grid */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(190px,100%),1fr))',gap:10,marginBottom:16}}>
+        {REWARD_TIERS.filter(r=>r.cat===rewardCat).map((r,i)=>{
+          const pts=profile?.points||0;
+          const canClaim=pts>=r.pts;
+          const progress=Math.min(100,(pts/r.pts)*100);
+          const tierData=LOYALTY_TIERS.find(t=>t.name.toLowerCase()===r.tier)||LOYALTY_TIERS[0];
+          const isInstant=r.cat==="instant";
+          const accentColor=isInstant?'rgba(34,211,238,':'rgba(251,191,36,';
+          return (<div key={i} className={"rw-card"+(isInstant?" instant":"")} style={{
+            background:canClaim?'linear-gradient(135deg,'+accentColor+'0.1),'+accentColor+'0.04))':'var(--glass)',
+            border:'1px solid '+(canClaim?accentColor+'0.35)':'var(--bdr2)'),
+            borderRadius:14,padding:'20px 16px',textAlign:'center',
+            cursor:canClaim?'pointer':'default',
+            boxShadow:canClaim?'0 0 4px '+accentColor+'0.3),0 0 16px '+accentColor+'0.15),0 0 40px '+accentColor+'0.06)':'none',
+          }} onClick={()=>canClaim&&claimReward(r)}>
+            {/* Top glow bar */}
+            <div style={{position:'absolute',top:0,left:0,right:0,height:canClaim?3:1,background:canClaim?'linear-gradient(90deg,transparent,'+(isInstant?'var(--em)':'var(--gold)')+',transparent)':'linear-gradient(90deg,transparent,'+tierData.color+'40,transparent)',boxShadow:canClaim?'0 0 20px '+accentColor+'0.6)':'none'}}/>
+            {/* Background glow for claimable */}
+            {canClaim&&<div style={{position:'absolute',top:'-40%',left:'50%',transform:'translateX(-50%)',width:250,height:250,background:'radial-gradient(circle,'+accentColor+'0.15) 0%,transparent 55%)',borderRadius:'50%',pointerEvents:'none',animation:'pulsGlow 3s ease-in-out infinite'}}/>}
+            {/* Tier badge */}
+            <div style={{position:'absolute',top:8,right:8,fontSize:8,fontWeight:700,color:tierData.color,background:tierData.color+'15',border:'1px solid '+tierData.color+'25',padding:'2px 6px',borderRadius:4,textTransform:'uppercase',letterSpacing:.5}}>{tierData.icon} {r.tier}</div>
+            {/* Instant badge */}
+            {isInstant&&<div style={{position:'absolute',top:8,left:8,fontSize:8,fontWeight:700,color:'var(--em)',background:'rgba(34,211,238,0.12)',border:'1px solid rgba(34,211,238,0.25)',padding:'2px 6px',borderRadius:4,textTransform:'uppercase',letterSpacing:.5}}>{'\u26A1'} INSTANT</div>}
+            {/* Icon */}
+            <div style={{fontSize:36,marginBottom:6,marginTop:isInstant?8:0,filter:canClaim?'drop-shadow(0 0 8px '+accentColor+'0.4))':'grayscale(0.5) opacity(0.6)'}}>{r.icon}</div>
+            {/* Points cost */}
+            <div style={{fontFamily:'var(--mono)',fontSize:22,fontWeight:900,color:canClaim?(isInstant?'var(--em)':'var(--gold)'):'var(--t3)',textShadow:canClaim?'0 0 8px '+accentColor+'0.6),0 0 20px '+accentColor+'0.3)':'none',marginBottom:2}}>{r.pts.toLocaleString()}</div>
+            <div style={{fontSize:9,color:'var(--t4)',fontWeight:600,textTransform:'uppercase',letterSpacing:.8,marginBottom:8}}>points</div>
+            {/* Name */}
+            <div style={{fontSize:13,fontWeight:700,color:canClaim?'var(--t1)':'var(--t3)',marginBottom:3}}>{r.name}</div>
+            <div style={{fontSize:10,color:'var(--t4)',marginBottom:12,lineHeight:1.4}}>{r.desc}</div>
+            {/* Progress bar */}
+            <div style={{height:4,background:'var(--bg4)',borderRadius:2,overflow:'hidden',marginBottom:6}}>
+              <div style={{height:'100%',background:canClaim?'linear-gradient(90deg,'+(isInstant?'var(--em),#67e8f9':'var(--gold),#fde68a')+')':'linear-gradient(90deg,'+tierData.color+'80,'+tierData.color+'40)',borderRadius:2,width:Math.min(100,progress)+'%',transition:'width .5s ease',boxShadow:canClaim?'0 0 6px '+accentColor+'0.4)':'none'}}/>
+            </div>
+            <div style={{fontSize:10,color:'var(--t4)',fontFamily:'var(--mono)'}}>
+              {canClaim
+                ?<span style={{color:isInstant?'var(--em)':'var(--gold)',fontWeight:700,textShadow:isInstant?'var(--glow-sm)':'var(--glow-gold-sm)'}}>{'\u2713'} READY TO CLAIM</span>
+                :<span>{(r.pts-pts).toLocaleString()} more needed</span>}
+            </div>
+            {/* Claim button */}
+            {canClaim&&<button style={{marginTop:10,background:isInstant?'linear-gradient(135deg,#22d3ee,#0891b2)':'linear-gradient(135deg,#fbbf24,#f59e0b)',color:'#050810',fontFamily:'var(--sans)',fontSize:12,fontWeight:700,padding:'8px 20px',border:'none',borderRadius:7,cursor:'pointer',boxShadow:'0 0 6px '+accentColor+'0.5),0 0 16px '+accentColor+'0.3),0 0 32px '+accentColor+'0.15)',transition:'all .2s'}} onClick={e=>{e.stopPropagation();claimReward(r)}}>Claim Reward</button>}
+            {/* Lock icon */}
+            {!canClaim&&<div style={{fontSize:14,color:'var(--t5)',marginTop:6}}>{'\u{1F512}'}</div>}
+          </div>);
+        })}
       </div>
 
       {/* Claimed Rewards History */}
       {rewards.length>0&&<div className="pp-card" style={{marginTop:16}}>
         <h3>Your Claimed Rewards</h3>
         {rewards.map(rw=>{
-          const det=rw.fulfillment_details?JSON.parse(rw.fulfillment_details):{};
+          let det={};try{det=rw.fulfillment_details?JSON.parse(rw.fulfillment_details):{};}catch(e){}
           const statusColors={pending:'var(--gold)',processing:'var(--em)',fulfilled:'var(--green)',rejected:'var(--red)'};
           const statusLabels={pending:'Pending Review',processing:'Being Fulfilled',fulfilled:'Fulfilled \u2713',rejected:'Rejected'};
           return (<div key={rw.id} style={{padding:'14px 0',borderBottom:'1px solid var(--bdr)'}}>
@@ -1832,8 +1854,6 @@ const PulsePointsTab = ({user,onLogin}) => {
                 <div style={{fontSize:14,fontWeight:700,color:'var(--t1)'}}>{rw.reward_name}</div>
                 <div style={{fontSize:11,color:'var(--t4)',marginTop:2}}>
                   {det.type==="eval"&&<>Firm: <b style={{color:'var(--t2)'}}>{det.firm}</b> &middot; </>}
-                  {det.type==="merch"&&<>Ship to: <b style={{color:'var(--t2)'}}>{det.shipName}</b> &middot; </>}
-                  {det.type==="call"&&<>Discord: <b style={{color:'var(--t2)'}}>{det.discord}</b> &middot; </>}
                   {new Date(rw.created_at).toLocaleDateString()}
                 </div>
               </div>
@@ -1854,7 +1874,7 @@ const PulsePointsTab = ({user,onLogin}) => {
       <p style={{marginBottom:16}}>This will deduct <b style={{color:'var(--gold)'}}>{claimModal.pts} points</b> from your balance.</p>
 
       {claimModal.type==="eval"&&<>
-        <div style={{fontSize:12,fontWeight:600,color:'var(--t3)',marginBottom:5}}>Which firm do you want your {claimModal.evalSize} account from?</div>
+        <div style={{fontSize:12,fontWeight:600,color:'var(--t3)',marginBottom:5}}>Which firm do you want your {claimModal.evalSize} {claimModal.cat==="instant"?"instant funded":"evaluation"} account from?</div>
         <select className="pp-form" value={claimForm.firm||""} onChange={e=>setClaimForm(p=>({...p,firm:e.target.value}))} style={{width:'100%',background:'var(--bg3)',border:'1px solid var(--bdr2)',borderRadius:8,padding:'10px 14px',color:'var(--t1)',fontFamily:'var(--sans)',fontSize:13,marginBottom:10}}>
           <option value="">Select firm...</option>
           {FIRMS.map(f=><option key={f.name} value={f.name}>{f.name}</option>)}
