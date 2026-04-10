@@ -606,6 +606,10 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .rw-card{transition:all .3s ease;position:relative;overflow:hidden}
 .rw-card:hover{transform:translateY(-6px);border-color:rgba(251,191,36,0.4) !important;box-shadow:0 0 8px rgba(251,191,36,0.5),0 0 24px rgba(251,191,36,0.35),0 0 60px rgba(251,191,36,0.2),0 0 120px rgba(251,191,36,0.1),0 0 200px rgba(251,191,36,0.05),0 20px 60px rgba(0,0,0,0.3) !important}
 .rw-card.instant:hover{border-color:rgba(34,211,238,0.4) !important;box-shadow:0 0 8px rgba(34,211,238,0.5),0 0 24px rgba(34,211,238,0.35),0 0 60px rgba(34,211,238,0.2),0 0 120px rgba(34,211,238,0.1),0 0 200px rgba(34,211,238,0.05),0 20px 60px rgba(0,0,0,0.3) !important}
+.rw-card.locked-bronze:hover{border-color:rgba(205,127,50,0.4) !important;box-shadow:0 0 6px rgba(205,127,50,0.4),0 0 20px rgba(205,127,50,0.25),0 0 50px rgba(205,127,50,0.12),0 0 100px rgba(205,127,50,0.06),0 16px 48px rgba(0,0,0,0.3) !important}
+.rw-card.locked-silver:hover{border-color:rgba(192,192,192,0.4) !important;box-shadow:0 0 6px rgba(192,192,192,0.4),0 0 20px rgba(192,192,192,0.25),0 0 50px rgba(192,192,192,0.12),0 0 100px rgba(192,192,192,0.06),0 16px 48px rgba(0,0,0,0.3) !important}
+.rw-card.locked-gold:hover{border-color:rgba(251,191,36,0.3) !important;box-shadow:0 0 6px rgba(251,191,36,0.3),0 0 20px rgba(251,191,36,0.2),0 0 50px rgba(251,191,36,0.1),0 0 100px rgba(251,191,36,0.05),0 16px 48px rgba(0,0,0,0.3) !important}
+.rw-card.locked-diamond:hover{border-color:rgba(103,232,249,0.4) !important;box-shadow:0 0 6px rgba(103,232,249,0.4),0 0 20px rgba(103,232,249,0.25),0 0 50px rgba(103,232,249,0.12),0 0 100px rgba(103,232,249,0.06),0 16px 48px rgba(0,0,0,0.3) !important}
 .pp-login-prompt{text-align:center;padding:40px 20px}
 .pp-login-prompt h3{font-size:18px;font-weight:700;margin-bottom:8px}
 .pp-login-prompt p{color:var(--t4);font-size:13px;margin-bottom:16px}
@@ -1801,12 +1805,12 @@ const PulsePointsTab = ({user,onLogin}) => {
           const tierData=LOYALTY_TIERS.find(t=>t.name.toLowerCase()===r.tier)||LOYALTY_TIERS[0];
           const isInstant=r.cat==="instant";
           const accentColor=isInstant?'rgba(34,211,238,':'rgba(251,191,36,';
-          return (<div key={i} className={"rw-card"+(isInstant?" instant":"")} style={{
-            background:canClaim?'linear-gradient(135deg,'+accentColor+'0.1),'+accentColor+'0.04))':'var(--glass)',
-            border:'1px solid '+(canClaim?accentColor+'0.35)':'var(--bdr2)'),
+          return (<div key={i} className={"rw-card"+(isInstant?" instant":"")+(canClaim?"":" locked-"+r.tier)} style={{
+            background:canClaim?'linear-gradient(135deg,'+accentColor+'0.1),'+accentColor+'0.04))':'linear-gradient(135deg,'+tierData.color+'08,'+tierData.color+'03)',
+            border:'1px solid '+(canClaim?accentColor+'0.35)':tierData.color+'20'),
             borderRadius:14,padding:'20px 16px',textAlign:'center',
             cursor:canClaim?'pointer':'default',
-            boxShadow:canClaim?'0 0 4px '+accentColor+'0.3),0 0 16px '+accentColor+'0.15),0 0 40px '+accentColor+'0.06)':'none',
+            boxShadow:canClaim?'0 0 4px '+accentColor+'0.3),0 0 16px '+accentColor+'0.15),0 0 40px '+accentColor+'0.06)':'0 0 3px '+tierData.color+'30,0 0 12px '+tierData.color+'15,0 0 30px '+tierData.color+'08',
           }} onClick={()=>canClaim&&claimReward(r)}>
             {/* Top glow bar */}
             <div style={{position:'absolute',top:0,left:0,right:0,height:canClaim?3:1,background:canClaim?'linear-gradient(90deg,transparent,'+(isInstant?'var(--em)':'var(--gold)')+',transparent)':'linear-gradient(90deg,transparent,'+tierData.color+'40,transparent)',boxShadow:canClaim?'0 0 20px '+accentColor+'0.6)':'none'}}/>
