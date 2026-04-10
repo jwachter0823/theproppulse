@@ -1624,7 +1624,7 @@ const PulsePointsTab = ({user,onLogin}) => {
     setClaimSubmitting(true);
     const details=JSON.stringify({...claimForm,type:r.type,evalSize:r.evalSize||null,cat:r.cat||"eval"});
     const {error}=await supabase.from("rewards").insert({user_id:user.id,reward_name:r.name,points_cost:r.pts,fulfillment_details:details,user_email:user.email,status:"pending"});
-    if(error){alert("Failed to claim: "+error.message);setClaimSubmitting(false);return;}
+    if(error){alert("Failed to claim: "+error.message);setClaimSubmitting(false);setClaimModal(null);return;}
     await supabase.from("points_history").insert({user_id:user.id,amount:-r.pts,reason:"Reward: "+r.name});
     await supabase.from("profiles").update({points:profile.points-r.pts,rewards_claimed:(profile.rewards_claimed||0)+1}).eq("id",user.id);
     setClaimSubmitting(false);setClaimModal(null);setClaimForm({});loadData();
