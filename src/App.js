@@ -1532,10 +1532,16 @@ const REWARD_TIERS = [
   {name:"Instant Funded 150K",pts:110000,desc:"Skip the eval — funded immediately",type:"eval",evalSize:"150K",icon:"\u{1F680}",tier:"diamond",cat:"instant"},
 ];
 const LOYALTY_TIERS = [
-  {name:"Bronze",min:0,max:9999,color:"#cd7f32",glow:"0 0 8px rgba(205,127,50,0.4)",icon:"\u{1F949}"},
-  {name:"Silver",min:10000,max:24999,color:"#c0c0c0",glow:"0 0 8px rgba(192,192,192,0.4)",icon:"\u{1F948}"},
-  {name:"Gold",min:25000,max:49999,color:"#fbbf24",glow:"0 0 12px rgba(251,191,36,0.5),0 0 24px rgba(251,191,36,0.2)",icon:"\u{1F947}"},
-  {name:"Diamond",min:50000,max:Infinity,color:"#67e8f9",glow:"0 0 12px rgba(103,232,249,0.5),0 0 28px rgba(103,232,249,0.2)",icon:"\u{1F48E}"},
+  {name:"Bronze",min:0,max:4999,color:"#cd7f32",glow:"0 0 8px rgba(205,127,50,0.4)",icon:"\u{1F949}",bonus:0},
+  {name:"Silver",min:5000,max:14999,color:"#c0c0c0",glow:"0 0 8px rgba(192,192,192,0.4)",icon:"\u{1F948}",bonus:500},
+  {name:"Gold",min:15000,max:34999,color:"#fbbf24",glow:"0 0 12px rgba(251,191,36,0.5),0 0 24px rgba(251,191,36,0.2)",icon:"\u{1F947}",bonus:1500},
+  {name:"Platinum",min:35000,max:59999,color:"#e5e4e2",glow:"0 0 10px rgba(229,228,226,0.5),0 0 20px rgba(229,228,226,0.2)",icon:"\u{2B50}",bonus:3000},
+  {name:"Diamond",min:60000,max:99999,color:"#67e8f9",glow:"0 0 12px rgba(103,232,249,0.5),0 0 28px rgba(103,232,249,0.2)",icon:"\u{1F48E}",bonus:5000},
+  {name:"Master",min:100000,max:174999,color:"#a78bfa",glow:"0 0 12px rgba(167,139,250,0.5),0 0 28px rgba(167,139,250,0.2)",icon:"\u{1F3C6}",bonus:8000},
+  {name:"Grandmaster",min:175000,max:299999,color:"#f472b6",glow:"0 0 12px rgba(244,114,182,0.5),0 0 28px rgba(244,114,182,0.2)",icon:"\u{1F525}",bonus:12000},
+  {name:"Legend",min:300000,max:499999,color:"#fb923c",glow:"0 0 14px rgba(251,146,60,0.6),0 0 32px rgba(251,146,60,0.25)",icon:"\u{26A1}",bonus:20000},
+  {name:"Mythic",min:500000,max:999999,color:"#f43f5e",glow:"0 0 16px rgba(244,63,94,0.6),0 0 36px rgba(244,63,94,0.25)",icon:"\u{1F480}",bonus:35000},
+  {name:"Immortal",min:1000000,max:Infinity,color:"#fef08a",glow:"0 0 20px rgba(254,240,138,0.7),0 0 40px rgba(254,240,138,0.3),0 0 80px rgba(254,240,138,0.1)",icon:"\u{1F451}",bonus:75000},
 ];
 const getLoyaltyTier = (totalEarned) => LOYALTY_TIERS.find(t=>totalEarned>=t.min&&totalEarned<=t.max)||LOYALTY_TIERS[0];
 const getNextTier = (totalEarned) => LOYALTY_TIERS.find(t=>totalEarned<t.min)||null;
@@ -1576,6 +1582,7 @@ const PulsePointsTab = ({user,onLogin}) => {
   const [reviewText,setReviewText]=useState("");
   const [reviewSubmitting,setReviewSubmitting]=useState(false);
   const [siteReviews,setSiteReviews]=useState([]);
+  const [adminBonusTasks,setAdminBonusTasks]=useState([]);
 
   const loadData = useCallback(async ()=>{
     if(!user) return;
@@ -1589,8 +1596,8 @@ const PulsePointsTab = ({user,onLogin}) => {
     setRewards(r||[]);
     const {data:c}=await supabase.from("click_tracking").select("*").eq("user_id",user.id).order("clicked_at",{ascending:false}).limit(50);
     setClicks(c||[]);
-    const {data:bt}=await supabase.from("bonus_tasks").select("task_key").eq("user_id",user.id);
-    setCompletedTasks((bt||[]).map(t=>t.task_key));
+    const {data:bt}=await supabase.from("bonus_tasks").select("*").eq("user_id",user.id);
+    setCompletedTasks((bt||[]).filter(t=>t.status==="approved"||t.status==="pending").map(t=>({key:t.task_key,status:t.status})));
     const {data:rv}=await supabase.from("reviews").select("*").eq("is_approved",true).order("created_at",{ascending:false}).limit(50);
     setSiteReviews(rv||[]);
     if(p&&p.is_admin){
@@ -1598,6 +1605,8 @@ const PulsePointsTab = ({user,onLogin}) => {
       setAdminSubs(as||[]);
       const {data:ar}=await supabase.from("rewards").select("*").order("created_at",{ascending:false});
       setAdminRewards(ar||[]);
+      const {data:abt}=await supabase.from("bonus_tasks").select("*").order("completed_at",{ascending:false});
+      setAdminBonusTasks(abt||[]);
     }
   },[user]);
 
@@ -1662,16 +1671,35 @@ const PulsePointsTab = ({user,onLogin}) => {
     setAdminNoteId(null);setAdminNote("");loadData();
   };
 
+  const [taskScreenshot,setTaskScreenshot]=useState("");
+  const [taskSubmitting,setTaskSubmitting]=useState("");
+  const [taskMsg,setTaskMsg]=useState("");
+
   const claimTask = async (task) => {
-    if(completedTasks.includes(task.key)) return;
-    if(task.url){window.open(task.url,"_blank");}
+    if(completedTasks.some(t=>t.key===task.key)) return;
     if(task.key==="leave_review"){setShowReviewModal(true);return;}
-    // For social tasks, open link then let them claim after a delay
-    const {error}=await supabase.from("bonus_tasks").insert({user_id:user.id,task_key:task.key,points_awarded:task.pts});
-    if(error){alert("Already claimed or error: "+error.message);return;}
-    await supabase.from("points_history").insert({user_id:user.id,amount:task.pts,reason:"Bonus: "+task.label});
-    const {data:p}=await supabase.from("profiles").select("points,total_earned").eq("id",user.id).single();
-    if(p) await supabase.from("profiles").update({points:(p.points||0)+task.pts,total_earned:(p.total_earned||0)+task.pts}).eq("id",user.id);
+    if(task.url) window.open(task.url,"_blank");
+  };
+
+  const submitTaskProof = async (task) => {
+    if(!taskScreenshot){setTaskMsg("Upload a screenshot first");return;}
+    setTaskSubmitting(task.key);setTaskMsg("");
+    const {error}=await supabase.from("bonus_tasks").insert({user_id:user.id,task_key:task.key,points_awarded:task.pts,status:"pending",screenshot_url:taskScreenshot});
+    if(error){setTaskMsg("Error: "+error.message);setTaskSubmitting("");return;}
+    setTaskMsg("Submitted! We'll review and credit your points.");
+    setTaskScreenshot("");setTaskSubmitting("");loadData();
+  };
+
+  const handleApproveTask = async (bt) => {
+    await supabase.from("bonus_tasks").update({status:"approved"}).eq("id",bt.id);
+    await supabase.from("points_history").insert({user_id:bt.user_id,amount:bt.points_awarded,reason:"Bonus: "+bt.task_key});
+    const {data:p}=await supabase.from("profiles").select("points,total_earned").eq("id",bt.user_id).single();
+    if(p) await supabase.from("profiles").update({points:(p.points||0)+bt.points_awarded,total_earned:(p.total_earned||0)+bt.points_awarded}).eq("id",bt.user_id);
+    loadData();
+  };
+
+  const handleRejectTask = async (bt) => {
+    await supabase.from("bonus_tasks").update({status:"rejected"}).eq("id",bt.id);
     loadData();
   };
 
@@ -1682,7 +1710,7 @@ const PulsePointsTab = ({user,onLogin}) => {
     const {error}=await supabase.from("reviews").insert({user_id:user.id,rating:reviewRating,content:reviewText.trim(),display_name:displayName,is_approved:true});
     if(error){alert("Error: "+error.message);setReviewSubmitting(false);return;}
     // Also mark the bonus task as done
-    if(!completedTasks.includes("leave_review")){
+    if(!completedTasks.some(t=>t.key==="leave_review")){
       await supabase.from("bonus_tasks").insert({user_id:user.id,task_key:"leave_review",points_awarded:200});
       await supabase.from("points_history").insert({user_id:user.id,amount:200,reason:"Bonus: Share a Review"});
       const {data:p}=await supabase.from("profiles").select("points,total_earned").eq("id",user.id).single();
@@ -1761,6 +1789,7 @@ const PulsePointsTab = ({user,onLogin}) => {
       <button className={`pp-tab ${ppTab==="earn"?"on":""}`} onClick={()=>setPpTab("earn")}>Earn More</button>
       <button className={`pp-tab ${ppTab==="history"?"on":""}`} onClick={()=>setPpTab("history")}>History</button>
       <button className={`pp-tab ${ppTab==="rewards"?"on":""}`} onClick={()=>setPpTab("rewards")}>Rewards</button>
+      <button className={`pp-tab ${ppTab==="reviews"?"on":""}`} onClick={()=>setPpTab("reviews")}>Reviews</button>
       {profile?.is_admin&&<button className={`pp-tab ${ppTab==="admin"?"on":""}`} onClick={()=>setPpTab("admin")} style={{borderColor:'rgba(255,71,87,0.3)',color:ppTab==="admin"?'var(--red)':'var(--t4)'}}>Admin</button>}
     </div>
 
@@ -1814,61 +1843,100 @@ const PulsePointsTab = ({user,onLogin}) => {
     </div>}
 
     {ppTab==="earn"&&<>
-      {/* Bonus Tasks */}
       <div className="pp-card" style={{marginBottom:16}}>
         <h3 style={{display:'flex',alignItems:'center',gap:8}}>{'\u{1F3AF}'} <span style={{background:'linear-gradient(135deg,var(--em2),var(--gold))',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Bonus Tasks</span>
-          <span style={{marginLeft:'auto',fontFamily:'var(--mono)',fontSize:12,color:completedTasks.length>=BONUS_TASKS.length?'var(--green)':'var(--t4)'}}>{completedTasks.length}/{BONUS_TASKS.length}</span>
+          <span style={{marginLeft:'auto',fontFamily:'var(--mono)',fontSize:12,color:completedTasks.length>=BONUS_TASKS.length?'var(--green)':'var(--t4)'}}>{completedTasks.filter(t=>t.status==="approved").length}/{BONUS_TASKS.length}</span>
         </h3>
-        <div style={{height:4,background:'var(--bg4)',borderRadius:2,overflow:'hidden',margin:'12px 0'}}>
-          <div style={{height:'100%',background:'linear-gradient(90deg,var(--em),var(--gold))',borderRadius:2,width:(completedTasks.length/BONUS_TASKS.length*100)+'%',transition:'width .5s ease',boxShadow:'0 0 8px rgba(251,191,36,0.4)'}}/>
+        <p style={{fontSize:12,color:'var(--t4)',marginBottom:12}}>Complete tasks and upload proof to earn bonus points. We'll review and credit within 48 hours.</p>
+        <div style={{height:4,background:'var(--bg4)',borderRadius:2,overflow:'hidden',marginBottom:16}}>
+          <div style={{height:'100%',background:'linear-gradient(90deg,var(--em),var(--gold))',borderRadius:2,width:(completedTasks.filter(t=>t.status==="approved").length/BONUS_TASKS.length*100)+'%',transition:'width .5s ease',boxShadow:'0 0 8px rgba(251,191,36,0.4)'}}/>
         </div>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(220px,100%),1fr))',gap:10,marginTop:12}}>
+        <div style={{display:'grid',gap:10}}>
           {BONUS_TASKS.map(task=>{
-            const done=completedTasks.includes(task.key);
-            return (<div key={task.key} style={{background:done?'rgba(16,185,129,0.06)':'var(--bg3)',border:'1px solid '+(done?'rgba(16,185,129,0.2)':task.color+'25'),borderRadius:10,padding:'16px',display:'flex',alignItems:'center',gap:12,cursor:done?'default':'pointer',transition:'all .2s',opacity:done?0.7:1}} onClick={()=>!done&&claimTask(task)}>
-              <div style={{width:40,height:40,borderRadius:10,background:task.color+'18',border:'1px solid '+task.color+'30',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,flexShrink:0,boxShadow:done?'none':'0 0 8px '+task.color+'20'}}>{done?'\u2713':task.icon}</div>
-              <div style={{flex:1,minWidth:0}}>
-                <div style={{fontSize:13,fontWeight:700,color:done?'var(--green)':'var(--t1)'}}>{task.label}</div>
-                <div style={{fontFamily:'var(--mono)',fontSize:12,fontWeight:700,color:done?'var(--green)':'var(--gold)',marginTop:2,display:'flex',alignItems:'center',gap:4}}>
-                  {done?<>{'\u2713'} +{task.pts} earned</>:<>+{task.pts} pts</>}
+            const ct=completedTasks.find(t=>t.key===task.key);
+            const done=ct?.status==="approved";
+            const pending=ct?.status==="pending";
+            return (<div key={task.key} style={{background:done?'rgba(16,185,129,0.06)':pending?'rgba(251,191,36,0.04)':'var(--bg3)',border:'1px solid '+(done?'rgba(16,185,129,0.2)':pending?'rgba(251,191,36,0.15)':task.color+'20'),borderRadius:12,padding:'16px 18px',transition:'all .2s'}}>
+              <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:done||pending?0:12}}>
+                <div style={{width:42,height:42,borderRadius:10,background:task.color+'18',border:'1px solid '+task.color+'30',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,flexShrink:0,boxShadow:'0 0 8px '+task.color+'20'}}>{done?'\u2713':task.icon}</div>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:14,fontWeight:700,color:done?'var(--green)':pending?'var(--gold)':'var(--t1)'}}>{task.label}</div>
+                  <div style={{fontFamily:'var(--mono)',fontSize:12,fontWeight:700,color:done?'var(--green)':pending?'var(--gold)':'var(--t4)',marginTop:2}}>
+                    {done?'\u2713 +'+task.pts+' earned':pending?'\u23F3 Pending review — +'+task.pts+' pts':'+'+task.pts+' pts'}
+                  </div>
                 </div>
+                {!done&&!pending&&task.key!=="leave_review"&&<button style={{fontSize:11,fontWeight:700,color:task.color,background:task.color+'12',border:'1px solid '+task.color+'25',padding:'6px 14px',borderRadius:6,cursor:'pointer',whiteSpace:'nowrap'}} onClick={()=>claimTask(task)}>Visit {'\u2197'}</button>}
+                {!done&&!pending&&task.key==="leave_review"&&<button style={{fontSize:11,fontWeight:700,color:'var(--gold)',background:'rgba(251,191,36,0.1)',border:'1px solid rgba(251,191,36,0.2)',padding:'6px 14px',borderRadius:6,cursor:'pointer',whiteSpace:'nowrap'}} onClick={()=>setShowReviewModal(true)}>Write Review</button>}
               </div>
-              {!done&&<div style={{fontSize:10,fontWeight:700,color:task.color,background:task.color+'15',border:'1px solid '+task.color+'25',padding:'5px 10px',borderRadius:6,whiteSpace:'nowrap'}}>{task.key==="leave_review"?"Write Review":"Claim"}</div>}
+              {!done&&!pending&&task.key!=="leave_review"&&<div style={{marginTop:12,padding:'12px',background:'var(--bg2)',borderRadius:8,border:'1px solid var(--bdr)'}}>
+                <div style={{fontSize:11,fontWeight:600,color:'var(--t3)',marginBottom:6}}>Upload proof (screenshot of following/subscribing/joining)</div>
+                <input type="file" accept="image/*" onChange={async e=>{
+                  const file=e.target.files?.[0];if(!file)return;
+                  setTaskMsg("Uploading...");
+                  const ext=file.name.split('.').pop();
+                  const path=user.id+'/task_'+task.key+'_'+Date.now()+'.'+ext;
+                  const {error}=await supabase.storage.from('screenshots').upload(path,file);
+                  if(error){setTaskMsg("Upload error: "+error.message);return;}
+                  const {data:u}=supabase.storage.from('screenshots').getPublicUrl(path);
+                  setTaskScreenshot(u.publicUrl);setTaskMsg("Screenshot uploaded!");
+                }} style={{fontSize:11,color:'var(--t3)',marginBottom:6}}/>
+                {taskScreenshot&&<div style={{fontSize:11,color:'var(--green)',marginBottom:6}}>{'\u2705'} Screenshot attached</div>}
+                {taskMsg&&<div style={{fontSize:11,color:taskMsg.includes("Error")?'var(--red)':'var(--green)',marginBottom:6}}>{taskMsg}</div>}
+                <button style={{background:'linear-gradient(135deg,var(--em),#0891b2)',color:'#050810',fontSize:11,fontWeight:700,padding:'7px 16px',border:'none',borderRadius:6,cursor:'pointer',boxShadow:'var(--glow-sm)'}} onClick={()=>submitTaskProof(task)} disabled={taskSubmitting===task.key||!taskScreenshot}>{taskSubmitting===task.key?"Submitting...":"Submit Proof for +"+task.pts+" pts"}</button>
+              </div>}
             </div>);
           })}
         </div>
       </div>
 
-      {/* Reviews Section */}
+      {/* Tier Roadmap */}
       <div className="pp-card">
-        <h3 style={{display:'flex',alignItems:'center',gap:8}}>{'\u2B50'} <span style={{background:'linear-gradient(135deg,var(--gold),#fde68a)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Community Reviews</span>
-          {!completedTasks.includes("leave_review")&&<button style={{marginLeft:'auto',background:'linear-gradient(135deg,#fbbf24,#f59e0b)',color:'#050810',fontSize:11,fontWeight:700,padding:'6px 14px',border:'none',borderRadius:6,cursor:'pointer',boxShadow:'var(--glow-gold-sm)'}} onClick={()=>setShowReviewModal(true)}>Write a Review (+200 pts)</button>}
-        </h3>
-        {siteReviews.length===0?<p style={{fontSize:12,color:'var(--t4)',padding:'16px 0',textAlign:'center'}}>No reviews yet. Be the first!</p>
-        :<div style={{display:'grid',gap:10,marginTop:12}}>
-          {siteReviews.map(rv=>(
-            <div key={rv.id} style={{background:'var(--bg3)',border:'1px solid var(--bdr)',borderRadius:10,padding:'14px 16px'}}>
-              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}>
-                <div style={{display:'flex',alignItems:'center',gap:8}}>
-                  <div style={{width:28,height:28,borderRadius:'50%',background:'linear-gradient(135deg,var(--em),#0891b2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:800,color:'#050810'}}>{(rv.display_name||"T")[0].toUpperCase()}</div>
-                  <div>
-                    <div style={{fontSize:13,fontWeight:700,color:'var(--t1)'}}>{rv.display_name}</div>
-                    <div style={{fontSize:10,color:'var(--t4)'}}>{new Date(rv.created_at).toLocaleDateString()}</div>
-                  </div>
-                </div>
-                <div style={{color:'#facc15',fontSize:13,textShadow:'0 0 6px rgba(250,204,21,0.3)',letterSpacing:1}}>{'★'.repeat(rv.rating)}{'☆'.repeat(5-rv.rating)}</div>
-              </div>
-              <div style={{fontSize:13,color:'var(--t2)',lineHeight:1.6}}>{rv.content}</div>
-            </div>
-          ))}
-        </div>}
+        <h3 style={{display:'flex',alignItems:'center',gap:8}}>{'\u{1F3C6}'} <span style={{background:'linear-gradient(135deg,var(--em2),var(--gold))',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Loyalty Tier Roadmap</span></h3>
+        <p style={{fontSize:12,color:'var(--t4)',marginBottom:14}}>Earn bonus points when you reach each tier!</p>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(160px,100%),1fr))',gap:6}}>
+          {LOYALTY_TIERS.map((t,i)=>{
+            const earned=profile?.total_earned||0;
+            const reached=earned>=t.min;
+            return (<div key={i} style={{background:reached?t.color+'10':'var(--bg3)',border:'1px solid '+(reached?t.color+'30':'var(--bdr)'),borderRadius:8,padding:'10px 12px',textAlign:'center',opacity:reached?1:0.6}}>
+              <div style={{fontSize:18}}>{t.icon}</div>
+              <div style={{fontSize:11,fontWeight:700,color:reached?t.color:'var(--t4)',marginTop:2}}>{t.name}</div>
+              <div style={{fontFamily:'var(--mono)',fontSize:10,color:'var(--t4)',marginTop:2}}>{t.min.toLocaleString()}+</div>
+              {t.bonus>0&&<div style={{fontFamily:'var(--mono)',fontSize:10,fontWeight:700,color:reached?'var(--green)':'var(--gold)',marginTop:3}}>+{t.bonus.toLocaleString()} bonus</div>}
+            </div>);
+          })}
+        </div>
       </div>
+    </>}
+
+    {ppTab==="reviews"&&<>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
+        <div style={{fontSize:15,fontWeight:700,color:'var(--em)',textShadow:'var(--glow-sm)'}}>{'\u2B50'} Community Reviews ({siteReviews.length})</div>
+        <button style={{background:'linear-gradient(135deg,#fbbf24,#f59e0b)',color:'#050810',fontSize:12,fontWeight:700,padding:'8px 18px',border:'none',borderRadius:7,cursor:'pointer',boxShadow:'var(--glow-gold-sm)'}} onClick={()=>setShowReviewModal(true)}>{completedTasks.some(t=>t.key==="leave_review")?"Write Another Review":"Write a Review (+200 pts)"}</button>
+      </div>
+      {siteReviews.length===0?<div className="pp-card" style={{textAlign:'center',padding:40}}><div style={{fontSize:36,marginBottom:8}}>{'\u2B50'}</div><h3 style={{marginBottom:6}}>No reviews yet</h3><p style={{fontSize:13,color:'var(--t4)'}}>Be the first to share your experience!</p></div>
+      :<div style={{display:'grid',gap:10}}>
+        {siteReviews.map(rv=>(
+          <div key={rv.id} style={{background:'var(--glass)',border:'1px solid var(--bdr2)',borderRadius:12,padding:'18px 20px',transition:'all .2s'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
+              <div style={{display:'flex',alignItems:'center',gap:10}}>
+                <div style={{width:36,height:36,borderRadius:'50%',background:'linear-gradient(135deg,var(--em),#0891b2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,fontWeight:800,color:'#050810',boxShadow:'var(--glow-sm)'}}>{(rv.display_name||"T")[0].toUpperCase()}</div>
+                <div>
+                  <div style={{fontSize:14,fontWeight:700,color:'var(--t1)'}}>{rv.display_name}</div>
+                  <div style={{fontSize:11,color:'var(--t4)'}}>{new Date(rv.created_at).toLocaleDateString()}</div>
+                </div>
+              </div>
+              <div style={{color:'#facc15',fontSize:15,textShadow:'0 0 8px rgba(250,204,21,0.4)',letterSpacing:2}}>{'★'.repeat(rv.rating)}{'☆'.repeat(5-rv.rating)}</div>
+            </div>
+            <div style={{fontSize:14,color:'var(--t2)',lineHeight:1.7}}>{rv.content}</div>
+          </div>
+        ))}
+      </div>}
     </>}
 
     {showReviewModal&&<div className="auth-overlay" onClick={()=>setShowReviewModal(false)}><div className="auth-modal" onClick={e=>e.stopPropagation()} style={{maxWidth:480}}>
       <button className="auth-close" onClick={()=>setShowReviewModal(false)}>{'\u2715'}</button>
       <h2 style={{fontSize:18}}>Rate <span>ThePropPulse</span></h2>
-      <p style={{marginBottom:12}}>Share your experience and earn <b style={{color:'var(--gold)'}}>200 Pulse Points</b></p>
+      <p style={{marginBottom:12}}>Share your experience{!completedTasks.some(t=>t.key==="leave_review")&&<> and earn <b style={{color:'var(--gold)'}}>200 Pulse Points</b></>}</p>
       <div style={{display:'flex',justifyContent:'center',gap:6,margin:'16px 0'}}>
         {[1,2,3,4,5].map(n=>(
           <button key={n} onClick={()=>setReviewRating(n)} style={{background:'none',border:'none',fontSize:32,cursor:'pointer',color:n<=reviewRating?'#facc15':'var(--t5)',textShadow:n<=reviewRating?'0 0 8px rgba(250,204,21,0.4)':'none',transition:'all .15s',transform:n<=reviewRating?'scale(1.1)':'scale(1)'}}>{'★'}</button>
@@ -1877,7 +1945,7 @@ const PulsePointsTab = ({user,onLogin}) => {
       <div style={{textAlign:'center',fontSize:12,color:'var(--t3)',marginBottom:12}}>{["","Terrible","Poor","Average","Great","Excellent"][reviewRating]}</div>
       <textarea style={{width:'100%',minHeight:100,background:'var(--bg3)',border:'1px solid var(--bdr2)',borderRadius:8,padding:'12px 14px',color:'var(--t1)',fontFamily:'var(--sans)',fontSize:14,resize:'vertical',outline:'none'}} placeholder="Tell other traders about your experience with ThePropPulse..." value={reviewText} onChange={e=>setReviewText(e.target.value)}/>
       <div style={{fontSize:10,color:'var(--t4)',marginTop:4,marginBottom:8}}>{reviewText.length}/500 characters</div>
-      <button className="auth-btn" onClick={submitReview} disabled={reviewSubmitting||reviewText.trim().length<10}>{reviewSubmitting?"Submitting...":"Submit Review & Earn 200 Points"}</button>
+      <button className="auth-btn" onClick={submitReview} disabled={reviewSubmitting||reviewText.trim().length<10}>{reviewSubmitting?"Submitting...":completedTasks.some(t=>t.key==="leave_review")?"Submit Review":"Submit Review & Earn 200 Points"}</button>
     </div></div>}
 
     {ppTab==="history"&&<div className="pp-card">
@@ -2017,6 +2085,7 @@ const PulsePointsTab = ({user,onLogin}) => {
       <div style={{display:'flex',gap:4,marginBottom:16}}>
         <button className={`f-btn ${adminTab==="submissions"?"on":""}`} onClick={()=>setAdminTab("submissions")}>Purchase Submissions ({adminSubs.filter(s=>s.status==="pending").length} pending)</button>
         <button className={`f-btn ${adminTab==="rewards"?"on":""}`} style={adminTab==="rewards"?{borderColor:'rgba(251,191,36,0.3)',background:'rgba(251,191,36,0.1)',color:'var(--gold)'}:{}} onClick={()=>setAdminTab("rewards")}>{'\u{1F381}'} Reward Claims ({adminRewards.filter(r=>r.status==="pending").length} pending)</button>
+        <button className={`f-btn ${adminTab==="tasks"?"on":""}`} onClick={()=>setAdminTab("tasks")}>{'\u{1F3AF}'} Bonus Tasks ({adminBonusTasks.filter(t=>t.status==="pending").length} pending)</button>
       </div>
 
       {adminTab==="submissions"&&<div className="pp-card">
@@ -2124,6 +2193,33 @@ const PulsePointsTab = ({user,onLogin}) => {
           })}
         </div>
       </>}
+
+      {adminTab==="tasks"&&<div className="pp-card">
+        <h3 style={{color:'var(--em)'}}>{'\u{1F3AF}'} Bonus Task Submissions</h3>
+        {adminBonusTasks.filter(t=>t.status==="pending").length===0&&<p style={{fontSize:12,color:'var(--t4)',padding:8}}>No pending task submissions.</p>}
+        {adminBonusTasks.filter(t=>t.status==="pending").map(bt=>(
+          <div key={bt.id} className="pp-row" style={{flexWrap:'wrap',gap:8}}>
+            <div style={{flex:1,minWidth:200}}>
+              <div style={{fontSize:13,fontWeight:700,color:'var(--t1)'}}>{bt.task_key.replace(/_/g," ").replace(/\b\w/g,c=>c.toUpperCase())}</div>
+              <div style={{fontSize:11,color:'var(--t4)'}}>{bt.user_id.slice(0,8)}... · {new Date(bt.completed_at).toLocaleDateString()} · <span style={{color:'var(--gold)'}}>+{bt.points_awarded} pts</span></div>
+              {bt.screenshot_url&&<a href={bt.screenshot_url} target="_blank" rel="noopener" style={{fontSize:11,color:'var(--em)',display:'inline-block',marginTop:4}}>View Screenshot {'\u2192'}</a>}
+            </div>
+            <div style={{display:'flex',gap:4}}>
+              <button style={{background:'rgba(16,185,129,0.15)',border:'1px solid rgba(16,185,129,0.3)',color:'var(--green)',fontSize:11,fontWeight:700,padding:'5px 12px',borderRadius:5,cursor:'pointer'}} onClick={()=>handleApproveTask(bt)}>Approve</button>
+              <button style={{background:'rgba(255,71,87,0.15)',border:'1px solid rgba(255,71,87,0.3)',color:'var(--red)',fontSize:11,fontWeight:700,padding:'5px 12px',borderRadius:5,cursor:'pointer'}} onClick={()=>handleRejectTask(bt)}>Reject</button>
+            </div>
+          </div>
+        ))}
+        {adminBonusTasks.filter(t=>t.status!=="pending").length>0&&<>
+          <div style={{fontSize:11,fontWeight:700,color:'var(--t4)',marginTop:16,marginBottom:8,textTransform:'uppercase',letterSpacing:.8}}>History</div>
+          {adminBonusTasks.filter(t=>t.status!=="pending").map(bt=>(
+            <div key={bt.id} className="pp-row">
+              <div><div style={{fontSize:12,fontWeight:600}}>{bt.task_key.replace(/_/g," ")}</div><div style={{fontSize:10,color:'var(--t4)'}}>{bt.user_id.slice(0,8)}... · {new Date(bt.completed_at).toLocaleDateString()}</div></div>
+              <span className={`pp-status ${bt.status}`}>{bt.status}</span>
+            </div>
+          ))}
+        </>}
+      </div>}
     </>}
   </div>);
 };
