@@ -1630,15 +1630,18 @@ const PulsePointsTab = ({user,onLogin}) => {
     setClaimSubmitting(false);setClaimModal(null);setClaimForm({});loadData();
   };
 
-  const handleRewardStatus = async (rw,status) => {
-    const updates={status,fulfilled_by:user.id,fulfilled_at:new Date().toISOString()};
+  const handleRewardStatus = async (rw,newStatus) => {
+    const updates={status:newStatus};
+    if(newStatus==="fulfilled"){updates.fulfilled_by=user.id;updates.fulfilled_at=new Date().toISOString();}
     if(adminNote&&adminNoteId===rw.id) updates.admin_notes=adminNote;
-    await supabase.from("rewards").update(updates).eq("id",rw.id);
+    const {error}=await supabase.from("rewards").update(updates).eq("id",rw.id);
+    if(error){console.error("Reward update error:",error);alert("Update failed: "+error.message);return;}
     setAdminNoteId(null);setAdminNote("");loadData();
   };
 
   const saveAdminNote = async (rw) => {
-    await supabase.from("rewards").update({admin_notes:adminNote}).eq("id",rw.id);
+    const {error}=await supabase.from("rewards").update({admin_notes:adminNote}).eq("id",rw.id);
+    if(error){console.error("Note save error:",error);alert("Save failed: "+error.message);return;}
     setAdminNoteId(null);setAdminNote("");loadData();
   };
 
