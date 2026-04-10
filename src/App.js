@@ -397,7 +397,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .filters{display:flex;gap:5px;flex-wrap:wrap}
 .f-btn{background:var(--bg2);border:1px solid var(--bdr);color:var(--t4);font-family:var(--sans);font-size:12px;font-weight:600;padding:6px 14px;border-radius:6px;cursor:pointer;transition:all .15s}
 .f-btn:hover{border-color:var(--bdr2);color:var(--em);text-shadow:0 0 6px rgba(6,182,212,0.2)}
-.f-btn.on{background:var(--emA2);border-color:var(--bdr3);color:var(--em);box-shadow:0 0 10px rgba(6,182,212,0.12),inset 0 0 12px rgba(6,182,212,0.05);text-shadow:var(--glow-sm)}
+.f-btn.on{background:var(--emA2);border-color:var(--bdr3);color:var(--em);box-shadow:0 0 6px rgba(6,182,212,0.2),0 0 16px rgba(6,182,212,0.08),inset 0 0 12px rgba(6,182,212,0.05);text-shadow:var(--glow-sm)}
 .view-tog{display:flex;gap:2px;background:var(--bg2);border:1px solid var(--bdr2);border-radius:7px;padding:2px}
 .vt{background:none;border:none;color:var(--t5);font-family:var(--sans);font-size:12px;font-weight:600;padding:5px 12px;border-radius:5px;cursor:pointer;transition:all .12s}
 .vt:hover{color:var(--em)}
@@ -461,16 +461,16 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 /* ── TABLE ── */
 .tbl-wrap{border:1px solid var(--bdr2);border-radius:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--glass);box-shadow:0 0 1px rgba(6,182,212,0.1),0 0 20px rgba(0,0,0,0.2)}
 .tbl{width:100%;border-collapse:collapse;min-width:900px}
-.tbl th{background:var(--bg2);padding:12px 16px;font-size:10px;font-weight:700;color:var(--em);text-transform:uppercase;letter-spacing:.8px;text-align:left;border-bottom:1px solid var(--bdr2);white-space:nowrap;text-shadow:0 0 6px rgba(6,182,212,0.15)}
-.tbl td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--bdr);color:var(--t2);white-space:nowrap}
-.tbl tbody tr{cursor:pointer;transition:all .15s}
-.tbl tbody tr:hover{background:rgba(6,182,212,0.05);box-shadow:inset 0 0 20px rgba(6,182,212,0.03)}
-.tbl .mono{font-family:var(--mono);font-weight:600;color:var(--em2)}
-.tbl .good{color:var(--green);font-weight:700;text-shadow:var(--glow-green)}
-.tbl .warn{color:var(--amber);text-shadow:var(--glow-gold-sm)}
+.tbl th{background:var(--bg2);padding:14px 18px;font-size:11px;font-weight:700;color:var(--em);text-transform:uppercase;letter-spacing:.8px;text-align:left;border-bottom:1px solid var(--bdr2);white-space:nowrap;text-shadow:0 0 6px rgba(6,182,212,0.15)}
+.tbl td{padding:14px 18px;font-size:14px;border-bottom:1px solid var(--bdr);color:var(--t2);white-space:nowrap}
+.tbl tbody tr{cursor:pointer;transition:all .2s}
+.tbl tbody tr:hover{background:rgba(6,182,212,0.06);box-shadow:inset 0 0 30px rgba(6,182,212,0.04),0 0 12px rgba(6,182,212,0.06)}
+.tbl .mono{font-family:var(--mono);font-weight:700;color:var(--em2)}
+.tbl .good{color:var(--green);font-weight:700;text-shadow:0 0 6px rgba(16,185,129,0.3)}
+.tbl .warn{color:var(--amber);font-weight:700;text-shadow:0 0 6px rgba(255,190,11,0.3)}
 
 /* ── CHALLENGES ── */
-.ch-wrap{border:1px solid var(--bdr2);border-radius:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--glass);box-shadow:0 0 1px rgba(6,182,212,0.1),0 0 20px rgba(0,0,0,0.2)}
+.ch-wrap{border:1px solid var(--bdr2);border-radius:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--glass);box-shadow:0 0 2px rgba(6,182,212,0.15),0 0 20px rgba(0,0,0,0.2),0 0 40px rgba(6,182,212,0.04)}
 
 /* ── OFFERS ── */
 .offers-list{display:flex;flex-direction:column;gap:8px}
@@ -1960,8 +1960,8 @@ const PulsePointsTab = ({user,onLogin}) => {
           {LOYALTY_TIERS.map((t,i)=>{
             const earned=profile?.total_earned||0;
             const reached=earned>=t.min;
-            return (<div key={i} className={"tier-card tc-"+t.name.toLowerCase()} style={{background:reached?t.color+'10':'var(--bg3)',border:'1px solid '+(reached?t.color+'30':'var(--bdr)'),borderRadius:10,padding:'12px 14px',textAlign:'center',opacity:reached?1:0.7}}>
-              <div style={{fontSize:22}}>{t.icon}</div>
+            return (<div key={i} className={"tier-card tc-"+t.name.toLowerCase()} style={{background:reached?t.color+'12':'var(--bg3)',border:'1px solid '+(reached?t.color+'40':'var(--bdr)'),borderRadius:10,padding:'12px 14px',textAlign:'center',opacity:reached?1:0.7,boxShadow:reached?'0 0 6px '+t.color+'40,0 0 16px '+t.color+'25,0 0 36px '+t.color+'12':'none'}}>
+              <div style={{fontSize:22,filter:reached?'drop-shadow(0 0 6px '+t.color+'60)':'grayscale(0.5) opacity(0.5)'}}>{t.icon}</div>
               <div style={{fontSize:12,fontWeight:700,color:reached?t.color:'var(--t4)',marginTop:4}}>{t.name}</div>
               <div style={{fontFamily:'var(--mono)',fontSize:10,color:'var(--t4)',marginTop:2}}>{t.min.toLocaleString()}+</div>
               {t.bonus>0&&<div style={{fontFamily:'var(--mono)',fontSize:10,fontWeight:700,color:reached?'var(--green)':'var(--gold)',marginTop:3}}>+{t.bonus.toLocaleString()} bonus</div>}
