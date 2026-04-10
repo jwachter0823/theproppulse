@@ -568,7 +568,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .auth-err{background:rgba(255,71,87,0.1);border:1px solid rgba(255,71,87,0.2);color:var(--red);font-size:12px;padding:8px 12px;border-radius:6px;margin-bottom:10px}
 
 /* ── PULSE POINTS ── */
-.pp{max-width:800px;margin:0 auto}
+.pp{max-width:900px;margin:0 auto}
 .pp-header{text-align:center;margin-bottom:28px}
 .pp-header h2{font-size:22px;font-weight:800;margin-bottom:4px}
 .pp-header h2 span{color:var(--gold);text-shadow:var(--glow-gold-sm)}
@@ -668,6 +668,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   .offer-pct{min-width:70px;font-size:16px}
   .pp-rewards{grid-template-columns:1fr 1fr}
   .pp-balance-n{font-size:28px}
+  .pp-hdr-grid{grid-template-columns:1fr !important}
   .auth-modal{margin:16px;padding:24px}
   .nav-login{display:none}
   .panel{width:100%}
@@ -1064,14 +1065,14 @@ const NavBar = ({tab,setTab,setPage,user,onLogin,onLogout}) => {
         <div className="panel-pts" onClick={()=>go("points")}>
           <div className="panel-pts-top">
             <span className="panel-pts-label">Pulse Points</span>
-            <span className="panel-pts-val">{userPts}</span>
+            <span className="panel-pts-val">{userPts.toLocaleString()}</span>
           </div>
           <div className="panel-bar-bg">
-            <div className="panel-bar-fill" style={{width:Math.min(100,userPts/5)+'%'}}/>
+            <div className="panel-bar-fill" style={{width:Math.min(100,(userPts/10000)*100)+'%'}}/>
           </div>
           <div style={{display:'flex',justifyContent:'space-between',fontSize:10,color:'#475569',marginTop:6}}>
-            <span>{Math.max(0,500-userPts)} pts to next reward</span>
-            <span style={{color:'#fbbf24'}}>Free 50K Eval</span>
+            <span>{userPts>=10000?'Ready to claim!':Math.max(0,10000-userPts).toLocaleString()+' pts to next reward'}</span>
+            <span style={{color:'#fbbf24'}}>Free 25K (10,000)</span>
           </div>
         </div>
         <div className="panel-section-label">Pulse Points</div>
@@ -1510,12 +1511,19 @@ const AuthModal = ({onClose,onAuth}) => {
 // ── PULSE POINTS TAB ──
 const POINT_VALUES = {"25K":50,"50K":100,"75K":125,"100K":150,"150K":200,"200K":250,"250K":300,"300K":350};
 const REWARD_TIERS = [
-  {name:"Free 50K Evaluation",pts:500,desc:"Any partner firm",type:"eval",evalSize:"50K"},
-  {name:"Free 100K Evaluation",pts:900,desc:"Any partner firm",type:"eval",evalSize:"100K"},
-  {name:"Free 150K Evaluation",pts:1200,desc:"Any partner firm",type:"eval",evalSize:"150K"},
-  {name:"Exclusive Merch Pack",pts:300,desc:"ThePropPulse gear",type:"merch"},
-  {name:"1-on-1 Strategy Call",pts:800,desc:"30min with a funded trader",type:"call"},
+  {name:"Free 25K Evaluation",pts:10000,desc:"Any partner firm",type:"eval",evalSize:"25K",icon:"\u{1F4CA}",tier:"bronze"},
+  {name:"Free 50K Evaluation",pts:25000,desc:"Any partner firm",type:"eval",evalSize:"50K",icon:"\u{1F525}",tier:"silver"},
+  {name:"Free 100K Evaluation",pts:40000,desc:"Any partner firm",type:"eval",evalSize:"100K",icon:"\u{1F48E}",tier:"gold"},
+  {name:"Free 150K Evaluation",pts:60000,desc:"Any partner firm",type:"eval",evalSize:"150K",icon:"\u{1F451}",tier:"diamond"},
 ];
+const LOYALTY_TIERS = [
+  {name:"Bronze",min:0,max:9999,color:"#cd7f32",glow:"0 0 8px rgba(205,127,50,0.4)",icon:"\u{1F949}"},
+  {name:"Silver",min:10000,max:24999,color:"#c0c0c0",glow:"0 0 8px rgba(192,192,192,0.4)",icon:"\u{1F948}"},
+  {name:"Gold",min:25000,max:49999,color:"#fbbf24",glow:"0 0 12px rgba(251,191,36,0.5),0 0 24px rgba(251,191,36,0.2)",icon:"\u{1F947}"},
+  {name:"Diamond",min:50000,max:Infinity,color:"#67e8f9",glow:"0 0 12px rgba(103,232,249,0.5),0 0 28px rgba(103,232,249,0.2)",icon:"\u{1F48E}"},
+];
+const getLoyaltyTier = (totalEarned) => LOYALTY_TIERS.find(t=>totalEarned>=t.min&&totalEarned<=t.max)||LOYALTY_TIERS[0];
+const getNextTier = (totalEarned) => LOYALTY_TIERS.find(t=>totalEarned<t.min)||null;
 
 const PulsePointsTab = ({user,onLogin}) => {
   const [profile,setProfile]=useState(null);
@@ -1622,29 +1630,65 @@ const PulsePointsTab = ({user,onLogin}) => {
   if(!user) return (<div className="pp-login-prompt">
     <div style={{fontSize:48,marginBottom:12}}>{'\u2B50'}</div>
     <h3>Earn <span style={{color:'var(--gold)',textShadow:'var(--glow-gold-sm)'}}>Pulse Points</span></h3>
-    <p>Buy any evaluation with code PULSE, submit proof, and earn points toward free accounts.</p>
+    <p>Buy any evaluation with code PULSE, submit proof, and earn points toward free funded accounts.</p>
     <button className="auth-btn" style={{maxWidth:200,margin:'0 auto'}} onClick={onLogin}>Sign In / Sign Up</button>
     <div style={{marginTop:24}}>
       <div className="pp-card"><h3>How It Works</h3>
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:10}}>
           <div style={{textAlign:'center',padding:12}}><div style={{fontSize:24,marginBottom:6}}>1{'\uFE0F'}{'\u20E3'}</div><div style={{fontSize:13,fontWeight:600,color:'var(--t2)'}}>Buy with code PULSE</div><div style={{fontSize:11,color:'var(--t4)',marginTop:4}}>At any partner firm</div></div>
-          <div style={{textAlign:'center',padding:12}}><div style={{fontSize:24,marginBottom:6}}>2{'\uFE0F'}{'\u20E3'}</div><div style={{fontSize:13,fontWeight:600,color:'var(--t2)'}}>Submit Proof</div><div style={{fontSize:11,color:'var(--t4)',marginTop:4}}>Firm name + account size</div></div>
+          <div style={{textAlign:'center',padding:12}}><div style={{fontSize:24,marginBottom:6}}>2{'\uFE0F'}{'\u20E3'}</div><div style={{fontSize:13,fontWeight:600,color:'var(--t2)'}}>Upload Proof</div><div style={{fontSize:11,color:'var(--t4)',marginTop:4}}>Screenshot of purchase</div></div>
           <div style={{textAlign:'center',padding:12}}><div style={{fontSize:24,marginBottom:6}}>3{'\uFE0F'}{'\u20E3'}</div><div style={{fontSize:13,fontWeight:600,color:'var(--t2)'}}>Earn Points</div><div style={{fontSize:11,color:'var(--t4)',marginTop:4}}>50-350 pts per purchase</div></div>
-          <div style={{textAlign:'center',padding:12}}><div style={{fontSize:24,marginBottom:6}}>{'\u{1F3C6}'}</div><div style={{fontSize:13,fontWeight:600,color:'var(--t2)'}}>Claim Rewards</div><div style={{fontSize:11,color:'var(--t4)',marginTop:4}}>Free accounts & more</div></div>
+          <div style={{textAlign:'center',padding:12}}><div style={{fontSize:24,marginBottom:6}}>{'\u{1F3C6}'}</div><div style={{fontSize:13,fontWeight:600,color:'var(--t2)'}}>Unlock Rewards</div><div style={{fontSize:11,color:'var(--t4)',marginTop:4}}>Free accounts & more</div></div>
+        </div>
+      </div>
+      <div style={{marginTop:16}}>
+        <div style={{fontSize:13,fontWeight:700,color:'var(--em)',textAlign:'center',marginBottom:12,textShadow:'var(--glow-sm)'}}>Reward Tiers</div>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(200px,100%),1fr))',gap:8}}>
+          {REWARD_TIERS.map((r,i)=><div key={i} style={{background:'var(--glass)',border:'1px solid var(--bdr2)',borderRadius:10,padding:'14px 16px',textAlign:'center'}}>
+            <div style={{fontSize:20,marginBottom:4}}>{r.icon}</div>
+            <div style={{fontSize:12,fontWeight:700,color:'var(--t2)'}}>{r.name}</div>
+            <div style={{fontFamily:'var(--mono)',fontSize:16,fontWeight:800,color:'var(--gold)',textShadow:'var(--glow-gold-sm)',marginTop:4}}>{r.pts.toLocaleString()}</div>
+            <div style={{fontSize:10,color:'var(--t4)'}}>points</div>
+          </div>)}
         </div>
       </div>
     </div>
   </div>);
 
+  const tier=getLoyaltyTier(profile?.total_earned||0);
+  const nextTier=getNextTier(profile?.total_earned||0);
+  const tierProg=nextTier?((profile?.total_earned||0)-tier.min)/(nextTier.min-tier.min)*100:100;
+
   return (<div className="pp">
-    <div className="pp-header">
-      <h2>Your <span>Pulse Points</span></h2>
-      <div className="pp-balance">
-        <div><div className="pp-balance-n">{profile?.points||0}</div><div className="pp-balance-l">Points Balance</div></div>
+    {/* ── BALANCE + TIER HEADER ── */}
+    <div className="pp-hdr-grid" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginBottom:20}}>
+      {/* Balance Card */}
+      <div style={{background:'linear-gradient(135deg,rgba(6,182,212,0.08),rgba(251,191,36,0.06))',border:'1px solid rgba(251,191,36,0.15)',borderRadius:16,padding:'24px 20px',position:'relative',overflow:'hidden'}}>
+        <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:'linear-gradient(90deg,var(--em),var(--gold),var(--em))',boxShadow:'0 0 20px rgba(251,191,36,0.4)'}}/>
+        <div style={{position:'absolute',top:'50%',right:'-30px',transform:'translateY(-50%)',fontSize:100,opacity:0.04,fontWeight:900}}>{'\u2B50'}</div>
+        <div style={{fontSize:11,fontWeight:700,color:'var(--em)',textTransform:'uppercase',letterSpacing:1,marginBottom:8,textShadow:'var(--glow-sm)'}}>Your Points Balance</div>
+        <div style={{fontFamily:'var(--mono)',fontSize:42,fontWeight:900,color:'var(--gold)',textShadow:'0 0 8px rgba(251,191,36,0.6),0 0 24px rgba(251,191,36,0.3),0 0 48px rgba(251,191,36,0.15)',lineHeight:1,marginBottom:8,animation:'pulsGlow 3s ease-in-out infinite'}}>{(profile?.points||0).toLocaleString()}</div>
+        <div style={{display:'flex',gap:20,fontSize:11,color:'var(--t4)'}}>
+          <span>Earned: <b style={{color:'var(--gold)'}}>{(profile?.total_earned||0).toLocaleString()}</b></span>
+          <span>Claimed: <b style={{color:'var(--em)'}}>{profile?.rewards_claimed||0}</b></span>
+        </div>
       </div>
-      <div style={{display:'flex',justifyContent:'center',gap:20,fontSize:12,color:'var(--t4)',marginTop:8}}>
-        <span>Total Earned: <b style={{color:'var(--gold)'}}>{profile?.total_earned||0}</b></span>
-        <span>Rewards Claimed: <b style={{color:'var(--em)'}}>{profile?.rewards_claimed||0}</b></span>
+
+      {/* Tier Card */}
+      <div style={{background:'var(--glass)',border:'1px solid '+tier.color+'30',borderRadius:16,padding:'24px 20px',position:'relative',overflow:'hidden'}}>
+        <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:tier.color,boxShadow:tier.glow}}/>
+        <div style={{position:'absolute',top:'50%',right:'-20px',transform:'translateY(-50%)',fontSize:80,opacity:0.06}}>{tier.icon}</div>
+        <div style={{fontSize:11,fontWeight:700,color:tier.color,textTransform:'uppercase',letterSpacing:1,marginBottom:6}}>Loyalty Tier</div>
+        <div style={{fontSize:28,fontWeight:900,color:tier.color,textShadow:tier.glow,display:'flex',alignItems:'center',gap:8,marginBottom:10}}>{tier.icon} {tier.name}</div>
+        {nextTier?<>
+          <div style={{height:6,background:'var(--bg4)',borderRadius:3,overflow:'hidden',marginBottom:6}}>
+            <div style={{height:'100%',background:'linear-gradient(90deg,'+tier.color+','+nextTier.color+'80)',borderRadius:3,width:tierProg+'%',transition:'width .8s ease',boxShadow:'0 0 8px '+tier.color+'80'}}/>
+          </div>
+          <div style={{display:'flex',justifyContent:'space-between',fontSize:10,color:'var(--t4)'}}>
+            <span>{((profile?.total_earned||0)-tier.min).toLocaleString()} / {(nextTier.min-tier.min).toLocaleString()}</span>
+            <span style={{color:nextTier.color}}>{nextTier.icon} {nextTier.name}</span>
+          </div>
+        </>:<div style={{fontSize:11,color:tier.color,fontWeight:600}}>Max tier reached!</div>}
       </div>
     </div>
 
@@ -1714,16 +1758,68 @@ const PulsePointsTab = ({user,onLogin}) => {
     </div>}
 
     {ppTab==="rewards"&&<>
-      <div className="pp-card" style={{marginBottom:16}}><p style={{fontSize:13,color:'var(--t3)',textAlign:'center'}}>Redeem your points for free evaluations and exclusive rewards</p></div>
-      <div className="pp-rewards">
-        {REWARD_TIERS.map((r,i)=><div key={i} className="pp-reward">
-          <div style={{fontSize:18,marginBottom:4}}>{r.type==="eval"?"\u{1F4CA}":r.type==="merch"?"\u{1F455}":"\u{1F4DE}"}</div>
-          <div className="pp-reward-pts">{r.pts}</div>
-          <div className="pp-reward-name">{r.name}</div>
-          <div style={{fontSize:10,color:'var(--t4)',marginBottom:8}}>{r.desc}</div>
-          <button className="pp-reward-btn" disabled={!profile||profile.points<r.pts} onClick={()=>claimReward(r)}>{profile&&profile.points>=r.pts?"Claim":"Need "+(r.pts-(profile?.points||0))+" more"}</button>
-        </div>)}
+      {/* Earn Points Table */}
+      <div className="pp-card" style={{marginBottom:16}}>
+        <h3 style={{display:'flex',alignItems:'center',gap:6}}>{'\u{1F4B0}'} <span style={{background:'linear-gradient(135deg,var(--em2),var(--gold))',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Points Per Purchase</span></h3>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(100px,1fr))',gap:6,marginTop:12}}>
+          {Object.entries(POINT_VALUES).map(([size,pts])=>(
+            <div key={size} style={{background:'var(--bg3)',border:'1px solid var(--bdr)',borderRadius:8,padding:'10px 8px',textAlign:'center'}}>
+              <div style={{fontFamily:'var(--mono)',fontSize:15,fontWeight:800,color:'var(--em)',textShadow:'var(--glow-sm)'}}>{size}</div>
+              <div style={{fontFamily:'var(--mono)',fontSize:12,fontWeight:700,color:'var(--gold)',marginTop:2}}>+{pts}</div>
+            </div>
+          ))}
+        </div>
       </div>
+
+      {/* Rewards Grid */}
+      <div style={{marginBottom:16}}>
+        <div style={{fontSize:13,fontWeight:700,color:'var(--em)',marginBottom:12,display:'flex',alignItems:'center',gap:6,textShadow:'var(--glow-sm)'}}>{'\u{1F381}'} Unlock Rewards</div>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(200px,100%),1fr))',gap:10}}>
+          {REWARD_TIERS.map((r,i)=>{
+            const pts=profile?.points||0;
+            const canClaim=pts>=r.pts;
+            const progress=Math.min(100,(pts/r.pts)*100);
+            const tierData=LOYALTY_TIERS.find(t=>t.name.toLowerCase()===r.tier)||LOYALTY_TIERS[0];
+            return (<div key={i} style={{
+              background:canClaim?'linear-gradient(135deg,rgba(251,191,36,0.08),rgba(6,182,212,0.06))':'var(--glass)',
+              border:'1px solid '+(canClaim?'rgba(251,191,36,0.3)':'var(--bdr2)'),
+              borderRadius:14,padding:'20px 16px',textAlign:'center',position:'relative',overflow:'hidden',
+              transition:'all .3s',cursor:canClaim?'pointer':'default',
+              boxShadow:canClaim?'0 0 4px rgba(251,191,36,0.3),0 0 16px rgba(251,191,36,0.15),0 0 40px rgba(251,191,36,0.06)':'none',
+            }} onClick={()=>canClaim&&claimReward(r)}>
+              {/* Top glow bar */}
+              <div style={{position:'absolute',top:0,left:0,right:0,height:canClaim?3:1,background:canClaim?'linear-gradient(90deg,transparent,var(--gold),transparent)':'linear-gradient(90deg,transparent,'+tierData.color+'40,transparent)',boxShadow:canClaim?'0 0 12px rgba(251,191,36,0.5)':'none'}}/>
+              {/* Background glow */}
+              {canClaim&&<div style={{position:'absolute',top:'-50%',left:'50%',transform:'translateX(-50%)',width:200,height:200,background:'radial-gradient(circle,rgba(251,191,36,0.12) 0%,transparent 60%)',borderRadius:'50%',pointerEvents:'none',animation:'pulsGlow 3s ease-in-out infinite'}}/>}
+              {/* Tier badge */}
+              <div style={{position:'absolute',top:8,right:8,fontSize:8,fontWeight:700,color:tierData.color,background:tierData.color+'15',border:'1px solid '+tierData.color+'25',padding:'2px 6px',borderRadius:4,textTransform:'uppercase',letterSpacing:.5}}>{tierData.icon} {r.tier}</div>
+              {/* Icon */}
+              <div style={{fontSize:32,marginBottom:6,filter:canClaim?'none':'grayscale(0.5) opacity(0.6)'}}>{r.icon}</div>
+              {/* Points cost */}
+              <div style={{fontFamily:'var(--mono)',fontSize:20,fontWeight:900,color:canClaim?'var(--gold)':'var(--t3)',textShadow:canClaim?'0 0 8px rgba(251,191,36,0.6),0 0 20px rgba(251,191,36,0.3)':'none',marginBottom:2}}>{r.pts.toLocaleString()}</div>
+              <div style={{fontSize:9,color:'var(--t4)',fontWeight:600,textTransform:'uppercase',letterSpacing:.8,marginBottom:8}}>points</div>
+              {/* Name */}
+              <div style={{fontSize:13,fontWeight:700,color:canClaim?'var(--t1)':'var(--t3)',marginBottom:4}}>{r.name}</div>
+              <div style={{fontSize:10,color:'var(--t4)',marginBottom:12}}>{r.desc}</div>
+              {/* Progress bar */}
+              <div style={{height:4,background:'var(--bg4)',borderRadius:2,overflow:'hidden',marginBottom:6}}>
+                <div style={{height:'100%',background:canClaim?'linear-gradient(90deg,var(--gold),#fde68a)':'linear-gradient(90deg,'+tierData.color+'80,'+tierData.color+'40)',borderRadius:2,width:Math.min(100,progress)+'%',transition:'width .5s ease',boxShadow:canClaim?'0 0 6px rgba(251,191,36,0.4)':'none'}}/>
+              </div>
+              <div style={{fontSize:10,color:'var(--t4)',fontFamily:'var(--mono)'}}>
+                {canClaim
+                  ?<span style={{color:'var(--gold)',fontWeight:700,textShadow:'var(--glow-gold-sm)'}}>{'\u2713'} READY TO CLAIM</span>
+                  :<span>{(r.pts-pts).toLocaleString()} more needed</span>}
+              </div>
+              {/* Claim button */}
+              {canClaim&&<button style={{marginTop:10,background:'linear-gradient(135deg,#fbbf24,#f59e0b)',color:'#050810',fontFamily:'var(--sans)',fontSize:12,fontWeight:700,padding:'8px 20px',border:'none',borderRadius:7,cursor:'pointer',boxShadow:'0 0 4px rgba(251,191,36,0.5),0 0 12px rgba(251,191,36,0.3),0 0 24px rgba(251,191,36,0.15)',transition:'all .2s'}} onClick={e=>{e.stopPropagation();claimReward(r)}}>Claim Reward</button>}
+              {/* Lock icon */}
+              {!canClaim&&<div style={{fontSize:14,color:'var(--t5)',marginTop:6}}>{'\u{1F512}'}</div>}
+            </div>);
+          })}
+        </div>
+      </div>
+
+      {/* Claimed Rewards History */}
       {rewards.length>0&&<div className="pp-card" style={{marginTop:16}}>
         <h3>Your Claimed Rewards</h3>
         {rewards.map(rw=>{
@@ -1742,7 +1838,7 @@ const PulsePointsTab = ({user,onLogin}) => {
                 </div>
               </div>
               <div style={{display:'flex',alignItems:'center',gap:8}}>
-                <span style={{fontFamily:'var(--mono)',fontSize:11,color:'var(--gold)'}}>-{rw.points_cost} pts</span>
+                <span style={{fontFamily:'var(--mono)',fontSize:11,color:'var(--gold)'}}>-{rw.points_cost.toLocaleString()} pts</span>
                 <span style={{fontFamily:'var(--mono)',fontSize:10,fontWeight:700,padding:'3px 10px',borderRadius:5,background:(statusColors[rw.status]||'var(--t4)')+'15',color:statusColors[rw.status]||'var(--t4)',border:'1px solid '+(statusColors[rw.status]||'var(--t4)')+'30'}}>{statusLabels[rw.status]||rw.status}</span>
               </div>
             </div>
