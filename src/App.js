@@ -214,6 +214,18 @@ Several firms now offer drawdown locking. On Tradeify, once your EOD balance exc
 Always choose EOD trailing drawdown unless you have a specific reason not to (like MFFU Rapid's daily payouts). The difference in account survival rate is massive, and it's the one rule that protects you from normal market volatility that has nothing to do with your trading skill.`},
 ];
 
+// ─── VIDEOS ─────────────────────────────────────────────────────────────────
+// Add videos here: just drop in the YouTube video ID and metadata.
+// To get the ID: from a URL like https://youtube.com/watch?v=dQw4w9WgXcQ the ID is "dQw4w9WgXcQ"
+const VIDEOS = [
+  {id:"GVhYXerrvCU",title:"Tradeify 3.0 Full Review — Is It Still Worth It?",firm:"Tradeify",cat:"Review",date:"Apr 2026",duration:"12:34"},
+  {id:"GVhYXerrvCU",title:"Apex Trader Funding March 2026 Update — Everything Changed",firm:"Apex Trader Funding",cat:"Review",date:"Apr 2026",duration:"15:20"},
+  {id:"GVhYXerrvCU",title:"My Funded Futures vs Tradeify — Which One Is Better?",firm:"My Funded Futures",cat:"Comparison",date:"Apr 2026",duration:"18:45"},
+  {id:"GVhYXerrvCU",title:"Top One Futures Deep Dive — Hidden Rules Exposed",firm:"Top One Futures",cat:"Review",date:"Apr 2026",duration:"10:12"},
+  {id:"GVhYXerrvCU",title:"Alpha Futures Full Review — UK's Best Prop Firm?",firm:"Alpha Futures",cat:"Review",date:"Apr 2026",duration:"14:30"},
+  {id:"GVhYXerrvCU",title:"Best Prop Firm for NQ Scalpers in 2026",firm:null,cat:"Guide",date:"Apr 2026",duration:"22:10"},
+];
+
 
 // ─── CHALLENGES (per account size, per firm) ────────────────────────────────
 const CHALLENGES = [
@@ -610,6 +622,24 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .rw-card.locked-silver:hover{border-color:rgba(192,192,192,0.4) !important;box-shadow:0 0 6px rgba(192,192,192,0.4),0 0 20px rgba(192,192,192,0.25),0 0 50px rgba(192,192,192,0.12),0 0 100px rgba(192,192,192,0.06),0 16px 48px rgba(0,0,0,0.3) !important}
 .rw-card.locked-gold:hover{border-color:rgba(251,191,36,0.3) !important;box-shadow:0 0 6px rgba(251,191,36,0.3),0 0 20px rgba(251,191,36,0.2),0 0 50px rgba(251,191,36,0.1),0 0 100px rgba(251,191,36,0.05),0 16px 48px rgba(0,0,0,0.3) !important}
 .rw-card.locked-diamond:hover{border-color:rgba(103,232,249,0.4) !important;box-shadow:0 0 6px rgba(103,232,249,0.4),0 0 20px rgba(103,232,249,0.25),0 0 50px rgba(103,232,249,0.12),0 0 100px rgba(103,232,249,0.06),0 16px 48px rgba(0,0,0,0.3) !important}
+.tier-card{transition:all .3s ease;cursor:pointer}
+.tier-card:hover{transform:translateY(-4px) scale(1.03)}
+.tier-card.tc-bronze:hover{border-color:rgba(205,127,50,0.5) !important;box-shadow:0 0 8px rgba(205,127,50,0.5),0 0 24px rgba(205,127,50,0.35),0 0 60px rgba(205,127,50,0.2),0 0 120px rgba(205,127,50,0.1) !important}
+.tier-card.tc-silver:hover{border-color:rgba(192,192,192,0.5) !important;box-shadow:0 0 8px rgba(192,192,192,0.5),0 0 24px rgba(192,192,192,0.35),0 0 60px rgba(192,192,192,0.2),0 0 120px rgba(192,192,192,0.1) !important}
+.tier-card.tc-gold:hover{border-color:rgba(251,191,36,0.5) !important;box-shadow:0 0 10px rgba(251,191,36,0.6),0 0 30px rgba(251,191,36,0.4),0 0 70px rgba(251,191,36,0.2),0 0 140px rgba(251,191,36,0.1) !important}
+.tier-card.tc-platinum:hover{border-color:rgba(229,228,226,0.5) !important;box-shadow:0 0 10px rgba(229,228,226,0.6),0 0 30px rgba(229,228,226,0.4),0 0 70px rgba(229,228,226,0.2),0 0 140px rgba(229,228,226,0.1) !important}
+.tier-card.tc-diamond:hover{border-color:rgba(103,232,249,0.5) !important;box-shadow:0 0 12px rgba(103,232,249,0.6),0 0 36px rgba(103,232,249,0.45),0 0 80px rgba(103,232,249,0.25),0 0 160px rgba(103,232,249,0.1) !important}
+.tier-card.tc-master:hover{border-color:rgba(167,139,250,0.5) !important;box-shadow:0 0 12px rgba(167,139,250,0.6),0 0 36px rgba(167,139,250,0.45),0 0 80px rgba(167,139,250,0.25),0 0 160px rgba(167,139,250,0.1) !important}
+.tier-card.tc-grandmaster:hover{border-color:rgba(244,114,182,0.5) !important;box-shadow:0 0 14px rgba(244,114,182,0.6),0 0 40px rgba(244,114,182,0.45),0 0 90px rgba(244,114,182,0.25),0 0 180px rgba(244,114,182,0.1) !important}
+.tier-card.tc-legend:hover{border-color:rgba(251,146,60,0.5) !important;box-shadow:0 0 14px rgba(251,146,60,0.7),0 0 40px rgba(251,146,60,0.5),0 0 100px rgba(251,146,60,0.3),0 0 200px rgba(251,146,60,0.12) !important}
+.tier-card.tc-mythic:hover{border-color:rgba(244,63,94,0.5) !important;box-shadow:0 0 16px rgba(244,63,94,0.7),0 0 45px rgba(244,63,94,0.5),0 0 110px rgba(244,63,94,0.3),0 0 220px rgba(244,63,94,0.12) !important}
+.tier-card.tc-immortal:hover{border-color:rgba(254,240,138,0.6) !important;box-shadow:0 0 20px rgba(254,240,138,0.8),0 0 50px rgba(254,240,138,0.6),0 0 120px rgba(254,240,138,0.35),0 0 250px rgba(254,240,138,0.15),0 0 400px rgba(254,240,138,0.05) !important}
+.pp-card{transition:all .25s ease}
+.pp-card:hover{border-color:var(--bdr3);box-shadow:0 0 4px rgba(6,182,212,0.2),0 0 16px rgba(6,182,212,0.1),0 0 40px rgba(6,182,212,0.05)}
+.task-card{transition:all .25s ease}
+.task-card:hover{transform:translateX(3px);box-shadow:0 0 4px rgba(6,182,212,0.2),0 0 16px rgba(6,182,212,0.1),0 0 36px rgba(6,182,212,0.05) !important}
+.review-card{transition:all .25s ease}
+.review-card:hover{transform:translateY(-2px);border-color:rgba(250,204,21,0.2) !important;box-shadow:0 0 6px rgba(250,204,21,0.2),0 0 20px rgba(250,204,21,0.1),0 0 50px rgba(250,204,21,0.05) !important}
 .pp-login-prompt{text-align:center;padding:40px 20px}
 .pp-login-prompt h3{font-size:18px;font-weight:700;margin-bottom:8px}
 .pp-login-prompt p{color:var(--t4);font-size:13px;margin-bottom:16px}
@@ -1027,7 +1057,7 @@ const NavBar = ({tab,setTab,setPage,user,onLogin,onLogout}) => {
   const [changingPw,setChangingPw] = useState(false);
   const [newPw,setNewPw] = useState("");
   const [pwMsg,setPwMsg] = useState("");
-  const tabs = [["firms","Firms"],["challenges","Challenges"],["offers","Offers"],["giveaways","Giveaway"],["blog","Research"],["points","\u2B50 Pulse Points"]];
+  const tabs = [["firms","Firms"],["challenges","Challenges"],["offers","Offers"],["giveaways","Giveaway"],["blog","Research"],["videos","Videos"],["points","\u2B50 Pulse Points"]];
   const go = k => {setPage("home");setTab(k);setMob(false);document.body.style.overflow='';setShowProfile(false);};
   const copyPulse = () => {copyToClipboard("PULSE");setCopied(true);setTimeout(()=>setCopied(false),1800);};
 
@@ -1325,6 +1355,66 @@ const BlogTab = ({onSelect}) => {
   </div>);
 };
 
+// ── VIDEOS TAB ──
+const VideosTab = () => {
+  const [vFilter,setVFilter]=useState("all");
+  const firms=["all",...new Set(VIDEOS.filter(v=>v.firm).map(v=>v.firm))];
+  const cats=["all",...new Set(VIDEOS.map(v=>v.cat))];
+  const filtered=VIDEOS.filter(v=>{
+    if(vFilter!=="all"&&v.firm!==vFilter&&v.cat!==vFilter) return false;
+    return true;
+  });
+  const isPlaceholder=id=>id.startsWith("PLACEHOLDER");
+  return (<div>
+    <div className="sec-hdr"><div>
+      <div className="sec-title">{'\u{1F3AC}'} Prop Firm Video Reviews</div>
+      <div className="sec-sub">In-depth reviews, comparisons, and guides from ThePropPulse</div>
+    </div>
+      <a href="https://www.youtube.com/@ThePropPulse" target="_blank" rel="noopener" style={{display:'inline-flex',alignItems:'center',gap:6,background:'#ff0000',color:'#fff',fontSize:11,fontWeight:700,padding:'7px 14px',borderRadius:6,textDecoration:'none',boxShadow:'0 0 8px rgba(255,0,0,0.3)'}}>
+        {'\u25B6'} Subscribe on YouTube
+      </a>
+    </div>
+    <div style={{display:'flex',gap:4,flexWrap:'wrap',marginBottom:16}}>
+      <button className={`f-btn ${vFilter==="all"?"on":""}`} onClick={()=>setVFilter("all")}>All</button>
+      {[...new Set(VIDEOS.filter(v=>v.firm).map(v=>v.firm))].map(f=><button key={f} className={`f-btn ${vFilter===f?"on":""}`} onClick={()=>setVFilter(f)}>{f}</button>)}
+      {[...new Set(VIDEOS.map(v=>v.cat))].map(c=><button key={c} className={`f-btn ${vFilter===c?"on":""}`} onClick={()=>setVFilter(c)} style={{fontStyle:'italic'}}>{c}</button>)}
+    </div>
+    {filtered.length===0?<div style={{textAlign:'center',padding:40,color:'var(--t4)'}}>No videos match this filter.</div>
+    :<div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(340px,100%),1fr))',gap:14}}>
+      {filtered.map((v,i)=>{
+        const f=v.firm?FIRMS.find(ff=>ff.name===v.firm):null;
+        return (<div key={i} className="review-card" style={{background:'var(--glass)',border:'1px solid var(--bdr2)',borderRadius:14,overflow:'hidden'}}>
+          {/* Video embed / thumbnail */}
+          <div style={{position:'relative',paddingBottom:'56.25%',background:'var(--bg3)'}}>
+            {isPlaceholder(v.id)?
+              <div style={{position:'absolute',inset:0,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:8}}>
+                <div style={{fontSize:40,opacity:0.3}}>{'\u{1F3AC}'}</div>
+                <div style={{fontSize:12,color:'var(--t4)',fontWeight:600}}>Coming Soon</div>
+              </div>
+            :<iframe
+              src={"https://www.youtube.com/embed/"+v.id}
+              style={{position:'absolute',top:0,left:0,width:'100%',height:'100%',border:'none'}}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              title={v.title}
+            />}
+          </div>
+          {/* Info */}
+          <div style={{padding:'14px 16px'}}>
+            <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:6}}>
+              {f&&<span style={{fontSize:9,fontWeight:700,color:f.color,background:f.color+'15',border:'1px solid '+f.color+'25',padding:'2px 7px',borderRadius:4}}>{f.name}</span>}
+              <span style={{fontSize:9,fontWeight:600,color:'var(--t4)',background:'var(--bg3)',padding:'2px 7px',borderRadius:4}}>{v.cat}</span>
+              {v.duration&&<span style={{fontSize:9,fontFamily:'var(--mono)',color:'var(--t4)',marginLeft:'auto'}}>{v.duration}</span>}
+            </div>
+            <div style={{fontSize:14,fontWeight:700,color:'var(--t1)',lineHeight:1.35}}>{v.title}</div>
+            <div style={{fontSize:11,color:'var(--t4)',marginTop:4}}>{v.date}</div>
+          </div>
+        </div>);
+      })}
+    </div>}
+  </div>);
+};
+
 // ── BLOG POST PAGE ──
 const BlogPostPage = ({post,goBack}) => {
   if(!post) return null;
@@ -1464,7 +1554,7 @@ const Footer = ({setPage,setTab}) => (
   <footer className="foot"><div className="wrap"><div className="foot-in">
     <div className="foot-brand"><div className="foot-brand-n">The<span>PropPulse</span></div><div className="foot-brand-d">Your futures prop firm command center. Compare, track, and find the right firm.</div></div>
     <div className="foot-col"><h4>Platform</h4><a onClick={()=>{setPage("home");setTab("firms")}}>Firms</a><a onClick={()=>{setPage("home");setTab("challenges")}}>Challenges</a><a onClick={()=>{setPage("home");setTab("offers")}}>Offers</a><a onClick={()=>{setPage("home");setTab("giveaways")}}>Giveaway</a><a onClick={()=>{setPage("home");setTab("points")}}>Pulse Points</a></div>
-    <div className="foot-col"><h4>Resources</h4><a onClick={()=>{setPage("home");setTab("blog")}}>Research</a><a>Education</a><a>FAQ</a></div>
+    <div className="foot-col"><h4>Resources</h4><a onClick={()=>{setPage("home");setTab("blog")}}>Research</a><a onClick={()=>{setPage("home");setTab("videos")}}>Videos</a><a>FAQ</a></div>
     <div className="foot-col"><h4>Company</h4><a>About</a><a>Contact</a><a>Privacy</a><a>Terms</a></div>
   </div><div className="foot-bot">© 2026 ThePropPulse.com — Not financial advice. Data for informational purposes only.</div></div></footer>
 );
@@ -1856,7 +1946,7 @@ const PulsePointsTab = ({user,onLogin}) => {
             const ct=completedTasks.find(t=>t.key===task.key);
             const done=ct?.status==="approved";
             const pending=ct?.status==="pending";
-            return (<div key={task.key} style={{background:done?'rgba(16,185,129,0.06)':pending?'rgba(251,191,36,0.04)':'var(--bg3)',border:'1px solid '+(done?'rgba(16,185,129,0.2)':pending?'rgba(251,191,36,0.15)':task.color+'20'),borderRadius:12,padding:'16px 18px',transition:'all .2s'}}>
+            return (<div key={task.key} className="task-card" style={{background:done?'rgba(16,185,129,0.06)':pending?'rgba(251,191,36,0.04)':'var(--bg3)',border:'1px solid '+(done?'rgba(16,185,129,0.2)':pending?'rgba(251,191,36,0.15)':task.color+'20'),borderRadius:12,padding:'16px 18px'}}>
               <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:done||pending?0:12}}>
                 <div style={{width:42,height:42,borderRadius:10,background:task.color+'18',border:'1px solid '+task.color+'30',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,flexShrink:0,boxShadow:'0 0 8px '+task.color+'20'}}>{done?'\u2713':task.icon}</div>
                 <div style={{flex:1}}>
@@ -1897,9 +1987,9 @@ const PulsePointsTab = ({user,onLogin}) => {
           {LOYALTY_TIERS.map((t,i)=>{
             const earned=profile?.total_earned||0;
             const reached=earned>=t.min;
-            return (<div key={i} style={{background:reached?t.color+'10':'var(--bg3)',border:'1px solid '+(reached?t.color+'30':'var(--bdr)'),borderRadius:8,padding:'10px 12px',textAlign:'center',opacity:reached?1:0.6}}>
-              <div style={{fontSize:18}}>{t.icon}</div>
-              <div style={{fontSize:11,fontWeight:700,color:reached?t.color:'var(--t4)',marginTop:2}}>{t.name}</div>
+            return (<div key={i} className={"tier-card tc-"+t.name.toLowerCase()} style={{background:reached?t.color+'10':'var(--bg3)',border:'1px solid '+(reached?t.color+'30':'var(--bdr)'),borderRadius:10,padding:'12px 14px',textAlign:'center',opacity:reached?1:0.7}}>
+              <div style={{fontSize:22}}>{t.icon}</div>
+              <div style={{fontSize:12,fontWeight:700,color:reached?t.color:'var(--t4)',marginTop:4}}>{t.name}</div>
               <div style={{fontFamily:'var(--mono)',fontSize:10,color:'var(--t4)',marginTop:2}}>{t.min.toLocaleString()}+</div>
               {t.bonus>0&&<div style={{fontFamily:'var(--mono)',fontSize:10,fontWeight:700,color:reached?'var(--green)':'var(--gold)',marginTop:3}}>+{t.bonus.toLocaleString()} bonus</div>}
             </div>);
@@ -1916,7 +2006,7 @@ const PulsePointsTab = ({user,onLogin}) => {
       {siteReviews.length===0?<div className="pp-card" style={{textAlign:'center',padding:40}}><div style={{fontSize:36,marginBottom:8}}>{'\u2B50'}</div><h3 style={{marginBottom:6}}>No reviews yet</h3><p style={{fontSize:13,color:'var(--t4)'}}>Be the first to share your experience!</p></div>
       :<div style={{display:'grid',gap:10}}>
         {siteReviews.map(rv=>(
-          <div key={rv.id} style={{background:'var(--glass)',border:'1px solid var(--bdr2)',borderRadius:12,padding:'18px 20px',transition:'all .2s'}}>
+          <div key={rv.id} className="review-card" style={{background:'var(--glass)',border:'1px solid var(--bdr2)',borderRadius:12,padding:'18px 20px'}}>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
               <div style={{display:'flex',alignItems:'center',gap:10}}>
                 <div style={{width:36,height:36,borderRadius:'50%',background:'linear-gradient(135deg,var(--em),#0891b2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,fontWeight:800,color:'#050810',boxShadow:'var(--glow-sm)'}}>{(rv.display_name||"T")[0].toUpperCase()}</div>
@@ -2282,7 +2372,7 @@ export default function App() {
     <div className="wrap">
 
       <div className="ctabs">
-        {[["firms","Firms"],["challenges","Challenges"],["offers","Offers"],["giveaways","Giveaway"],["blog","Research"],["points","\u2B50 Pulse Points"]].map(([k,l])=>(
+        {[["firms","Firms"],["challenges","Challenges"],["offers","Offers"],["giveaways","Giveaway"],["blog","Research"],["videos","Videos"],["points","\u2B50 Pulse Points"]].map(([k,l])=>(
           <button key={k} className={`ctab${tab===k?' on':''}`} onClick={()=>setTab(k)}>{l}</button>
         ))}
       </div>
@@ -2300,6 +2390,7 @@ export default function App() {
       {tab==="offers"&&<OffersTab user={user}/>}
       {tab==="giveaways"&&<GiveawaysTab/>}
       {tab==="blog"&&<BlogTab onSelect={goBlog}/>}
+      {tab==="videos"&&<VideosTab/>}
       {tab==="points"&&<PulsePointsTab user={user} onLogin={()=>setShowAuth(true)}/>}
     </div>
     <Footer setPage={setPage} setTab={setTab}/>
