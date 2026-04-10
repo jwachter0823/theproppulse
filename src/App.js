@@ -692,6 +692,40 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .panel-logout{color:#ff4757}
 .panel-logout:hover{background:rgba(255,71,87,0.06);color:#ff4757}
 
+/* ── COMPARE ── */
+.cmp-tog{background:var(--bg2);border:1px solid var(--bdr2);color:var(--t4);font-family:var(--sans);font-size:11px;font-weight:600;padding:6px 12px;border-radius:6px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.cmp-tog:hover{border-color:var(--bdr3);color:var(--em)}
+.cmp-tray{position:fixed;bottom:0;left:0;right:0;z-index:150;background:var(--glass2);backdrop-filter:blur(20px) saturate(1.3);border-top:1px solid var(--bdr2);padding:12px 24px;display:flex;align-items:center;justify-content:center;gap:14px;box-shadow:0 -4px 30px rgba(0,0,0,0.4),0 -1px 0 rgba(34,211,238,0.15);animation:trayIn .25s ease-out}
+@keyframes trayIn{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.cmp-tray-firms{display:flex;gap:8px;align-items:center}
+.cmp-tray-chip{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--bdr2);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;color:var(--t2)}
+.cmp-tray-chip button{background:none;border:none;color:var(--t5);font-size:14px;cursor:pointer;padding:0 0 0 4px;line-height:1}
+.cmp-tray-chip button:hover{color:var(--red)}
+.cmp-tray-go{background:linear-gradient(135deg,#22d3ee,#0891b2);color:#050810;font-family:var(--sans);font-size:13px;font-weight:700;padding:9px 22px;border:none;border-radius:7px;cursor:pointer;box-shadow:var(--glow-sm);transition:all .2s}
+.cmp-tray-go:hover{box-shadow:var(--glow);transform:translateY(-1px)}
+.cmp-tray-clear{background:none;border:1px solid var(--bdr2);color:var(--t4);font-family:var(--sans);font-size:12px;font-weight:600;padding:8px 14px;border-radius:7px;cursor:pointer;transition:all .15s}
+.cmp-tray-clear:hover{border-color:var(--red);color:var(--red)}
+.cmp-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(10px);z-index:250;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto}
+.cmp-modal{background:var(--bg1);border:1px solid var(--bdr2);border-radius:16px;max-width:900px;width:100%;position:relative;box-shadow:var(--glow-box),0 20px 60px rgba(0,0,0,0.5);overflow:hidden}
+.cmp-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--bdr2);background:var(--bg2)}
+.cmp-header h2{font-size:18px;font-weight:700;color:var(--t1)}
+.cmp-header h2 span{color:var(--em);text-shadow:var(--glow-sm)}
+.cmp-close{background:none;border:none;color:var(--t4);font-size:20px;cursor:pointer}
+.cmp-close:hover{color:var(--em)}
+.cmp-grid{display:grid;gap:0}
+.cmp-row{display:grid;border-bottom:1px solid var(--bdr);align-items:stretch}
+.cmp-row:last-child{border-bottom:none}
+.cmp-row:hover{background:rgba(6,182,212,0.03)}
+.cmp-label{padding:12px 18px;font-size:12px;font-weight:700;color:var(--em);text-transform:uppercase;letter-spacing:.5px;background:var(--bg2);display:flex;align-items:center;border-right:1px solid var(--bdr)}
+.cmp-cell{padding:12px 16px;font-size:13px;color:var(--t2);display:flex;align-items:center;border-right:1px solid var(--bdr);line-height:1.5;word-break:break-word}
+.cmp-cell:last-child{border-right:none}
+.cmp-cell.best{color:var(--green);font-weight:700}
+.cmp-firm-hdr{text-align:center;padding:18px 12px;border-right:1px solid var(--bdr)}
+.cmp-firm-hdr:last-child{border-right:none}
+.cmp-firm-name{font-size:14px;font-weight:700;margin-top:8px}
+.cmp-firm-pulse{font-family:var(--mono);font-size:16px;font-weight:800;margin-top:4px}
+.cmp-deal-btn{display:inline-block;margin-top:8px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#050810;font-size:11px;font-weight:700;padding:5px 14px;border:none;border-radius:5px;cursor:pointer;box-shadow:var(--glow-gold-sm)}
+
 /* ── MOBILE ── */
 @media(max-width:768px){
   .wrap{padding:0 16px}
@@ -711,6 +745,12 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   .hero-step-t{font-size:11px}
   .hero-ctas{flex-direction:column;align-items:center}
   .hero-cta-primary,.hero-cta-secondary{width:100%;max-width:280px;text-align:center}
+  .cmp-tray{padding:10px 14px;gap:8px;flex-wrap:wrap;justify-content:center}
+  .cmp-tray-firms{flex-wrap:wrap;justify-content:center}
+  .cmp-overlay{padding:20px 10px}
+  .cmp-modal{border-radius:12px}
+  .cmp-label{font-size:10px;padding:10px 12px}
+  .cmp-cell{font-size:11px;padding:10px 10px}
   .lb-hdr{display:none}
   .lb-row{grid-template-columns:24px 30px 1fr 110px;gap:8px;padding:10px 14px}
   .lb-rating,.lb-trend,.lb-deal{display:none}
@@ -1186,12 +1226,13 @@ const PulseLeaderboard = ({firms,onSelect}) => {
 };
 
 // ── FIRM CARDS ──
-const FirmCards = ({firms,onSelect,user}) => (
+const FirmCards = ({firms,onSelect,user,compareFirms=[],toggleCompare}) => (
   <div className="cards">{firms.map(f=>{
     const ps=calcPulse(f.rating,f.reviews,f.name);
     const deal=DEALS.find(d=>d.firm===f.name);
     const hasAff=!!AFFILIATE_LINKS[f.name];
-    return (<div key={f.id} className="fcard" style={{'--card-accent':f.color,'--card-glow':f.color+'20'}}>
+    const isComparing=compareFirms.some(x=>x.id===f.id);
+    return (<div key={f.id} className="fcard" style={{'--card-accent':f.color,'--card-glow':f.color+'20',...(isComparing?{borderColor:f.color,boxShadow:'0 0 4px '+f.color+'60, 0 0 16px '+f.color+'20'}:{})}}>
       <div className="fcard-top" onClick={()=>onSelect(f)} style={{cursor:'pointer'}}>
         <div className="fcard-logo"><FirmLogo f={f} size={42}/></div>
         <div className="fcard-info">
@@ -1216,7 +1257,8 @@ const FirmCards = ({firms,onSelect,user}) => (
           <span className="fcard-pl">Pulse</span>
           <span className="fcard-pv" style={{color:pulseColor(ps)}}>{ps}</span>
         </div>
-        <div style={{display:'flex',gap:6}}>
+        <div style={{display:'flex',gap:6,alignItems:'center'}}>
+          {toggleCompare&&<button className="cmp-tog" style={{...(isComparing?{background:f.color+'25',borderColor:f.color+'50',color:f.color}:{})}} onClick={e=>{e.stopPropagation();toggleCompare(f)}}>{isComparing?'✓ Added':'Compare'}</button>}
           {hasAff&&<button className="fcard-btn" style={{background:'linear-gradient(135deg,#fbbf24,#f59e0b)',borderColor:'transparent',color:'#050810',fontWeight:700}} onClick={e=>{e.stopPropagation();trackClick(f.name,user?.id)}}>Get Deal</button>}
           <button className="fcard-btn" style={{background:f.color+'15',borderColor:f.color+'30',color:f.color}} onClick={()=>onSelect(f)}>View Details</button>
         </div>
@@ -2270,6 +2312,56 @@ const PulsePointsTab = ({user,onLogin}) => {
 };
 
 // ── APP ──────────────────────────────────────────────────────────────────────
+// ── COMPARE OVERLAY ──
+const COMPARE_ROWS = [
+  {label:"Pulse Score",key:"pulse",fn:f=>calcPulse(f.rating,f.reviews,f.name),best:"max"},
+  {label:"Rating",key:"rating",fn:f=>f.rating+" / 5 ("+f.reviews.toLocaleString()+" reviews)",best:"max",val:f=>f.rating},
+  {label:"Profit Split",key:"split",fn:f=>f.split},
+  {label:"Max Drawdown",key:"maxDD",fn:f=>f.maxDD},
+  {label:"Daily Loss Limit",key:"dailyDD",fn:f=>f.dailyDD||"None"},
+  {label:"Drawdown Type",key:"drawdownType",fn:f=>f.drawdownType},
+  {label:"Consistency Rule",key:"consistencyPct",fn:f=>f.hasConsistency?f.consistencyPct:"None"},
+  {label:"Payout Speed",key:"paySpeed",fn:f=>f.paySpeed},
+  {label:"Min Payout",key:"minPayout",fn:f=>f.minPayout},
+  {label:"Account Sizes",key:"sizes",fn:f=>f.sizes.join(", ")},
+  {label:"Platforms",key:"platforms",fn:f=>f.platforms.join(", ")},
+  {label:"News Trading",key:"newsTrading",fn:f=>f.newsTrading?"✓ Yes":"✗ No"},
+  {label:"EAs / Bots",key:"eaAllowed",fn:f=>f.eaAllowed?"✓ Yes":"✗ No"},
+  {label:"Instant Fund",key:"instantFund",fn:f=>f.instantFund?"✓ Available":"✗ No"},
+  {label:"Current Deal",key:"deal",fn:f=>{const d=DEALS.find(x=>x.firm===f.name);return d?d.pct+" w/ code "+d.code:"—"}},
+];
+const CompareOverlay = ({firms,onClose}) => {
+  const cols=firms.length;
+  const gridCols=`160px repeat(${cols},1fr)`;
+  return (<div className="cmp-overlay" onClick={onClose}>
+    <div className="cmp-modal" onClick={e=>e.stopPropagation()}>
+      <div className="cmp-header">
+        <h2>Compare <span>{cols} Firms</span></h2>
+        <button className="cmp-close" onClick={onClose}>✕</button>
+      </div>
+      <div className="cmp-grid" style={{overflowX:'auto'}}>
+        <div className="cmp-row" style={{display:'grid',gridTemplateColumns:gridCols}}>
+          <div className="cmp-label" style={{background:'transparent',border:'none'}}/>
+          {firms.map(f=><div key={f.id} className="cmp-firm-hdr">
+            <FirmLogo f={f} size={36}/>
+            <div className="cmp-firm-name" style={{color:f.color}}>{f.name}</div>
+            <div className="cmp-firm-pulse" style={{color:pulseColor(calcPulse(f.rating,f.reviews,f.name)),textShadow:'var(--glow-gold-sm)'}}>{calcPulse(f.rating,f.reviews,f.name)}</div>
+            {AFFILIATE_LINKS[f.name]&&<button className="cmp-deal-btn" onClick={()=>trackClick(f.name)}>Get Deal</button>}
+          </div>)}
+        </div>
+        {COMPARE_ROWS.map(r=><div key={r.key} className="cmp-row" style={{display:'grid',gridTemplateColumns:gridCols}}>
+          <div className="cmp-label">{r.label}</div>
+          {firms.map(f=>{
+            const v=r.fn(f);
+            const isStr=typeof v==="string";
+            return <div key={f.id} className="cmp-cell">{isStr?v:v}</div>;
+          })}
+        </div>)}
+      </div>
+    </div>
+  </div>);
+};
+
 export default function App() {
   const [page,setPage]=useState("home");
   const [tab,setTab]=useState("firms");
@@ -2279,6 +2371,9 @@ export default function App() {
   const [blogPost,setBlogPost]=useState(null);
   const [user,setUser]=useState(null);
   const [showAuth,setShowAuth]=useState(false);
+  const [compareFirms,setCompareFirms]=useState([]);
+  const toggleCompare=(f)=>setCompareFirms(prev=>prev.find(x=>x.id===f.id)?prev.filter(x=>x.id!==f.id):prev.length<3?[...prev,f]:prev);
+  const [showCompare,setShowCompare]=useState(false);
 
   useEffect(()=>{
     supabase.auth.getSession().then(({data:{session}})=>{if(session)setUser(session.user)});
@@ -2349,7 +2444,7 @@ export default function App() {
           <button className={`f-btn ${sort==="newest"?"on":""}`} onClick={()=>setSort("newest")}>Newest</button>
           <button className={`f-btn ${sort==="alloc"?"on":""}`} onClick={()=>setSort("alloc")}>Highest Alloc</button>
         </div>
-        <FirmCards firms={sorted} onSelect={goDetail} user={user}/>
+        <FirmCards firms={sorted} onSelect={goDetail} user={user} compareFirms={compareFirms} toggleCompare={toggleCompare}/>
       </>}
       {tab==="challenges"&&<ChallengesTab/>}
       {tab==="offers"&&<OffersTab user={user}/>}
@@ -2361,5 +2456,16 @@ export default function App() {
     <Footer setPage={setPage} setTab={setTab}/>
     </div>
     {showAuth&&<AuthModal onClose={()=>setShowAuth(false)} onAuth={u=>{setUser(u);setShowAuth(false)}}/>}
+    {compareFirms.length>=2&&!showCompare&&<div className="cmp-tray">
+      <div className="cmp-tray-firms">
+        {compareFirms.map(f=><div key={f.id} className="cmp-tray-chip" style={{borderColor:f.color+'40'}}>
+          <span style={{color:f.color,fontWeight:700}}>{f.name}</span>
+          <button onClick={()=>toggleCompare(f)}>✕</button>
+        </div>)}
+      </div>
+      <button className="cmp-tray-go" onClick={()=>setShowCompare(true)}>Compare {compareFirms.length} Firms</button>
+      <button className="cmp-tray-clear" onClick={()=>setCompareFirms([])}>Clear</button>
+    </div>}
+    {showCompare&&<CompareOverlay firms={compareFirms} onClose={()=>setShowCompare(false)}/>}
   </>);
 }
