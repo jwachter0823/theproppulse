@@ -1682,8 +1682,6 @@ const PulsePointsTab = ({user,onLogin}) => {
     setClicks(c||[]);
     const {data:bt}=await supabase.from("bonus_tasks").select("*").eq("user_id",user.id);
     setCompletedTasks((bt||[]).filter(t=>t.status==="approved"||t.status==="pending").map(t=>({key:t.task_key,status:t.status})));
-    const {data:rv}=await supabase.from("reviews").select("*").eq("is_approved",true).order("created_at",{ascending:false}).limit(50);
-    setSiteReviews(rv||[]);
     if(p&&p.is_admin){
       const {data:as}=await supabase.from("submissions").select("*").order("created_at",{ascending:false});
       setAdminSubs(as||[]);
