@@ -385,6 +385,17 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .hero-stat{text-align:center}
 .hero-stat b{font-family:var(--mono);font-size:22px;font-weight:800;display:block}
 .hero-stat small{font-size:10px;color:var(--t4);font-weight:600;margin-top:3px;display:block;text-transform:uppercase;letter-spacing:.5px}
+.hero-steps{display:flex;justify-content:center;gap:10px;margin:22px 0 26px;flex-wrap:wrap}
+.hero-step{display:flex;align-items:center;gap:8px;background:var(--glass);border:1px solid var(--bdr2);border-radius:10px;padding:12px 18px;min-width:180px;transition:all .2s}
+.hero-step:hover{border-color:var(--bdr3);box-shadow:var(--glow-box)}
+.hero-step-n{font-family:var(--mono);font-size:18px;font-weight:800;color:var(--em);text-shadow:var(--glow-sm);flex-shrink:0;width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:var(--emA2);border-radius:50%}
+.hero-step-t{font-size:13px;font-weight:600;color:var(--t2);line-height:1.3}
+.hero-step-t span{color:var(--gold);font-weight:700}
+.hero-ctas{display:flex;justify-content:center;gap:10px;margin-bottom:24px;flex-wrap:wrap}
+.hero-cta-primary{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#050810;font-family:var(--sans);font-size:15px;font-weight:700;padding:13px 32px;border:none;border-radius:9px;cursor:pointer;box-shadow:var(--glow-gold-sm),0 4px 16px rgba(0,0,0,0.3);transition:all .2s}
+.hero-cta-primary:hover{box-shadow:var(--glow-gold);transform:translateY(-2px)}
+.hero-cta-secondary{background:var(--emA2);border:1px solid var(--bdr3);color:var(--em);font-family:var(--sans);font-size:14px;font-weight:700;padding:12px 28px;border-radius:9px;cursor:pointer;transition:all .2s;text-shadow:0 0 6px rgba(6,182,212,0.2)}
+.hero-cta-secondary:hover{background:var(--em);color:#050810;border-color:var(--em);box-shadow:var(--glow-sm)}
 
 /* ── TABS ── */
 .ctabs{display:flex;justify-content:center;gap:2px;margin-bottom:28px;border-bottom:1px solid var(--bdr);padding-bottom:0;position:relative;scrollbar-width:none;-ms-overflow-style:none}
@@ -695,6 +706,11 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   .hero-stats{gap:14px;flex-wrap:wrap;justify-content:center}
   .hero-stat b{font-size:18px}
   .hero-stat small{font-size:9px;letter-spacing:.3px}
+  .hero-steps{gap:6px}
+  .hero-step{min-width:unset;flex:1;padding:10px 12px}
+  .hero-step-t{font-size:11px}
+  .hero-ctas{flex-direction:column;align-items:center}
+  .hero-cta-primary,.hero-cta-secondary{width:100%;max-width:280px;text-align:center}
   .lb-hdr{display:none}
   .lb-row{grid-template-columns:24px 30px 1fr 110px;gap:8px;padding:10px 14px}
   .lb-rating,.lb-trend,.lb-deal{display:none}
@@ -2297,13 +2313,23 @@ export default function App() {
     <div className="wrap">
       <div className="hero">
         <div className="hero-code">PULSE</div>
-        <h1>Your Code to <em>Every Futures Prop Firm</em></h1>
-        <p>One discount code. Every major firm. Exposed rules, real Pulse Scores, and a free 150K account given away every week.</p>
+        <h1>Compare. Buy. <em>Earn Rewards.</em></h1>
+        <p>Save up to 90% on every futures prop firm — then earn <span className="gold" style={{color:'var(--gold)',fontWeight:700}}>Pulse Points</span> on each purchase. Redeem for free evaluations, instant funding accounts, and more.</p>
+        <div className="hero-steps">
+          <div className="hero-step"><div className="hero-step-n">1</div><div className="hero-step-t">Compare <span>10 firms</span></div></div>
+          <div className="hero-step"><div className="hero-step-n">2</div><div className="hero-step-t">Buy with code <span>PULSE</span></div></div>
+          <div className="hero-step"><div className="hero-step-n">3</div><div className="hero-step-t">Submit proof & <span>earn points</span></div></div>
+        </div>
+        <div className="hero-ctas">
+          {!user && <button className="hero-cta-primary" onClick={()=>setShowAuth(true)}>Sign Up Free — Start Earning</button>}
+          {user && <button className="hero-cta-primary" onClick={()=>setTab('points')}>View My Rewards</button>}
+          <button className="hero-cta-secondary" onClick={()=>setTab('offers')}>Browse Deals</button>
+        </div>
         <div className="hero-stats">
-          <div className="hero-stat"><b style={{color:'var(--gold)',textShadow:'var(--glow-gold-sm)'}}>50%</b><small>Avg Discount</small></div>
+          <div className="hero-stat"><b style={{color:'var(--gold)',textShadow:'var(--glow-gold-sm)'}}>90%</b><small>Max Discount</small></div>
           <div className="hero-stat"><b style={{color:'var(--em)',textShadow:'var(--glow-sm)'}}>10</b><small>Partner Firms</small></div>
           <div className="hero-stat"><b style={{color:'var(--gold)',textShadow:'var(--glow-gold-sm)'}}>$150K</b><small>Given Away Weekly</small></div>
-          <div className="hero-stat"><b style={{color:'var(--em)',textShadow:'var(--glow-sm)'}}>45+</b><small>Challenges</small></div>
+          <div className="hero-stat"><b style={{color:'var(--em)',textShadow:'var(--glow-sm)'}}>Free</b><small>Accounts Earned</small></div>
         </div>
       </div>
       <div className="hero-divider"/>
