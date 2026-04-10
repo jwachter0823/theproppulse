@@ -1540,6 +1540,13 @@ const LOYALTY_TIERS = [
 const getLoyaltyTier = (totalEarned) => LOYALTY_TIERS.find(t=>totalEarned>=t.min&&totalEarned<=t.max)||LOYALTY_TIERS[0];
 const getNextTier = (totalEarned) => LOYALTY_TIERS.find(t=>totalEarned<t.min)||null;
 
+const BONUS_TASKS = [
+  {key:"follow_x",label:"Follow us on X",pts:150,icon:"\u{1D54F}",url:"https://x.com/PropPulseMedia",color:"#1d9bf0"},
+  {key:"sub_youtube",label:"Subscribe on YouTube",pts:150,icon:"\u25B6",url:"https://www.youtube.com/@ThePropPulse",color:"#ff0000"},
+  {key:"join_discord",label:"Join our Discord",pts:100,icon:"\u{1F4AC}",url:"https://discord.gg/ZncCJqxa7c",color:"#5865f2"},
+  {key:"leave_review",label:"Share a Review",pts:200,icon:"\u2B50",url:null,color:"#fbbf24"},
+];
+
 const PulsePointsTab = ({user,onLogin}) => {
   const [profile,setProfile]=useState(null);
   const [subs,setSubs]=useState([]);
@@ -1563,6 +1570,12 @@ const PulsePointsTab = ({user,onLogin}) => {
   const [adminNoteId,setAdminNoteId]=useState(null);
   const [adminNote,setAdminNote]=useState("");
   const [rewardCat,setRewardCat]=useState("eval");
+  const [completedTasks,setCompletedTasks]=useState([]);
+  const [showReviewModal,setShowReviewModal]=useState(false);
+  const [reviewRating,setReviewRating]=useState(5);
+  const [reviewText,setReviewText]=useState("");
+  const [reviewSubmitting,setReviewSubmitting]=useState(false);
+  const [siteReviews,setSiteReviews]=useState([]);
 
   const loadData = useCallback(async ()=>{
     if(!user) return;
@@ -1576,6 +1589,10 @@ const PulsePointsTab = ({user,onLogin}) => {
     setRewards(r||[]);
     const {data:c}=await supabase.from("click_tracking").select("*").eq("user_id",user.id).order("clicked_at",{ascending:false}).limit(50);
     setClicks(c||[]);
+    const {data:bt}=await supabase.from("bonus_tasks").select("task_key").eq("user_id",user.id);
+    setCompletedTasks((bt||[]).map(t=>t.task_key));
+    const {data:rv}=await supabase.from("reviews").select("*").eq("is_approved",true).order("created_at",{ascending:false}).limit(50);
+    setSiteReviews(rv||[]);
     if(p&&p.is_admin){
       const {data:as}=await supabase.from("submissions").select("*").order("created_at",{ascending:false});
       setAdminSubs(as||[]);
@@ -1645,6 +1662,35 @@ const PulsePointsTab = ({user,onLogin}) => {
     setAdminNoteId(null);setAdminNote("");loadData();
   };
 
+  const claimTask = async (task) => {
+    if(completedTasks.includes(task.key)) return;
+    if(task.url){window.open(task.url,"_blank");}
+    if(task.key==="leave_review"){setShowReviewModal(true);return;}
+    // For social tasks, open link then let them claim after a delay
+    const {error}=await supabase.from("bonus_tasks").insert({user_id:user.id,task_key:task.key,points_awarded:task.pts});
+    if(error){alert("Already claimed or error: "+error.message);return;}
+    await supabase.from("points_history").insert({user_id:user.id,amount:task.pts,reason:"Bonus: "+task.label});
+    const {data:p}=await supabase.from("profiles").select("points,total_earned").eq("id",user.id).single();
+    if(p) await supabase.from("profiles").update({points:(p.points||0)+task.pts,total_earned:(p.total_earned||0)+task.pts}).eq("id",user.id);
+    loadData();
+  };
+
+  const submitReview = async () => {
+    if(!reviewText.trim()||reviewText.trim().length<10){alert("Please write at least 10 characters.");return;}
+    setReviewSubmitting(true);
+    const displayName=profile?.display_name||user.email?.split("@")[0]||"Trader";
+    const {error}=await supabase.from("reviews").insert({user_id:user.id,rating:reviewRating,content:reviewText.trim(),display_name:displayName,is_approved:true});
+    if(error){alert("Error: "+error.message);setReviewSubmitting(false);return;}
+    // Also mark the bonus task as done
+    if(!completedTasks.includes("leave_review")){
+      await supabase.from("bonus_tasks").insert({user_id:user.id,task_key:"leave_review",points_awarded:200});
+      await supabase.from("points_history").insert({user_id:user.id,amount:200,reason:"Bonus: Share a Review"});
+      const {data:p}=await supabase.from("profiles").select("points,total_earned").eq("id",user.id).single();
+      if(p) await supabase.from("profiles").update({points:(p.points||0)+200,total_earned:(p.total_earned||0)+200}).eq("id",user.id);
+    }
+    setReviewSubmitting(false);setShowReviewModal(false);setReviewText("");setReviewRating(5);loadData();
+  };
+
   if(!user) return (<div className="pp-login-prompt">
     <div style={{fontSize:48,marginBottom:12}}>{'\u2B50'}</div>
     <h3>Earn <span style={{color:'var(--gold)',textShadow:'var(--glow-gold-sm)'}}>Pulse Points</span></h3>
@@ -1712,6 +1758,7 @@ const PulsePointsTab = ({user,onLogin}) => {
 
     <div className="pp-tabs">
       <button className={`pp-tab ${ppTab==="submit"?"on":""}`} onClick={()=>setPpTab("submit")}>Submit Purchase</button>
+      <button className={`pp-tab ${ppTab==="earn"?"on":""}`} onClick={()=>setPpTab("earn")}>Earn More</button>
       <button className={`pp-tab ${ppTab==="history"?"on":""}`} onClick={()=>setPpTab("history")}>History</button>
       <button className={`pp-tab ${ppTab==="rewards"?"on":""}`} onClick={()=>setPpTab("rewards")}>Rewards</button>
       {profile?.is_admin&&<button className={`pp-tab ${ppTab==="admin"?"on":""}`} onClick={()=>setPpTab("admin")} style={{borderColor:'rgba(255,71,87,0.3)',color:ppTab==="admin"?'var(--red)':'var(--t4)'}}>Admin</button>}
@@ -1765,6 +1812,73 @@ const PulsePointsTab = ({user,onLogin}) => {
         </div>
       </div>)}
     </div>}
+
+    {ppTab==="earn"&&<>
+      {/* Bonus Tasks */}
+      <div className="pp-card" style={{marginBottom:16}}>
+        <h3 style={{display:'flex',alignItems:'center',gap:8}}>{'\u{1F3AF}'} <span style={{background:'linear-gradient(135deg,var(--em2),var(--gold))',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Bonus Tasks</span>
+          <span style={{marginLeft:'auto',fontFamily:'var(--mono)',fontSize:12,color:completedTasks.length>=BONUS_TASKS.length?'var(--green)':'var(--t4)'}}>{completedTasks.length}/{BONUS_TASKS.length}</span>
+        </h3>
+        <div style={{height:4,background:'var(--bg4)',borderRadius:2,overflow:'hidden',margin:'12px 0'}}>
+          <div style={{height:'100%',background:'linear-gradient(90deg,var(--em),var(--gold))',borderRadius:2,width:(completedTasks.length/BONUS_TASKS.length*100)+'%',transition:'width .5s ease',boxShadow:'0 0 8px rgba(251,191,36,0.4)'}}/>
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(220px,100%),1fr))',gap:10,marginTop:12}}>
+          {BONUS_TASKS.map(task=>{
+            const done=completedTasks.includes(task.key);
+            return (<div key={task.key} style={{background:done?'rgba(16,185,129,0.06)':'var(--bg3)',border:'1px solid '+(done?'rgba(16,185,129,0.2)':task.color+'25'),borderRadius:10,padding:'16px',display:'flex',alignItems:'center',gap:12,cursor:done?'default':'pointer',transition:'all .2s',opacity:done?0.7:1}} onClick={()=>!done&&claimTask(task)}>
+              <div style={{width:40,height:40,borderRadius:10,background:task.color+'18',border:'1px solid '+task.color+'30',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,flexShrink:0,boxShadow:done?'none':'0 0 8px '+task.color+'20'}}>{done?'\u2713':task.icon}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:13,fontWeight:700,color:done?'var(--green)':'var(--t1)'}}>{task.label}</div>
+                <div style={{fontFamily:'var(--mono)',fontSize:12,fontWeight:700,color:done?'var(--green)':'var(--gold)',marginTop:2,display:'flex',alignItems:'center',gap:4}}>
+                  {done?<>{'\u2713'} +{task.pts} earned</>:<>+{task.pts} pts</>}
+                </div>
+              </div>
+              {!done&&<div style={{fontSize:10,fontWeight:700,color:task.color,background:task.color+'15',border:'1px solid '+task.color+'25',padding:'5px 10px',borderRadius:6,whiteSpace:'nowrap'}}>{task.key==="leave_review"?"Write Review":"Claim"}</div>}
+            </div>);
+          })}
+        </div>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="pp-card">
+        <h3 style={{display:'flex',alignItems:'center',gap:8}}>{'\u2B50'} <span style={{background:'linear-gradient(135deg,var(--gold),#fde68a)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Community Reviews</span>
+          {!completedTasks.includes("leave_review")&&<button style={{marginLeft:'auto',background:'linear-gradient(135deg,#fbbf24,#f59e0b)',color:'#050810',fontSize:11,fontWeight:700,padding:'6px 14px',border:'none',borderRadius:6,cursor:'pointer',boxShadow:'var(--glow-gold-sm)'}} onClick={()=>setShowReviewModal(true)}>Write a Review (+200 pts)</button>}
+        </h3>
+        {siteReviews.length===0?<p style={{fontSize:12,color:'var(--t4)',padding:'16px 0',textAlign:'center'}}>No reviews yet. Be the first!</p>
+        :<div style={{display:'grid',gap:10,marginTop:12}}>
+          {siteReviews.map(rv=>(
+            <div key={rv.id} style={{background:'var(--bg3)',border:'1px solid var(--bdr)',borderRadius:10,padding:'14px 16px'}}>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}>
+                <div style={{display:'flex',alignItems:'center',gap:8}}>
+                  <div style={{width:28,height:28,borderRadius:'50%',background:'linear-gradient(135deg,var(--em),#0891b2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:800,color:'#050810'}}>{(rv.display_name||"T")[0].toUpperCase()}</div>
+                  <div>
+                    <div style={{fontSize:13,fontWeight:700,color:'var(--t1)'}}>{rv.display_name}</div>
+                    <div style={{fontSize:10,color:'var(--t4)'}}>{new Date(rv.created_at).toLocaleDateString()}</div>
+                  </div>
+                </div>
+                <div style={{color:'#facc15',fontSize:13,textShadow:'0 0 6px rgba(250,204,21,0.3)',letterSpacing:1}}>{'★'.repeat(rv.rating)}{'☆'.repeat(5-rv.rating)}</div>
+              </div>
+              <div style={{fontSize:13,color:'var(--t2)',lineHeight:1.6}}>{rv.content}</div>
+            </div>
+          ))}
+        </div>}
+      </div>
+    </>}
+
+    {showReviewModal&&<div className="auth-overlay" onClick={()=>setShowReviewModal(false)}><div className="auth-modal" onClick={e=>e.stopPropagation()} style={{maxWidth:480}}>
+      <button className="auth-close" onClick={()=>setShowReviewModal(false)}>{'\u2715'}</button>
+      <h2 style={{fontSize:18}}>Rate <span>ThePropPulse</span></h2>
+      <p style={{marginBottom:12}}>Share your experience and earn <b style={{color:'var(--gold)'}}>200 Pulse Points</b></p>
+      <div style={{display:'flex',justifyContent:'center',gap:6,margin:'16px 0'}}>
+        {[1,2,3,4,5].map(n=>(
+          <button key={n} onClick={()=>setReviewRating(n)} style={{background:'none',border:'none',fontSize:32,cursor:'pointer',color:n<=reviewRating?'#facc15':'var(--t5)',textShadow:n<=reviewRating?'0 0 8px rgba(250,204,21,0.4)':'none',transition:'all .15s',transform:n<=reviewRating?'scale(1.1)':'scale(1)'}}>{'★'}</button>
+        ))}
+      </div>
+      <div style={{textAlign:'center',fontSize:12,color:'var(--t3)',marginBottom:12}}>{["","Terrible","Poor","Average","Great","Excellent"][reviewRating]}</div>
+      <textarea style={{width:'100%',minHeight:100,background:'var(--bg3)',border:'1px solid var(--bdr2)',borderRadius:8,padding:'12px 14px',color:'var(--t1)',fontFamily:'var(--sans)',fontSize:14,resize:'vertical',outline:'none'}} placeholder="Tell other traders about your experience with ThePropPulse..." value={reviewText} onChange={e=>setReviewText(e.target.value)}/>
+      <div style={{fontSize:10,color:'var(--t4)',marginTop:4,marginBottom:8}}>{reviewText.length}/500 characters</div>
+      <button className="auth-btn" onClick={submitReview} disabled={reviewSubmitting||reviewText.trim().length<10}>{reviewSubmitting?"Submitting...":"Submit Review & Earn 200 Points"}</button>
+    </div></div>}
 
     {ppTab==="history"&&<div className="pp-card">
       <h3>Points History</h3>
