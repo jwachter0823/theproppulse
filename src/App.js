@@ -1621,11 +1621,10 @@ const PulsePointsTab = ({user,onLogin}) => {
     if(!claimModal||!profile) return;
     const r=claimModal;
     if(r.type==="eval"&&!claimForm.firm) return;
-    if(r.type==="merch"&&(!claimForm.shipName||!claimForm.address||!claimForm.city||!claimForm.state||!claimForm.zip)) return;
-    if(r.type==="call"&&!claimForm.discord) return;
     setClaimSubmitting(true);
-    const details=JSON.stringify({...claimForm,type:r.type,evalSize:r.evalSize||null});
-    await supabase.from("rewards").insert({user_id:user.id,reward_name:r.name,points_cost:r.pts,fulfillment_details:details,user_email:user.email,status:"pending"});
+    const details=JSON.stringify({...claimForm,type:r.type,evalSize:r.evalSize||null,cat:r.cat||"eval"});
+    const {error}=await supabase.from("rewards").insert({user_id:user.id,reward_name:r.name,points_cost:r.pts,fulfillment_details:details,user_email:user.email,status:"pending"});
+    if(error){alert("Failed to claim: "+error.message);setClaimSubmitting(false);return;}
     await supabase.from("points_history").insert({user_id:user.id,amount:-r.pts,reason:"Reward: "+r.name});
     await supabase.from("profiles").update({points:profile.points-r.pts,rewards_claimed:(profile.rewards_claimed||0)+1}).eq("id",user.id);
     setClaimSubmitting(false);setClaimModal(null);setClaimForm({});loadData();
@@ -1888,36 +1887,12 @@ const PulsePointsTab = ({user,onLogin}) => {
         <div style={{fontSize:10,color:'var(--t4)',marginTop:2}}>Leave blank to use your account email ({user?.email})</div>
       </>}
 
-      {claimModal.type==="merch"&&<>
-        <div style={{fontSize:12,fontWeight:600,color:'var(--t3)',marginBottom:5}}>Shipping Information</div>
-        <input className="auth-input" placeholder="Full Name" value={claimForm.shipName||""} onChange={e=>setClaimForm(p=>({...p,shipName:e.target.value}))}/>
-        <input className="auth-input" placeholder="Street Address" value={claimForm.address||""} onChange={e=>setClaimForm(p=>({...p,address:e.target.value}))}/>
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
-          <input className="auth-input" placeholder="City" value={claimForm.city||""} onChange={e=>setClaimForm(p=>({...p,city:e.target.value}))}/>
-          <input className="auth-input" placeholder="State" value={claimForm.state||""} onChange={e=>setClaimForm(p=>({...p,state:e.target.value}))}/>
-        </div>
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
-          <input className="auth-input" placeholder="ZIP Code" value={claimForm.zip||""} onChange={e=>setClaimForm(p=>({...p,zip:e.target.value}))}/>
-          <input className="auth-input" placeholder="Country (default: US)" value={claimForm.country||""} onChange={e=>setClaimForm(p=>({...p,country:e.target.value}))}/>
-        </div>
-        <input className="auth-input" placeholder="T-Shirt Size (S/M/L/XL/2XL)" value={claimForm.shirtSize||""} onChange={e=>setClaimForm(p=>({...p,shirtSize:e.target.value}))}/>
-      </>}
-
-      {claimModal.type==="call"&&<>
-        <div style={{fontSize:12,fontWeight:600,color:'var(--t3)',marginBottom:5}}>How should we schedule your call?</div>
-        <input className="auth-input" placeholder="Discord username (e.g. trader#1234)" value={claimForm.discord||""} onChange={e=>setClaimForm(p=>({...p,discord:e.target.value}))}/>
-        <input className="auth-input" placeholder="Timezone (e.g. EST, CST, PST)" value={claimForm.timezone||""} onChange={e=>setClaimForm(p=>({...p,timezone:e.target.value}))}/>
-        <input className="auth-input" placeholder="Preferred days/times (e.g. Weekdays 6-9pm)" value={claimForm.availability||""} onChange={e=>setClaimForm(p=>({...p,availability:e.target.value}))}/>
-        <div style={{fontSize:12,fontWeight:600,color:'var(--t3)',marginBottom:5,marginTop:4}}>What do you want to focus on?</div>
-        <input className="auth-input" placeholder="Strategy review, risk management, prop firm tips, etc." value={claimForm.focus||""} onChange={e=>setClaimForm(p=>({...p,focus:e.target.value}))}/>
-      </>}
-
       <div style={{fontSize:11,color:'var(--t4)',margin:'10px 0',padding:'8px 12px',background:'var(--bg3)',borderRadius:6,lineHeight:1.6}}>
         {'\u2139\uFE0F'} After claiming, we'll process your reward within <b style={{color:'var(--em)'}}>48 hours</b>. You'll see status updates here and we'll contact you at <b style={{color:'var(--t2)'}}>{user?.email}</b> when it's ready.
       </div>
 
-      <button className="auth-btn" onClick={submitClaim} disabled={claimSubmitting||(claimModal.type==="eval"&&!claimForm.firm)||(claimModal.type==="merch"&&(!claimForm.shipName||!claimForm.address||!claimForm.city||!claimForm.state||!claimForm.zip))||(claimModal.type==="call"&&!claimForm.discord)}>
-        {claimSubmitting?"Processing...":"Confirm — Spend "+claimModal.pts+" Points"}
+      <button className="auth-btn" onClick={submitClaim} disabled={claimSubmitting||!claimForm.firm}>
+        {claimSubmitting?"Processing...":"Confirm — Spend "+claimModal.pts.toLocaleString()+" Points"}
       </button>
     </div></div>}
 
