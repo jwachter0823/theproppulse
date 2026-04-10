@@ -1253,13 +1253,15 @@ const FirmCards = ({firms,onSelect,user,compareFirms=[],toggleCompare}) => (
         <div className="fcard-stat"><div className="fcard-sl">Payout</div><div className="fcard-sv">{f.paySpeed}</div></div>
       </div>
       <div className="fcard-foot">
-        <div className="fcard-pulse">
-          <span className="fcard-pl">Pulse</span>
-          <span className="fcard-pv" style={{color:pulseColor(ps)}}>{ps}</span>
+        <div style={{display:'flex',alignItems:'center',gap:10}}>
+          <div className="fcard-pulse">
+            <span className="fcard-pl">Pulse</span>
+            <span className="fcard-pv" style={{color:pulseColor(ps)}}>{ps}</span>
+          </div>
+          {toggleCompare&&<button className="cmp-tog" style={{...(isComparing?{background:f.color+'25',borderColor:f.color+'50',color:f.color}:{})}} onClick={e=>{e.stopPropagation();toggleCompare(f)}}>{isComparing?'✓ Added':'Compare'}</button>}
         </div>
         <div style={{display:'flex',gap:6,alignItems:'center'}}>
-          {toggleCompare&&<button className="cmp-tog" style={{...(isComparing?{background:f.color+'25',borderColor:f.color+'50',color:f.color}:{})}} onClick={e=>{e.stopPropagation();toggleCompare(f)}}>{isComparing?'✓ Added':'Compare'}</button>}
-          {hasAff&&<button className="fcard-btn" style={{background:'linear-gradient(135deg,#fbbf24,#f59e0b)',borderColor:'transparent',color:'#050810',fontWeight:700}} onClick={e=>{e.stopPropagation();trackClick(f.name,user?.id)}}>Get Deal</button>}
+          <button className="fcard-btn" style={{background:'linear-gradient(135deg,#fbbf24,#f59e0b)',borderColor:'transparent',color:'#050810',fontWeight:700}} onClick={e=>{e.stopPropagation();if(hasAff){trackClick(f.name,user?.id)}else{const fp=FIRM_PROFILES[f.name];window.open('https://'+(fp?.website||f.name.toLowerCase().replace(/\s+/g,'')+'.com'),'_blank')}}}>Get Deal</button>
           <button className="fcard-btn" style={{background:f.color+'15',borderColor:f.color+'30',color:f.color}} onClick={()=>onSelect(f)}>View Details</button>
         </div>
       </div>
