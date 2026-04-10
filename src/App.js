@@ -1057,7 +1057,7 @@ const NavBar = ({tab,setTab,setPage,user,onLogin,onLogout}) => {
   const [changingPw,setChangingPw] = useState(false);
   const [newPw,setNewPw] = useState("");
   const [pwMsg,setPwMsg] = useState("");
-  const tabs = [["firms","Firms"],["challenges","Challenges"],["offers","Offers"],["giveaways","Giveaway"],["blog","Research"],["videos","Videos"],["reviews","Reviews"],["chat","\u{1F4AC} Live Chat"],["points","\u2B50 Pulse Points"]];
+  const tabs = [["firms","Firms"],["challenges","Challenges"],["offers","Offers"],["giveaways","Giveaway"],["blog","Research"],["videos","Videos"],["points","\u2B50 Pulse Points"]];
   const go = k => {setPage("home");setTab(k);setMob(false);document.body.style.overflow='';setShowProfile(false);};
   const copyPulse = () => {copyToClipboard("PULSE");setCopied(true);setTimeout(()=>setCopied(false),1800);};
 
@@ -1640,7 +1640,6 @@ const BONUS_TASKS = [
   {key:"follow_x",label:"Follow us on X",pts:150,icon:"\u{1D54F}",url:"https://x.com/PropPulseMedia",color:"#1d9bf0"},
   {key:"sub_youtube",label:"Subscribe on YouTube",pts:150,icon:"\u25B6",url:"https://www.youtube.com/@ThePropPulse",color:"#ff0000"},
   {key:"join_discord",label:"Join our Discord",pts:100,icon:"\u{1F4AC}",url:"https://discord.gg/ZncCJqxa7c",color:"#5865f2"},
-  {key:"leave_review",label:"Share a Review",pts:200,icon:"\u2B50",url:null,color:"#fbbf24"},
 ];
 
 const PulsePointsTab = ({user,onLogin}) => {
@@ -1667,11 +1666,6 @@ const PulsePointsTab = ({user,onLogin}) => {
   const [adminNote,setAdminNote]=useState("");
   const [rewardCat,setRewardCat]=useState("eval");
   const [completedTasks,setCompletedTasks]=useState([]);
-  const [showReviewModal,setShowReviewModal]=useState(false);
-  const [reviewRating,setReviewRating]=useState(5);
-  const [reviewText,setReviewText]=useState("");
-  const [reviewSubmitting,setReviewSubmitting]=useState(false);
-  const [siteReviews,setSiteReviews]=useState([]);
   const [adminBonusTasks,setAdminBonusTasks]=useState([]);
 
   const loadData = useCallback(async ()=>{
@@ -1767,7 +1761,6 @@ const PulsePointsTab = ({user,onLogin}) => {
 
   const claimTask = async (task) => {
     if(completedTasks.some(t=>t.key===task.key)) return;
-    if(task.key==="leave_review"){setShowReviewModal(true);return;}
     if(task.url) window.open(task.url,"_blank");
   };
 
@@ -1791,22 +1784,6 @@ const PulsePointsTab = ({user,onLogin}) => {
   const handleRejectTask = async (bt) => {
     await supabase.from("bonus_tasks").update({status:"rejected"}).eq("id",bt.id);
     loadData();
-  };
-
-  const submitReview = async () => {
-    if(!reviewText.trim()||reviewText.trim().length<10){alert("Please write at least 10 characters.");return;}
-    setReviewSubmitting(true);
-    const displayName=profile?.display_name||user.email?.split("@")[0]||"Trader";
-    const {error}=await supabase.from("reviews").insert({user_id:user.id,rating:reviewRating,content:reviewText.trim(),display_name:displayName,is_approved:true});
-    if(error){alert("Error: "+error.message);setReviewSubmitting(false);return;}
-    // Also mark the bonus task as done
-    if(!completedTasks.some(t=>t.key==="leave_review")){
-      await supabase.from("bonus_tasks").insert({user_id:user.id,task_key:"leave_review",points_awarded:200});
-      await supabase.from("points_history").insert({user_id:user.id,amount:200,reason:"Bonus: Share a Review"});
-      const {data:p}=await supabase.from("profiles").select("points,total_earned").eq("id",user.id).single();
-      if(p) await supabase.from("profiles").update({points:(p.points||0)+200,total_earned:(p.total_earned||0)+200}).eq("id",user.id);
-    }
-    setReviewSubmitting(false);setShowReviewModal(false);setReviewText("");setReviewRating(5);loadData();
   };
 
   if(!user) return (<div className="pp-login-prompt">
@@ -1954,10 +1931,9 @@ const PulsePointsTab = ({user,onLogin}) => {
                     {done?'\u2713 +'+task.pts+' earned':pending?'\u23F3 Pending review — +'+task.pts+' pts':'+'+task.pts+' pts'}
                   </div>
                 </div>
-                {!done&&!pending&&task.key!=="leave_review"&&<button style={{fontSize:11,fontWeight:700,color:task.color,background:task.color+'12',border:'1px solid '+task.color+'25',padding:'6px 14px',borderRadius:6,cursor:'pointer',whiteSpace:'nowrap'}} onClick={()=>claimTask(task)}>Visit {'\u2197'}</button>}
-                {!done&&!pending&&task.key==="leave_review"&&<button style={{fontSize:11,fontWeight:700,color:'var(--gold)',background:'rgba(251,191,36,0.1)',border:'1px solid rgba(251,191,36,0.2)',padding:'6px 14px',borderRadius:6,cursor:'pointer',whiteSpace:'nowrap'}} onClick={()=>setShowReviewModal(true)}>Write Review</button>}
+                {!done&&!pending&&<button style={{fontSize:11,fontWeight:700,color:task.color,background:task.color+'12',border:'1px solid '+task.color+'25',padding:'6px 14px',borderRadius:6,cursor:'pointer',whiteSpace:'nowrap'}} onClick={()=>claimTask(task)}>Visit {'\u2197'}</button>}
               </div>
-              {!done&&!pending&&task.key!=="leave_review"&&<div style={{marginTop:12,padding:'12px',background:'var(--bg2)',borderRadius:8,border:'1px solid var(--bdr)'}}>
+              {!done&&!pending&&<div style={{marginTop:12,padding:'12px',background:'var(--bg2)',borderRadius:8,border:'1px solid var(--bdr)'}}>
                 <div style={{fontSize:11,fontWeight:600,color:'var(--t3)',marginBottom:6}}>Upload proof (screenshot of following/subscribing/joining)</div>
                 <input type="file" accept="image/*" onChange={async e=>{
                   const file=e.target.files?.[0];if(!file)return;
@@ -2273,172 +2249,6 @@ const PulsePointsTab = ({user,onLogin}) => {
   </div>);
 };
 
-// ── REVIEWS TAB (standalone) ─────────────────────────────────────────────────
-const TierBadge = ({tierName,tierIcon,tierColor}) => {
-  if(!tierName) return null;
-  return <span style={{fontSize:9,fontWeight:700,color:tierColor||'var(--t4)',background:(tierColor||'#666')+'15',border:'1px solid '+(tierColor||'#666')+'25',padding:'2px 6px',borderRadius:4,display:'inline-flex',alignItems:'center',gap:3}}>{tierIcon} {tierName}</span>;
-};
-
-const ReviewsTab = ({user,onLogin}) => {
-  const [reviews,setReviews]=useState([]);
-  const [showModal,setShowModal]=useState(false);
-  const [rating,setRating]=useState(5);
-  const [text,setText]=useState("");
-  const [submitting,setSubmitting]=useState(false);
-
-  const loadReviews=useCallback(async()=>{
-    const {data}=await supabase.from("reviews").select("*").eq("is_approved",true).order("created_at",{ascending:false}).limit(100);
-    setReviews(data||[]);
-  },[]);
-
-  useEffect(()=>{loadReviews()},[loadReviews]);
-
-  const submitReview=async()=>{
-    if(!user){onLogin();return;}
-    if(text.trim().length<10) return;
-    setSubmitting(true);
-    const {data:p}=await supabase.from("profiles").select("display_name,total_earned").eq("id",user.id).single();
-    const tier=getLoyaltyTier(p?.total_earned||0);
-    const displayName=p?.display_name||user.email?.split("@")[0]||"Trader";
-    await supabase.from("reviews").insert({user_id:user.id,rating,content:text.trim(),display_name:displayName,is_approved:true,tier_name:tier.name,tier_icon:tier.icon,tier_color:tier.color});
-    setSubmitting(false);setShowModal(false);setText("");setRating(5);loadReviews();
-  };
-
-  const avgRating=reviews.length>0?(reviews.reduce((s,r)=>s+r.rating,0)/reviews.length).toFixed(1):"0";
-
-  return (<div>
-    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20,flexWrap:'wrap',gap:12}}>
-      <div>
-        <div className="sec-title">{'\u2B50'} Community Reviews</div>
-        <div style={{display:'flex',alignItems:'center',gap:10,marginTop:6}}>
-          <span style={{fontFamily:'var(--mono)',fontSize:24,fontWeight:900,color:'#facc15',textShadow:'0 0 8px rgba(250,204,21,0.4)'}}>{avgRating}</span>
-          <span style={{color:'#facc15',fontSize:16,letterSpacing:2}}>{'★'.repeat(Math.round(avgRating))}</span>
-          <span style={{fontSize:12,color:'var(--t4)'}}>{reviews.length} review{reviews.length!==1?"s":""}</span>
-        </div>
-      </div>
-      <button style={{background:'linear-gradient(135deg,#fbbf24,#f59e0b)',color:'#050810',fontSize:13,fontWeight:700,padding:'10px 22px',border:'none',borderRadius:8,cursor:'pointer',boxShadow:'var(--glow-gold)'}} onClick={()=>user?setShowModal(true):onLogin()}>Write a Review</button>
-    </div>
-
-    {reviews.length===0?<div style={{textAlign:'center',padding:48,background:'var(--glass)',border:'1px solid var(--bdr2)',borderRadius:14}}><div style={{fontSize:40,marginBottom:8}}>{'\u2B50'}</div><h3 style={{marginBottom:6,color:'var(--t2)'}}>No reviews yet</h3><p style={{fontSize:13,color:'var(--t4)'}}>Be the first to share your experience with ThePropPulse!</p></div>
-    :<div style={{display:'grid',gap:10}}>
-      {reviews.map(rv=>(
-        <div key={rv.id} className="review-card" style={{background:'var(--glass)',border:'1px solid var(--bdr2)',borderRadius:12,padding:'18px 20px'}}>
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
-            <div style={{display:'flex',alignItems:'center',gap:10}}>
-              <div style={{width:36,height:36,borderRadius:'50%',background:'linear-gradient(135deg,'+(rv.tier_color||'var(--em)')+','+(rv.tier_color||'#0891b2')+'80)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,fontWeight:800,color:'#050810',boxShadow:'0 0 8px '+(rv.tier_color||'var(--em)')+'40'}}>{(rv.display_name||"T")[0].toUpperCase()}</div>
-              <div>
-                <div style={{display:'flex',alignItems:'center',gap:6}}><span style={{fontSize:14,fontWeight:700,color:'var(--t1)'}}>{rv.display_name}</span><TierBadge tierName={rv.tier_name} tierIcon={rv.tier_icon} tierColor={rv.tier_color}/></div>
-                <div style={{fontSize:11,color:'var(--t4)'}}>{new Date(rv.created_at).toLocaleDateString()}</div>
-              </div>
-            </div>
-            <div style={{color:'#facc15',fontSize:15,textShadow:'0 0 8px rgba(250,204,21,0.4)',letterSpacing:2}}>{'★'.repeat(rv.rating)}{'☆'.repeat(5-rv.rating)}</div>
-          </div>
-          <div style={{fontSize:14,color:'var(--t2)',lineHeight:1.7}}>{rv.content}</div>
-        </div>
-      ))}
-    </div>}
-
-    {showModal&&<div className="auth-overlay" onClick={()=>setShowModal(false)}><div className="auth-modal" onClick={e=>e.stopPropagation()} style={{maxWidth:480}}>
-      <button className="auth-close" onClick={()=>setShowModal(false)}>{'\u2715'}</button>
-      <h2 style={{fontSize:18}}>Rate <span>ThePropPulse</span></h2>
-      <p style={{marginBottom:12}}>Share your experience with the community</p>
-      <div style={{display:'flex',justifyContent:'center',gap:6,margin:'16px 0'}}>
-        {[1,2,3,4,5].map(n=><button key={n} onClick={()=>setRating(n)} style={{background:'none',border:'none',fontSize:32,cursor:'pointer',color:n<=rating?'#facc15':'var(--t5)',textShadow:n<=rating?'0 0 8px rgba(250,204,21,0.4)':'none',transition:'all .15s',transform:n<=rating?'scale(1.1)':'scale(1)'}}>{'★'}</button>)}
-      </div>
-      <div style={{textAlign:'center',fontSize:12,color:'var(--t3)',marginBottom:12}}>{["","Terrible","Poor","Average","Great","Excellent"][rating]}</div>
-      <textarea style={{width:'100%',minHeight:100,background:'var(--bg3)',border:'1px solid var(--bdr2)',borderRadius:8,padding:'12px 14px',color:'var(--t1)',fontFamily:'var(--sans)',fontSize:14,resize:'vertical',outline:'none'}} placeholder="Tell other traders about your experience..." value={text} onChange={e=>setText(e.target.value)} maxLength={500}/>
-      <div style={{fontSize:10,color:'var(--t4)',marginTop:4,marginBottom:8}}>{text.length}/500</div>
-      <button className="auth-btn" onClick={submitReview} disabled={submitting||text.trim().length<10}>{submitting?"Submitting...":"Submit Review"}</button>
-    </div></div>}
-  </div>);
-};
-
-// ── LIVE CHAT TAB ───────────────────────────────────────────────────────────
-const LiveChatTab = ({user,onLogin}) => {
-  const [messages,setMessages]=useState([]);
-  const [msg,setMsg]=useState("");
-  const [sending,setSending]=useState(false);
-  const [isAdmin,setIsAdmin]=useState(false);
-  const chatRef=useCallback(node=>{if(node)node.scrollTop=node.scrollHeight;},[messages]);
-
-  useEffect(()=>{
-    const load=async()=>{
-      const {data}=await supabase.from("chat_messages").select("*").eq("is_deleted",false).order("created_at",{ascending:true}).limit(200);
-      setMessages(data||[]);
-      if(user){
-        const {data:p}=await supabase.from("profiles").select("is_admin").eq("id",user.id).single();
-        setIsAdmin(p?.is_admin||false);
-      }
-    };
-    load();
-
-    const channel=supabase.channel("public-chat").on("postgres_changes",{event:"INSERT",schema:"public",table:"chat_messages"},payload=>{
-      setMessages(prev=>[...prev,payload.new]);
-    }).on("postgres_changes",{event:"UPDATE",schema:"public",table:"chat_messages"},payload=>{
-      setMessages(prev=>prev.map(m=>m.id===payload.new.id?payload.new:m));
-    }).subscribe();
-
-    return ()=>{supabase.removeChannel(channel)};
-  },[user]);
-
-  const sendMessage=async()=>{
-    if(!user){onLogin();return;}
-    if(!msg.trim())return;
-    setSending(true);
-    const {data:p}=await supabase.from("profiles").select("display_name,total_earned").eq("id",user.id).single();
-    const tier=getLoyaltyTier(p?.total_earned||0);
-    const displayName=p?.display_name||user.email?.split("@")[0]||"Trader";
-    await supabase.from("chat_messages").insert({user_id:user.id,display_name:displayName,content:msg.trim(),tier_name:tier.name,tier_icon:tier.icon,tier_color:tier.color});
-    setMsg("");setSending(false);
-  };
-
-  const deleteMsg=async(id)=>{
-    await supabase.from("chat_messages").update({is_deleted:true}).eq("id",id);
-  };
-
-  const visibleMsgs=messages.filter(m=>!m.is_deleted);
-
-  return (<div style={{maxWidth:800,margin:'0 auto'}}>
-    <div className="sec-hdr" style={{marginBottom:12}}>
-      <div><div className="sec-title">{'\u{1F4AC}'} Live Community Chat</div><div className="sec-sub">{visibleMsgs.length} messages · {'\u{1F7E2}'} Live</div></div>
-    </div>
-
-    <div style={{background:'var(--glass)',border:'1px solid var(--bdr2)',borderRadius:14,overflow:'hidden',boxShadow:'0 0 2px rgba(6,182,212,0.2),0 0 20px rgba(0,0,0,0.2)'}}>
-      {/* Messages */}
-      <div ref={chatRef} style={{height:480,overflowY:'auto',padding:'16px',display:'flex',flexDirection:'column',gap:6}}>
-        {visibleMsgs.length===0&&<div style={{textAlign:'center',padding:40,color:'var(--t4)',fontSize:13}}>No messages yet. Start the conversation!</div>}
-        {visibleMsgs.map(m=>{
-          const isOwn=user&&m.user_id===user.id;
-          return (<div key={m.id} style={{display:'flex',gap:8,alignItems:'flex-start',padding:'8px 10px',borderRadius:8,background:isOwn?'rgba(6,182,212,0.06)':'transparent',transition:'background .15s'}} onMouseEnter={e=>e.currentTarget.style.background=isOwn?'rgba(6,182,212,0.08)':'rgba(255,255,255,0.02)'} onMouseLeave={e=>e.currentTarget.style.background=isOwn?'rgba(6,182,212,0.06)':'transparent'}>
-            <div style={{width:30,height:30,borderRadius:'50%',background:'linear-gradient(135deg,'+(m.tier_color||'var(--em)')+','+(m.tier_color||'#0891b2')+'80)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:800,color:'#050810',flexShrink:0,boxShadow:'0 0 6px '+(m.tier_color||'var(--em)')+'30'}}>{(m.display_name||"T")[0].toUpperCase()}</div>
-            <div style={{flex:1,minWidth:0}}>
-              <div style={{display:'flex',alignItems:'center',gap:6,flexWrap:'wrap'}}>
-                <span style={{fontSize:12,fontWeight:700,color:isOwn?'var(--em)':'var(--t1)'}}>{m.display_name}</span>
-                <TierBadge tierName={m.tier_name} tierIcon={m.tier_icon} tierColor={m.tier_color}/>
-                <span style={{fontSize:9,color:'var(--t5)',fontFamily:'var(--mono)',marginLeft:'auto'}}>{new Date(m.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>
-                {isAdmin&&<button onClick={()=>deleteMsg(m.id)} style={{background:'none',border:'none',color:'var(--red)',fontSize:10,cursor:'pointer',opacity:0.5,padding:0}} title="Delete">{'\u2717'}</button>}
-              </div>
-              <div style={{fontSize:13,color:'var(--t2)',lineHeight:1.5,marginTop:2,wordBreak:'break-word'}}>{m.content}</div>
-            </div>
-          </div>);
-        })}
-      </div>
-
-      {/* Input */}
-      <div style={{borderTop:'1px solid var(--bdr2)',padding:'12px 16px',display:'flex',gap:8,background:'var(--bg2)'}}>
-        {user?<>
-          <input style={{flex:1,background:'var(--bg3)',border:'1px solid var(--bdr2)',borderRadius:8,padding:'10px 14px',color:'var(--t1)',fontFamily:'var(--sans)',fontSize:13,outline:'none'}} placeholder="Type a message..." value={msg} onChange={e=>setMsg(e.target.value)} onKeyDown={e=>e.key==="Enter"&&!e.shiftKey&&sendMessage()} maxLength={500}/>
-          <button style={{background:'linear-gradient(135deg,var(--em),#0891b2)',color:'#050810',fontFamily:'var(--sans)',fontSize:12,fontWeight:700,padding:'10px 20px',border:'none',borderRadius:8,cursor:'pointer',boxShadow:'var(--glow-sm)',whiteSpace:'nowrap'}} onClick={sendMessage} disabled={sending||!msg.trim()}>Send</button>
-        </>:<div style={{flex:1,textAlign:'center',padding:'8px 0'}}>
-          <button style={{background:'var(--emA2)',border:'1px solid var(--bdr3)',color:'var(--em)',fontSize:12,fontWeight:700,padding:'8px 20px',borderRadius:7,cursor:'pointer'}} onClick={onLogin}>Sign in to chat</button>
-        </div>}
-      </div>
-    </div>
-
-    <div style={{fontSize:10,color:'var(--t5)',textAlign:'center',marginTop:8}}>Be respectful. Messages are public and moderated.</div>
-  </div>);
-};
-
 // ── APP ──────────────────────────────────────────────────────────────────────
 export default function App() {
   const [page,setPage]=useState("home");
@@ -2497,7 +2307,7 @@ export default function App() {
     <div className="wrap">
 
       <div className="ctabs">
-        {[["firms","Firms"],["challenges","Challenges"],["offers","Offers"],["giveaways","Giveaway"],["blog","Research"],["videos","Videos"],["reviews","Reviews"],["chat","\u{1F4AC} Chat"],["points","\u2B50 Pulse Points"]].map(([k,l])=>(
+        {[["firms","Firms"],["challenges","Challenges"],["offers","Offers"],["giveaways","Giveaway"],["blog","Research"],["videos","Videos"],["points","\u2B50 Pulse Points"]].map(([k,l])=>(
           <button key={k} className={`ctab${tab===k?' on':''}`} onClick={()=>setTab(k)}>{l}</button>
         ))}
       </div>
@@ -2516,8 +2326,6 @@ export default function App() {
       {tab==="giveaways"&&<GiveawaysTab/>}
       {tab==="blog"&&<BlogTab onSelect={goBlog}/>}
       {tab==="videos"&&<VideosTab/>}
-      {tab==="reviews"&&<ReviewsTab user={user} onLogin={()=>setShowAuth(true)}/>}
-      {tab==="chat"&&<LiveChatTab user={user} onLogin={()=>setShowAuth(true)}/>}
       {tab==="points"&&<PulsePointsTab user={user} onLogin={()=>setShowAuth(true)}/>}
     </div>
     <Footer setPage={setPage} setTab={setTab}/>
