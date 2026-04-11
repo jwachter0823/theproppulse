@@ -493,22 +493,22 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .best-for::before{content:'';position:absolute;inset:0;border-radius:20px;opacity:0.6;filter:blur(8px);z-index:-1}
 
 /* ── NEWSLETTER ── */
-.nl-section{position:relative;margin:48px 0 0;padding:40px 0;border-top:1px solid var(--bdr2);overflow:hidden}
-.nl-section::before{content:'';position:absolute;top:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(251,191,36,0.4),rgba(34,211,238,0.3),rgba(251,191,36,0.4),transparent)}
-.nl-section::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:300px;background:radial-gradient(ellipse,rgba(6,182,212,0.06) 0%,rgba(251,191,36,0.03) 40%,transparent 65%);border-radius:50%;pointer-events:none}
-.nl-inner{max-width:520px;margin:0 auto;text-align:center;position:relative;z-index:1}
-.nl-inner h3{font-size:20px;font-weight:800;margin-bottom:6px}
-.nl-inner h3 span{color:var(--gold);text-shadow:var(--glow-gold-sm)}
-.nl-inner p{color:var(--t4);font-size:13px;margin-bottom:18px;line-height:1.6}
-.nl-form{display:flex;gap:8px;max-width:420px;margin:0 auto}
-.nl-input{flex:1;background:var(--bg3);border:1px solid var(--bdr2);border-radius:8px;padding:12px 16px;color:var(--t1);font-family:var(--sans);font-size:14px;outline:none;transition:border-color .15s}
-.nl-input:focus{border-color:var(--em);box-shadow:0 0 8px rgba(6,182,212,0.1)}
-.nl-btn{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#050810;font-family:var(--sans);font-size:13px;font-weight:700;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;box-shadow:var(--glow-gold-sm);transition:all .2s;white-space:nowrap}
-.nl-btn:hover{box-shadow:var(--glow-gold);transform:translateY(-1px)}
+.nl-section{position:relative;margin:48px 0 0;padding:56px 0;border-top:1px solid var(--bdr2);overflow:hidden}
+.nl-section::before{content:'';position:absolute;top:-1px;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(251,191,36,0.5),rgba(34,211,238,0.4),rgba(251,191,36,0.5),transparent)}
+.nl-section::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:800px;height:400px;background:radial-gradient(ellipse,rgba(6,182,212,0.08) 0%,rgba(251,191,36,0.04) 35%,transparent 65%);border-radius:50%;pointer-events:none}
+.nl-inner{max-width:600px;margin:0 auto;text-align:center;position:relative;z-index:1}
+.nl-inner h3{font-size:28px;font-weight:800;margin-bottom:10px;letter-spacing:-.3px}
+.nl-inner h3 span{color:var(--gold);text-shadow:var(--glow-gold)}
+.nl-inner p{color:var(--t3);font-size:15px;margin-bottom:24px;line-height:1.7;max-width:480px;margin-left:auto;margin-right:auto}
+.nl-form{display:flex;gap:10px;max-width:480px;margin:0 auto}
+.nl-input{flex:1;background:var(--bg3);border:1px solid var(--bdr2);border-radius:10px;padding:16px 20px;color:var(--t1);font-family:var(--sans);font-size:15px;outline:none;transition:all .2s}
+.nl-input:focus{border-color:var(--em);box-shadow:0 0 12px rgba(6,182,212,0.15)}
+.nl-btn{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#050810;font-family:var(--sans);font-size:15px;font-weight:700;padding:16px 32px;border:none;border-radius:10px;cursor:pointer;box-shadow:var(--glow-gold-sm);transition:all .2s;white-space:nowrap}
+.nl-btn:hover{box-shadow:var(--glow-gold);transform:translateY(-2px)}
 .nl-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
-.nl-success{color:var(--green);font-size:13px;font-weight:600;margin-top:12px;text-shadow:var(--glow-green)}
-.nl-pills{display:flex;justify-content:center;gap:8px;margin-top:14px;flex-wrap:wrap}
-.nl-pill{font-size:11px;color:var(--t4);padding:4px 10px;border:1px solid var(--bdr);border-radius:16px;background:var(--bg2)}
+.nl-success{color:var(--green);font-size:15px;font-weight:600;margin-top:16px;text-shadow:var(--glow-green)}
+.nl-pills{display:flex;justify-content:center;gap:10px;margin-top:20px;flex-wrap:wrap}
+.nl-pill{font-size:12px;color:var(--t3);padding:6px 14px;border:1px solid var(--bdr2);border-radius:20px;background:var(--bg2)}
 .fcard-pulse{display:flex;align-items:center;gap:7px}
 .fcard-pl{font-size:10px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;text-shadow:0 0 6px rgba(251,191,36,0.2)}
 .fcard-pv{font-family:var(--mono);font-size:18px;font-weight:800;color:var(--gold);text-shadow:var(--glow-gold);animation:pulsGlow 3s ease-in-out infinite}
@@ -2359,6 +2359,50 @@ const PulsePointsTab = ({user,onLogin}) => {
         </>:<div style={{fontSize:11,color:tier.color,fontWeight:600}}>Max tier reached!</div>}
       </div>
     </div>
+
+    {/* Per-Firm Points Breakdown */}
+    {subs.filter(s=>s.status==="approved").length>0&&<div style={{marginTop:20}}>
+      <div style={{fontSize:13,fontWeight:700,color:'var(--em2)',marginBottom:10,display:'flex',alignItems:'center',gap:6,textShadow:'0 0 8px rgba(6,182,212,0.15)'}}>
+        <span style={{fontSize:16}}>📊</span> Points by Firm
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))',gap:8}}>
+        {(()=>{
+          const firmMap={};
+          subs.filter(s=>s.status==="approved").forEach(s=>{
+            if(!firmMap[s.firm])firmMap[s.firm]={pts:0,count:0};
+            firmMap[s.firm].pts+=(s.points_awarded||0);
+            firmMap[s.firm].count++;
+          });
+          return Object.entries(firmMap).sort((a,b)=>b[1].pts-a[1].pts).map(([name,data])=>{
+            const f=FIRMS.find(ff=>ff.name===name);
+            const fc=f?f.color:'var(--em)';
+            return (<div key={name} style={{
+              background:'var(--glass)',
+              border:'1px solid '+fc+'25',
+              borderRadius:12,
+              padding:'14px 16px',
+              position:'relative',
+              overflow:'hidden',
+              transition:'all .25s',
+              cursor:'default',
+              borderTop:'2px solid '+fc,
+              boxShadow:'0 0 8px '+fc+'15, 0 0 20px '+fc+'08'
+            }}
+            onMouseOver={e=>{e.currentTarget.style.boxShadow='0 0 12px '+fc+'40, 0 0 30px '+fc+'20, 0 0 60px '+fc+'10';e.currentTarget.style.transform='translateY(-3px)'}}
+            onMouseOut={e=>{e.currentTarget.style.boxShadow='0 0 8px '+fc+'15, 0 0 20px '+fc+'08';e.currentTarget.style.transform='translateY(0)'}}
+            >
+              <div style={{position:'absolute',top:'-10px',right:'-10px',fontSize:50,opacity:0.04,fontWeight:900}}>{f?.initials||'?'}</div>
+              <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:8}}>
+                {f&&<FirmLogo f={f} size={22}/>}
+                <span style={{fontSize:12,fontWeight:700,color:fc,textShadow:'0 0 6px '+fc+'40'}}>{name}</span>
+              </div>
+              <div style={{fontFamily:'var(--mono)',fontSize:20,fontWeight:900,color:'var(--gold)',textShadow:'var(--glow-gold-sm)',lineHeight:1}}>{data.pts.toLocaleString()}</div>
+              <div style={{fontSize:10,color:'var(--t4)',marginTop:4}}>{data.count} purchase{data.count!==1?'s':''} verified</div>
+            </div>);
+          });
+        })()}
+      </div>
+    </div>}
 
     <div className="pp-tabs">
       <button className={`pp-tab ${ppTab==="submit"?"on":""}`} onClick={()=>setPpTab("submit")}>Submit Purchase</button>
