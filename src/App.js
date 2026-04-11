@@ -1300,12 +1300,12 @@ const ChallengesTab = () => {
   const setSize=v=>setFilters(p=>({...p,size:p.size===v?"":v}));
   const allSizes=[...new Set(CHALLENGES.map(c=>c.size))].sort((a,b)=>parseInt(a)-parseInt(b));
   const filtered=useMemo(()=>{
-    const hs=filters.instant;
+    const anyFilterOn=filters.instant||filters.noDLL||filters.noConsistency||filters.newsOk||filters.eaOk;
     return CHALLENGES.filter(c=>{
-      if(!hs&&!c.standard)return false;
+      if(!anyFilterOn&&!c.standard)return false;
       if(filters.instant&&!c.instant)return false;
       if(filters.noDLL&&c.dll!=="None"&&!c.dll.includes("None"))return false;
-      if(filters.noConsistency&&c.consistency!=="None")return false;
+      if(filters.noConsistency&&!c.consistency.toLowerCase().includes("none"))return false;
       if(filters.newsOk&&!c.news)return false;
       if(filters.eaOk&&!c.ea)return false;
       if(filters.size&&c.size!==filters.size)return false;
@@ -1345,7 +1345,7 @@ const ChallengesTab = () => {
         <td>{c.minDays==="None"?<span className="good">None</span>:c.minDays}</td>
         <td>{c.split}</td>
         <td>{c.payout}</td>
-        <td>{c.consistency==="None"?<span className="good">None</span>:<span className="warn">{c.consistency}</span>}</td>
+        <td>{c.consistency.toLowerCase().includes("none")?<span className="good">{c.consistency}</span>:<span className="warn">{c.consistency}</span>}</td>
         <td>{c.news?<span className="good">{'\u2713'}</span>:<span style={{color:'var(--red)'}}>{'\u2717'}</span>}</td>
         <td>{c.ea?<span className="good">{'\u2713'}</span>:<span style={{color:'var(--red)'}}>{'\u2717'}</span>}</td>
       </tr>);
@@ -1580,8 +1580,8 @@ const DetailPage = ({firm,goBack}) => {
             <td style={{fontWeight:600}}>{c.price}</td>
             <td className="mono">{c.target}</td>
             <td className="mono">{c.maxLoss}</td>
-            <td>{c.dll==="None"?<span className="good">None</span>:<span className="warn">{c.dll}</span>}</td>
-            <td>{c.consistency==="None"?<span className="good">None</span>:<span className="warn">{c.consistency}</span>}</td>
+            <td>{c.dll==="None"||c.dll.toLowerCase().includes("none")?<span className="good">{c.dll}</span>:<span className="warn">{c.dll}</span>}</td>
+            <td>{c.consistency.toLowerCase().includes("none")?<span className="good">{c.consistency}</span>:<span className="warn">{c.consistency}</span>}</td>
             <td>{c.split}</td>
             <td>{c.payout}</td>
           </tr>
@@ -2315,50 +2315,68 @@ const PulsePointsTab = ({user,onLogin}) => {
 
 // ── APP ──────────────────────────────────────────────────────────────────────
 // ── COMPARE OVERLAY ──
-const COMPARE_ROWS = [
-  {label:"Pulse Score",key:"pulse",fn:f=>calcPulse(f.rating,f.reviews,f.name),best:"max"},
-  {label:"Rating",key:"rating",fn:f=>f.rating+" / 5 ("+f.reviews.toLocaleString()+" reviews)",best:"max",val:f=>f.rating},
-  {label:"Profit Split",key:"split",fn:f=>f.split},
-  {label:"Max Drawdown",key:"maxDD",fn:f=>f.maxDD},
-  {label:"Daily Loss Limit",key:"dailyDD",fn:f=>f.dailyDD||"None"},
-  {label:"Drawdown Type",key:"drawdownType",fn:f=>f.drawdownType},
-  {label:"Consistency Rule",key:"consistencyPct",fn:f=>f.hasConsistency?f.consistencyPct:"None"},
-  {label:"Payout Speed",key:"paySpeed",fn:f=>f.paySpeed},
-  {label:"Min Payout",key:"minPayout",fn:f=>f.minPayout},
-  {label:"Account Sizes",key:"sizes",fn:f=>f.sizes.join(", ")},
-  {label:"Platforms",key:"platforms",fn:f=>f.platforms.join(", ")},
-  {label:"News Trading",key:"newsTrading",fn:f=>f.newsTrading?"✓ Yes":"✗ No"},
-  {label:"EAs / Bots",key:"eaAllowed",fn:f=>f.eaAllowed?"✓ Yes":"✗ No"},
-  {label:"Instant Fund",key:"instantFund",fn:f=>f.instantFund?"✓ Available":"✗ No"},
-  {label:"Current Deal",key:"deal",fn:f=>{const d=DEALS.find(x=>x.firm===f.name);return d?d.pct+" w/ code "+d.code:"—"}},
-];
 const CompareOverlay = ({firms,onClose}) => {
+  const [cmpSize,setCmpSize]=useState("50K");
+  const sizes=["25K","50K","100K","150K"];
   const cols=firms.length;
-  const gridCols=`160px repeat(${cols},1fr)`;
+  const gridCols=`140px repeat(${cols},1fr)`;
+  // For each firm, find the best matching challenge at chosen size (prefer standard plan)
+  const getCh=(f)=>{
+    const matches=CHALLENGES.filter(c=>c.firm===f.name&&c.size===cmpSize);
+    return matches.find(c=>c.standard)||matches[0]||null;
+  };
+  const rows=[
+    {label:"Pulse Score",fn:(f)=>({v:String(calcPulse(f.rating,f.reviews,f.name)),n:calcPulse(f.rating,f.reviews,f.name)}),best:"max",fromFirm:true},
+    {label:"Rating",fn:(f)=>({v:f.rating+"/5 ("+f.reviews.toLocaleString()+")",n:f.rating}),best:"max",fromFirm:true},
+    {label:"Plan",fn:(_,c)=>({v:c?c.plan:"—"}),fromFirm:false},
+    {label:"Price",fn:(_,c)=>({v:c?c.price:"—"}),fromFirm:false},
+    {label:"Profit Target",fn:(_,c)=>({v:c?c.target:"—"}),fromFirm:false},
+    {label:"Max Drawdown",fn:(_,c)=>({v:c?c.maxLoss:"—"}),fromFirm:false},
+    {label:"Daily Loss Limit",fn:(_,c)=>({v:c?c.dll:"—"}),fromFirm:false},
+    {label:"Drawdown Type",fn:(_,c)=>({v:c?c.drawdown:"—"}),fromFirm:false},
+    {label:"Consistency",fn:(_,c)=>({v:c?c.consistency:"—"}),fromFirm:false},
+    {label:"Profit Split",fn:(_,c)=>({v:c?c.split:"—"}),fromFirm:false},
+    {label:"Min Days",fn:(_,c)=>({v:c?c.minDays:"—"}),fromFirm:false},
+    {label:"Payout",fn:(_,c)=>({v:c?c.payout:"—"}),fromFirm:false},
+    {label:"News Trading",fn:(_,c)=>({v:c?(c.news?"✓ Yes":"✗ No"):"—"}),fromFirm:false},
+    {label:"EAs / Bots",fn:(_,c)=>({v:c?(c.ea?"✓ Yes":"✗ No"):"—"}),fromFirm:false},
+    {label:"Payout Speed",fn:(f)=>({v:f.paySpeed}),fromFirm:true},
+    {label:"Current Deal",fn:(f)=>{const d=DEALS.find(x=>x.firm===f.name);return {v:d?d.pct+" w/ code "+d.code:"—"}},fromFirm:true},
+  ];
   return (<div className="cmp-overlay" onClick={onClose}>
     <div className="cmp-modal" onClick={e=>e.stopPropagation()}>
       <div className="cmp-header">
-        <h2>Compare <span>{cols} Firms</span></h2>
+        <div>
+          <h2>Compare <span>{cols} Firms</span></h2>
+          <div style={{display:'flex',gap:4,marginTop:8}}>
+            {sizes.map(s=><button key={s} className={`f-btn ${cmpSize===s?"on":""}`} style={{padding:'4px 12px',fontSize:11}} onClick={()=>setCmpSize(s)}>{s}</button>)}
+          </div>
+        </div>
         <button className="cmp-close" onClick={onClose}>✕</button>
       </div>
-      <div className="cmp-grid" style={{overflowX:'auto'}}>
+      <div style={{overflowX:'auto'}}>
+      <div className="cmp-grid" style={{minWidth:cols*220+140}}>
         <div className="cmp-row" style={{display:'grid',gridTemplateColumns:gridCols}}>
-          <div className="cmp-label" style={{background:'transparent',border:'none'}}/>
-          {firms.map(f=><div key={f.id} className="cmp-firm-hdr">
+          <div className="cmp-label" style={{background:'transparent',borderRight:'1px solid var(--bdr)'}}/>
+          {firms.map(f=>{const ch=getCh(f);return <div key={f.id} className="cmp-firm-hdr">
             <FirmLogo f={f} size={36}/>
             <div className="cmp-firm-name" style={{color:f.color}}>{f.name}</div>
+            <div style={{fontSize:11,color:'var(--t4)',marginTop:2}}>{ch?ch.plan+" "+cmpSize:<span style={{color:'var(--red)',fontSize:10}}>No {cmpSize} plan</span>}</div>
             <div className="cmp-firm-pulse" style={{color:pulseColor(calcPulse(f.rating,f.reviews,f.name)),textShadow:'var(--glow-gold-sm)'}}>{calcPulse(f.rating,f.reviews,f.name)}</div>
-            {AFFILIATE_LINKS[f.name]&&<button className="cmp-deal-btn" onClick={()=>trackClick(f.name)}>Get Deal</button>}
-          </div>)}
+            {AFFILIATE_LINKS[f.name]?<button className="cmp-deal-btn" onClick={()=>trackClick(f.name)}>Get Deal</button>:<button className="cmp-deal-btn" style={{background:'var(--emA2)',color:'var(--em)',boxShadow:'none'}} onClick={()=>{const fp=FIRM_PROFILES[f.name];window.open('https://'+(fp?.website||''),'_blank')}}>Visit Site</button>}
+          </div>})}
         </div>
-        {COMPARE_ROWS.map(r=><div key={r.key} className="cmp-row" style={{display:'grid',gridTemplateColumns:gridCols}}>
+        {rows.map((r,ri)=><div key={ri} className="cmp-row" style={{display:'grid',gridTemplateColumns:gridCols}}>
           <div className="cmp-label">{r.label}</div>
           {firms.map(f=>{
-            const v=r.fn(f);
-            const isStr=typeof v==="string";
-            return <div key={f.id} className="cmp-cell">{isStr?v:v}</div>;
+            const ch=getCh(f);
+            const res=r.fn(f,ch);
+            const isGood=res.v&&(res.v.includes("✓")||res.v==="None");
+            const isBad=res.v&&res.v.includes("✗");
+            return <div key={f.id} className="cmp-cell" style={{...(isGood?{color:'var(--green)',fontWeight:600}:isBad?{color:'var(--red)'}:{})}}>{res.v||"—"}</div>;
           })}
         </div>)}
+      </div>
       </div>
     </div>
   </div>);
