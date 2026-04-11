@@ -294,6 +294,27 @@ const CHALLENGES = [
   {firm:"Bulenox",plan:"Eval",size:"250K",target:"$15,000",maxLoss:"$5,500",dll:"$2,500",drawdown:"EOD or Trailing",minDays:"No min",consistency:"40%",split:"100% first $10K",payout:"Weekly",standard:true,instant:false,news:true,ea:true,price:"$535 one-time"},
 ];
 
+// Funded-phase overrides — only fields that DIFFER from eval. Keyed by "firm|plan".
+const FUNDED_OVERRIDES = {
+  "Tradeify|Select":{consistency:"None (Flex) / 50% (Daily)",dll:"None (Flex) / $500–$1,750 (Daily)",drawdown:"EOD Trailing (locks at balance + $100)",minDays:"N/A",target:"N/A"},
+  "Tradeify|Growth":{consistency:"35%",dll:"$600–$3,750",drawdown:"EOD Trailing (locks at balance + $100)",minDays:"N/A",target:"N/A"},
+  "Tradeify|Lightning":{consistency:"20→25→30% (progressive)",minDays:"N/A",target:"N/A"},
+  "My Funded Futures|Core":{consistency:"40%",drawdown:"EOD (locks at balance)",minDays:"5 winning days",target:"N/A"},
+  "My Funded Futures|Rapid":{consistency:"None",drawdown:"Intraday Trailing",minDays:"5 winning days",target:"N/A"},
+  "My Funded Futures|Pro":{consistency:"None",drawdown:"EOD (locks at balance)",minDays:"14 calendar days",target:"N/A"},
+  "Alpha Futures|Standard":{consistency:"None",split:"70→80→90%",minDays:"N/A",target:"N/A"},
+  "Apex Trader Funding|EOD":{consistency:"50%",dll:"$750–$2,000 (soft, pauses trading)",drawdown:"EOD Trailing (locks at balance + $100)",minDays:"5 qualifying days",target:"N/A",split:"100% first $25K → 90/10"},
+  "Apex Trader Funding|Intraday":{consistency:"50%",dll:"Tier-based",drawdown:"Intraday Trailing (locks at balance + $100)",minDays:"5 qualifying days",target:"N/A",split:"100% first $25K → 90/10"},
+  "Top One Futures|Eval":{consistency:"30%",minDays:"5 days",target:"N/A"},
+  "Top One Futures|Prime":{consistency:"30%",target:"N/A"},
+  "FundedNext Futures|Rapid":{consistency:"None",minDays:"N/A",target:"N/A",split:"80/20→95/5"},
+  "Lucid Trading|Flex Eval":{consistency:"None",drawdown:"EOD Trailing",minDays:"5 profitable days",target:"N/A",split:"90/10"},
+  "Lucid Trading|Direct":{consistency:"20%",target:"N/A"},
+  "Topstep|Combine":{consistency:"50%",drawdown:"EOD Trailing (locks once reached)",minDays:"5 winning days (Standard) / 15 (Consistency)",target:"N/A",split:"90/10"},
+  "Take Profit Trader|Eval":{consistency:"40%",minDays:"N/A",target:"N/A",split:"80/20→90/10 (PRO+)"},
+  "Bulenox|Eval":{consistency:"40%",minDays:"N/A",target:"N/A",split:"100% first $10K → 90/10"},
+};
+
 const LOGO_URL = "data:image/png;base64,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";
 
 const css = `
@@ -1294,28 +1315,44 @@ const FirmTable = ({firms,onSelect}) => {
 };
 
 // ── CHALLENGES TAB ──
-const ChallengesTab = () => {
+const ChallengesTab = ({onSelect}) => {
   const [filters,setFilters]=useState({instant:false,noDLL:false,noConsistency:false,newsOk:false,eaOk:false,size:"50K"});
+  const [phase,setPhase]=useState("eval");
   const toggle=k=>setFilters(p=>({...p,[k]:!p[k]}));
   const setSize=v=>setFilters(p=>({...p,size:p.size===v?"":v}));
   const allSizes=[...new Set(CHALLENGES.map(c=>c.size))].sort((a,b)=>parseInt(a)-parseInt(b));
+  // Helper to get display value: if funded phase, check overrides
+  const getVal=(c,field)=>{
+    if(phase==="eval") return c[field];
+    const key=c.firm+"|"+c.plan;
+    const ov=FUNDED_OVERRIDES[key];
+    return (ov&&ov[field]!==undefined)?ov[field]:c[field];
+  };
   const filtered=useMemo(()=>{
     const anyFilterOn=filters.instant||filters.noDLL||filters.noConsistency||filters.newsOk||filters.eaOk;
     return CHALLENGES.filter(c=>{
       if(!anyFilterOn&&!c.standard)return false;
       if(filters.instant&&!c.instant)return false;
-      if(filters.noDLL&&c.dll!=="None"&&!c.dll.includes("None"))return false;
-      if(filters.noConsistency&&!c.consistency.toLowerCase().includes("none"))return false;
+      const dll=getVal(c,"dll");
+      if(filters.noDLL&&dll!=="None"&&!dll.toLowerCase().includes("none"))return false;
+      const cons=getVal(c,"consistency");
+      if(filters.noConsistency&&!cons.toLowerCase().includes("none"))return false;
       if(filters.newsOk&&!c.news)return false;
       if(filters.eaOk&&!c.ea)return false;
       if(filters.size&&c.size!==filters.size)return false;
       return true;
     });
-  },[filters]);
+  },[filters,phase]);
   const ac=Object.values(filters).filter(v=>v===true||(typeof v==="string"&&v!=="")).length;
   return (<div>
     <div className="sec-hdr"><div><div className="sec-title">Challenge Comparison Tool</div><div className="sec-sub">Filter {CHALLENGES.length} challenges across {new Set(CHALLENGES.map(c=>c.firm)).size} firms</div></div>
       {ac>0&&<button className="f-btn" style={{fontSize:10}} onClick={()=>setFilters({instant:false,noDLL:false,noConsistency:false,newsOk:false,eaOk:false,size:""})}>Clear all</button>}
+    </div>
+    <div style={{display:'flex',gap:4,marginBottom:10}}>
+      <div className="view-tog">
+        <button className={`vt ${phase==="eval"?"on":""}`} onClick={()=>setPhase("eval")}>Evaluation</button>
+        <button className={`vt ${phase==="funded"?"on":""}`} onClick={()=>setPhase("funded")}>Funded</button>
+      </div>
     </div>
     <div style={{display:'flex',gap:4,flexWrap:'wrap',marginBottom:6}}>
       <button className={`f-btn ${filters.instant?"on":""}`} onClick={()=>toggle("instant")}>Instant Funding</button>
@@ -1328,24 +1365,24 @@ const ChallengesTab = () => {
       <span style={{fontSize:10,color:'var(--t4)',fontWeight:700,marginRight:2}}>SIZE:</span>
       {allSizes.map(s=><button key={s} className={`f-btn ${filters.size===s?"on":""}`} onClick={()=>setSize(s)} style={{padding:'3px 8px',fontSize:10}}>${s}</button>)}
     </div>
-    <div style={{fontSize:11,color:'var(--t3)',marginBottom:8}}>Showing <b style={{color:'var(--t1)'}}>{filtered.length}</b> challenges</div>
+    <div style={{fontSize:11,color:'var(--t3)',marginBottom:8}}>Showing <b style={{color:'var(--t1)'}}>{filtered.length}</b> challenges {phase==="funded"&&<span style={{color:'var(--gold)',fontSize:10,marginLeft:6}}>★ Showing funded account rules</span>}</div>
     <div className="ch-wrap"><table className="tbl" style={{minWidth:1100}}><thead><tr>
-      <th>Firm</th><th>Plan</th><th>Size</th><th>Price</th><th>Target</th><th>Max Loss</th><th>DLL</th><th>Drawdown</th><th>Min Days</th><th>Split</th><th>Payout</th><th>Consistency</th><th>News</th><th>EAs</th>
+      <th>Firm</th><th>Plan</th><th>Size</th><th>Price</th><th>{phase==="funded"?"Target":"Target"}</th><th>Max Loss</th><th>DLL</th><th>Drawdown</th><th>{phase==="funded"?"Payout Freq":"Min Days"}</th><th>Split</th><th>Payout</th><th>Consistency</th><th>News</th><th>EAs</th>
     </tr></thead><tbody>{filtered.length===0?<tr><td colSpan={14} style={{textAlign:'center',padding:32,color:'var(--t4)'}}>No matches. Try fewer filters.</td></tr>:filtered.map((c,i)=>{
       const f=FIRMS.find(ff=>ff.name===c.firm);
       return (<tr key={i}>
-        <td><div style={{display:'flex',alignItems:'center',gap:8}}>{f&&<FirmLogo f={f} size={26}/>}<span style={{fontWeight:700,color:'var(--t1)'}}>{c.firm}</span></div></td>
+        <td><div style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer'}} onClick={()=>f&&onSelect(f)}>{f&&<FirmLogo f={f} size={26}/>}<span style={{fontWeight:700,color:'var(--t1)',borderBottom:'1px solid transparent',transition:'all .15s'}} onMouseOver={e=>e.target.style.cssText='font-weight:700;color:var(--em);border-bottom:1px solid var(--em)'} onMouseOut={e=>e.target.style.cssText='font-weight:700;color:var(--t1);border-bottom:1px solid transparent'}>{c.firm}</span></div></td>
         <td style={{fontWeight:600}}>{c.plan}{c.instant&&<span style={{color:'var(--cyan)',marginLeft:4,fontSize:10}}>INSTANT</span>}</td>
         <td className="mono" style={{color:'var(--cyan)'}}>${c.size}</td>
         <td style={{fontWeight:600}}>{c.price}</td>
-        <td className="mono">{c.target}</td>
-        <td className="mono">{c.maxLoss}</td>
-        <td>{c.dll==="None"||c.dll.includes("None")?<span className="good">None</span>:<span className="warn">{c.dll}</span>}</td>
-        <td>{c.drawdown}</td>
-        <td>{c.minDays==="None"?<span className="good">None</span>:c.minDays}</td>
-        <td>{c.split}</td>
-        <td>{c.payout}</td>
-        <td>{c.consistency.toLowerCase().includes("none")?<span className="good">{c.consistency}</span>:<span className="warn">{c.consistency}</span>}</td>
+        <td className="mono">{getVal(c,"target")}</td>
+        <td className="mono">{getVal(c,"maxLoss")}</td>
+        <td>{(()=>{const v=getVal(c,"dll");return v==="None"||v.toLowerCase().includes("none")?<span className="good">{v}</span>:<span className="warn">{v}</span>})()}</td>
+        <td>{getVal(c,"drawdown")}</td>
+        <td>{(()=>{const v=getVal(c,"minDays");return v==="None"||v==="N/A"?<span className="good">{v}</span>:v})()}</td>
+        <td>{getVal(c,"split")}</td>
+        <td>{getVal(c,"payout")}</td>
+        <td>{(()=>{const v=getVal(c,"consistency");return v.toLowerCase().includes("none")?<span className="good">{v}</span>:<span className="warn">{v}</span>})()}</td>
         <td>{c.news?<span className="good">{'\u2713'}</span>:<span style={{color:'var(--red)'}}>{'\u2717'}</span>}</td>
         <td>{c.ea?<span className="good">{'\u2713'}</span>:<span style={{color:'var(--red)'}}>{'\u2717'}</span>}</td>
       </tr>);
@@ -2466,7 +2503,7 @@ export default function App() {
         </div>
         <FirmCards firms={sorted} onSelect={goDetail} user={user} compareFirms={compareFirms} toggleCompare={toggleCompare}/>
       </>}
-      {tab==="challenges"&&<ChallengesTab/>}
+      {tab==="challenges"&&<ChallengesTab onSelect={goDetail}/>}
       {tab==="offers"&&<OffersTab user={user}/>}
       {tab==="giveaways"&&<GiveawaysTab/>}
       {tab==="blog"&&<BlogTab onSelect={goBlog}/>}
