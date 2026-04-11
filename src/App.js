@@ -714,6 +714,20 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .panel-logout:hover{background:rgba(255,71,87,0.06);color:#ff4757}
 
 /* ── COMPARE ── */
+.faq-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:linear-gradient(135deg,rgba(34,211,238,0.15),rgba(251,191,36,0.1));border:1px solid rgba(34,211,238,0.25);color:var(--em2);font-family:var(--sans);font-size:15px;font-weight:700;padding:16px;border-radius:12px;cursor:pointer;transition:all .25s;margin:24px 0;text-shadow:0 0 8px rgba(6,182,212,0.2)}
+.faq-btn:hover{background:linear-gradient(135deg,rgba(34,211,238,0.25),rgba(251,191,36,0.18));border-color:var(--em);box-shadow:var(--glow-box);transform:translateY(-2px)}
+.faq-wrap{margin:24px 0}
+.faq-search{width:100%;background:var(--bg3);border:1px solid var(--bdr2);border-radius:8px;padding:11px 16px;color:var(--t1);font-family:var(--sans);font-size:14px;outline:none;margin-bottom:16px;transition:border-color .15s}
+.faq-search:focus{border-color:var(--em);box-shadow:0 0 8px rgba(6,182,212,0.1)}
+.faq-cat{margin-bottom:14px}
+.faq-cat-title{font-size:14px;font-weight:700;color:var(--gold);padding:10px 0;border-bottom:1px solid var(--bdr);margin-bottom:8px;text-shadow:0 0 6px rgba(251,191,36,0.15)}
+.faq-item{background:var(--glass);border:1px solid var(--bdr);border-radius:9px;margin-bottom:6px;overflow:hidden;transition:all .2s}
+.faq-item:hover{border-color:var(--bdr2)}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;font-size:13px;font-weight:600;color:var(--t2);transition:color .15s}
+.faq-q:hover{color:var(--em)}
+.faq-q span{font-size:14px;color:var(--t4);transition:transform .2s;flex-shrink:0;margin-left:8px}
+.faq-a{padding:0 16px 14px;font-size:13px;color:var(--t3);line-height:1.7;border-top:1px solid var(--bdr)}
+/* ── COMPARE ── */
 .cmp-tog{background:var(--bg2);border:1px solid var(--bdr2);color:var(--t4);font-family:var(--sans);font-size:11px;font-weight:600;padding:6px 12px;border-radius:6px;cursor:pointer;transition:all .15s;white-space:nowrap}
 .cmp-tog:hover{border-color:var(--bdr3);color:var(--em)}
 .cmp-tray{position:fixed;bottom:0;left:0;right:0;z-index:150;background:var(--glass2);backdrop-filter:blur(20px) saturate(1.3);border-top:1px solid var(--bdr2);padding:12px 24px;display:flex;align-items:center;justify-content:center;gap:14px;box-shadow:0 -4px 30px rgba(0,0,0,0.4),0 -1px 0 rgba(34,211,238,0.15);animation:trayIn .25s ease-out}
@@ -1110,7 +1124,299 @@ const FIRM_PROFILES = {
   }
 };
 
-// ── COMPONENTS ────────────────────────────────────────────────────────────────
+// ── FIRM FAQ DATA ──
+const FIRM_FAQ = {
+  "Tradeify":[
+    {cat:"Trading Hours",items:[
+      {q:"When can I trade?",a:"6:00 PM ET (Sun–Thu) to 4:59 PM ET (Mon–Fri). All positions must be closed by 4:59 PM ET. Holiday early close: 12:59 PM ET."},
+      {q:"Can I hold overnight?",a:"No. All positions must be closed within the same trading session. Positions left open are auto-closed (no account failure, but poor fills possible)."},
+      {q:"Can I trade weekends?",a:"No. Markets close Friday 5:00 PM ET and reopen Sunday 6:00 PM ET."}
+    ]},
+    {cat:"Instruments & Contracts",items:[
+      {q:"What can I trade?",a:"Full CME Group access: ES, NQ, RTY, YM (+ micros), GC, SI, CL, NG, HG, currency futures (6E, 6B, 6J), crypto (BTC, ETH), agriculture, treasuries, VIX. EUREX with optional data add-on."},
+      {q:"Can I mix minis and micros?",a:"No. You can trade either minis OR micros, but not both simultaneously. This applies across ALL your accounts. You can switch between sessions (close all micros, then trade minis next session)."},
+      {q:"Contract limits?",a:"Eval: 25K=1/10, 50K=4/40, 100K=8/80, 150K=12/120 (standard/micro). Funded accounts use progressive scaling starting lower."}
+    ]},
+    {cat:"Drawdown Rules",items:[
+      {q:"How does EOD trailing drawdown work?",a:"Your max loss floor only updates once per day at 5:00 PM ET based on your highest end-of-day balance. Intraday dips that recover don't count. However, if your balance touches the floor at ANY point during the session, the account fails immediately."},
+      {q:"Does the drawdown lock?",a:"Yes. On Select Flex funded accounts, the floor locks (stops trailing) at starting balance + a cap ($1,250 for 50K). After that it becomes static — your safety net stops moving."},
+      {q:"What are the max loss limits?",a:"25K: $1,000 | 50K: $2,000 | 100K: $3,500 | 150K: $4,500 (Select). Lightning 150K reduced to $5,250 in 3.0 update."}
+    ]},
+    {cat:"Consistency Rule",items:[
+      {q:"What is the consistency rule?",a:"No single trading day can account for more than X% of your total profits. Select eval: 40%. Growth funded: 35%. Lightning: 20% → 25% → 30% (progressive). Select Flex funded: 50% cap per day."},
+      {q:"Does it apply during evaluation?",a:"Yes on Select (40%). Growth eval also has consistency. Lightning is already funded, so consistency applies from day one."}
+    ]},
+    {cat:"Daily Loss Limit",items:[
+      {q:"Is there a DLL?",a:"Select eval: No DLL. Select Flex funded: No DLL. Select Daily funded: $500(25K)/$1K(50K)/$1.25K(100K)/$1.75K(150K). Growth: $600(25K)/$1.25K(50K)/$2.5K(100K)/$3.75K(150K). Lightning: $1.25K(50K)/$2.5K(100K)/$3K(150K) — removed at 6% profit."},
+      {q:"What happens if I hit the DLL?",a:"Trading pauses for the rest of the day (soft breach). Your account is NOT failed. You come back next session with a fresh DLL."}
+    ]},
+    {cat:"Payouts",items:[
+      {q:"How fast are payouts?",a:"Same-day to 48 hours via Rise or Plane. Most processed within 24 hours."},
+      {q:"How often can I withdraw?",a:"Select Daily: every trading day. Select Flex: every 5 profitable days ($100+ each). Growth/Lightning: per profit goal milestone."},
+      {q:"Are there payout caps?",a:"Select Daily: $500(25K)/$1K(50K)/$1.5K(100K)/$2.5K(150K) per day. Select Flex: 2× profit earned since last payout, capped at $1K–$2.5K."},
+      {q:"Is there an activation fee?",a:"$0. No activation fees on any Tradeify account."}
+    ]},
+    {cat:"Prohibited Activities",items:[
+      {q:"What will get me failed?",a:"Hedging same instrument (even across accounts), mixing mini/micro simultaneously, platform manipulation, latency arbitrage, spoofing, copy trading from external sources, breaching drawdown."},
+      {q:"Can I copy trade between my own accounts?",a:"Restricted. Each account needs independent trading behavior — meaningful variation in entry timing, sizing, or instrument. Exact mirrors get flagged."},
+      {q:"Can I use EAs/bots?",a:"Yes, if you're the sole owner. Not HFT. Must be able to prove ownership. 50%+ of trades must be held longer than 10 seconds AND 50%+ of profit from trades held longer than 10 seconds."}
+    ]},
+    {cat:"Accounts & Scaling",items:[
+      {q:"How many accounts can I have?",a:"Up to 5 funded accounts per trader, combined max balance $750K. Can mix Select, Growth, and Lightning."},
+      {q:"What is Tradeify Elite?",a:"After 5 total payouts across all accounts, you're eligible for Elite — trade real CME capital with up to 5 live accounts. Includes Performance Reward Pool up to $90K."},
+      {q:"Can I reset a failed account?",a:"Growth and Select: yes, at reduced price. Lightning: no resets — must purchase new account."}
+    ]},
+    {cat:"Platforms",items:[
+      {q:"What platforms are supported?",a:"Tradovate (web/desktop/mobile), NinjaTrader 8, Rithmic (NEW 3.0), TradeSea (NEW 3.0), TradingView (via Tradovate), Quantower, WealthCharts. All execution routes through platform backend."},
+      {q:"Is there a platform fee?",a:"No platform surcharges. All brokers are the same price. Market data is free with Non-Professional Agreement."}
+    ]}
+  ],
+  "My Funded Futures":[
+    {cat:"Trading Hours",items:[
+      {q:"When can I trade?",a:"CME Globex hours: Sunday 5:00 PM CT to Friday 4:00 PM CT. All positions must be closed by session end."},
+      {q:"Can I hold overnight?",a:"No. Must close all positions before session end on all plans."}
+    ]},
+    {cat:"Instruments",items:[
+      {q:"What can I trade?",a:"CME, CBOT, NYMEX, COMEX regulated futures — ES, NQ, RTY, YM, GC, SI, CL, NG, ZB, ZN, and agricultural futures. No crypto, forex, equities, or OTC."},
+      {q:"Are there contract limits?",a:"Yes, varies by account size and plan. Core uses micro-contract scaling on funded. Pro has full contracts from day one. Check MFFU help center for specifics per instrument."}
+    ]},
+    {cat:"Drawdown Rules",items:[
+      {q:"How does drawdown work?",a:"Core & Pro: EOD trailing — floor only updates at session close, locks at starting balance once reached. Rapid: Intraday trailing — follows peak equity in real time INCLUDING unrealized P&L."},
+      {q:"Max loss amounts?",a:"50K: $2,000 | 100K: $3,000 | 150K: $4,500. Same across all plans during eval."},
+      {q:"Why is Rapid's drawdown dangerous?",a:"If you're up $1,500 on an open trade that reverses, the floor already moved up $1,500. Close at breakeven and you've lost $1,500 of buffer. This is the #1 way Rapid traders get eliminated."}
+    ]},
+    {cat:"Consistency Rule",items:[
+      {q:"What is the consistency rule?",a:"Eval (all plans): 50% — no single day > 50% of total profit. There's $100 leniency. Core funded: 40%. Rapid funded: None. Pro funded: None."},
+      {q:"How does it work in practice?",a:"On a 50K eval ($3,000 target), to pass in 2 days you'd make ~$1,500 each day. If one day is $2,000, you'd need at least $4,000+ total for that day to be under 50%."}
+    ]},
+    {cat:"Payouts",items:[
+      {q:"How fast are payouts?",a:"Most approved instantly. Manual review takes 6-12 hours. Processed via RiseWorks. $15 flat fee per withdrawal."},
+      {q:"How often can I withdraw?",a:"Core: every 5 winning days. Rapid: every 5 winning days. Pro: every 14 calendar days (bi-weekly)."},
+      {q:"Are there payout caps?",a:"Core: $5,000 per cycle. Rapid: $11,250 per cycle. Pro: no per-cycle cap, but $100K total cumulative cap across all Pro accounts."},
+      {q:"Is there an activation fee?",a:"$0. No activation fees on any MFFU plan."}
+    ]},
+    {cat:"News Trading",items:[
+      {q:"Can I trade the news?",a:"Core: Yes, allowed. Rapid & Pro: Restricted — must be flat during Tier 1 events (FOMC, NFP, CPI). Holding through a Tier 1 event is a hard violation."}
+    ]},
+    {cat:"Plans Comparison",items:[
+      {q:"Core vs Rapid vs Pro?",a:"Core ($77/mo, 50K only): 80/20 split, EOD drawdown, 40% consistency funded, $5K payout cap. Cheapest entry. Rapid ($129+/mo): 90/10 split, intraday trailing drawdown, no consistency funded, $11.25K cap. Pro ($229+/mo): 80/20 split, EOD drawdown, no consistency funded, no per-cycle cap, bi-weekly payouts."},
+      {q:"Can I switch plans?",a:"No. You pass or fail the evaluation you purchased. Purchase a new evaluation on a different plan to run in parallel."}
+    ]},
+    {cat:"Prohibited Activities",items:[
+      {q:"What's not allowed?",a:"Exploiting simulator latency, hedging across MFFU accounts, holding through Tier 1 news (Rapid/Pro), trading unsupported instruments, exceeding contract limits. HFT prohibited."},
+      {q:"$10K daily cap on Rapid?",a:"Do not make more than $10,000 in one day on Rapid sim funded. Excess is forfeited and triggers a risk review."}
+    ]},
+    {cat:"Path to Live",items:[
+      {q:"How do I get a live account?",a:"Hit the cumulative payout cap ($100K on Pro, varies on others) or 5+ consecutive payouts. MFFU reviews and initiates the transition. Live accounts trade real capital."}
+    ]}
+  ],
+  "Alpha Futures":[
+    {cat:"Trading Hours",items:[
+      {q:"When can I trade?",a:"CME Globex hours. All positions must be closed before session end. No overnight or weekend holds."},
+    ]},
+    {cat:"Drawdown & DLL",items:[
+      {q:"How does drawdown work?",a:"EOD Trailing: $2,500(50K), $3,500(100K), $4,500(150K). Updates at session close only."},
+      {q:"What is the Daily Loss Guard?",a:"A SOFT daily loss limit. If you hit it, trading pauses for the day but your account is NOT failed. This is a key differentiator — most firms hard-fail you on DLL breach."},
+    ]},
+    {cat:"Consistency",items:[
+      {q:"Is there a consistency rule?",a:"50% during evaluation only. No consistency rule on funded accounts. This is one of the most trader-friendly funded structures available."},
+    ]},
+    {cat:"Profit Split",items:[
+      {q:"What's the profit split?",a:"Progressive: 70% (payouts 1-2) → 80% (payouts 3-4) → 90% (payout 5+). Lower than competitors initially but reaches 90% with consistency."},
+    ]},
+    {cat:"Payouts",items:[
+      {q:"How fast are payouts?",a:"Within 48 business hours. Advanced plan gets weekly processing."},
+      {q:"Is there an activation fee?",a:"$149 activation on Standard plan. Varies by plan type."},
+    ]},
+    {cat:"EAs & Automation",items:[
+      {q:"Can I use bots?",a:"No. EAs, bots, and automated trading are completely prohibited. Semi-auto with active human supervision may be allowed — check with Alpha directly."},
+    ]},
+    {cat:"Platforms",items:[
+      {q:"What platforms are supported?",a:"NinjaTrader, Tradovate, TradingView, AlphaTicks (Quantower-based). Limited selection compared to some competitors."},
+    ]}
+  ],
+  "Apex Trader Funding":[
+    {cat:"Apex 4.0 Overview",items:[
+      {q:"What changed with 4.0?",a:"Launched March 1, 2026. Complete rebuild: one-time fees (no subscriptions), two drawdown types (EOD/Intraday), 30-day eval expiry, 6-payout cap per PA, metals suspended, overnight banned, MAE/5:1 RR/one-direction rules removed, automated Deel payouts."},
+      {q:"Are old accounts affected?",a:"No. Legacy accounts (pre-March 2026) stay on old rules permanently. No conversion path to 4.0. Can run legacy and 4.0 simultaneously."},
+      {q:"What sizes are available?",a:"$25K, $50K, $100K, $150K only. The $75K, $250K, and $300K were removed in 4.0."}
+    ]},
+    {cat:"Drawdown Rules",items:[
+      {q:"EOD vs Intraday — what's the difference?",a:"EOD: Drawdown recalculates once per day at 4:59 PM ET. Intraday dips that recover don't tighten your threshold. Includes DLL. Costs more. RECOMMENDED for most traders. Intraday: Drawdown trails peak equity in real-time including unrealized P&L. No DLL. Cheaper. Very aggressive."},
+      {q:"When does the drawdown lock?",a:"Both types: locks at starting balance + $100 once your peak balance reaches that threshold. On a 50K, locks at $50,100 once peak hits $52,100."},
+      {q:"Max loss amounts?",a:"25K: $1,000 | 50K: $2,000 | 100K: $3,000 | 150K: $4,000."}
+    ]},
+    {cat:"Daily Loss Limit",items:[
+      {q:"Is there a DLL?",a:"EOD accounts only: $750(25K), $1K(50K), $1.5K(100K), $2K(150K). If hit, trading pauses for the day — does NOT fail your account. Intraday accounts have NO DLL."},
+      {q:"Does DLL affect my drawdown?",a:"No. DLL and trailing drawdown are separate systems. Hitting DLL stops your day but doesn't move the drawdown floor."}
+    ]},
+    {cat:"Consistency Rule",items:[
+      {q:"When does the 50% rule apply?",a:"Performance Account (funded) only. NOT during evaluation. No single profitable trading day can account for 50%+ of total net profit since last approved payout."},
+      {q:"Can I pass the eval in one day?",a:"Yes. There's no consistency rule and no minimum trading day requirement during evaluation. Hit the target without breaching drawdown and you pass."}
+    ]},
+    {cat:"Payouts",items:[
+      {q:"How does the payout ladder work?",a:"6-step system with increasing caps per payout. 100K example: ~$2K(1st) → $4K(6th). Max 6 payouts per PA lifetime, then account closes. 100% profit split up to $25K, then 90/10."},
+      {q:"What are qualifying days?",a:"5 days with net profit above threshold ($200 for 50K, $250 for 100K, etc.). Days with losses or profit below threshold don't count."},
+      {q:"How are payouts processed?",a:"Automated via Deel. 3-4 business days after approval. No manual review, no video reviews, no chart screenshots."},
+      {q:"What is the Safety Net?",a:"For first 3 payouts, account balance must stay above trailing threshold + $100. This limits how much you can withdraw early on."}
+    ]},
+    {cat:"Activation Fee",items:[
+      {q:"How much is the activation fee?",a:"$99 (EOD) or $79 (Intraday). Paid AFTER passing eval, not upfront. You have 7 days to pay once you pass. Never discounted."},
+      {q:"Is it per account?",a:"Yes. Each PA requires its own activation fee. Running 20 accounts = 20 × $79-$99 = $1,580-$1,980 in activation fees alone."}
+    ]},
+    {cat:"Metals & Instruments",items:[
+      {q:"Can I trade gold?",a:"NO. All metals suspended as of March 2026: Gold (GC), Silver (SI), Micro Gold (MGC), Copper (HG), Platinum (PL), Palladium (PA). No return date announced."},
+      {q:"What CAN I trade?",a:"CME, CBOT, NYMEX, COMEX futures — equity index, energy, currencies, treasuries, agriculture. 46 markets minus metals."}
+    ]},
+    {cat:"Prohibited Activities",items:[
+      {q:"What's banned?",a:"DCA (dollar-cost averaging) on Performance Accounts, overnight positions, trading metals, exceeding contract limits, windfall exploitation. Mandatory bracket orders enforced by platform."},
+      {q:"Can I use EAs?",a:"Yes — automated trading permitted with monitoring. DCA strategies are specifically prohibited on funded accounts."},
+      {q:"Is news trading allowed?",a:"Yes for normal strategies. 'Windfall' exploitation (deliberately targeting extreme news moves) is prohibited."}
+    ]},
+    {cat:"Account Limits",items:[
+      {q:"How many accounts can I have?",a:"Up to 20 Performance Accounts simultaneously across all types (EOD, Intraday, Legacy combined). Highest in the industry."},
+      {q:"What happens after 6 payouts?",a:"PA closes permanently. Purchase a new evaluation to start over. No direct path to live capital currently."},
+      {q:"Is there a reset option?",a:"No. 4.0 eliminated resets. If you don't pass within 30 days, the eval expires. Buy a new one."}
+    ]}
+  ],
+  "Top One Futures":[
+    {cat:"Overview",items:[
+      {q:"What plans are available?",a:"Eval (1-Step evaluation) and Prime (instant funding, no eval required). Both available in 50K and 100K. Eval also has 25K and 150K."},
+    ]},
+    {cat:"Rules",items:[
+      {q:"What's the consistency rule?",a:"30% — strictest in the industry. No single day can exceed 30% of total profit. Applies on eval and funded."},
+      {q:"Is there a DLL?",a:"Yes: $1,000(50K), $2,000(100K) on Eval. Same on Prime."},
+      {q:"Drawdown type?",a:"EOD Trailing on all accounts."},
+    ]},
+    {cat:"Payouts",items:[
+      {q:"How fast are payouts?",a:"1-3 business days. Request after 5 trading days."},
+      {q:"Profit split?",a:"90/10 on all plans."},
+    ]},
+    {cat:"Trading Rules",items:[
+      {q:"News trading allowed?",a:"Yes, no restrictions."},
+      {q:"EAs allowed?",a:"Yes, automated trading permitted."},
+      {q:"Overnight holds?",a:"No — must close by session end."},
+    ]}
+  ],
+  "FundedNext Futures":[
+    {cat:"Overview",items:[
+      {q:"What plans are available?",a:"Rapid evaluation in 50K, 100K, 150K, 200K. Part of the FundedNext ecosystem (also offers forex)."},
+    ]},
+    {cat:"Rules",items:[
+      {q:"Consistency rule?",a:"None. FundedNext Futures has no consistency rule on eval or funded. One of the few firms with zero consistency."},
+      {q:"DLL?",a:"Yes: $1,250(50K), $2,000(100K). Hard DLL."},
+      {q:"Drawdown?",a:"EOD Trailing. Updates at session close only."},
+      {q:"Minimum trading days?",a:"No minimum on evaluation."},
+    ]},
+    {cat:"Payouts",items:[
+      {q:"How fast?",a:"Within 24 hours. Among the fastest in the industry."},
+      {q:"Split?",a:"80/20 initially → scales to 95/5 with milestone progression."},
+    ]},
+    {cat:"Trading",items:[
+      {q:"News trading?",a:"Yes, fully allowed."},
+      {q:"EAs?",a:"Yes, automated strategies permitted."},
+      {q:"Platforms?",a:"NinjaTrader, Tradovate, TradingView."},
+    ]}
+  ],
+  "Lucid Trading":[
+    {cat:"Plans",items:[
+      {q:"What plans are available?",a:"LucidFlex (eval, no DLL, no funded consistency), LucidPro (eval, 3-day payouts), LucidDirect (instant funding), LucidMaxx (invite-only live)."},
+    ]},
+    {cat:"Drawdown",items:[
+      {q:"How does drawdown work?",a:"EOD Trailing on all plans. MLL: $1K(25K), $2K(50K), $3K(100K), $4.5K(150K)."},
+      {q:"Does it lock?",a:"Flex: drawdown has a cap and becomes static. Direct: similar lock mechanism."},
+    ]},
+    {cat:"Consistency",items:[
+      {q:"Consistency rules?",a:"Flex eval: 50%. Flex funded: NONE. Pro funded: 35%. Direct: 20%. Maxx: None."},
+    ]},
+    {cat:"Payouts",items:[
+      {q:"How fast?",a:"Average 15 minutes via ACH/Plaid — fastest in the industry."},
+      {q:"Frequency?",a:"Flex: every 5 profitable days. Pro: every 3 days. Direct: every 8 days."},
+      {q:"Split?",a:"90/10 (Flex). 100% first $10K then 90/10 (Pro/Direct). 80/20 (LucidLive)."},
+    ]},
+    {cat:"Trading Rules",items:[
+      {q:"News trading?",a:"Yes, fully allowed during economic releases."},
+      {q:"EAs?",a:"Yes, algorithmic strategies permitted. HFT bots prohibited."},
+      {q:"Overnight?",a:"No on sim-funded (close by 4:45 PM EST). Yes on LucidLive."},
+      {q:"Activation fee?",a:"$0 — one-time purchase, no monthly fees, no activation fees."},
+    ]},
+    {cat:"Scaling & Live",items:[
+      {q:"How many accounts?",a:"10 evaluations, 5 funded accounts per household."},
+      {q:"Path to live?",a:"LucidLive after 5-6 payouts (varies by plan). $0 start + one-time bonus, 80/20 split, daily payouts, real capital."},
+    ]}
+  ],
+  "Topstep":[
+    {cat:"Evaluation",items:[
+      {q:"How does the Trading Combine work?",a:"Single-step evaluation. Hit profit target ($3K/$6K/$9K) while respecting drawdown and consistency. Minimum 2 trading days. No maximum time limit."},
+      {q:"Two paths — what's the difference?",a:"Standard Path: lower monthly fee + $149 activation when funded. No Activation Fee Path: higher monthly but $0 activation. Standard is cheaper if you pass quickly."},
+    ]},
+    {cat:"Drawdown",items:[
+      {q:"How does the MLL work?",a:"EOD trailing — Maximum Loss Limit recalculates at session close only. Intraday dips that recover don't count. If your balance touches the MLL at any point, account is liquidated."},
+      {q:"When does it lock?",a:"Locks once it reaches starting balance. Once your highest EOD balance pushes the floor to $50,000 on a 50K, it stops trailing permanently."},
+    ]},
+    {cat:"Consistency & DLL",items:[
+      {q:"Consistency rule?",a:"50% — best single day cannot exceed 50% of total profits. Applies during eval AND funded."},
+      {q:"DLL?",a:"Tier-based DLL that varies by account size and scaling tier. Pauses trading if hit — doesn't fail account."},
+    ]},
+    {cat:"Payouts",items:[
+      {q:"Profit split?",a:"90/10 from day one for new traders (as of Feb 2026). Legacy accounts may still have 100% first $10K."},
+      {q:"Speed?",a:"1-3 business days approval + 1-3 for delivery. $30 withdrawal fee per payout."},
+      {q:"Frequency?",a:"Weekly. Up to 4x/month. Daily payouts after milestones. Capped at 50% of balance or $5,000 per withdrawal."},
+    ]},
+    {cat:"Trading Rules",items:[
+      {q:"Close time?",a:"Must close all positions by 3:10 PM CT. Stricter than most firms."},
+      {q:"News trading?",a:"Yes, allowed with no restrictions."},
+      {q:"EAs?",a:"Generally not permitted. TopstepX has limited automation support."},
+      {q:"Overnight?",a:"No. Must be flat by 3:10 PM CT."},
+    ]},
+    {cat:"Platform & Accounts",items:[
+      {q:"Platforms?",a:"TopstepX (proprietary), NinjaTrader, Quantower, Tradovate, R Trader Pro. TopstepX has $0 commission."},
+      {q:"Max accounts?",a:"Up to 5 funded accounts."},
+      {q:"Path to live?",a:"Express Funded (sim) → Live Funded Account with real CME capital. NFA registered brokerage."},
+    ]}
+  ],
+  "Take Profit Trader":[
+    {cat:"Evaluation",items:[
+      {q:"How does the eval work?",a:"1-Step evaluation. Hit profit target without breaching drawdown. Minimum 5 trading days. No maximum time limit."},
+    ]},
+    {cat:"Rules",items:[
+      {q:"Drawdown?",a:"EOD Trailing on all accounts."},
+      {q:"Consistency?",a:"50% on eval. 40% on funded."},
+      {q:"DLL?",a:"None on evaluation accounts."},
+    ]},
+    {cat:"Payouts",items:[
+      {q:"Speed?",a:"1-3 business days. PRO+ accounts get same-day requests."},
+      {q:"Split?",a:"80/20 (PRO) → 90/10 (PRO+). Daily payouts available on PRO+."},
+      {q:"Activation fee?",a:"~$130. One-time fee after passing."},
+    ]},
+    {cat:"Trading",items:[
+      {q:"News trading?",a:"Restricted — some limitations around major events."},
+      {q:"EAs?",a:"Generally restricted. Check current policy."},
+      {q:"Platforms?",a:"NinjaTrader, Tradovate, +10 additional platforms."},
+    ]}
+  ],
+  "Bulenox":[
+    {cat:"Evaluation",items:[
+      {q:"How does the eval work?",a:"1-Step evaluation. No minimum trading days. Choose EOD or Trailing drawdown type at purchase."},
+    ]},
+    {cat:"Rules",items:[
+      {q:"Drawdown options?",a:"Choose at purchase: EOD trailing OR standard trailing. EOD only updates at session close. Standard trails in real-time."},
+      {q:"Consistency?",a:"40% on eval and funded. No single day > 40% of total profit."},
+      {q:"DLL?",a:"Yes: $500(25K), $1,100(50K), $2,000(100K), $2,200(150K), $2,500(250K)."},
+    ]},
+    {cat:"Payouts",items:[
+      {q:"Speed?",a:"1-5 business days. Weekly payouts."},
+      {q:"Split?",a:"100% of first $10K, then 90/10."},
+      {q:"Reset fee?",a:"$75 — cheapest reset in the industry."},
+    ]},
+    {cat:"Trading",items:[
+      {q:"News trading?",a:"Yes, fully allowed."},
+      {q:"EAs?",a:"Yes, automated trading permitted."},
+      {q:"Platforms?",a:"NinjaTrader, Tradovate, Bookmap, +1."},
+      {q:"Max accounts?",a:"Multiple accounts allowed. Scaling up to $450K."},
+    ]}
+  ]
+};
 
 
 const FirmLogo = ({f,size=32}) => {
@@ -1547,6 +1853,40 @@ const BlogPostPage = ({post,goBack}) => {
 };
 
 // ── DETAIL PAGE ──
+// ── FIRM FAQ SECTION ──
+const FirmFAQSection = ({firm}) => {
+  const [showFAQ,setShowFAQ]=useState(false);
+  const [search,setSearch]=useState("");
+  const [openQ,setOpenQ]=useState(null);
+  const faq=FIRM_FAQ[firm.name]||[];
+  const filtered=search.trim()?faq.map(cat=>({...cat,items:cat.items.filter(i=>i.q.toLowerCase().includes(search.toLowerCase())||i.a.toLowerCase().includes(search.toLowerCase()))})).filter(cat=>cat.items.length>0):faq;
+  const fc=firm.color||'var(--em)';
+  return (<>
+    <button className="faq-btn" onClick={()=>setShowFAQ(!showFAQ)} style={{borderColor:showFAQ?fc:undefined}}>
+      <span style={{fontSize:18}}>{showFAQ?'▼':'📋'}</span>
+      {showFAQ?'Hide Full Rules & FAQ':'Full Rules & FAQ — Everything You Need to Know'}
+    </button>
+    {showFAQ&&<div className="faq-wrap">
+      <input className="faq-search" placeholder={"Search "+firm.name+" rules & FAQ..."} value={search} onChange={e=>setSearch(e.target.value)}/>
+      {filtered.length===0&&<div style={{textAlign:'center',padding:24,color:'var(--t4)',fontSize:13}}>No results for "{search}"</div>}
+      {filtered.map((cat,ci)=><div key={ci} className="faq-cat">
+        <div className="faq-cat-title">{cat.cat}</div>
+        {cat.items.map((item,qi)=>{
+          const key=ci+'-'+qi;
+          const isOpen=openQ===key;
+          return (<div key={qi} className="faq-item" style={isOpen?{borderColor:fc+'40',background:fc+'08'}:{}}>
+            <div className="faq-q" onClick={()=>setOpenQ(isOpen?null:key)}>
+              {item.q}
+              <span style={isOpen?{transform:'rotate(180deg)'}:{}}>▾</span>
+            </div>
+            {isOpen&&<div className="faq-a">{item.a}</div>}
+          </div>);
+        })}
+      </div>)}
+    </div>}
+  </>);
+};
+
 const DetailPage = ({firm,goBack}) => {
   const [copied,setCopied]=useState(false);
   if(!firm) return null;
@@ -1648,6 +1988,9 @@ const DetailPage = ({firm,goBack}) => {
           {profile.cons.map((c,i)=><div key={i} style={{fontSize:12,color:'var(--t2)',padding:'4px 0',paddingLeft:16,position:'relative'}}><span style={{position:'absolute',left:0,color:'var(--amber)',textShadow:'0 0 4px rgba(255,190,11,0.4)'}}>–</span>{c}</div>)}
         </div>
       </div>
+
+      {/* FAQ Section */}
+      {FIRM_FAQ[firm.name]&&<FirmFAQSection firm={firm}/>}
     </>:<div className="det-desc">{firm.desc}</div>}
   </div>);
 };
