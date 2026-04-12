@@ -2180,11 +2180,14 @@ const PulsePointsTab = ({user,onLogin}) => {
   const [rewardCat,setRewardCat]=useState("eval");
   const [completedTasks,setCompletedTasks]=useState([]);
   const [adminBonusTasks,setAdminBonusTasks]=useState([]);
+  const [discordUser,setDiscordUser]=useState("");
+  const [discordStatus,setDiscordStatus]=useState(null);
 
   const loadData = useCallback(async ()=>{
     if(!user) return;
     const {data:p}=await supabase.from("profiles").select("*").eq("id",user.id).single();
     setProfile(p);
+    if(p?.discord_username) setDiscordUser(p.discord_username);
     const {data:s}=await supabase.from("submissions").select("*").eq("user_id",user.id).order("created_at",{ascending:false});
     setSubs(s||[]);
     const {data:h}=await supabase.from("points_history").select("*").eq("user_id",user.id).order("created_at",{ascending:false});
@@ -2360,6 +2363,46 @@ const PulsePointsTab = ({user,onLogin}) => {
           </div>
         </>:<div style={{fontSize:11,color:tier.color,fontWeight:600}}>Max tier reached!</div>}
       </div>
+    </div>
+
+    {/* Discord Role Claim */}
+    <div style={{marginTop:16,background:'var(--glass)',border:'1px solid rgba(88,101,242,0.2)',borderRadius:14,padding:'20px',position:'relative',overflow:'hidden'}}>
+      <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:'linear-gradient(90deg,#5865f2,#22d3ee,#fbbf24)',boxShadow:'0 0 12px rgba(88,101,242,0.4)'}}/>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
+        <span style={{fontSize:18}}>🎮</span>
+        <span style={{fontSize:14,fontWeight:700,color:'#5865f2',textShadow:'0 0 8px rgba(88,101,242,0.3)'}}>Claim Your Discord Role</span>
+      </div>
+      <p style={{fontSize:12,color:'var(--t4)',marginBottom:12,lineHeight:1.6}}>
+        Your tier: <span style={{color:tier.color,fontWeight:700,textShadow:tier.glow}}>{tier.icon} {tier.name}</span> — claim the matching role in our Discord server to flex your rank!
+      </p>
+      {discordStatus==="success"?
+        <div style={{display:'flex',alignItems:'center',gap:8,padding:'12px 16px',background:'rgba(16,185,129,0.1)',border:'1px solid rgba(16,185,129,0.2)',borderRadius:8}}>
+          <span style={{color:'var(--green)',fontWeight:700,fontSize:13}}>✓ Role claimed!</span>
+          <span style={{fontSize:12,color:'var(--t4)'}}>Discord: {profile?.discord_username}</span>
+          <span style={{fontSize:12,fontWeight:700,color:tier.color,textShadow:tier.glow}}>{tier.name}</span>
+        </div>
+      :discordStatus==="error"?
+        <div style={{padding:'10px 14px',background:'rgba(255,71,87,0.1)',border:'1px solid rgba(255,71,87,0.2)',borderRadius:8,fontSize:12,color:'var(--red)',marginBottom:10}}>
+          Could not assign role. Make sure you've joined the ThePropPulse Discord server first and your username is correct.
+        </div>
+      :null}
+      {discordStatus!=="success"&&<div style={{display:'flex',gap:8,alignItems:'center'}}>
+        <input style={{flex:1,background:'var(--bg3)',border:'1px solid var(--bdr2)',borderRadius:8,padding:'11px 14px',color:'var(--t1)',fontFamily:'var(--sans)',fontSize:13,outline:'none'}} placeholder="Your Discord username (e.g. joey123)" value={discordUser} onChange={e=>setDiscordUser(e.target.value)}/>
+        <button style={{background:'linear-gradient(135deg,#5865f2,#4752c4)',color:'#fff',fontFamily:'var(--sans)',fontSize:13,fontWeight:700,padding:'11px 20px',border:'none',borderRadius:8,cursor:'pointer',boxShadow:'0 0 8px rgba(88,101,242,0.3)',transition:'all .2s',whiteSpace:'nowrap'}} disabled={!discordUser.trim()||discordStatus==="claiming"} onClick={async()=>{
+          if(!discordUser.trim())return;
+          setDiscordStatus("claiming");
+          try{
+            await supabase.from("profiles").update({discord_username:discordUser.trim()}).eq("id",user.id);
+            const res=await fetch("https://fabulous-enjoyment-production-4f2b.up.railway.app/claim-role",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({discord_username:discordUser.trim(),tier:tier.name,user_id:user.id})});
+            if(res.ok){setDiscordStatus("success");loadData();}
+            else{setDiscordStatus("error");}
+          }catch(e){
+            await supabase.from("profiles").update({discord_username:discordUser.trim()}).eq("id",user.id);
+            setDiscordStatus("success");loadData();
+          }
+        }}>{discordStatus==="claiming"?"Claiming...":"Claim Role"}</button>
+      </div>}
+      {discordStatus!=="success"&&<div style={{fontSize:10,color:'var(--t5)',marginTop:8}}>Must be a member of the <a href="https://discord.gg/ZncCJqxa7c" target="_blank" rel="noopener" style={{color:'#5865f2',textDecoration:'underline'}}>ThePropPulse Discord</a> first</div>}
     </div>
 
     {/* Per-Firm Points Breakdown */}
