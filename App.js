@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -734,6 +734,33 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .panel-divider{height:1px;background:rgba(148,163,184,0.08);margin:4px 16px}
 .panel-logout{color:#ff4757}
 .panel-logout:hover{background:rgba(255,71,87,0.06);color:#ff4757}
+.acct-page{max-width:640px;margin:0 auto;padding:40px 20px}
+.acct-back{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:var(--t4);font-family:var(--sans);font-size:13px;cursor:pointer;margin-bottom:24px;padding:0;transition:color .15s}
+.acct-back:hover{color:var(--em)}
+.acct-card{background:var(--glass);border:1px solid var(--bdr);border-radius:14px;padding:24px;margin-bottom:16px}
+.acct-card h3{font-size:14px;font-weight:700;color:var(--em2);margin:0 0 16px;display:flex;align-items:center;gap:8px}
+.acct-avatar-wrap{display:flex;align-items:center;gap:20px;margin-bottom:16px}
+.acct-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#22d3ee,#0891b2);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#050810;box-shadow:0 0 6px rgba(6,182,212,0.6),0 0 16px rgba(6,182,212,0.3);overflow:hidden;position:relative;flex-shrink:0}
+.acct-avatar img{width:100%;height:100%;object-fit:cover}
+.acct-avatar-upload{font-size:12px;color:var(--em);cursor:pointer;font-weight:600;transition:color .15s;background:none;border:none;font-family:var(--sans);padding:0}
+.acct-avatar-upload:hover{color:var(--gold)}
+.acct-field{margin-bottom:14px}
+.acct-field label{display:block;font-size:11px;font-weight:600;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.acct-input{width:100%;background:var(--bg3);border:1px solid var(--bdr2);border-radius:8px;padding:11px 14px;color:var(--t1);font-family:var(--sans);font-size:13px;outline:none;box-sizing:border-box;transition:border-color .15s}
+.acct-input:focus{border-color:var(--em)}
+.acct-save{background:linear-gradient(135deg,#22d3ee,#0891b2);color:#050810;font-family:var(--sans);font-size:12px;font-weight:700;padding:9px 20px;border:none;border-radius:8px;cursor:pointer;transition:all .2s}
+.acct-save:hover{box-shadow:0 0 12px rgba(6,182,212,0.4)}
+.acct-save:disabled{opacity:.5;cursor:not-allowed}
+.acct-msg{font-size:11px;margin-top:8px}
+.acct-tier-banner{display:flex;align-items:center;gap:12px;padding:16px;background:var(--bg3);border-radius:10px;margin-bottom:12px}
+.acct-tier-icon{font-size:28px}
+.acct-tier-info{flex:1}
+.acct-tier-name{font-size:16px;font-weight:800}
+.acct-tier-pts{font-size:11px;color:var(--t4);margin-top:2px}
+.acct-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.acct-stat{background:var(--bg3);border-radius:8px;padding:12px;text-align:center}
+.acct-stat b{display:block;font-size:18px;font-weight:800;font-family:var(--mono)}
+.acct-stat small{font-size:10px;color:var(--t4);margin-top:2px;display:block}
 
 /* ── COMPARE ── */
 .faq-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:linear-gradient(135deg,rgba(34,211,238,0.15),rgba(251,191,36,0.1));border:1px solid rgba(34,211,238,0.25);color:var(--em2);font-family:var(--sans);font-size:15px;font-weight:700;padding:16px;border-radius:12px;cursor:pointer;transition:all .25s;margin:24px 0;text-shadow:0 0 8px rgba(6,182,212,0.2)}
@@ -1462,7 +1489,7 @@ const Ticker = () => {
   );
 };
 
-const NavBar = ({tab,setTab,setPage,user,onLogin,onLogout}) => {
+const NavBar = ({tab,setTab,setPage,user,onLogin,onLogout,setPpSection}) => {
   const [mob,setMob] = useState(false);
   const [copied,setCopied] = useState(false);
   const [showProfile,setShowProfile] = useState(false);
@@ -1526,17 +1553,13 @@ const NavBar = ({tab,setTab,setPage,user,onLogin,onLogout}) => {
           </div>
         </div>
         <div className="panel-section-label">Pulse Points</div>
-        <button className="panel-item" onClick={()=>go("points")}><span className="panel-icon">{'\u2B50'}</span><span>My Dashboard</span></button>
-        <button className="panel-item" onClick={()=>go("points")}><span className="panel-icon">{'\u{1F4E4}'}</span><span>Submit Purchase</span></button>
-        <button className="panel-item" onClick={()=>go("points")}><span className="panel-icon">{'\u{1F381}'}</span><span>Rewards Store</span></button>
-        <button className="panel-item" onClick={()=>go("points")}><span className="panel-icon">{'\u{1F4DC}'}</span><span>Points History</span></button>
+        <button className="panel-item" onClick={()=>{setPpSection("submit");go("points")}}><span className="panel-icon">{'\u2B50'}</span><span>My Dashboard</span></button>
+        <button className="panel-item" onClick={()=>{setPpSection("submit");go("points")}}><span className="panel-icon">{'\u{1F4E4}'}</span><span>Submit Purchase</span></button>
+        <button className="panel-item" onClick={()=>{setPpSection("rewards");go("points")}}><span className="panel-icon">{'\u{1F381}'}</span><span>Rewards Store</span></button>
+        <button className="panel-item" onClick={()=>{setPpSection("history");go("points")}}><span className="panel-icon">{'\u{1F4DC}'}</span><span>Points History</span></button>
+        <button className="panel-item" onClick={()=>{setPpSection("discord");go("points")}}><span className="panel-icon">{'\u{1F451}'}</span><span>Claim Discord Role</span></button>
         <div className="panel-section-label">Account</div>
-        <button className="panel-item" onClick={()=>setChangingPw(p=>!p)}><span className="panel-icon">{'\u{1F512}'}</span><span>Change Password</span></button>
-        {changingPw&&<div style={{padding:'0 16px 12px'}}>
-          <input className="auth-input" type="password" placeholder="New password (min 6 chars)" value={newPw} onChange={e=>setNewPw(e.target.value)} style={{marginBottom:6,fontSize:12}}/>
-          {pwMsg&&<div style={{fontSize:11,color:pwMsg.includes("updated")?'#10b981':'#ff4757',marginBottom:6}}>{pwMsg}</div>}
-          <button className="pp-submit" style={{padding:'6px 14px',fontSize:11,marginTop:0,width:'100%'}} onClick={handleChangePw}>Update Password</button>
-        </div>}
+        <button className="panel-item" onClick={()=>{setPage("account");setShowProfile(false);window.scrollTo({top:0,behavior:"smooth"})}}><span className="panel-icon">{'\u2699\uFE0F'}</span><span>Account Details</span></button>
         <div style={{flex:1}}/>
         <div className="panel-divider"/>
         <button className="panel-item panel-logout" onClick={()=>{setShowProfile(false);onLogout();}}><span className="panel-icon">{'\u274C'}</span><span>Sign Out</span></button>
@@ -2118,6 +2141,168 @@ const AuthModal = ({onClose,onAuth}) => {
   </div>);
 };
 
+// ── ACCOUNT DETAILS PAGE ──
+const AccountPage = ({user,goBack}) => {
+  const [profile,setProfile]=useState(null);
+  const [displayName,setDisplayName]=useState("");
+  const [nameMsg,setNameMsg]=useState("");
+  const [nameSaving,setNameSaving]=useState(false);
+  const [newPw,setNewPw]=useState("");
+  const [confirmPw,setConfirmPw]=useState("");
+  const [pwMsg,setPwMsg]=useState("");
+  const [pwSaving,setPwSaving]=useState(false);
+  const [avatarUploading,setAvatarUploading]=useState(false);
+  const [avatarMsg,setAvatarMsg]=useState("");
+  const [rewards,setRewards]=useState([]);
+  const fileRef=useRef(null);
+
+  const loadProfile=useCallback(async()=>{
+    if(!user)return;
+    const {data:p}=await supabase.from("profiles").select("*").eq("id",user.id).single();
+    if(p){setProfile(p);setDisplayName(p.display_name||user.user_metadata?.display_name||"");}
+    const {data:r}=await supabase.from("rewards").select("*").eq("user_id",user.id).order("created_at",{ascending:false}).limit(5);
+    setRewards(r||[]);
+  },[user]);
+
+  useEffect(()=>{loadProfile()},[loadProfile]);
+
+  const tier=getLoyaltyTier(profile?.total_earned||0);
+  const nextTier=getNextTier(profile?.total_earned||0);
+  const pts=profile?.points||0;
+
+  const handleNameSave=async()=>{
+    if(!displayName.trim()){setNameMsg("Name cannot be empty");return;}
+    setNameSaving(true);setNameMsg("");
+    try{
+      await supabase.from("profiles").update({display_name:displayName.trim()}).eq("id",user.id);
+      await supabase.auth.updateUser({data:{display_name:displayName.trim()}});
+      setNameMsg("Display name updated!");
+      setTimeout(()=>setNameMsg(""),2000);
+    }catch(e){setNameMsg("Error: "+e.message);}
+    setNameSaving(false);
+  };
+
+  const handlePwSave=async()=>{
+    if(newPw.length<6){setPwMsg("Minimum 6 characters");return;}
+    if(newPw!==confirmPw){setPwMsg("Passwords don't match");return;}
+    setPwSaving(true);setPwMsg("");
+    const {error}=await supabase.auth.updateUser({password:newPw});
+    if(error){setPwMsg(error.message);}
+    else{setPwMsg("Password updated! You can now sign in with your new password.");setNewPw("");setConfirmPw("");}
+    setPwSaving(false);
+  };
+
+  const handleAvatarUpload=async(e)=>{
+    const file=e.target.files?.[0];
+    if(!file)return;
+    if(!file.type.startsWith("image/")){setAvatarMsg("Please select an image file");return;}
+    if(file.size>2*1024*1024){setAvatarMsg("Image must be under 2MB");return;}
+    setAvatarUploading(true);setAvatarMsg("");
+    try{
+      const ext=file.name.split(".").pop();
+      const path=user.id+"/avatar."+ext;
+      const {error:upErr}=await supabase.storage.from("avatars").upload(path,file,{upsert:true});
+      if(upErr) throw upErr;
+      const {data:urlData}=supabase.storage.from("avatars").getPublicUrl(path);
+      const avatarUrl=urlData.publicUrl+"?t="+Date.now();
+      await supabase.from("profiles").update({avatar_url:avatarUrl}).eq("id",user.id);
+      setAvatarMsg("Avatar updated!");
+      loadProfile();
+      setTimeout(()=>setAvatarMsg(""),2000);
+    }catch(err){
+      setAvatarMsg("Upload failed — make sure the 'avatars' storage bucket exists in Supabase");
+    }
+    setAvatarUploading(false);
+  };
+
+  if(!user) return null;
+
+  return (<div className="acct-page">
+    <button className="acct-back" onClick={goBack}>{'\u2190'} Back to Dashboard</button>
+
+    <h2 style={{fontSize:22,fontWeight:800,color:'var(--t1)',marginBottom:24}}>Account <span style={{color:'var(--em)'}}>Details</span></h2>
+
+    {/* Profile Card */}
+    <div className="acct-card">
+      <h3>{'\u{1F464}'} Profile</h3>
+      <div className="acct-avatar-wrap">
+        <div className="acct-avatar">
+          {profile?.avatar_url?<img src={profile.avatar_url} alt="avatar"/>:(user.email||"U")[0].toUpperCase()}
+        </div>
+        <div>
+          <button className="acct-avatar-upload" onClick={()=>fileRef.current?.click()}>{avatarUploading?"Uploading...":"Change Photo"}</button>
+          <input ref={fileRef} type="file" accept="image/*" style={{display:'none'}} onChange={handleAvatarUpload}/>
+          {avatarMsg&&<div className="acct-msg" style={{color:avatarMsg.includes("updated")?'var(--green)':'var(--red)'}}>{avatarMsg}</div>}
+          <div style={{fontSize:10,color:'var(--t5)',marginTop:4}}>JPG, PNG — max 2MB</div>
+        </div>
+      </div>
+      <div className="acct-field">
+        <label>Display Name</label>
+        <input className="acct-input" value={displayName} onChange={e=>setDisplayName(e.target.value)} placeholder="Your display name"/>
+      </div>
+      <div className="acct-field">
+        <label>Email</label>
+        <input className="acct-input" value={user.email||""} disabled style={{opacity:.6,cursor:'not-allowed'}}/>
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:10}}>
+        <button className="acct-save" onClick={handleNameSave} disabled={nameSaving}>{nameSaving?"Saving...":"Save Changes"}</button>
+        {nameMsg&&<span className="acct-msg" style={{color:nameMsg.includes("updated")?'var(--green)':'var(--red)'}}>{nameMsg}</span>}
+      </div>
+    </div>
+
+    {/* Password Card */}
+    <div className="acct-card">
+      <h3>{'\u{1F512}'} Change Password</h3>
+      <div className="acct-field">
+        <label>New Password</label>
+        <input className="acct-input" type="password" value={newPw} onChange={e=>setNewPw(e.target.value)} placeholder="Min 6 characters"/>
+      </div>
+      <div className="acct-field">
+        <label>Confirm Password</label>
+        <input className="acct-input" type="password" value={confirmPw} onChange={e=>setConfirmPw(e.target.value)} placeholder="Re-enter new password" onKeyDown={e=>e.key==="Enter"&&handlePwSave()}/>
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:10}}>
+        <button className="acct-save" onClick={handlePwSave} disabled={pwSaving}>{pwSaving?"Updating...":"Update Password"}</button>
+        {pwMsg&&<span className="acct-msg" style={{color:pwMsg.includes("updated")?'var(--green)':'var(--red)'}}>{pwMsg}</span>}
+      </div>
+    </div>
+
+    {/* Tier & Points Summary */}
+    <div className="acct-card">
+      <h3>{'\u{1F3C6}'} Rewards Summary</h3>
+      <div className="acct-tier-banner" style={{border:'1px solid '+tier.color+'30'}}>
+        <div className="acct-tier-icon">{tier.icon}</div>
+        <div className="acct-tier-info">
+          <div className="acct-tier-name" style={{color:tier.color,textShadow:tier.glow}}>{tier.name}</div>
+          <div className="acct-tier-pts">{nextTier?((nextTier.min-(profile?.total_earned||0)).toLocaleString()+" pts to "+nextTier.name):"Max tier reached!"}</div>
+        </div>
+        <div style={{textAlign:'right'}}>
+          <div style={{fontFamily:'var(--mono)',fontSize:20,fontWeight:800,color:'var(--gold)',textShadow:'var(--glow-gold-sm)'}}>{pts.toLocaleString()}</div>
+          <div style={{fontSize:10,color:'var(--t5)'}}>Available Points</div>
+        </div>
+      </div>
+      <div className="acct-stat-grid">
+        <div className="acct-stat"><b style={{color:'var(--gold)'}}>{(profile?.total_earned||0).toLocaleString()}</b><small>Total Earned</small></div>
+        <div className="acct-stat"><b style={{color:'var(--em)'}}>{profile?.rewards_claimed||0}</b><small>Rewards Claimed</small></div>
+        <div className="acct-stat"><b style={{color:'var(--green)'}}>{tier.bonus>0?"+"+tier.bonus.toLocaleString():"—"}</b><small>Tier Bonus</small></div>
+        <div className="acct-stat"><b style={{color:'#a78bfa'}}>{profile?.discord_username||"—"}</b><small>Discord</small></div>
+      </div>
+    </div>
+
+    {/* Recent Rewards */}
+    {rewards.length>0&&<div className="acct-card">
+      <h3>{'\u{1F381}'} Recent Rewards</h3>
+      {rewards.map((r,i)=><div key={i} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'10px 0',borderBottom:i<rewards.length-1?'1px solid var(--bdr)':'none'}}>
+        <div>
+          <div style={{fontSize:13,fontWeight:600,color:'var(--t1)'}}>{r.reward_name}</div>
+          <div style={{fontSize:10,color:'var(--t5)'}}>{new Date(r.created_at).toLocaleDateString()}</div>
+        </div>
+        <div style={{fontSize:11,fontWeight:700,padding:'4px 10px',borderRadius:6,background:r.status==="fulfilled"?'rgba(16,185,129,0.1)':r.status==="pending"?'rgba(251,191,36,0.1)':'rgba(255,71,87,0.1)',color:r.status==="fulfilled"?'var(--green)':r.status==="pending"?'var(--gold)':'var(--red)'}}>{r.status}</div>
+      </div>)}
+    </div>}
+  </div>);
+};
+
 // ── PULSE POINTS TAB ──
 const POINT_VALUES = {"25K":50,"50K":100,"75K":125,"100K":150,"150K":200,"200K":250,"250K":300,"300K":350};
 const REWARD_TIERS = [
@@ -2155,7 +2340,7 @@ const BONUS_TASKS = [
   {key:"join_discord",label:"Join our Discord",pts:100,icon:"\u{1F4AC}",url:"https://discord.gg/pP9vfJ7WqK",color:"#5865f2"},
 ];
 
-const PulsePointsTab = ({user,onLogin}) => {
+const PulsePointsTab = ({user,onLogin,ppSection,setPpSection}) => {
   const [profile,setProfile]=useState(null);
   const [subs,setSubs]=useState([]);
   const [history,setHistory]=useState([]);
@@ -2209,6 +2394,16 @@ const PulsePointsTab = ({user,onLogin}) => {
   },[user]);
 
   useEffect(()=>{loadData()},[loadData]);
+
+  useEffect(()=>{
+    if(!ppSection) return;
+    if(ppSection==="discord"){
+      setTimeout(()=>{document.getElementById("discord-role-claim")?.scrollIntoView({behavior:"smooth",block:"center"})},400);
+    } else {
+      setPpTab(ppSection);
+    }
+    setPpSection(null);
+  },[ppSection,setPpSection]);
 
   const handleSubmit = async () => {
     if(!firm||!accSize){setSubmitMsg("Select a firm and account size");return;}
@@ -2366,7 +2561,7 @@ const PulsePointsTab = ({user,onLogin}) => {
     </div>
 
     {/* Discord Role Claim */}
-    <div style={{marginTop:16,background:'var(--glass)',border:'1px solid rgba(251,191,36,0.15)',borderRadius:14,padding:'20px',position:'relative',overflow:'hidden'}}>
+    <div id="discord-role-claim" style={{marginTop:16,background:'var(--glass)',border:'1px solid rgba(251,191,36,0.15)',borderRadius:14,padding:'20px',position:'relative',overflow:'hidden'}}>
       <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:'linear-gradient(90deg,#fbbf24,#f59e0b,#d97706)',boxShadow:'0 0 12px rgba(251,191,36,0.4)'}}/>
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
         <span style={{fontSize:18}}>👑</span>
@@ -2926,6 +3121,7 @@ export default function App() {
   const [user,setUser]=useState(null);
   const [showAuth,setShowAuth]=useState(false);
   const [compareFirms,setCompareFirms]=useState([]);
+  const [ppSection,setPpSection]=useState(null);
   const toggleCompare=(f)=>setCompareFirms(prev=>prev.find(x=>x.id===f.id)?prev.filter(x=>x.id!==f.id):prev.length<3?[...prev,f]:prev);
   const [showCompare,setShowCompare]=useState(false);
 
@@ -2951,14 +3147,15 @@ export default function App() {
   const goBlog=p=>{setBlogPost(p);setPage("blogpost");window.scrollTo({top:0,behavior:"smooth"})};
   const blogBack=()=>{setPage("home");setTab("blog");window.scrollTo({top:0,behavior:"smooth"})};
 
-  if(page==="blogpost") return (<><style>{css}</style><div className="ambient"><div className="ambient-gold"/></div><div className="edge-glow"/><div className="side-glow-l"/><div className="side-glow-r"/><div className="top-glow"/><div className="page"><Ticker/><NavBar tab={tab} setTab={setTab} setPage={setPage} user={user} onLogin={()=>setShowAuth(true)} onLogout={handleLogout}/><BlogPostPage post={blogPost} goBack={blogBack}/><div style={{height:40}}/><Footer setPage={setPage} setTab={setTab}/></div></>);
-  if(page==="detail") return (<><style>{css}</style><div className="ambient"><div className="ambient-gold"/></div><div className="edge-glow"/><div className="side-glow-l"/><div className="side-glow-r"/><div className="top-glow"/><div className="page"><Ticker/><NavBar tab={tab} setTab={setTab} setPage={setPage} user={user} onLogin={()=>setShowAuth(true)} onLogout={handleLogout}/><DetailPage firm={sf} goBack={goBack}/><Footer setPage={setPage} setTab={setTab}/></div></>);
+  if(page==="blogpost") return (<><style>{css}</style><div className="ambient"><div className="ambient-gold"/></div><div className="edge-glow"/><div className="side-glow-l"/><div className="side-glow-r"/><div className="top-glow"/><div className="page"><Ticker/><NavBar tab={tab} setTab={setTab} setPage={setPage} user={user} onLogin={()=>setShowAuth(true)} onLogout={handleLogout} setPpSection={setPpSection}/><BlogPostPage post={blogPost} goBack={blogBack}/><div style={{height:40}}/><Footer setPage={setPage} setTab={setTab}/></div></>);
+  if(page==="detail") return (<><style>{css}</style><div className="ambient"><div className="ambient-gold"/></div><div className="edge-glow"/><div className="side-glow-l"/><div className="side-glow-r"/><div className="top-glow"/><div className="page"><Ticker/><NavBar tab={tab} setTab={setTab} setPage={setPage} user={user} onLogin={()=>setShowAuth(true)} onLogout={handleLogout} setPpSection={setPpSection}/><DetailPage firm={sf} goBack={goBack}/><Footer setPage={setPage} setTab={setTab}/></div></>);
+  if(page==="account") return (<><style>{css}</style><div className="ambient"><div className="ambient-gold"/></div><div className="edge-glow"/><div className="side-glow-l"/><div className="side-glow-r"/><div className="top-glow"/><div className="page"><Ticker/><NavBar tab={tab} setTab={setTab} setPage={setPage} user={user} onLogin={()=>setShowAuth(true)} onLogout={handleLogout} setPpSection={setPpSection}/><div className="wrap"><AccountPage user={user} goBack={()=>{setPage("home");window.scrollTo({top:0,behavior:"smooth"})}}/></div><Footer setPage={setPage} setTab={setTab}/></div></>);
 
   return (<><style>{css}</style>
     <div className="ambient"><div className="ambient-gold"/></div><div className="edge-glow"/><div className="side-glow-l"/><div className="side-glow-r"/><div className="top-glow"/>
     <div className="page">
     <Ticker/>
-    <NavBar tab={tab} setTab={setTab} setPage={setPage} user={user} onLogin={()=>setShowAuth(true)} onLogout={handleLogout}/>
+    <NavBar tab={tab} setTab={setTab} setPage={setPage} user={user} onLogin={()=>setShowAuth(true)} onLogout={handleLogout} setPpSection={setPpSection}/>
     <div className="wrap">
       <div className="hero">
         <div className="hero-code">PULSE</div>
@@ -3005,7 +3202,7 @@ export default function App() {
       {tab==="giveaways"&&<GiveawaysTab/>}
       {tab==="blog"&&<BlogTab onSelect={goBlog}/>}
       {tab==="videos"&&<VideosTab/>}
-      {tab==="points"&&<PulsePointsTab user={user} onLogin={()=>setShowAuth(true)}/>}
+      {tab==="points"&&<PulsePointsTab user={user} onLogin={()=>setShowAuth(true)} ppSection={ppSection} setPpSection={setPpSection}/>}
     </div>
     <div className="wrap"><Newsletter/></div>
     <Footer setPage={setPage} setTab={setTab}/>
