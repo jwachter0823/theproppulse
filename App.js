@@ -2152,7 +2152,7 @@ const getNextTier = (totalEarned) => LOYALTY_TIERS.find(t=>totalEarned<t.min)||n
 const BONUS_TASKS = [
   {key:"follow_x",label:"Follow us on X",pts:150,icon:"\u{1D54F}",url:"https://x.com/PropPulseMedia",color:"#1d9bf0"},
   {key:"sub_youtube",label:"Subscribe on YouTube",pts:150,icon:"\u25B6",url:"https://www.youtube.com/@ThePropPulse",color:"#ff0000"},
-  {key:"join_discord",label:"Join our Discord",pts:100,icon:"\u{1F4AC}",url:"https://discord.gg/ZncCJqxa7c",color:"#5865f2"},
+  {key:"join_discord",label:"Join our Discord",pts:100,icon:"\u{1F4AC}",url:"https://discord.gg/pP9vfJ7WqK",color:"#5865f2"},
 ];
 
 const PulsePointsTab = ({user,onLogin}) => {
@@ -2366,11 +2366,11 @@ const PulsePointsTab = ({user,onLogin}) => {
     </div>
 
     {/* Discord Role Claim */}
-    <div style={{marginTop:16,background:'var(--glass)',border:'1px solid rgba(88,101,242,0.2)',borderRadius:14,padding:'20px',position:'relative',overflow:'hidden'}}>
-      <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:'linear-gradient(90deg,#5865f2,#22d3ee,#fbbf24)',boxShadow:'0 0 12px rgba(88,101,242,0.4)'}}/>
+    <div style={{marginTop:16,background:'var(--glass)',border:'1px solid rgba(251,191,36,0.15)',borderRadius:14,padding:'20px',position:'relative',overflow:'hidden'}}>
+      <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:'linear-gradient(90deg,#fbbf24,#f59e0b,#d97706)',boxShadow:'0 0 12px rgba(251,191,36,0.4)'}}/>
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
-        <span style={{fontSize:18}}>🎮</span>
-        <span style={{fontSize:14,fontWeight:700,color:'#5865f2',textShadow:'0 0 8px rgba(88,101,242,0.3)'}}>Claim Your Discord Role</span>
+        <span style={{fontSize:18}}>👑</span>
+        <span style={{fontSize:14,fontWeight:700,color:'var(--gold)',textShadow:'0 0 10px rgba(251,191,36,0.5), 0 0 20px rgba(251,191,36,0.2)'}}>Claim Your Discord Role</span>
       </div>
       <p style={{fontSize:12,color:'var(--t4)',marginBottom:12,lineHeight:1.6}}>
         Your tier: <span style={{color:tier.color,fontWeight:700,textShadow:tier.glow}}>{tier.icon} {tier.name}</span> — claim the matching role in our Discord server to flex your rank!
@@ -2388,7 +2388,7 @@ const PulsePointsTab = ({user,onLogin}) => {
       :null}
       {discordStatus!=="success"&&<div style={{display:'flex',gap:8,alignItems:'center'}}>
         <input style={{flex:1,background:'var(--bg3)',border:'1px solid var(--bdr2)',borderRadius:8,padding:'11px 14px',color:'var(--t1)',fontFamily:'var(--sans)',fontSize:13,outline:'none'}} placeholder="Your Discord username (e.g. joey123)" value={discordUser} onChange={e=>setDiscordUser(e.target.value)}/>
-        <button style={{background:'linear-gradient(135deg,#5865f2,#4752c4)',color:'#fff',fontFamily:'var(--sans)',fontSize:13,fontWeight:700,padding:'11px 20px',border:'none',borderRadius:8,cursor:'pointer',boxShadow:'0 0 8px rgba(88,101,242,0.3)',transition:'all .2s',whiteSpace:'nowrap'}} disabled={!discordUser.trim()||discordStatus==="claiming"} onClick={async()=>{
+        <button style={{background:'linear-gradient(135deg,#fbbf24,#d97706)',color:'#000',fontFamily:'var(--sans)',fontSize:13,fontWeight:700,padding:'11px 20px',border:'none',borderRadius:8,cursor:'pointer',boxShadow:'0 0 8px rgba(251,191,36,0.3)',transition:'all .2s',whiteSpace:'nowrap'}} disabled={!discordUser.trim()||discordStatus==="claiming"} onClick={async()=>{
           if(!discordUser.trim())return;
           setDiscordStatus("claiming");
           try{
@@ -2402,7 +2402,7 @@ const PulsePointsTab = ({user,onLogin}) => {
           }
         }}>{discordStatus==="claiming"?"Claiming...":"Claim Role"}</button>
       </div>}
-      {discordStatus!=="success"&&<div style={{fontSize:10,color:'var(--t5)',marginTop:8}}>Must be a member of the <a href="https://discord.gg/ZncCJqxa7c" target="_blank" rel="noopener" style={{color:'#5865f2',textDecoration:'underline'}}>ThePropPulse Discord</a> first</div>}
+      {discordStatus!=="success"&&<div style={{fontSize:10,color:'var(--t5)',marginTop:8}}>Must be a member of the <a href="https://discord.gg/pP9vfJ7WqK" target="_blank" rel="noopener" style={{color:'var(--gold)',textDecoration:'underline'}}>ThePropPulse Discord</a> first</div>}
     </div>
 
     {/* Per-Firm Points Breakdown */}
