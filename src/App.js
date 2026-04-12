@@ -218,12 +218,14 @@ Always choose EOD trailing drawdown unless you have a specific reason not to (li
 // Add videos here: just drop in the YouTube video ID and metadata.
 // To get the ID: from a URL like https://youtube.com/watch?v=dQw4w9WgXcQ the ID is "dQw4w9WgXcQ"
 const VIDEOS = [
-  {id:"GVhYXerrvCU",title:"Tradeify 3.0 Full Review — Is It Still Worth It?",firm:"Tradeify",cat:"Review",date:"Apr 2026",duration:"12:34"},
-  {id:"GVhYXerrvCU",title:"Apex Trader Funding March 2026 Update — Everything Changed",firm:"Apex Trader Funding",cat:"Review",date:"Apr 2026",duration:"15:20"},
-  {id:"GVhYXerrvCU",title:"My Funded Futures vs Tradeify — Which One Is Better?",firm:"My Funded Futures",cat:"Comparison",date:"Apr 2026",duration:"18:45"},
-  {id:"GVhYXerrvCU",title:"Top One Futures Deep Dive — Hidden Rules Exposed",firm:"Top One Futures",cat:"Review",date:"Apr 2026",duration:"10:12"},
-  {id:"GVhYXerrvCU",title:"Alpha Futures Full Review — UK's Best Prop Firm?",firm:"Alpha Futures",cat:"Review",date:"Apr 2026",duration:"14:30"},
-  {id:"GVhYXerrvCU",title:"Best Prop Firm for NQ Scalpers in 2026",firm:null,cat:"Guide",date:"Apr 2026",duration:"22:10"},
+  {id:"dRhMfFMzSfA",title:"How I Passed a $150K Apex Account in Under 1 Hour (All Trades Shown)",firm:"Apex Trader Funding",cat:"Strategy",date:"Mar 2026",duration:"18:32"},
+  {id:"SXR7C0kJrIc",title:"ICT Concepts Explained — Smart Money Trading for Beginners",firm:null,cat:"Education",date:"2025",duration:"42:15"},
+  {id:"L7G0OfJUgN8",title:"Day Trading Futures for Beginners — Complete Step by Step Guide",firm:null,cat:"Guide",date:"2025",duration:"28:47"},
+  {id:"5mQ5hGeBA6U",title:"How to ACTUALLY Pass a Prop Firm Evaluation (Futures Edition)",firm:null,cat:"Strategy",date:"2025",duration:"22:10"},
+  {id:"jk-GVX9aFhg",title:"EOD vs Intraday Trailing Drawdown — Which Should You Choose?",firm:null,cat:"Education",date:"2026",duration:"15:33"},
+  {id:"bfbEKfKt4F0",title:"NQ Scalping Strategy That Actually Works — Live Trading",firm:null,cat:"Strategy",date:"2025",duration:"34:20"},
+  {id:"Yy9siocXRCo",title:"Risk Management for Funded Accounts — Stop Blowing Drawdown",firm:null,cat:"Education",date:"2025",duration:"19:45"},
+  {id:"MfC_oGImigA",title:"Topstep vs Apex vs Tradeify — Best Prop Firm 2026 Comparison",firm:null,cat:"Comparison",date:"2026",duration:"25:18"},
 ];
 
 
@@ -1799,8 +1801,8 @@ const VideosTab = () => {
   const isPlaceholder=id=>id.startsWith("PLACEHOLDER");
   return (<div>
     <div className="sec-hdr"><div>
-      <div className="sec-title">{'\u{1F3AC}'} Prop Firm Video Reviews</div>
-      <div className="sec-sub">In-depth reviews, comparisons, and guides from ThePropPulse</div>
+      <div className="sec-title">{'\u{1F3AC}'} Trading Videos & Education</div>
+      <div className="sec-sub">Curated videos on prop firms, futures trading strategies, and risk management</div>
     </div>
       <a href="https://www.youtube.com/@ThePropPulse" target="_blank" rel="noopener" style={{display:'inline-flex',alignItems:'center',gap:6,background:'#ff0000',color:'#fff',fontSize:11,fontWeight:700,padding:'7px 14px',borderRadius:6,textDecoration:'none',boxShadow:'0 0 8px rgba(255,0,0,0.3)'}}>
         {'\u25B6'} Subscribe on YouTube
