@@ -21,11 +21,11 @@ const LOGOS = {
 // ─── DATA ───────────────────────────────────────────────────────────────────
 const FIRMS = [
   { id:1, name:"Tradeify", initials:"T", logoUrl:"https://www.google.com/s2/favicons?domain=tradeify.co&sz=128", founded:2021, rating:4.7, reviews:2437, pulse:96, trend:"up", maxAlloc:"$750K", country:"US", flag:"🇺🇸", platforms:["Tradovate","WealthCharts","TradeSea"], challenge:"Straight to Funded", steps:0, split:"90/10 (Select) / 100% first $15K (Growth)", target:"N/A", dailyDD:"$2,250", maxDD:"$3,500", minPayout:"$250", paySpeed:"~1 hour processing", reset:"$60–$99 (varies by plan)", hq:"Austin, TX", color:"#0ea5e9", brandGrad:"linear-gradient(135deg,#0ea5e9,#0284c7)", desc:"Fast-growing futures prop firm with their signature Straight-to-Funded model (Tradeify 3.0). No subscription fees — one-time plan fees. Known for ~1-hour payout processing and trader-friendly drawdown rules.", instantFund:true, sizes:["25K","50K","100K","150K"], payoutType:"Daily / 5-Day / Per Goal", minDaysPass:"1 day (Lightning) / 3 (Select)", drawdownType:"EOD Trailing", hasDLL:false, hasConsistency:true, consistencyPct:"20–40%", newsTrading:true, eaAllowed:true, rewardsRedeemable:true, bestFor:"Editor's Pick" },
-  { id:2, name:"My Funded Futures", initials:"MFF", logoUrl:"https://www.google.com/s2/favicons?domain=myfundedfutures.com&sz=128", founded:2023, rating:4.9, reviews:16890, pulse:93, trend:"up", maxAlloc:"$450K (3×150K)", country:"US", flag:"🇺🇸", platforms:["NinjaTrader","Tradovate","Rithmic","TradingView","Quantower","DeepDOM"], challenge:"1-Step Eval", steps:1, split:"80/20 (Core/Pro) → 90/10 (Rapid)", target:"$1,500–$9,000", dailyDD:"None", maxDD:"$1,000–$4,500", minPayout:"$1,000", paySpeed:"Next business day (RiseWorks)", reset:"$84–$477 (varies by plan/size)", hq:"Dover, DE", color:"#a855f7", brandGrad:"linear-gradient(135deg,#a855f7,#7c3aed)", desc:"Highest-rated futures prop firm (4.9/5). Four plans: Flex, Core (cheapest, 80/20), Rapid (daily payouts, 90/10, intraday trailing), Pro (no consistency, bi-weekly). Zero activation fees on all plans.", instantFund:false, sizes:["25K","50K","100K","150K"], payoutType:"Varies by Plan", minDaysPass:"2 days", drawdownType:"EOD (Core/Pro) / Intraday (Rapid)", hasDLL:false, hasConsistency:true, consistencyPct:"50% (Eval) / 40% (Core funded)", newsTrading:true, eaAllowed:true, rewardsRedeemable:false, bestFor:"Highest Rated" },
-  { id:3, name:"Alpha Futures", initials:"AF", logoUrl:"https://www.google.com/s2/favicons?domain=alphafutures.io&sz=128", founded:2024, rating:4.9, reviews:3320, pulse:92, trend:"up", maxAlloc:"$450K", country:"GB", flag:"🇬🇧", platforms:["NinjaTrader","Tradovate","TradingView"], challenge:"1-Step Eval", steps:1, split:"70→80→90% (tiered by payout #)", target:"$3,000–$9,000", dailyDD:"None (EOD trailing only)", maxDD:"$2,500–$4,500", minPayout:"$200", paySpeed:"Within 48 business hours", reset:"$59–$199 (varies by size)", hq:"London, UK", color:"#8b5cf6", brandGrad:"linear-gradient(135deg,#8b5cf6,#6d28d9)", desc:"UK-based futures prop firm (Alpha Futures Limited). Max $15,000 per payout request. Multiple account types: Standard (tiered split), Zero (90% flat), Advanced (90% flat, no consistency), and Alpha Prime live tier.", instantFund:false, sizes:["25K","50K","100K","150K"], payoutType:"Bi-Weekly (Standard) / Weekly (Zero)", minDaysPass:"3 days", drawdownType:"EOD Trailing", hasDLL:false, hasConsistency:true, consistencyPct:"40% (Standard Eval & Funded)", newsTrading:true, eaAllowed:false, rewardsRedeemable:false, bestFor:"Most Transparent" },
+  { id:2, name:"My Funded Futures", initials:"MFF", logoUrl:"https://www.google.com/s2/favicons?domain=myfundedfutures.com&sz=128", founded:2023, rating:4.9, reviews:16890, pulse:93, trend:"up", maxAlloc:"Up to 5 sim-funded accounts", country:"US", flag:"🇺🇸", platforms:["NinjaTrader","Tradovate","Rithmic","TradingView","Quantower","DeepDOM"], challenge:"Flex / Rapid / Pro", steps:1, split:"80/20 (Flex/Pro) → 90/10 (Rapid)", target:"$1,500–$9,000", dailyDD:"None", maxDD:"$1,000–$4,500", minPayout:"$250 (Flex) / $500 (Rapid) / $1,000 (Pro)", paySpeed:"Instant to 6-12 business hours", reset:"Varies by plan/size", hq:"Dover, DE", color:"#a855f7", brandGrad:"linear-gradient(135deg,#a855f7,#7c3aed)", desc:"Highest-rated futures prop firm (4.9/5). Current plans are Flex, Rapid, and Pro. Flex uses EOD drawdown with no funded consistency, Rapid offers daily payout eligibility with a 90/10 split, and Pro keeps the 14-day payout cadence. Zero activation fees on all plans.", instantFund:false, sizes:["25K","50K","100K","150K"], payoutType:"5-Day / Daily / 14-Day", minDaysPass:"2 days", drawdownType:"EOD / Intraday (Rapid funded)", hasDLL:false, hasConsistency:true, consistencyPct:"50% eval only", newsTrading:true, eaAllowed:true, rewardsRedeemable:false, bestFor:"Highest Rated" },
+  { id:3, name:"Alpha Futures", initials:"AF", logoUrl:"https://www.google.com/s2/favicons?domain=alphafutures.io&sz=128", founded:2024, rating:4.9, reviews:3320, pulse:92, trend:"up", maxAlloc:"$450K", country:"GB", flag:"🇬🇧", platforms:["NinjaTrader","Tradovate","TradingView"], challenge:"Standard / Advanced / Zero", steps:1, split:"70→80→90% (Standard) | 90/10 flat (Advanced/Zero)", target:"$1,500–$12,000", dailyDD:"Standard/Zero only | Advanced none", maxDD:"$1,000–$6,000", minPayout:"$200", paySpeed:"Within 48 business hours", reset:"$59–$419 (varies by plan)", hq:"London, UK", color:"#8b5cf6", brandGrad:"linear-gradient(135deg,#8b5cf6,#6d28d9)", desc:"UK-based futures prop firm (Alpha Futures Limited). Standard uses tiered split payouts, Advanced is 90/10 with no funded consistency or DLL, and Zero offers one-day-pass evaluations with $0 activation fees. Max $15,000 payout cap on Standard and Advanced.", instantFund:false, sizes:["25K","50K","100K","150K"], payoutType:"14-Day (Standard) / 5 Winning Days (Advanced/Zero)", minDaysPass:"1 day (Zero) / 3 days (Standard/Advanced)", drawdownType:"EOD Trailing", hasDLL:true, hasConsistency:true, consistencyPct:"50% eval / 40% Standard & Zero funded / none on Advanced funded", newsTrading:true, eaAllowed:false, rewardsRedeemable:false, bestFor:"Most Transparent" },
   { id:4, name:"Apex Trader Funding", initials:"ATF", logoUrl:"https://www.google.com/s2/favicons?domain=apextraderfunding.com&sz=128", founded:2021, rating:4.4, reviews:18070, pulse:94, trend:"flat", maxAlloc:"$3M (20 accts)", country:"US", flag:"🇺🇸", platforms:["Rithmic","Tradovate","WealthCharts"], challenge:"1-Step Eval", steps:1, split:"100% first $25K → 90/10", target:"$6,000", dailyDD:"$1,500 (EOD only)", maxDD:"$3,000", minPayout:"$500", paySpeed:"Automated via Deel", reset:"No resets (rebuy eval)", hq:"Austin, TX", color:"#f97316", brandGrad:"linear-gradient(135deg,#f97316,#ea580c)", desc:"The largest futures prop firm by volume with $720M+ in payouts. Rebuilt with 4.0 (March 1, 2026): one-time fees, $79 activation across all plans, EOD or Intraday drawdown choice, 50% consistency (funded only), 30-day eval window, automated payouts via Deel. Metals suspended, overnight flat by 4:59 PM ET.", instantFund:false, sizes:["25K","50K","100K","150K"], payoutType:"After 5 Qualifying Days", minDaysPass:"1 day", drawdownType:"EOD Trailing / Intraday Trailing", hasDLL:true, hasConsistency:true, consistencyPct:"50% (funded only)", newsTrading:true, eaAllowed:true, rewardsRedeemable:false, bestFor:"Most Accounts (20)" },
-  { id:5, name:"Top One Futures", initials:"T1", logoUrl:"https://www.google.com/s2/favicons?domain=toponefutures.com&sz=128", founded:2025, rating:4.7, reviews:3041, pulse:87, trend:"up", maxAlloc:"$1.5M", country:"US", flag:"🇺🇸", platforms:["NinjaTrader","Tradovate","TradingView"], challenge:"Multiple Plans", steps:1, split:"90/10", target:"$1,500–$9,000", dailyDD:"Varies by plan", maxDD:"$1,000–$5,000", minPayout:"$300", paySpeed:"<24 hrs avg", reset:"$35–$149 (varies)", hq:"Cheyenne, WY", color:"#06b6d4", brandGrad:"linear-gradient(135deg,#06b6d4,#0891b2)", desc:"Rapidly growing with 5 distinct plan types: Elite (cheap eval, 25% consistency), Elite Access (no DLL, 40%), Instant Sim Funded, S2F Sim PRO (intraday trailing), and IGNITE Instant Funding (15% consistency, up to 6 accounts). $23M+ distributed.", instantFund:true, sizes:["25K","50K","100K","150K"], payoutType:"<24hr average", minDaysPass:"1 day (Elite/Access) / 10 (S2F Pro)", drawdownType:"EOD Trailing / Intraday (S2F Pro)", hasDLL:true, hasConsistency:true, consistencyPct:"15–40% (varies by plan)", newsTrading:true, eaAllowed:true, rewardsRedeemable:true, bestFor:"Most Plan Options" },
-  { id:6, name:"FundedNext Futures", initials:"FN", logoUrl:"https://www.google.com/s2/favicons?domain=fundednext.com&sz=128", founded:2022, rating:4.4, reviews:63192, pulse:91, trend:"flat", maxAlloc:"$1.2M", country:"AE", flag:"🇦🇪", platforms:["NinjaTrader","Tradovate","TradingView"], challenge:"Rapid / Legacy / Bolt", steps:1, split:"80/20 → 90/10 (Rapid)", target:"$3,000–$6,000", dailyDD:"$1,000–$2,000", maxDD:"$2,000–$3,500", minPayout:"$500", paySpeed:"24-hr guaranteed (~5 hr avg)", reset:"$91.99–$95", hq:"Ajman, UAE", color:"#06b6d4", brandGrad:"linear-gradient(135deg,#06b6d4,#0891b2)", desc:"Operated by GrowthNext F.Z.E. (Ajman, UAE). 24-hour guaranteed payout with $1,000 compensation if delayed. Offers three challenges: Rapid (no consistency), Legacy (classic model), and Bolt (daily withdrawals, 40% reward split, has consistency).", instantFund:false, sizes:["25K","50K","100K"], payoutType:"Within 24 Hours", minDaysPass:"No minimum (Rapid)", drawdownType:"EOD Trailing", hasDLL:true, hasConsistency:true, consistencyPct:"None (Rapid) / Yes (Bolt)", newsTrading:true, eaAllowed:true, rewardsRedeemable:false, bestFor:"Fastest Guaranteed Payouts" },
+  { id:5, name:"Top One Futures", initials:"T1", logoUrl:"https://www.google.com/s2/favicons?domain=toponefutures.com&sz=128", founded:2025, rating:4.7, reviews:3041, pulse:87, trend:"up", maxAlloc:"Up to $1.5M sim capital", country:"US", flag:"🇺🇸", platforms:["NinjaTrader","Tradovate","TradingView"], challenge:"Elite / Elite Daily / Elite Access / Instant / S2F / Ignite", steps:1, split:"90/10", target:"$1,500–$9,000", dailyDD:"Varies by plan", maxDD:"$1,000–$5,000", minPayout:"$500 on Elite Access", paySpeed:"<24 hrs avg", reset:"$35–$149 (varies)", hq:"Cheyenne, WY", color:"#06b6d4", brandGrad:"linear-gradient(135deg,#06b6d4,#0891b2)", desc:"Rapidly growing futures firm with multiple plan types including Elite, new Elite Daily, Elite Access, Instant Sim Funded, S2F Sim PRO, and IGNITE. Elite Access now uses a $39 one-time evaluation fee with activation from $139. Manual trading only — Top One prohibits EAs and bots.", instantFund:true, sizes:["25K","50K","100K","150K"], payoutType:"Daily / 5-day / <24hr plan-dependent", minDaysPass:"1 day (Elite/Access) / none (Elite Daily) / 10 (S2F rules)", drawdownType:"EOD Trailing / Intraday (S2F Pro)", hasDLL:true, hasConsistency:true, consistencyPct:"15–45% (varies by plan)", newsTrading:true, eaAllowed:false, rewardsRedeemable:true, bestFor:"Most Plan Options" },
+  { id:6, name:"FundedNext Futures", initials:"FN", logoUrl:"https://www.google.com/s2/favicons?domain=fundednext.com&sz=128", founded:2022, rating:4.4, reviews:63192, pulse:91, trend:"flat", maxAlloc:"$700K challenge / $300K funded", country:"AE", flag:"🇦🇪", platforms:["NinjaTrader","Tradovate","TradingView"], challenge:"Rapid / Legacy / Bolt", steps:1, split:"80/20 → 95/5 (Rapid/Legacy) | 80/20 (Bolt)", target:"$1,500–$6,000", dailyDD:"Bolt only", maxDD:"$1,000–$3,000", minPayout:"$250–$500", paySpeed:"24-hr guaranteed (~5 hr avg)", reset:"Discounted challenge resets", hq:"Ajman, UAE", color:"#06b6d4", brandGrad:"linear-gradient(135deg,#06b6d4,#0891b2)", desc:"Operated by GrowthNext F.Z.E. (Ajman, UAE). FundedNext Futures currently offers Rapid, Legacy, and Bolt one-step challenges in $25K, $50K, and $100K sizes. Rapid has no challenge consistency, Legacy is the more structured model, and Bolt is the fixed $50K speed model.", instantFund:false, sizes:["25K","50K","100K"], payoutType:"Within 24 Hours", minDaysPass:"No minimum", drawdownType:"EOD Trailing", hasDLL:true, hasConsistency:true, consistencyPct:"None (Rapid) / 40% (Legacy & Bolt challenge)", newsTrading:true, eaAllowed:true, rewardsRedeemable:false, bestFor:"Fastest Guaranteed Payouts" },
   { id:10, name:"Bulenox", initials:"BX", logoUrl:"https://www.google.com/s2/favicons?domain=bulenox.com&sz=128", founded:2022, rating:4.6, reviews:1400, pulse:92, trend:"up", maxAlloc:"$250K per account (up to 5 accounts)", country:"US", flag:"🇺🇸", platforms:["NinjaTrader","Tradovate","Bookmap","Rithmic"], challenge:"1-Step Eval", steps:1, split:"100% first $10K → 90/10", target:"$1,500–$15,000", dailyDD:"Option 2 only (EOD)", maxDD:"$1,500–$5,500", minPayout:"$500", paySpeed:"1–5 days", reset:"Varies by plan", hq:"Wilmington, DE", color:"#ec4899", brandGrad:"linear-gradient(135deg,#ec4899,#db2777)", desc:"Two drawdown options: Option 1 (Trailing, no DLL, full contracts day 1) or Option 2 (EOD, DLL applies, scaling). Monthly subscription pricing. Frequent 40–60% discount coupons. Up to 5 concurrent accounts allowed.", instantFund:false, sizes:["25K","50K","100K","150K","250K"], payoutType:"Weekly", minDaysPass:"No minimum", drawdownType:"EOD (Opt 2) or Trailing (Opt 1)", hasDLL:true, hasConsistency:true, consistencyPct:"40%", newsTrading:true, eaAllowed:true, rewardsRedeemable:false, bestFor:"Most Drawdown Flexibility" },
   { id:11, name:"Goat Funded Futures", initials:"GFF", logoUrl:"https://www.google.com/s2/favicons?domain=goatfundedfutures.com&sz=128", founded:2023, rating:4.4, reviews:500, pulse:93, trend:"new", maxAlloc:"$750K (scaling)", country:"HK", flag:"🇭🇰", platforms:["NinjaTrader","Tradovate","TradingView","Quantower","Project X","Volumetrica","DeepCharts","MT5"], challenge:"EOD / Static / Instant", steps:1, split:"80/20 → up to 95–100%", target:"6–10% (model-dependent)", dailyDD:"2.5% (EOD funded) / 3% (Instant)", maxDD:"5–10% (trailing, varies)", minPayout:"Varies by plan", paySpeed:"24-hr guaranteed (or $1K penalty)", reset:"Varies", hq:"Hong Kong", color:"#16a34a", brandGrad:"linear-gradient(135deg,#16a34a,#15803d)", desc:"Futures sister brand of Goat Funded Trader, founded 2023 by Edoardo Dalla Torre (HQ Hong Kong). Three funding paths: EOD Trailing (monthly sub), Static non-trailing (monthly sub), and Instant (one-time fee, 5% trailing + 3% daily cap, 20% consistency). CME/COMEX/NYMEX/CBOT futures only. $7M+ in payouts distributed. 24-hour payout guarantee with $1,000 penalty if missed.", instantFund:true, sizes:["5K","25K","50K","100K","150K"], payoutType:"Bi-weekly / On-demand (varies)", minDaysPass:"Varies by plan", drawdownType:"EOD Trailing / Static / Intraday (Instant)", hasDLL:true, hasConsistency:true, consistencyPct:"20% (Instant) / Varies", newsTrading:true, eaAllowed:true, rewardsRedeemable:true, bestFor:"PFM Redemption Partner" },
 ];
@@ -226,26 +226,34 @@ const VIDEOS = [
 // ─── CHALLENGES (per account size, per firm) ────────────────────────────────
 const CHALLENGES = [
   // TRADEIFY
-    {firm:"Tradeify",plan:"Select",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"None (Flex)",drawdown:"EOD Trailing",minDays:"3 days",consistency:"40%",split:"90/10",payout:"Daily or 5-Day",standard:true,instant:false,news:true,ea:true,price:"$109 one-time"},
+    {firm:"Tradeify",plan:"Select",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"40%",split:"90/10",payout:"Daily or 5-Day",standard:true,instant:false,news:true,ea:true,price:"$109 one-time"},
   {firm:"Tradeify",plan:"Growth",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"$600",drawdown:"EOD Trailing",minDays:"1 day",consistency:"None (Eval)",split:"100% first $15K → 90/10",payout:"Per Profit Goal",standard:false,instant:false,news:true,ea:true,price:"$99 one-time"},
-{firm:"Tradeify",plan:"Select",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"None (Flex)",drawdown:"EOD Trailing",minDays:"3 days",consistency:"40%",split:"90/10",payout:"Daily or 5-Day",standard:true,instant:false,news:true,ea:true,price:"$165 one-time"},
-  {firm:"Tradeify",plan:"Select",size:"100K",target:"$6,000",maxLoss:"$3,500",dll:"None (Flex)",drawdown:"EOD Trailing",minDays:"3 days",consistency:"40%",split:"90/10",payout:"Daily or 5-Day",standard:true,instant:false,news:true,ea:true,price:"$265 one-time"},
-  {firm:"Tradeify",plan:"Select",size:"150K",target:"$9,000",maxLoss:"$4,500",dll:"None (Flex)",drawdown:"EOD Trailing",minDays:"3 days",consistency:"40%",split:"90/10",payout:"Daily or 5-Day",standard:true,instant:false,news:true,ea:true,price:"$369 one-time"},
+{firm:"Tradeify",plan:"Select",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"40%",split:"90/10",payout:"Daily or 5-Day",standard:true,instant:false,news:true,ea:true,price:"$165 one-time"},
+  {firm:"Tradeify",plan:"Select",size:"100K",target:"$6,000",maxLoss:"$3,500",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"40%",split:"90/10",payout:"Daily or 5-Day",standard:true,instant:false,news:true,ea:true,price:"$265 one-time"},
+  {firm:"Tradeify",plan:"Select",size:"150K",target:"$9,000",maxLoss:"$4,500",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"40%",split:"90/10",payout:"Daily or 5-Day",standard:true,instant:false,news:true,ea:true,price:"$369 one-time"},
   {firm:"Tradeify",plan:"Lightning",size:"50K",target:"N/A (Instant)",maxLoss:"$2,000",dll:"$1,250",drawdown:"EOD Trailing",minDays:"None",consistency:"20%",split:"90/10",payout:"Per Profit Goal",standard:false,instant:true,news:true,ea:true,price:"$492 one-time"},
   {firm:"Tradeify",plan:"Lightning",size:"100K",target:"N/A (Instant)",maxLoss:"$3,500",dll:"$2,500",drawdown:"EOD Trailing",minDays:"None",consistency:"20%",split:"90/10",payout:"Per Profit Goal",standard:false,instant:true,news:true,ea:true,price:"$660 one-time"},
   {firm:"Tradeify",plan:"Lightning",size:"150K",target:"N/A (Instant)",maxLoss:"$5,250",dll:"$3,000",drawdown:"EOD Trailing",minDays:"None",consistency:"20%",split:"90/10",payout:"Per Profit Goal",standard:false,instant:true,news:true,ea:true,price:"$796 one-time"},
   // MY FUNDED FUTURES
-  {firm:"My Funded Futures",plan:"Core",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"None",drawdown:"EOD Trailing",minDays:"2 days",consistency:"50% (eval) / 40% (funded)",split:"80/20",payout:"5 Winning Days",standard:true,instant:false,news:true,ea:true,price:"$77/mo or $229 one-time"},
-  {firm:"My Funded Futures",plan:"Rapid",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"None",drawdown:"Intraday Trailing",minDays:"2 days",consistency:"50% (eval) / None (funded)",split:"90/10",payout:"5 Winning Days",standard:false,instant:false,news:true,ea:true,price:"$129/mo or $157 one-time"},
-  {firm:"My Funded Futures",plan:"Rapid",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"None",drawdown:"Intraday Trailing",minDays:"2 days",consistency:"50% (eval) / None (funded)",split:"90/10",payout:"5 Winning Days",standard:false,instant:false,news:true,ea:true,price:"$199/mo or $267 one-time"},
-  {firm:"My Funded Futures",plan:"Rapid",size:"150K",target:"$9,000",maxLoss:"$4,500",dll:"None",drawdown:"Intraday Trailing",minDays:"2 days",consistency:"None",split:"90/10",payout:"Daily",standard:false,instant:false,news:true,ea:true,price:"$329/mo or $347 one-time"},
+  {firm:"My Funded Futures",plan:"Flex",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"None",drawdown:"EOD Trailing",minDays:"2 days",consistency:"50% (eval) / None (funded)",split:"80/20",payout:"5 Winning Days",standard:false,instant:false,news:true,ea:true,price:"Budget plan"},
+  {firm:"My Funded Futures",plan:"Flex",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"None",drawdown:"EOD Trailing",minDays:"2 days",consistency:"50% (eval) / None (funded)",split:"80/20",payout:"5 Winning Days",standard:true,instant:false,news:true,ea:true,price:"$77/mo or $229 one-time"},
+  {firm:"My Funded Futures",plan:"Rapid",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"None",drawdown:"EOD Trailing",minDays:"2 days",consistency:"50% (eval) / None (funded)",split:"90/10",payout:"Daily",standard:false,instant:false,news:true,ea:true,price:"25K available"},
+  {firm:"My Funded Futures",plan:"Rapid",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"None",drawdown:"EOD Trailing",minDays:"2 days",consistency:"50% (eval) / None (funded)",split:"90/10",payout:"Daily",standard:false,instant:false,news:true,ea:true,price:"$129/mo or $157 one-time"},
+  {firm:"My Funded Futures",plan:"Rapid",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"None",drawdown:"EOD Trailing",minDays:"2 days",consistency:"50% (eval) / None (funded)",split:"90/10",payout:"Daily",standard:false,instant:false,news:true,ea:true,price:"$199/mo or $267 one-time"},
+  {firm:"My Funded Futures",plan:"Rapid",size:"150K",target:"$9,000",maxLoss:"$4,500",dll:"None",drawdown:"EOD Trailing",minDays:"2 days",consistency:"50% (eval) / None (funded)",split:"90/10",payout:"Daily",standard:false,instant:false,news:true,ea:true,price:"$329/mo or $347 one-time"},
   {firm:"My Funded Futures",plan:"Pro",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"None",drawdown:"EOD Trailing",minDays:"2 days",consistency:"50% (eval) / None (funded)",split:"80/20",payout:"Bi-Weekly",standard:false,instant:false,news:true,ea:true,price:"$229/mo or $629 one-time"},
   {firm:"My Funded Futures",plan:"Pro",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"None",drawdown:"EOD Trailing",minDays:"2 days",consistency:"50% (eval) / None (funded)",split:"80/20",payout:"Bi-Weekly",standard:false,instant:false,news:true,ea:true,price:"$329/mo or $829 one-time"},
   {firm:"My Funded Futures",plan:"Pro",size:"150K",target:"$9,000",maxLoss:"$4,500",dll:"None",drawdown:"EOD Trailing",minDays:"2 days",consistency:"50% (eval) / None (funded)",split:"80/20",payout:"Bi-Weekly",standard:false,instant:false,news:true,ea:true,price:"$477/mo or $1,127 one-time"},
   // ALPHA FUTURES
-  {firm:"Alpha Futures",plan:"Standard",size:"50K",target:"$3,000",maxLoss:"$2,500",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"None (eval) / 40% (funded)",split:"70→80→90%",payout:"Bi-Weekly",standard:true,instant:false,news:true,ea:false,price:"$79/mo"},
-  {firm:"Alpha Futures",plan:"Standard",size:"100K",target:"$6,000",maxLoss:"$3,500",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"None (eval) / 40% (funded)",split:"70→80→90%",payout:"Bi-Weekly",standard:true,instant:false,news:true,ea:false,price:"$159/mo"},
-  {firm:"Alpha Futures",plan:"Standard",size:"150K",target:"$9,000",maxLoss:"$4,500",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"None (eval) / 40% (funded)",split:"70→80→90%",payout:"Bi-Weekly",standard:true,instant:false,news:true,ea:false,price:"$239/mo"},
+  {firm:"Alpha Futures",plan:"Standard",size:"50K",target:"$3,000",maxLoss:"$2,500",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"50% (eval) / 40% (funded)",split:"70→80→90%",payout:"14 Days",standard:true,instant:false,news:true,ea:false,price:"$79/mo"},
+  {firm:"Alpha Futures",plan:"Standard",size:"100K",target:"$6,000",maxLoss:"$3,500",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"50% (eval) / 40% (funded)",split:"70→80→90%",payout:"14 Days",standard:true,instant:false,news:true,ea:false,price:"$159/mo"},
+  {firm:"Alpha Futures",plan:"Standard",size:"150K",target:"$9,000",maxLoss:"$4,500",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"50% (eval) / 40% (funded)",split:"70→80→90%",payout:"14 Days",standard:true,instant:false,news:true,ea:false,price:"$239/mo"},
+  {firm:"Alpha Futures",plan:"Advanced",size:"50K",target:"$4,000",maxLoss:"$1,750",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"50% (eval) / None (funded)",split:"90/10",payout:"5 Winning Days",standard:false,instant:false,news:true,ea:false,price:"$139/mo"},
+  {firm:"Alpha Futures",plan:"Advanced",size:"100K",target:"$8,000",maxLoss:"$3,500",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"50% (eval) / None (funded)",split:"90/10",payout:"5 Winning Days",standard:false,instant:false,news:true,ea:false,price:"$279/mo"},
+  {firm:"Alpha Futures",plan:"Advanced",size:"150K",target:"$12,000",maxLoss:"$5,250",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"50% (eval) / None (funded)",split:"90/10",payout:"5 Winning Days",standard:false,instant:false,news:true,ea:false,price:"$419/mo"},
+  {firm:"Alpha Futures",plan:"Zero",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"$500 (eval) / $500 funded",drawdown:"EOD Trailing",minDays:"1 day",consistency:"None (eval) / 40% (funded)",split:"90/10",payout:"5 Winning Days",standard:false,instant:false,news:true,ea:false,price:"$79/mo"},
+  {firm:"Alpha Futures",plan:"Zero",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"$1,000 (eval) / $1,000 funded",drawdown:"EOD Trailing",minDays:"1 day",consistency:"None (eval) / 40% (funded)",split:"90/10",payout:"5 Winning Days",standard:false,instant:false,news:true,ea:false,price:"$119/mo"},
+  {firm:"Alpha Futures",plan:"Zero",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"$2,000 (eval) / $2,000 funded",drawdown:"EOD Trailing",minDays:"1 day",consistency:"None (eval) / 40% (funded)",split:"90/10",payout:"5 Winning Days",standard:false,instant:false,news:true,ea:false,price:"$239/mo"},
   // APEX TRADER FUNDING (4.0 — March 2026)
   {firm:"Apex Trader Funding",plan:"EOD",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"$750 (soft)",drawdown:"EOD Trailing",minDays:"1 day",consistency:"50% (Funded)",split:"100% first $25K",payout:"After 5 Days",standard:true,instant:false,news:true,ea:true,price:"$177 one-time + $99 activation"},
   {firm:"Apex Trader Funding",plan:"EOD",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"$1,000 (soft)",drawdown:"EOD Trailing",minDays:"1 day",consistency:"50% (Funded)",split:"100% first $25K",payout:"After 5 Days",standard:true,instant:false,news:true,ea:true,price:"$197 one-time + $99 activation"},
@@ -256,32 +264,35 @@ const CHALLENGES = [
   {firm:"Apex Trader Funding",plan:"Intraday",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"None",drawdown:"Intraday Trailing",minDays:"1 day",consistency:"50% (Funded)",split:"100% first $25K",payout:"After 5 Days",standard:false,instant:false,news:true,ea:true,price:"$198 one-time + $79 activation"},
   {firm:"Apex Trader Funding",plan:"Intraday",size:"150K",target:"$9,000",maxLoss:"$4,000",dll:"None",drawdown:"Intraday Trailing",minDays:"1 day",consistency:"50% (Funded)",split:"100% first $25K",payout:"After 5 Days",standard:false,instant:false,news:true,ea:true,price:"$265 one-time + $79 activation"},
   // TOP ONE FUTURES (Rebuilt — 5 plans: Elite, Elite Access, Instant Sim Funded, S2F Sim PRO, IGNITE)
-  {firm:"Top One Futures",plan:"Elite",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"$625",drawdown:"EOD Trailing",minDays:"1 day",consistency:"25%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:false,news:true,ea:true,price:"$39/mo + $149 activation"},
-  {firm:"Top One Futures",plan:"Elite",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"$1,250",drawdown:"EOD Trailing",minDays:"1 day",consistency:"25%",split:"90/10",payout:"<24 hrs avg",standard:true,instant:false,news:true,ea:true,price:"$63/mo + $149 activation"},
-  {firm:"Top One Futures",plan:"Elite",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"$2,500",drawdown:"EOD Trailing",minDays:"1 day",consistency:"25%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:false,news:true,ea:true,price:"$125/mo + $149 activation"},
-  {firm:"Top One Futures",plan:"Elite",size:"150K",target:"$9,000",maxLoss:"$4,500",dll:"$3,750",drawdown:"EOD Trailing",minDays:"1 day",consistency:"25%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:false,news:true,ea:true,price:"$185/mo + $149 activation"},
-  {firm:"Top One Futures",plan:"Elite Access",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"None",drawdown:"EOD Trailing",minDays:"1 day",consistency:"40%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:true,news:true,ea:true,price:"$299 one-time + $35 reset"},
-  {firm:"Top One Futures",plan:"Elite Access",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"None",drawdown:"EOD Trailing",minDays:"1 day",consistency:"40%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:true,news:true,ea:true,price:"$499 one-time + $35 reset"},
-  {firm:"Top One Futures",plan:"Elite Access",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"None",drawdown:"EOD Trailing",minDays:"1 day",consistency:"40%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:true,news:true,ea:true,price:"$849 one-time + $35 reset"},
-  {firm:"Top One Futures",plan:"Elite Access",size:"150K",target:"$9,000",maxLoss:"$4,000",dll:"None",drawdown:"EOD Trailing",minDays:"1 day",consistency:"40%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:true,news:true,ea:true,price:"$1,349 one-time + $35 reset"},
-  {firm:"Top One Futures",plan:"Instant Sim Funded",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"$625",drawdown:"EOD Trailing",minDays:"None",consistency:"20%",split:"90/10",payout:"<24 hrs",standard:false,instant:true,news:true,ea:true,price:"$210 one-time"},
-  {firm:"Top One Futures",plan:"Instant Sim Funded",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"$1,250",drawdown:"EOD Trailing",minDays:"None",consistency:"20%",split:"90/10",payout:"<24 hrs",standard:false,instant:true,news:true,ea:true,price:"$340 one-time"},
-  {firm:"Top One Futures",plan:"Instant Sim Funded",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"$2,500",drawdown:"EOD Trailing",minDays:"None",consistency:"20%",split:"90/10",payout:"<24 hrs",standard:false,instant:true,news:true,ea:true,price:"$411 one-time"},
-  {firm:"Top One Futures",plan:"Instant Sim Funded",size:"150K",target:"$9,000",maxLoss:"$4,500",dll:"$3,750",drawdown:"EOD Trailing",minDays:"None",consistency:"20%",split:"90/10",payout:"<24 hrs",standard:false,instant:true,news:true,ea:true,price:"$470 one-time"},
-  {firm:"Top One Futures",plan:"S2F Sim PRO",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"$500",drawdown:"Intraday Trailing",minDays:"10 days",consistency:"20%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:false,news:true,ea:true,price:"$154/mo"},
-  {firm:"Top One Futures",plan:"S2F Sim PRO",size:"50K",target:"$3,000",maxLoss:"$1,625",dll:"$1,000",drawdown:"Intraday Trailing",minDays:"10 days",consistency:"20%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:false,news:true,ea:true,price:"$253/mo"},
-  {firm:"Top One Futures",plan:"S2F Sim PRO",size:"100K",target:"$6,000",maxLoss:"$3,250",dll:"$2,000",drawdown:"Intraday Trailing",minDays:"10 days",consistency:"20%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:false,news:true,ea:true,price:"$379/mo"},
-  {firm:"Top One Futures",plan:"S2F Sim PRO",size:"150K",target:"$9,000",maxLoss:"$5,000",dll:"$3,000",drawdown:"Intraday Trailing",minDays:"10 days",consistency:"20%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:false,news:true,ea:true,price:"$436/mo"},
-  {firm:"Top One Futures",plan:"IGNITE",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"$500",drawdown:"EOD Trailing",minDays:"None",consistency:"15%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:true,news:true,ea:true,price:"$131 one-time"},
-  {firm:"Top One Futures",plan:"IGNITE",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"$1,000",drawdown:"EOD Trailing",minDays:"None",consistency:"15%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:true,news:true,ea:true,price:"$239 one-time"},
-  {firm:"Top One Futures",plan:"IGNITE",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"$2,000",drawdown:"EOD Trailing",minDays:"None",consistency:"15%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:true,news:true,ea:true,price:"$338 one-time"},
-  {firm:"Top One Futures",plan:"IGNITE",size:"150K",target:"$9,000",maxLoss:"$4,500",dll:"$3,000",drawdown:"EOD Trailing",minDays:"None",consistency:"15%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:true,news:true,ea:true,price:"$479 one-time"},
+  {firm:"Top One Futures",plan:"Elite",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"$625",drawdown:"EOD Trailing",minDays:"1 day",consistency:"25%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:false,news:true,ea:false,price:"$39/mo + $149 activation"},
+  {firm:"Top One Futures",plan:"Elite",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"$1,250",drawdown:"EOD Trailing",minDays:"1 day",consistency:"25%",split:"90/10",payout:"<24 hrs avg",standard:true,instant:false,news:true,ea:false,price:"$63/mo + $149 activation"},
+  {firm:"Top One Futures",plan:"Elite",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"$2,500",drawdown:"EOD Trailing",minDays:"1 day",consistency:"25%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:false,news:true,ea:false,price:"$125/mo + $149 activation"},
+  {firm:"Top One Futures",plan:"Elite",size:"150K",target:"$9,000",maxLoss:"$4,500",dll:"$3,750",drawdown:"EOD Trailing",minDays:"1 day",consistency:"25%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:false,news:true,ea:false,price:"$185/mo + $149 activation"},
+  {firm:"Top One Futures",plan:"Elite Daily",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"$500 funded",drawdown:"EOD Trailing",minDays:"No min",consistency:"45% (eval)",split:"90/10",payout:"Daily Eligible",standard:false,instant:false,news:true,ea:false,price:"No activation fee"},
+  {firm:"Top One Futures",plan:"Elite Daily",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"$1,000 funded",drawdown:"EOD Trailing",minDays:"No min",consistency:"45% (eval)",split:"90/10",payout:"Daily Eligible",standard:false,instant:false,news:true,ea:false,price:"No activation fee"},
+  {firm:"Top One Futures",plan:"Elite Daily",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"$1,250 funded",drawdown:"EOD Trailing",minDays:"No min",consistency:"45% (eval)",split:"90/10",payout:"Daily Eligible",standard:false,instant:false,news:true,ea:false,price:"No activation fee"},
+  {firm:"Top One Futures",plan:"Elite Access",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"None (eval) / $500 funded",drawdown:"EOD Trailing",minDays:"1 day",consistency:"None (eval) / 40% (funded)",split:"90/10",payout:"5 Profitable Days",standard:false,instant:true,news:true,ea:false,price:"$39 one-time + from $139 activation"},
+  {firm:"Top One Futures",plan:"Elite Access",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"None (eval) / $1,000 funded",drawdown:"EOD Trailing",minDays:"1 day",consistency:"None (eval) / 40% (funded)",split:"90/10",payout:"5 Profitable Days",standard:false,instant:true,news:true,ea:false,price:"$39 one-time + from $139 activation"},
+  {firm:"Top One Futures",plan:"Elite Access",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"None (eval) / $1,250 funded",drawdown:"EOD Trailing",minDays:"1 day",consistency:"None (eval) / 40% (funded)",split:"90/10",payout:"5 Profitable Days",standard:false,instant:true,news:true,ea:false,price:"$39 one-time + from $139 activation"},
+  {firm:"Top One Futures",plan:"Elite Access",size:"150K",target:"$9,000",maxLoss:"$4,000",dll:"None (eval) / $1,750 funded",drawdown:"EOD Trailing",minDays:"1 day",consistency:"None (eval) / 40% (funded)",split:"90/10",payout:"5 Profitable Days",standard:false,instant:true,news:true,ea:false,price:"$39 one-time + from $139 activation"},
+  {firm:"Top One Futures",plan:"Instant Sim Funded",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"$625",drawdown:"EOD Trailing",minDays:"None",consistency:"20%",split:"90/10",payout:"<24 hrs",standard:false,instant:true,news:true,ea:false,price:"$210 one-time"},
+  {firm:"Top One Futures",plan:"Instant Sim Funded",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"$1,250",drawdown:"EOD Trailing",minDays:"None",consistency:"20%",split:"90/10",payout:"<24 hrs",standard:false,instant:true,news:true,ea:false,price:"$340 one-time"},
+  {firm:"Top One Futures",plan:"Instant Sim Funded",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"$2,500",drawdown:"EOD Trailing",minDays:"None",consistency:"20%",split:"90/10",payout:"<24 hrs",standard:false,instant:true,news:true,ea:false,price:"$411 one-time"},
+  {firm:"Top One Futures",plan:"Instant Sim Funded",size:"150K",target:"$9,000",maxLoss:"$4,500",dll:"$3,750",drawdown:"EOD Trailing",minDays:"None",consistency:"20%",split:"90/10",payout:"<24 hrs",standard:false,instant:true,news:true,ea:false,price:"$470 one-time"},
+  {firm:"Top One Futures",plan:"S2F Sim PRO",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"$500",drawdown:"Intraday Trailing",minDays:"10 days",consistency:"20%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:false,news:true,ea:false,price:"$154/mo"},
+  {firm:"Top One Futures",plan:"S2F Sim PRO",size:"50K",target:"$3,000",maxLoss:"$1,625",dll:"$1,000",drawdown:"Intraday Trailing",minDays:"10 days",consistency:"20%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:false,news:true,ea:false,price:"$253/mo"},
+  {firm:"Top One Futures",plan:"S2F Sim PRO",size:"100K",target:"$6,000",maxLoss:"$3,250",dll:"$2,000",drawdown:"Intraday Trailing",minDays:"10 days",consistency:"20%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:false,news:true,ea:false,price:"$379/mo"},
+  {firm:"Top One Futures",plan:"S2F Sim PRO",size:"150K",target:"$9,000",maxLoss:"$5,000",dll:"$3,000",drawdown:"Intraday Trailing",minDays:"10 days",consistency:"20%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:false,news:true,ea:false,price:"$436/mo"},
+  {firm:"Top One Futures",plan:"IGNITE",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"$500",drawdown:"EOD Trailing",minDays:"None",consistency:"15%",split:"90/10",payout:"5% Cycle Target",standard:false,instant:true,news:true,ea:false,price:"$131 one-time"},
+  {firm:"Top One Futures",plan:"IGNITE",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"$1,000",drawdown:"EOD Trailing",minDays:"None",consistency:"15%",split:"90/10",payout:"5% Cycle Target",standard:false,instant:true,news:true,ea:false,price:"$239 one-time"},
+  {firm:"Top One Futures",plan:"IGNITE",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"$2,000",drawdown:"EOD Trailing",minDays:"None",consistency:"15%",split:"90/10",payout:"5% Cycle Target",standard:false,instant:true,news:true,ea:false,price:"$338 one-time"},
+  {firm:"Top One Futures",plan:"IGNITE",size:"150K",target:"$9,000",maxLoss:"$4,500",dll:"$3,000",drawdown:"EOD Trailing",minDays:"None",consistency:"15%",split:"90/10",payout:"5% Cycle Target",standard:false,instant:true,news:true,ea:false,price:"$479 one-time"},
   // FUNDEDNEXT FUTURES (max size is 100K for futures — no 150K/200K)
-  {firm:"FundedNext Futures",plan:"Rapid",size:"25K",target:"$1,500",maxLoss:"$1,250",dll:"None",drawdown:"EOD Trailing",minDays:"No min",consistency:"None (eval) / 40% (funded)",split:"80/20→95/5",payout:"Within 24 Hrs",standard:false,instant:false,news:true,ea:true,price:"$99 one-time"},
-  {firm:"FundedNext Futures",plan:"Rapid",size:"50K",target:"$3,000",maxLoss:"$2,500",dll:"None",drawdown:"EOD Trailing",minDays:"No min",consistency:"None (eval) / 40% (funded)",split:"80/20→95/5",payout:"Within 24 Hrs",standard:true,instant:false,news:true,ea:true,price:"$199 one-time"},
-  {firm:"FundedNext Futures",plan:"Rapid",size:"100K",target:"$6,000",maxLoss:"$3,500",dll:"None",drawdown:"EOD Trailing",minDays:"No min",consistency:"None (eval) / 40% (funded)",split:"80/20→95/5",payout:"Within 24 Hrs",standard:true,instant:false,news:true,ea:true,price:"$249 one-time"},
-  {firm:"FundedNext Futures",plan:"Legacy",size:"50K",target:"$3,000",maxLoss:"$2,500",dll:"None",drawdown:"EOD Trailing",minDays:"No min",consistency:"40% (eval) / None (funded)",split:"80/20→95/5",payout:"Within 24 Hrs",standard:false,instant:false,news:true,ea:true,price:"$159 one-time"},
-  {firm:"FundedNext Futures",plan:"Legacy",size:"100K",target:"$6,000",maxLoss:"$3,500",dll:"None",drawdown:"EOD Trailing",minDays:"No min",consistency:"40% (eval) / None (funded)",split:"80/20→95/5",payout:"Within 24 Hrs",standard:false,instant:false,news:true,ea:true,price:"$249 one-time"},
+  {firm:"FundedNext Futures",plan:"Rapid",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"None",drawdown:"EOD Trailing",minDays:"No min",consistency:"None (eval) / 40% (funded)",split:"80/20→95/5",payout:"Within 24 Hrs",standard:false,instant:false,news:true,ea:true,price:"$99 one-time"},
+  {firm:"FundedNext Futures",plan:"Rapid",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"None",drawdown:"EOD Trailing",minDays:"No min",consistency:"None (eval) / 40% (funded)",split:"80/20→95/5",payout:"Within 24 Hrs",standard:true,instant:false,news:true,ea:true,price:"$199 one-time"},
+  {firm:"FundedNext Futures",plan:"Rapid",size:"100K",target:"$6,000",maxLoss:"$2,500",dll:"None",drawdown:"EOD Trailing",minDays:"No min",consistency:"None (eval) / 40% (funded)",split:"80/20→95/5",payout:"Within 24 Hrs",standard:true,instant:false,news:true,ea:true,price:"$249 one-time"},
+  {firm:"FundedNext Futures",plan:"Legacy",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"None",drawdown:"EOD Trailing",minDays:"No min",consistency:"40% (eval) / None (funded)",split:"80/20→95/5",payout:"Within 24 Hrs",standard:false,instant:false,news:true,ea:true,price:"$159 one-time"},
+  {firm:"FundedNext Futures",plan:"Legacy",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"None",drawdown:"EOD Trailing",minDays:"No min",consistency:"40% (eval) / None (funded)",split:"80/20→95/5",payout:"Within 24 Hrs",standard:false,instant:false,news:true,ea:true,price:"$249 one-time"},
   {firm:"FundedNext Futures",plan:"Bolt",size:"50K",target:"$3,000",maxLoss:"$2,500",dll:"$1,000",drawdown:"EOD Trailing",minDays:"No min",consistency:"40%",split:"80/20",payout:"Within 24 Hrs",standard:false,instant:false,news:true,ea:true,price:"$99 one-time"},
   // BULENOX (monthly pricing, not one-time. DLL applies to Option 2 only)
   {firm:"Bulenox",plan:"Eval",size:"25K",target:"$1,500",maxLoss:"$1,500",dll:"$500 (Opt 2 only)",drawdown:"EOD or Trailing",minDays:"No min",consistency:"40%",split:"100% first $10K → 90/10",payout:"Weekly",standard:true,instant:false,news:true,ea:true,price:"~$145/mo"},
@@ -315,14 +326,17 @@ const FUNDED_OVERRIDES = {
   "Tradeify|Select":{consistency:"None (Flex) / 50% (Daily)",dll:"None (Flex) / $500–$1,750 (Daily)",drawdown:"EOD Trailing (locks at balance + $100)",minDays:"N/A",target:"N/A"},
   "Tradeify|Growth":{consistency:"35%",dll:"$600–$3,750",drawdown:"EOD Trailing (locks at balance + $100)",minDays:"N/A",target:"N/A"},
   "Tradeify|Lightning":{consistency:"20→25→30% (progressive)",minDays:"N/A",target:"N/A"},
-  "My Funded Futures|Core":{consistency:"40%",drawdown:"EOD (locks at balance)",minDays:"5 winning days",target:"N/A"},
-  "My Funded Futures|Rapid":{consistency:"None",drawdown:"Intraday Trailing",minDays:"5 winning days",target:"N/A",payout:"5 Winning Days ($1K min)"},
+  "My Funded Futures|Flex":{consistency:"None",drawdown:"EOD (locks at balance)",minDays:"5 winning days",target:"N/A",payout:"5 Winning Days ($250 min)"},
+  "My Funded Futures|Rapid":{consistency:"None",drawdown:"Intraday Trailing",minDays:"24 hours after first trade",target:"N/A",payout:"Daily ($500 min)"},
   "My Funded Futures|Pro":{consistency:"None",drawdown:"EOD (locks at balance)",minDays:"14 calendar days",target:"N/A"},
-  "Alpha Futures|Standard":{consistency:"40%",split:"70→80→90%",minDays:"N/A",target:"N/A"},
+  "Alpha Futures|Standard":{consistency:"40%",split:"70→80→90%",minDays:"14 days",target:"N/A"},
+  "Alpha Futures|Advanced":{consistency:"None",dll:"None",split:"90/10",minDays:"5 winning days",target:"N/A"},
+  "Alpha Futures|Zero":{consistency:"40%",split:"90/10",minDays:"5 winning days",target:"N/A"},
   "Apex Trader Funding|EOD":{consistency:"50%",dll:"$750–$2,000 (soft, pauses trading)",drawdown:"EOD Trailing (locks at balance + $100)",minDays:"5 qualifying days",target:"N/A",split:"100% first $25K → 90/10"},
   "Apex Trader Funding|Intraday":{consistency:"50%",dll:"Tier-based",drawdown:"Intraday Trailing (locks at balance + $100)",minDays:"5 qualifying days",target:"N/A",split:"100% first $25K → 90/10"},
   "Top One Futures|Elite":{consistency:"25%",target:"N/A",minDays:"N/A"},
-  "Top One Futures|Elite Access":{consistency:"40%",target:"N/A",minDays:"N/A"},
+  "Top One Futures|Elite Daily":{consistency:"None",dll:"$500–$1,250",target:"N/A",minDays:"Daily eligibility"},
+  "Top One Futures|Elite Access":{consistency:"None (eval) / 40% funded",dll:"None (eval) / $500–$1,750 funded",target:"N/A",minDays:"5 profitable days"},
   "Top One Futures|Instant Sim Funded":{consistency:"20%",target:"N/A",minDays:"N/A"},
   "Top One Futures|S2F Sim PRO":{consistency:"20%",target:"N/A",minDays:"N/A"},
   "Top One Futures|IGNITE":{consistency:"15%",target:"N/A",minDays:"N/A"},
@@ -330,7 +344,7 @@ const FUNDED_OVERRIDES = {
   "Bulenox|Eval":{consistency:"40%",minDays:"N/A",target:"N/A",split:"100% first $10K → 90/10"},
   "Goat Funded Futures|EOD Trailing":{consistency:"Varies",dll:"2.5% daily loss (funded)",drawdown:"EOD Trailing (resets daily)",minDays:"Varies",target:"N/A"},
   "Goat Funded Futures|Static":{consistency:"Varies",dll:"Static",drawdown:"Static (non-trailing)",minDays:"Varies",target:"N/A"},
-  "Goat Funded Futures|Instant":{consistency:"20%",dll:"3% daily",drawdown:"5% trailing (funded)",minDays:"Varies",target:"N/A"},
+  "Goat Funded Futures|Instant":{consistency:"20%",dll:"3% daily",drawdown:"5% trailing (funded)",minDays:"7 winning days (10 calendar days first payout)",target:"N/A"},
   "Goat Funded Futures|Express":{consistency:"30%",dll:"None",drawdown:"EOD Trailing",minDays:"5 winning days",target:"N/A"},
 };
 
@@ -635,12 +649,16 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .ch-count .funded-badge{color:var(--gold);font-size:11px;font-weight:700;margin-left:10px;padding:3px 10px;border-radius:999px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);text-shadow:var(--glow-gold-sm)}
 .ch-list{display:flex;flex-direction:column;gap:14px}
 .ch-empty{text-align:center;padding:60px 24px;color:var(--t4);background:var(--glass);border:1px dashed var(--bdr2);border-radius:16px;font-size:15px}
-.ch-card{display:grid;grid-template-columns:minmax(200px,1.4fr) repeat(5,minmax(70px,1fr)) auto;gap:18px;align-items:center;padding:22px 26px;background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--bdr2);border-radius:18px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;box-shadow:0 0 1px rgba(6,182,212,0.1),0 2px 8px rgba(0,0,0,0.2)}
+.f-search{width:100%;max-width:320px;background:linear-gradient(135deg,rgba(8,15,27,0.94),rgba(5,12,22,0.88));border:1px solid rgba(34,211,238,0.22);border-radius:16px;padding:13px 16px;color:var(--t1);font-family:var(--sans);font-size:14px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.03),0 0 0 1px rgba(6,182,212,0.04),0 10px 30px rgba(0,0,0,0.18);outline:none;transition:border-color .18s,box-shadow .18s,transform .18s,background .18s}
+.f-search::placeholder{color:rgba(186,214,223,0.58)}
+.f-search:hover{border-color:rgba(34,211,238,0.3);box-shadow:inset 0 1px 0 rgba(255,255,255,0.04),0 0 0 1px rgba(6,182,212,0.08),0 12px 32px rgba(0,0,0,0.22)}
+.f-search:focus{border-color:rgba(34,211,238,0.72);background:linear-gradient(135deg,rgba(8,15,27,0.98),rgba(7,18,31,0.94));box-shadow:0 0 0 1px rgba(34,211,238,0.18),0 0 0 4px rgba(34,211,238,0.09),0 0 26px rgba(34,211,238,0.14),0 16px 40px rgba(0,0,0,0.26);transform:translateY(-1px)}
+.ch-card{display:grid;grid-template-columns:minmax(220px,1.55fr) repeat(4,minmax(88px,1fr)) 176px;gap:18px;align-items:center;padding:22px 26px;background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--bdr2);border-radius:18px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;box-shadow:0 0 1px rgba(6,182,212,0.1),0 2px 8px rgba(0,0,0,0.2)}
 .ch-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--card-accent,var(--em)),transparent);opacity:0;transition:opacity .2s}
 .ch-card::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--card-accent,rgba(34,211,238,0.3)),transparent);opacity:0.4}
 .ch-card:hover{border-color:var(--bdr3);transform:translateY(-3px);box-shadow:0 10px 40px rgba(6,182,212,0.12),0 0 0 1px rgba(34,211,238,0.2),inset 0 0 40px rgba(6,182,212,0.04)}
 .ch-card:hover::before{opacity:1}
-.ch-firm{display:flex;align-items:center;gap:14px;min-width:0}
+.ch-firm{display:flex;align-items:center;gap:14px;min-width:0;grid-row:span 2}
 .ch-firm-logo{flex-shrink:0;width:48px;height:48px;border-radius:12px;overflow:hidden;border:1px solid var(--bdr2);background:var(--bg2);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1px rgba(6,182,212,0.08)}
 .ch-firm-info{min-width:0;flex:1}
 .ch-firm-name{font-family:var(--sans);font-size:17px;font-weight:700;color:var(--t1);line-height:1.2;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -654,19 +672,20 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .ch-stat-val.price{font-family:var(--sans);font-size:14px;color:var(--t1);white-space:normal;line-height:1.3}
 .ch-stat-val.good{color:var(--green);text-shadow:0 0 10px rgba(16,185,129,0.3)}
 .ch-stat-val.warn{color:var(--amber);text-shadow:0 0 6px rgba(255,190,11,0.25)}
-.ch-cta{display:inline-flex;align-items:center;gap:6px;font-family:var(--sans);font-size:13px;font-weight:700;color:var(--em);padding:11px 22px;border-radius:999px;border:1px solid var(--bdr3);background:var(--emA2);cursor:pointer;transition:all .2s;white-space:nowrap;text-transform:uppercase;letter-spacing:.8px}
+.ch-cta{display:inline-flex;align-items:center;justify-content:center;gap:6px;align-self:center;justify-self:end;grid-row:span 2;width:176px;min-height:52px;font-family:var(--sans);font-size:13px;font-weight:700;color:var(--em);padding:11px 22px;border-radius:999px;border:1px solid var(--bdr3);background:var(--emA2);cursor:pointer;transition:all .2s;white-space:nowrap;text-transform:uppercase;letter-spacing:.8px}
 .ch-card:hover .ch-cta{background:linear-gradient(135deg,var(--em),#0ea5e9);color:#050810;border-color:transparent;box-shadow:0 0 22px rgba(34,211,238,0.5)}
 @media(max-width:1280px){
-  .ch-card{grid-template-columns:minmax(180px,1.3fr) repeat(3,1fr) auto;row-gap:16px;column-gap:14px}
+  .ch-card{grid-template-columns:minmax(180px,1.25fr) repeat(3,minmax(88px,1fr)) 164px;row-gap:16px;column-gap:14px}
   .ch-firm{grid-row:span 2}
   .ch-cta{grid-row:span 2;align-self:center}
 }
 @media(max-width:820px){
   .ch-card{grid-template-columns:1fr 1fr;padding:20px;row-gap:16px;column-gap:14px}
   .ch-firm{grid-row:auto;grid-column:1 / -1}
-  .ch-cta{grid-row:auto;grid-column:1 / -1;justify-self:stretch;justify-content:center}
+  .ch-cta{grid-row:auto;grid-column:1 / -1;justify-self:stretch;width:auto}
   .ch-hero .sec-title{font-size:26px}
   .ch-phase-btn{padding:9px 20px;font-size:13px}
+  .f-search{max-width:none}
 }
 
 /* ── OFFERS ── */
@@ -927,26 +946,48 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .cmp-tray-clear{background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--bdr2);color:var(--t3);font-family:var(--sans);font-size:12px;font-weight:600;padding:9px 18px;border-radius:999px;cursor:pointer;transition:all .22s}
 .cmp-tray-clear:hover{border-color:var(--red);color:var(--red)}
 .cmp-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(10px);z-index:250;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto}
-.cmp-modal{background:var(--bg1);border:1px solid var(--bdr2);border-radius:16px;max-width:900px;width:100%;position:relative;box-shadow:var(--glow-box),0 20px 60px rgba(0,0,0,0.5);overflow:hidden}
+.cmp-modal{background:var(--bg1);border:1px solid var(--bdr2);border-radius:16px;max-width:1280px;width:100%;position:relative;box-shadow:var(--glow-box),0 20px 60px rgba(0,0,0,0.5);overflow:hidden}
 .cmp-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--bdr2);background:var(--bg2)}
 .cmp-header h2{font-size:18px;font-weight:700;color:var(--t1)}
 .cmp-header h2 span{color:var(--em);text-shadow:var(--glow-sm)}
 .cmp-close{background:none;border:none;color:var(--t4);font-size:20px;cursor:pointer}
 .cmp-close:hover{color:var(--em)}
+.cmp-topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-top:10px;flex-wrap:wrap}
+.cmp-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cmp-control-label{font-size:10px;font-weight:700;color:var(--t5);text-transform:uppercase;letter-spacing:.9px;margin-right:2px}
+.cmp-pills{display:flex;gap:6px;flex-wrap:wrap}
+.cmp-pills .f-btn{padding:6px 12px;font-size:11px}
+.cmp-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:18px 24px;border-bottom:1px solid var(--bdr2);background:linear-gradient(180deg,rgba(255,255,255,0.015),transparent)}
+.cmp-summary-card{background:var(--glass);border:1px solid var(--bdr);border-radius:12px;padding:14px 14px 12px;min-height:92px}
+.cmp-summary-label{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--t5);margin-bottom:8px}
+.cmp-summary-firm{font-size:14px;font-weight:800;color:var(--t1)}
+.cmp-summary-note{font-size:11px;color:var(--t4);margin-top:4px;line-height:1.45}
 .cmp-grid{display:grid;gap:0}
 .cmp-row{display:grid;border-bottom:1px solid var(--bdr);align-items:stretch}
 .cmp-row:last-child{border-bottom:none}
 .cmp-row:hover{background:rgba(6,182,212,0.03)}
-.cmp-label{padding:12px 18px;font-size:12px;font-weight:700;color:var(--em);text-transform:uppercase;letter-spacing:.5px;background:var(--bg2);display:flex;align-items:center;border-right:1px solid var(--bdr)}
+.cmp-label{padding:12px 18px;font-size:12px;font-weight:700;color:var(--em);text-transform:uppercase;letter-spacing:.5px;background:var(--bg2);display:flex;align-items:center;border-right:1px solid var(--bdr);position:sticky;left:0;z-index:2}
 .cmp-cell{padding:12px 16px;font-size:13px;color:var(--t2);display:flex;align-items:center;border-right:1px solid var(--bdr);line-height:1.5;word-break:break-word}
 .cmp-cell:last-child{border-right:none}
 .cmp-cell.best{color:var(--green);font-weight:700}
-.cmp-firm-hdr{text-align:center;padding:18px 12px;border-right:1px solid var(--bdr)}
+.cmp-cell.good{background:rgba(16,185,129,0.08);color:#b6f5d6}
+.cmp-cell.bad{background:rgba(255,71,87,0.08);color:#ffb3bc}
+.cmp-cell.bestish{box-shadow:inset 0 0 0 1px rgba(34,211,238,0.18)}
+.cmp-firm-hdr{text-align:center;padding:18px 12px;border-right:1px solid var(--bdr);background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
 .cmp-firm-hdr:last-child{border-right:none}
 .cmp-firm-name{font-size:14px;font-weight:700;margin-top:8px}
+.cmp-firm-meta{font-size:11px;color:var(--t4);margin-top:4px;line-height:1.45}
 .cmp-firm-pulse{font-family:var(--mono);font-size:16px;font-weight:800;margin-top:4px}
+.cmp-plan-select{width:100%;margin-top:10px;background:var(--bg3);border:1px solid var(--bdr2);border-radius:9px;padding:9px 10px;color:var(--t1);font-family:var(--sans);font-size:12px;outline:none}
+.cmp-plan-select:focus{border-color:var(--em)}
+.cmp-firm-tags{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.cmp-tag{font-size:10px;font-weight:700;padding:4px 8px;border-radius:999px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:var(--t3)}
 .cmp-deal-btn{display:inline-block;margin-top:8px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#050810;font-size:11px;font-weight:700;padding:6px 16px;border:none;border-radius:999px;cursor:pointer;box-shadow:var(--glow-gold-sm);transition:all .22s}
 .cmp-deal-btn:hover{box-shadow:var(--glow-gold),0 4px 12px rgba(251,191,36,0.3);transform:translateY(-1px)}
+.cmp-legend{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 24px;border-bottom:1px solid var(--bdr2);background:rgba(255,255,255,0.012)}
+.cmp-legend-item{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--t4)}
+.cmp-legend-swatch{width:12px;height:12px;border-radius:999px;border:1px solid var(--bdr2);flex-shrink:0}
+.cmp-empty{padding:18px 14px;color:var(--t4);font-size:12px;line-height:1.6}
 
 /* ── MOBILE ── */
 @media(max-width:768px){
@@ -967,6 +1008,8 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   .hero-trust{gap:12px;font-size:11px}
   .hero-ctas{flex-direction:column;align-items:center}
   .hero-cta-primary,.hero-cta-secondary{width:100%;max-width:280px;text-align:center}
+  .cmp-topbar{flex-direction:column;align-items:stretch}
+  .cmp-summary{grid-template-columns:1fr 1fr}
   .cmp-tray{padding:10px 14px;gap:8px;flex-wrap:wrap;justify-content:center}
   .cmp-tray-firms{flex-wrap:wrap;justify-content:center}
   .cmp-overlay{padding:20px 10px}
@@ -995,6 +1038,9 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   .auth-modal{margin:16px;padding:24px}
   .nav-login{display:none}
   .panel{width:100%}
+}
+@media(max-width:560px){
+  .cmp-summary{grid-template-columns:1fr}
 }
 @media(max-width:420px){
   .hero h1{font-size:28px;letter-spacing:-.4px}
@@ -1721,11 +1767,15 @@ const FirmTable = ({firms,onSelect}) => {
 
 // ── CHALLENGES TAB ──
 const ChallengesTab = ({onSelect}) => {
-  const [filters,setFilters]=useState({instant:false,noDLL:false,noConsistency:false,newsOk:false,eaOk:false,size:"50K"});
+  const [filters,setFilters]=useState({instant:false,noDLL:false,noConsistency:false,newsOk:false,eaOk:false,size:"",firm:"",drawdown:"",query:""});
   const [phase,setPhase]=useState("eval");
   const toggle=k=>setFilters(p=>({...p,[k]:!p[k]}));
   const setSize=v=>setFilters(p=>({...p,size:p.size===v?"":v}));
+  const setFirm=v=>setFilters(p=>({...p,firm:p.firm===v?"":v}));
+  const setDrawdown=v=>setFilters(p=>({...p,drawdown:p.drawdown===v?"":v}));
   const allSizes=[...new Set(CHALLENGES.map(c=>c.size))].sort((a,b)=>parseInt(a)-parseInt(b));
+  const allFirms=[...new Set(CHALLENGES.map(c=>c.firm))].sort();
+  const drawdownOptions=["EOD","Intraday","Static"];
   // Helper to get display value: if funded phase, check overrides
   const getVal=(c,field)=>{
     if(phase==="eval") return c[field];
@@ -1733,23 +1783,38 @@ const ChallengesTab = ({onSelect}) => {
     const ov=FUNDED_OVERRIDES[key];
     return (ov&&ov[field]!==undefined)?ov[field]:c[field];
   };
-  const filtered=useMemo(()=>{
-    const anyFilterOn=filters.instant||filters.noDLL||filters.noConsistency||filters.newsOk||filters.eaOk;
+  const filtered=(()=>{
     return CHALLENGES.filter(c=>{
-      if(!anyFilterOn&&!c.standard)return false;
       if(filters.instant&&!c.instant)return false;
-      const dll=getVal(c,"dll");
-      if(filters.noDLL&&dll!=="None"&&!dll.toLowerCase().includes("none"))return false;
-      const cons=getVal(c,"consistency");
+      const dll=String(getVal(c,"dll")||"");
+      if(filters.noDLL&&!dll.toLowerCase().includes("none"))return false;
+      const cons=String(getVal(c,"consistency")||"");
       if(filters.noConsistency&&!cons.toLowerCase().includes("none"))return false;
       if(filters.newsOk&&!c.news)return false;
       if(filters.eaOk&&!c.ea)return false;
       if(filters.size&&c.size!==filters.size)return false;
+      if(filters.firm&&c.firm!==filters.firm)return false;
+      if(filters.drawdown){
+        const dd=String(getVal(c,"drawdown")||"").toLowerCase();
+        if(filters.drawdown==="EOD"&&!dd.includes("eod"))return false;
+        if(filters.drawdown==="Intraday"&&!dd.includes("intraday"))return false;
+        if(filters.drawdown==="Static"&&!dd.includes("static"))return false;
+      }
+      if(filters.query){
+        const q=filters.query.toLowerCase();
+        const hay=[c.firm,c.plan,c.size,c.price,getVal(c,"target"),getVal(c,"maxLoss"),getVal(c,"dll"),getVal(c,"drawdown"),getVal(c,"consistency"),getVal(c,"payout"),getVal(c,"split")].join(" ").toLowerCase();
+        if(!hay.includes(q)) return false;
+      }
       return true;
+    }).sort((a,b)=>{
+      if(a.firm!==b.firm) return a.firm.localeCompare(b.firm);
+      const sizeDiff=parseInt(a.size)-parseInt(b.size);
+      if(sizeDiff!==0) return sizeDiff;
+      return a.plan.localeCompare(b.plan);
     });
-  },[filters,phase]);
+  })();
   const ac=Object.values(filters).filter(v=>v===true||(typeof v==="string"&&v!=="")).length;
-  const clearAll=()=>setFilters({instant:false,noDLL:false,noConsistency:false,newsOk:false,eaOk:false,size:""});
+  const clearAll=()=>setFilters({instant:false,noDLL:false,noConsistency:false,newsOk:false,eaOk:false,size:"",firm:"",drawdown:"",query:""});
   return (<div>
     <div className="ch-hero">
       <div className="sec-hdr"><div>
@@ -1762,6 +1827,15 @@ const ChallengesTab = ({onSelect}) => {
       <button className={`ch-phase-btn${phase==="funded"?" on":""}`} onClick={()=>setPhase("funded")}>Funded</button>
     </div>
     <div className="ch-filters-row">
+      <input
+        className="f-search"
+        style={{maxWidth:320}}
+        placeholder="Search firm, plan, drawdown, payout..."
+        value={filters.query}
+        onChange={e=>setFilters(p=>({...p,query:e.target.value}))}
+      />
+    </div>
+    <div className="ch-filters-row">
       <button className={`ch-chip${filters.instant?" on":""}`} onClick={()=>toggle("instant")}>⚡ Instant Funding</button>
       <button className={`ch-chip${filters.noDLL?" on":""}`} onClick={()=>toggle("noDLL")}>No Daily Loss Limit</button>
       <button className={`ch-chip${filters.noConsistency?" on":""}`} onClick={()=>toggle("noConsistency")}>No Consistency Rule</button>
@@ -1770,8 +1844,16 @@ const ChallengesTab = ({onSelect}) => {
       {ac>0&&<button className="ch-chip" style={{marginLeft:'auto',color:'var(--red)',borderColor:'rgba(255,71,87,0.3)'}} onClick={clearAll}>Clear all</button>}
     </div>
     <div className="ch-filters-row">
+      <span className="ch-size-label">Firm</span>
+      {allFirms.map(firm=><button key={firm} className={`ch-chip${filters.firm===firm?" on":""}`} onClick={()=>setFirm(firm)}>{firm}</button>)}
+    </div>
+    <div className="ch-filters-row">
       <span className="ch-size-label">Size</span>
       {allSizes.map(s=><button key={s} className={`ch-chip${filters.size===s?" on":""}`} onClick={()=>setSize(s)}>${s}</button>)}
+    </div>
+    <div className="ch-filters-row">
+      <span className="ch-size-label">Drawdown</span>
+      {drawdownOptions.map(opt=><button key={opt} className={`ch-chip${filters.drawdown===opt?" on":""}`} onClick={()=>setDrawdown(opt)}>{opt}</button>)}
     </div>
     <div className="ch-count">Showing <b>{filtered.length}</b> challenges{phase==="funded"&&<span className="funded-badge">★ Funded account rules</span>}</div>
     {filtered.length===0?<div className="ch-empty">No matches — try fewer filters.</div>
@@ -1780,6 +1862,9 @@ const ChallengesTab = ({onSelect}) => {
         const f=FIRMS.find(ff=>ff.name===c.firm);
         const dll=getVal(c,"dll");const noDLL=dll==="None"||dll.toLowerCase().includes("none");
         const minDays=getVal(c,"minDays");
+        const drawdown=getVal(c,"drawdown");
+        const consistency=getVal(c,"consistency");
+        const payout=getVal(c,"payout");
         const accent=f&&f.color?f.color:'var(--em)';
         return (<div key={i} className="ch-card" style={{'--card-accent':accent}} onClick={()=>f&&onSelect(f)}>
           <div className="ch-firm">
@@ -1810,8 +1895,20 @@ const ChallengesTab = ({onSelect}) => {
             <div className={`ch-stat-val ${noDLL?"good":"warn"}`}>{dll}</div>
           </div>
           <div className="ch-stat">
-            <div className="ch-stat-label">Split · {phase==="funded"?"Payout":"Min Days"}</div>
-            <div className="ch-stat-val">{getVal(c,"split")} · {phase==="funded"?getVal(c,"payout"):minDays}</div>
+            <div className="ch-stat-label">Drawdown</div>
+            <div className="ch-stat-val">{drawdown}</div>
+          </div>
+          <div className="ch-stat">
+            <div className="ch-stat-label">Consistency</div>
+            <div className="ch-stat-val">{consistency}</div>
+          </div>
+          <div className="ch-stat">
+            <div className="ch-stat-label">Split</div>
+            <div className="ch-stat-val">{getVal(c,"split")}</div>
+          </div>
+          <div className="ch-stat">
+            <div className="ch-stat-label">{phase==="funded"?"Payout":"Min Days"}</div>
+            <div className="ch-stat-val">{phase==="funded"?payout:minDays}</div>
           </div>
           <button className="ch-cta" onClick={e=>{e.stopPropagation();if(f)onSelect(f)}}>View →</button>
         </div>);
@@ -3148,7 +3245,7 @@ const PulsePointsTab = ({user,onLogin,ppSection,setPpSection}) => {
 
 // ── APP ──────────────────────────────────────────────────────────────────────
 // ── COMPARE OVERLAY ──
-const CompareOverlay = ({firms,onClose}) => {
+const CompareOverlayLegacy = ({firms,onClose}) => {
   const [cmpSize,setCmpSize]=useState("50K");
   const sizes=["25K","50K","100K","150K"];
   const cols=firms.length;
@@ -3215,6 +3312,219 @@ const CompareOverlay = ({firms,onClose}) => {
   </div>);
 };
 
+void CompareOverlayLegacy;
+
+const COMPARE_SIZES = ["25K","50K","100K","150K"];
+const getComparePlans = (firmName,size) => CHALLENGES.filter(c=>c.firm===firmName&&c.size===size);
+const getCompareDefaultPlan = (firmName,size) => {
+  const matches = getComparePlans(firmName,size);
+  return matches.find(c=>c.standard)?.plan || matches[0]?.plan || "";
+};
+const getCompareField = (challenge,phase,field) => {
+  if(!challenge) return "—";
+  if(phase==="eval") return challenge[field] ?? "—";
+  const key = `${challenge.firm}|${challenge.plan}`;
+  const override = FUNDED_OVERRIDES[key];
+  return override && override[field] !== undefined ? override[field] : (challenge[field] ?? "—");
+};
+const parseMoneyLike = (value) => {
+  if(!value || value==="—" || /n\/a/i.test(value)) return null;
+  const match = String(value).replace(/,/g,"").match(/\$?(\d+(?:\.\d+)?)(K|M)?/i);
+  if(!match) return null;
+  let num = parseFloat(match[1]);
+  const unit = (match[2]||"").toUpperCase();
+  if(unit==="K") num*=1000;
+  if(unit==="M") num*=1000000;
+  return num;
+};
+const parsePercentLike = (value) => {
+  if(!value || value==="—" || /varies/i.test(value)) return null;
+  const match = String(value).match(/(\d+(?:\.\d+)?)\s*%/);
+  return match ? parseFloat(match[1]) : null;
+};
+const parseDaysLike = (value) => {
+  if(!value || value==="—" || /varies/i.test(value)) return null;
+  if(/none|no min|n\/a/i.test(value)) return 0;
+  const match = String(value).match(/(\d+(?:\.\d+)?)/);
+  return match ? parseFloat(match[1]) : null;
+};
+const scoreDrawdown = (value) => {
+  if(!value || value==="—") return null;
+  const text = String(value).toLowerCase();
+  if(text.includes("static")) return 4;
+  if(text.includes("eod")) return 3;
+  if(text.includes("intraday")) return 1;
+  if(text.includes("trailing")) return 2;
+  return null;
+};
+const scorePayoutSpeed = (value) => {
+  if(!value || value==="—") return null;
+  const text = String(value).toLowerCase();
+  if(text.includes("15 minute")) return 0.01;
+  if(text.includes("<24") || text.includes("within 24") || text.includes("24 hr") || text.includes("next business day")) return 1;
+  if(text.includes("daily")) return 1.5;
+  if(text.includes("weekly") || text.includes("5 winning")) return 5;
+  if(text.includes("bi-weekly")) return 14;
+  const dayMatch = text.match(/(\d+(?:\.\d+)?)\s*day/);
+  if(dayMatch) return parseFloat(dayMatch[1]);
+  const hourMatch = text.match(/(\d+(?:\.\d+)?)\s*(?:hr|hour)/);
+  if(hourMatch) return parseFloat(hourMatch[1]) / 24;
+  return null;
+};
+const compareCellTone = (rowKey,value) => {
+  const text = String(value || "").toLowerCase();
+  if(rowKey==="dll") return text.includes("none") ? "good" : "";
+  if(rowKey==="drawdown") return text.includes("static") || text.includes("eod") ? "good" : text.includes("intraday") ? "bad" : "";
+  if(rowKey==="consistency") return text.includes("none") ? "good" : "";
+  if(rowKey==="news" || rowKey==="ea") return text.includes("yes") ? "good" : text.includes("no") ? "bad" : "";
+  return "";
+};
+const pickBest = (items,selector,mode="max") => {
+  const scored = items.map(item=>({item,val:selector(item)})).filter(x=>x.val!==null&&x.val!==undefined&&!Number.isNaN(x.val));
+  if(!scored.length) return null;
+  return scored.reduce((best,current)=>{
+    if(mode==="min") return current.val<best.val ? current : best;
+    return current.val>best.val ? current : best;
+  }).item;
+};
+const CompareOverlay = ({firms,onClose}) => {
+  const [cmpSize,setCmpSize]=useState("50K");
+  const [cmpPhase,setCmpPhase]=useState("eval");
+  const [planByFirm,setPlanByFirm]=useState(()=>Object.fromEntries(firms.map(f=>[f.id,getCompareDefaultPlan(f.name,"50K")])));
+  const cols=firms.length;
+  const gridCols=`170px repeat(${cols},minmax(220px,1fr))`;
+
+  useEffect(()=>{
+    setPlanByFirm(prev=>{
+      const next={...prev};
+      firms.forEach(f=>{
+        const options=getComparePlans(f.name,cmpSize);
+        if(!options.length){next[f.id]="";return;}
+        if(!options.some(opt=>opt.plan===next[f.id])) next[f.id]=getCompareDefaultPlan(f.name,cmpSize);
+      });
+      return next;
+    });
+  },[cmpSize,firms]);
+
+  const compared = firms.map(f=>{
+    const options=getComparePlans(f.name,cmpSize);
+    const selectedPlan=planByFirm[f.id] || getCompareDefaultPlan(f.name,cmpSize);
+    const challenge=options.find(opt=>opt.plan===selectedPlan) || options[0] || null;
+    const deal=DEALS.find(d=>d.firm===f.name);
+    const pulse=calcPulse(f.rating,f.reviews,f.name);
+    return {firm:f,options,challenge,deal,pulse};
+  });
+
+  const summaryCards = [
+    {label:"Cheapest Entry",winner:pickBest(compared,x=>parseMoneyLike(getCompareField(x.challenge,cmpPhase,"price")),"min"),note:w=>w?getCompareField(w.challenge,cmpPhase,"price"):"No comparable price data"},
+    {label:"Most Forgiving Drawdown",winner:pickBest(compared,x=>parseMoneyLike(getCompareField(x.challenge,cmpPhase,"maxLoss")),"max"),note:w=>w&&w.challenge?`${getCompareField(w.challenge,cmpPhase,"maxLoss")} max loss`:"No comparable loss data"},
+    {label:"Fastest Payout",winner:pickBest(compared,x=>scorePayoutSpeed(getCompareField(x.challenge,cmpPhase,"payout")),"min"),note:w=>w?getCompareField(w.challenge,cmpPhase,"payout"):"No comparable payout timing"},
+    {label:"Best Overall Edge",winner:pickBest(compared,x=>x.pulse,"max"),note:w=>w?(w.firm.bestFor || `${w.pulse} Pulse Score`):"No standout selected"},
+  ];
+
+  const rows = [
+    {key:"pulse",label:"Pulse Score",value:item=>String(item.pulse),score:item=>item.pulse,better:"max"},
+    {key:"rating",label:"Rating",value:item=>`${item.firm.rating}/5 (${item.firm.reviews.toLocaleString()})`,score:item=>item.firm.rating,better:"max"},
+    {key:"bestFor",label:"Best For",value:item=>item.firm.bestFor || "General Futures Traders"},
+    {key:"platforms",label:"Platforms",value:item=>item.firm.platforms.join(", ")},
+    {key:"plan",label:"Selected Plan",value:item=>item.challenge?item.challenge.plan:"No matching plan"},
+    {key:"price",label:cmpPhase==="eval"?"Entry Price":"Original Eval Price",value:item=>getCompareField(item.challenge,cmpPhase,"price"),score:item=>parseMoneyLike(getCompareField(item.challenge,cmpPhase,"price")),better:"min"},
+    {key:"target",label:cmpPhase==="eval"?"Profit Target":"Funded Target",value:item=>getCompareField(item.challenge,cmpPhase,"target"),score:item=>parseMoneyLike(getCompareField(item.challenge,cmpPhase,"target")),better:"min"},
+    {key:"maxLoss",label:"Max Loss",value:item=>getCompareField(item.challenge,cmpPhase,"maxLoss"),score:item=>parseMoneyLike(getCompareField(item.challenge,cmpPhase,"maxLoss")),better:"max"},
+    {key:"dll",label:"Daily Loss Limit",value:item=>getCompareField(item.challenge,cmpPhase,"dll")},
+    {key:"drawdown",label:"Drawdown Type",value:item=>getCompareField(item.challenge,cmpPhase,"drawdown"),score:item=>scoreDrawdown(getCompareField(item.challenge,cmpPhase,"drawdown")),better:"max"},
+    {key:"consistency",label:"Consistency Rule",value:item=>getCompareField(item.challenge,cmpPhase,"consistency"),score:item=>parsePercentLike(getCompareField(item.challenge,cmpPhase,"consistency")),better:"min"},
+    {key:"split",label:"Profit Split",value:item=>getCompareField(item.challenge,cmpPhase,"split"),score:item=>parsePercentLike(getCompareField(item.challenge,cmpPhase,"split")),better:"max"},
+    {key:"minDays",label:cmpPhase==="eval"?"Min Days to Pass":"Min Days to Payout",value:item=>getCompareField(item.challenge,cmpPhase,"minDays"),score:item=>parseDaysLike(getCompareField(item.challenge,cmpPhase,"minDays")),better:"min"},
+    {key:"payout",label:"Payout Schedule",value:item=>getCompareField(item.challenge,cmpPhase,"payout"),score:item=>scorePayoutSpeed(getCompareField(item.challenge,cmpPhase,"payout")),better:"min"},
+    {key:"news",label:"News Trading",value:item=>item.challenge?(item.challenge.news?"Yes":"No"):"—"},
+    {key:"ea",label:"EAs / Bots",value:item=>item.challenge?(item.challenge.ea?"Yes":"No"):"—"},
+    {key:"paySpeed",label:"Firm Payout Reputation",value:item=>item.firm.paySpeed,score:item=>scorePayoutSpeed(item.firm.paySpeed),better:"min"},
+    {key:"maxAlloc",label:"Max Allocation",value:item=>item.firm.maxAlloc,score:item=>parseMoneyLike(item.firm.maxAlloc),better:"max"},
+    {key:"deal",label:"Current Deal",value:item=>item.deal?`${item.deal.pct} · code ${item.deal.code}`:"—"},
+  ];
+
+  return (<div className="cmp-overlay" onClick={onClose}>
+    <div className="cmp-modal" onClick={e=>e.stopPropagation()}>
+      <div className="cmp-header">
+        <div style={{flex:1}}>
+          <h2>Compare <span>{cols} Firms</span></h2>
+          <div className="cmp-topbar">
+            <div className="cmp-controls">
+              <span className="cmp-control-label">Account Size</span>
+              <div className="cmp-pills">
+                {COMPARE_SIZES.map(s=><button key={s} className={`f-btn ${cmpSize===s?"on":""}`} onClick={()=>setCmpSize(s)}>{s}</button>)}
+              </div>
+            </div>
+            <div className="cmp-controls">
+              <span className="cmp-control-label">Rules Mode</span>
+              <div className="cmp-pills">
+                <button className={`f-btn ${cmpPhase==="eval"?"on":""}`} onClick={()=>setCmpPhase("eval")}>Evaluation</button>
+                <button className={`f-btn ${cmpPhase==="funded"?"on":""}`} onClick={()=>setCmpPhase("funded")}>Funded</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button className="cmp-close" onClick={onClose}>✕</button>
+      </div>
+      <div className="cmp-summary">
+        {summaryCards.map(card=>{
+          const winner=card.winner;
+          return <div key={card.label} className="cmp-summary-card">
+            <div className="cmp-summary-label">{card.label}</div>
+            <div className="cmp-summary-firm" style={winner?{color:winner.firm.color}:{}}>{winner?winner.firm.name:"No winner"}</div>
+            <div className="cmp-summary-note">{card.note(winner)}</div>
+          </div>;
+        })}
+      </div>
+      <div className="cmp-legend">
+        <div className="cmp-legend-item"><span className="cmp-legend-swatch" style={{background:"rgba(16,185,129,0.14)",borderColor:"rgba(16,185,129,0.28)"}}/>Trader-friendly edge</div>
+        <div className="cmp-legend-item"><span className="cmp-legend-swatch" style={{background:"rgba(255,71,87,0.14)",borderColor:"rgba(255,71,87,0.28)"}}/>More restrictive</div>
+        <div className="cmp-legend-item"><span className="cmp-legend-swatch" style={{background:"transparent",borderColor:"rgba(34,211,238,0.4)"}}/>Best numeric value in row</div>
+      </div>
+      <div style={{overflowX:'auto'}}>
+        <div className="cmp-grid" style={{minWidth:cols*220+170}}>
+          <div className="cmp-row" style={{gridTemplateColumns:gridCols}}>
+            <div className="cmp-label" style={{background:'transparent'}}/>
+            {compared.map(item=>(
+              <div key={item.firm.id} className="cmp-firm-hdr">
+                <FirmLogo f={item.firm} size={38}/>
+                <div className="cmp-firm-name" style={{color:item.firm.color}}>{item.firm.name}</div>
+                <div className="cmp-firm-meta">{item.firm.flag} {item.firm.hq} · Est. {item.firm.founded}</div>
+                <div className="cmp-firm-pulse" style={{color:pulseColor(item.pulse),textShadow:'var(--glow-gold-sm)'}}>{item.pulse}</div>
+                {item.options.length>0 ? <select className="cmp-plan-select" value={item.challenge?.plan || ""} onChange={e=>setPlanByFirm(prev=>({...prev,[item.firm.id]:e.target.value}))}>
+                  {item.options.map(opt=><option key={`${opt.plan}-${opt.size}`} value={opt.plan}>{opt.plan} · {opt.size}</option>)}
+                </select> : <div className="cmp-empty">No {cmpSize} plan is available for this firm yet.</div>}
+                <div className="cmp-firm-tags">
+                  {item.challenge?.instant&&<span className="cmp-tag">Instant</span>}
+                  {item.challenge&&String(getCompareField(item.challenge,cmpPhase,"dll")).toLowerCase().includes("none")&&<span className="cmp-tag">No DLL</span>}
+                  {item.challenge&&String(getCompareField(item.challenge,cmpPhase,"consistency")).toLowerCase().includes("none")&&<span className="cmp-tag">No Consistency</span>}
+                </div>
+                {AFFILIATE_LINKS[item.firm.name]
+                  ? <button className="cmp-deal-btn" onClick={()=>trackClick(item.firm.name)}>Get Deal</button>
+                  : <button className="cmp-deal-btn" style={{background:'var(--emA2)',color:'var(--em)',boxShadow:'none'}} onClick={()=>{const fp=FIRM_PROFILES[item.firm.name];window.open('https://'+(fp?.website||''),'_blank')}}>Visit Site</button>}
+              </div>
+            ))}
+          </div>
+          {rows.map(row=>{
+            const bestItem = row.score ? pickBest(compared,row.score,row.better==="min"?"min":"max") : null;
+            return <div key={row.key} className="cmp-row" style={{gridTemplateColumns:gridCols}}>
+              <div className="cmp-label">{row.label}</div>
+              {compared.map(item=>{
+                const value=row.value(item);
+                const tone=compareCellTone(row.key,value);
+                const isBest=bestItem && bestItem.firm.id===item.firm.id;
+                const className=["cmp-cell",tone,isBest?"bestish":""].filter(Boolean).join(" ");
+                return <div key={item.firm.id} className={className}>{value || "—"}</div>;
+              })}
+            </div>;
+          })}
+        </div>
+      </div>
+    </div>
+  </div>);
+};
+
 export default function App() {
   const [page,setPage]=useState("home");
   const [tab,setTab]=useState("firms");
@@ -3226,7 +3536,7 @@ export default function App() {
   const [showAuth,setShowAuth]=useState(false);
   const [compareFirms,setCompareFirms]=useState([]);
   const [ppSection,setPpSection]=useState(null);
-  const toggleCompare=(f)=>setCompareFirms(prev=>prev.find(x=>x.id===f.id)?prev.filter(x=>x.id!==f.id):prev.length<3?[...prev,f]:prev);
+  const toggleCompare=(f)=>setCompareFirms(prev=>prev.find(x=>x.id===f.id)?prev.filter(x=>x.id!==f.id):prev.length<4?[...prev,f]:prev);
   const [showCompare,setShowCompare]=useState(false);
 
   useEffect(()=>{
