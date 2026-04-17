@@ -936,6 +936,70 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .cmp-tog{background:rgba(6,182,212,0.08);backdrop-filter:blur(8px);border:1.5px solid rgba(6,182,212,0.35);color:#22d3ee;font-family:var(--sans);font-size:12px;font-weight:700;padding:8px 18px;border-radius:999px;cursor:pointer;transition:all .22s;white-space:nowrap;letter-spacing:.3px}
 .cmp-tog:hover{border-color:#22d3ee;color:#fff;background:rgba(6,182,212,0.18);transform:translateY(-1px);box-shadow:0 0 16px rgba(6,182,212,0.35)}
 
+/* ── DEALS GIVEAWAY BANNER ── */
+.deals-giveaway-banner{display:flex;align-items:center;gap:16px;background:linear-gradient(90deg,rgba(251,191,36,0.12),rgba(168,85,247,0.1),rgba(34,211,238,0.08));border:1px solid rgba(251,191,36,0.3);border-radius:14px;padding:16px 22px;margin-bottom:24px;cursor:pointer;transition:all .22s;width:100%;text-align:left;box-shadow:0 0 24px rgba(251,191,36,0.1)}
+.deals-giveaway-banner:hover{transform:translateY(-1px);border-color:rgba(251,191,36,0.5);box-shadow:0 0 32px rgba(251,191,36,0.2)}
+.deals-giveaway-ic{font-size:28px;flex-shrink:0}
+.deals-giveaway-txt{flex:1}
+.deals-giveaway-t{font-size:15px;font-weight:800;color:var(--gold);text-shadow:var(--glow-gold-sm);letter-spacing:-.1px}
+.deals-giveaway-s{font-size:12px;color:var(--t3);margin-top:2px}
+.deals-giveaway-arrow{font-size:20px;color:var(--gold);flex-shrink:0;transition:transform .22s}
+.deals-giveaway-banner:hover .deals-giveaway-arrow{transform:translateX(4px)}
+
+/* ── RESEARCH VIDEOS BUTTON ── */
+.research-videos-btn{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.35);color:#ef4444;font-size:13px;font-weight:700;padding:9px 18px;border-radius:999px;cursor:pointer;transition:all .22s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.research-videos-btn:hover{background:rgba(239,68,68,0.18);border-color:#ef4444;color:#fff;transform:translateY(-1px);box-shadow:0 0 16px rgba(239,68,68,0.35)}
+
+/* ── HERO V2 (Quiz-forward) ── */
+.heroV2{display:grid;grid-template-columns:1.15fr 1fr;gap:48px;align-items:center;padding:48px 0 40px;position:relative}
+.heroV2-left{max-width:560px}
+.heroV2-title{font-size:52px;font-weight:800;line-height:1.05;letter-spacing:-1.2px;margin:18px 0 18px;color:var(--t1)}
+.heroV2-title em{font-style:normal;background:linear-gradient(135deg,#fbbf24 0%,#f59e0b 50%,#22d3ee 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;display:inline-block;filter:drop-shadow(0 0 20px rgba(251,191,36,0.25))}
+.heroV2-sub{font-size:16px;line-height:1.65;color:var(--t3);margin:0 0 28px;max-width:520px}
+.heroV2-actions{display:flex;gap:12px;margin-bottom:32px;flex-wrap:wrap}
+.heroV2-primary{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#050810;font-family:var(--sans);font-size:15px;font-weight:800;padding:14px 28px;border:none;border-radius:999px;cursor:pointer;box-shadow:0 0 24px rgba(251,191,36,0.35),0 4px 20px rgba(0,0,0,0.4);transition:all .22s;display:inline-flex;align-items:center;gap:10px;letter-spacing:-.1px}
+.heroV2-primary:hover{transform:translateY(-2px);box-shadow:0 0 36px rgba(251,191,36,0.5),0 8px 30px rgba(0,0,0,0.4)}
+.heroV2-arrow{transition:transform .22s}
+.heroV2-primary:hover .heroV2-arrow{transform:translateX(4px)}
+.heroV2-secondary{background:rgba(34,211,238,0.1);border:1.5px solid rgba(34,211,238,0.35);color:#22d3ee;font-family:var(--sans);font-size:14px;font-weight:700;padding:13px 22px;border-radius:999px;cursor:pointer;transition:all .22s;display:inline-flex;align-items:center;gap:10px}
+.heroV2-secondary:hover{background:rgba(34,211,238,0.18);border-color:#22d3ee;color:#fff;transform:translateY(-2px);box-shadow:0 0 20px rgba(34,211,238,0.35)}
+.heroV2-trust{display:flex;align-items:center;gap:16px;padding-top:24px;border-top:1px solid var(--bdr)}
+.heroV2-trust-item{display:flex;flex-direction:column;gap:2px}
+.heroV2-trust-item b{font-family:var(--mono);font-size:17px;font-weight:800;color:var(--gold);text-shadow:var(--glow-gold-sm);letter-spacing:-.3px}
+.heroV2-trust-item span{font-size:11px;color:var(--t4);font-weight:600;letter-spacing:.2px}
+.heroV2-trust-sep{width:1px;height:32px;background:var(--bdr)}
+
+.heroV2-right{display:flex;justify-content:flex-end}
+.heroV2-card{width:100%;max-width:440px;background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--bdr2);border-radius:18px;padding:22px;box-shadow:0 0 60px rgba(34,211,238,0.08),0 20px 60px rgba(0,0,0,0.3);position:relative;overflow:hidden}
+.heroV2-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(251,191,36,0.6),rgba(34,211,238,0.6),transparent)}
+.heroV2-card-hdr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;padding:0 4px}
+.heroV2-card-lbl{font-size:11px;font-weight:800;color:var(--em);text-transform:uppercase;letter-spacing:.8px;text-shadow:0 0 8px rgba(6,182,212,0.3)}
+.heroV2-card-sub{font-size:11px;color:var(--t4);font-weight:500}
+.heroV2-firm-row{display:grid;grid-template-columns:30px 34px 1fr auto auto;gap:10px;align-items:center;padding:12px 10px;background:transparent;border:1px solid transparent;border-left:2px solid var(--card-accent,var(--em));border-radius:10px;cursor:pointer;transition:all .2s;text-align:left;margin-bottom:4px;width:100%}
+.heroV2-firm-row:hover{background:var(--bg3);border-color:var(--bdr2);border-left-color:var(--card-accent);transform:translateX(3px)}
+.heroV2-firm-rank{font-family:var(--mono);font-size:13px;font-weight:800;color:var(--t5);text-align:center}
+.heroV2-firm-info{min-width:0}
+.heroV2-firm-name{font-size:13px;font-weight:700;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.heroV2-firm-meta{font-size:10px;color:var(--t4);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.heroV2-firm-pulse{font-family:var(--mono);font-size:18px;font-weight:800;text-shadow:0 0 10px currentColor;letter-spacing:-.5px}
+.heroV2-firm-deal{font-family:var(--mono);font-size:10px;font-weight:800;color:var(--gold);background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);padding:3px 8px;border-radius:5px;white-space:nowrap;text-shadow:var(--glow-gold-sm)}
+.heroV2-card-footer{width:100%;background:transparent;border:none;color:var(--em);font-size:12px;font-weight:700;padding:12px 4px 4px;cursor:pointer;text-align:center;transition:color .2s;margin-top:4px;border-top:1px solid var(--bdr)}
+.heroV2-card-footer:hover{color:#22d3ee}
+@media(max-width:980px){
+  .heroV2{grid-template-columns:1fr;gap:28px;padding:28px 0 20px}
+  .heroV2-title{font-size:38px}
+  .heroV2-sub{font-size:15px}
+  .heroV2-right{justify-content:center}
+}
+@media(max-width:520px){
+  .heroV2-title{font-size:30px;letter-spacing:-.6px}
+  .heroV2-sub{font-size:14px}
+  .heroV2-primary,.heroV2-secondary{width:100%;justify-content:center}
+  .heroV2-trust{flex-wrap:wrap;gap:12px}
+  .heroV2-firm-row{grid-template-columns:24px 30px 1fr auto;gap:8px}
+  .heroV2-firm-deal{display:none}
+}
+
 /* ── TOOLS TAB ── */
 .tools-switch{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px;max-width:720px;margin-left:auto;margin-right:auto}
 .tools-switch-btn{background:var(--glass);backdrop-filter:blur(8px);border:1.5px solid var(--bdr2);border-radius:14px;padding:20px 24px;cursor:pointer;transition:all .22s;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--t3);text-align:center}
@@ -1715,7 +1779,7 @@ const NavBar = ({tab,setTab,setPage,page,user,onLogin,onLogout,setPpSection}) =>
   const [changingPw,setChangingPw] = useState(false);
   const [newPw,setNewPw] = useState("");
   const [pwMsg,setPwMsg] = useState("");
-  const tabs = [["firms","Firms",null],["challenges","Challenges",null],["offers","Offers",null],["giveaways","Giveaway",null],["blog","Research",null],["videos","Videos",null],["points","Pulse Points","\u2B50"]];
+  const tabs = [["firms","Firms",null],["tools","Tools","\uD83D\uDEE0"],["challenges","Challenges",null],["offers","Deals",null],["blog","Research",null],["points","Rewards","\u2B50"]];
   const go = k => {setPage("home");setTab(k);setMob(false);document.body.style.overflow='';setShowProfile(false);};
   const copyPulse = () => {copyToClipboard("TPP");setCopied(true);setTimeout(()=>setCopied(false),1800);};
   const ava = user?.user_metadata?.avatar_url || null;
@@ -2040,10 +2104,18 @@ const ChallengesTab = ({onSelect}) => {
 };
 
 // ── OFFERS TAB ──
-const OffersTab = ({user}) => {
+const OffersTab = ({user,setTab}) => {
   const [copied,setCopied]=useState(null);
   return (<div>
-    <div className="sec-hdr"><div><div className="sec-title">Exclusive Offers</div><div className="sec-sub">{DEALS.length} active deals — copy your code at checkout</div></div></div>
+    <div className="sec-hdr"><div><div className="sec-title">Exclusive Deals</div><div className="sec-sub">{DEALS.length} active discount codes — copy your code at checkout</div></div></div>
+    <div className="deals-giveaway-banner" onClick={()=>setTab&&setTab('giveaways')}>
+      <div className="deals-giveaway-ic">🎁</div>
+      <div className="deals-giveaway-txt">
+        <div className="deals-giveaway-t">Weekly Giveaway</div>
+        <div className="deals-giveaway-s">Buy with code TPP → enter to win a free prop account every Friday</div>
+      </div>
+      <span className="deals-giveaway-arrow">→</span>
+    </div>
     <div className="offers-list">{DEALS.map((d,i)=>{
       const f=FIRMS.find(ff=>ff.name===d.firm);
       const hasAff=!!AFFILIATE_LINKS[d.firm];
@@ -2560,11 +2632,14 @@ const FinePrintScorecard = ({firm}) => {
 };
 
 // ── BLOG TAB ──
-const BlogTab = ({onSelect}) => {
+const BlogTab = ({onSelect,setTab}) => {
   const catColor = c => ({Industry:'#a855f7',Comparison:'#0ea5e9',Strategy:'#06b6d4',News:'#06b6d4',Guide:'#ffbe0b',Education:'#ff6b6b'}[c]||'#06b6d4');
   return (
   <div>
-    <div className="sec-hdr"><div><div className="sec-title">Research & Analysis</div><div className="sec-sub">Data-driven insights for prop traders</div></div></div>
+    <div className="sec-hdr">
+      <div><div className="sec-title">Research & Analysis</div><div className="sec-sub">Data-driven insights for prop traders</div></div>
+      {setTab && <button className="research-videos-btn" onClick={()=>setTab('videos')}>▶ Watch Videos</button>}
+    </div>
     <div className="blog-grid">{BLOG.map(p=>{
       const cc = catColor(p.cat);
       return (
@@ -4183,33 +4258,52 @@ export default function App() {
     <Ticker/>
     <NavBar tab={tab} setTab={handleTabClick} setPage={setPage} page={page} user={user} onLogin={()=>setShowAuth(true)} onLogout={handleLogout} setPpSection={setPpSection}/>
     <div className="wrap">
-      <div className="hero">
-        <div className="hero-badge"><span className="dot"/>Live — {DEALS.length} active deals across {new Set(DEALS.map(d=>d.firm)).size} firms</div>
-        <h1>Pick your prop firm. <em>Get Rewarded.</em></h1>
-        <div className="hero-bubbles">
-          <div className="hero-bubble" onClick={()=>!user&&setShowAuth(true)}><div className="hero-bubble-n">1</div><div className="hero-bubble-t">Sign Up</div></div>
-          <div className="hero-bubble-arrow">→</div>
-          <div className="hero-bubble"><div className="hero-bubble-n">2</div><div className="hero-bubble-t">Buy w/ Code <span>TPP</span></div></div>
-          <div className="hero-bubble-arrow">→</div>
-          <div className="hero-bubble" onClick={()=>user&&handleTabClick('points')}><div className="hero-bubble-n">3</div><div className="hero-bubble-t">Submit Proof</div></div>
-          <div className="hero-bubble-arrow">→</div>
-          <div className="hero-bubble gold"><div className="hero-bubble-n">4</div><div className="hero-bubble-t">Get Rewarded</div></div>
+      <div className="heroV2">
+        <div className="heroV2-left">
+          <div className="hero-badge"><span className="dot"/>Live — {DEALS.length} active deals · {FIRMS.length} firms tracked</div>
+          <h1 className="heroV2-title">Find your futures prop firm <em>in 30 seconds.</em></h1>
+          <p className="heroV2-sub">Answer 6 questions. We rank all {FIRMS.length} firms by how well they match your trading style, budget, and rules preferences. No spam, no signup required.</p>
+          <div className="heroV2-actions">
+            <button className="heroV2-primary" onClick={()=>handleTabClick('tools')}>
+              <span>🎯</span>Take the Quiz
+              <span className="heroV2-arrow">→</span>
+            </button>
+            <button className="heroV2-secondary" onClick={()=>handleTabClick('tools')}>
+              <span>📉</span>Drawdown Simulator
+            </button>
+          </div>
+          <div className="heroV2-trust">
+            <div className="heroV2-trust-item"><b>TPP</b><span>Universal code</span></div>
+            <div className="heroV2-trust-sep"/>
+            <div className="heroV2-trust-item"><b>{FIRMS.length}</b><span>Firms tracked</span></div>
+            <div className="heroV2-trust-sep"/>
+            <div className="heroV2-trust-item"><b>Up to 90%</b><span>Off via partners</span></div>
+          </div>
         </div>
-        <div className="hero-tools-cta">
-          <button className="hero-tool-btn" onClick={()=>handleTabClick('tools')}>
-            <span className="hero-tool-ic">🎯</span>
-            <div className="hero-tool-txt">
-              <div className="hero-tool-t">Find My Firm</div>
-              <div className="hero-tool-s">6-question match quiz</div>
+        <div className="heroV2-right">
+          <div className="heroV2-card">
+            <div className="heroV2-card-hdr">
+              <div className="heroV2-card-lbl">Top Ranked</div>
+              <div className="heroV2-card-sub">By Pulse Score</div>
             </div>
-          </button>
-          <button className="hero-tool-btn" onClick={()=>handleTabClick('tools')}>
-            <span className="hero-tool-ic">📉</span>
-            <div className="hero-tool-txt">
-              <div className="hero-tool-t">Drawdown Simulator</div>
-              <div className="hero-tool-s">See exactly how you blow an account</div>
-            </div>
-          </button>
+            {[...FIRMS].sort((a,b)=>(PULSE_SCORES[b.name]||0)-(PULSE_SCORES[a.name]||0)).slice(0,4).map((f,i)=>{
+              const ps=PULSE_SCORES[f.name]||75;
+              const deal=DEALS.find(d=>d.firm===f.name);
+              return (
+                <button key={f.id} className="heroV2-firm-row" style={{'--card-accent':f.color}} onClick={()=>goDetail(f)}>
+                  <span className="heroV2-firm-rank">#{i+1}</span>
+                  <FirmLogo f={f} size={34}/>
+                  <div className="heroV2-firm-info">
+                    <div className="heroV2-firm-name">{f.name}</div>
+                    <div className="heroV2-firm-meta">★ {f.rating} · {f.bestFor}</div>
+                  </div>
+                  <div className="heroV2-firm-pulse" style={{color:pulseColor(ps)}}>{ps}</div>
+                  {deal && <span className="heroV2-firm-deal">{deal.pct}</span>}
+                </button>
+              );
+            })}
+            <button className="heroV2-card-footer" onClick={()=>handleTabClick('firms')}>See all {FIRMS.length} firms →</button>
+          </div>
         </div>
       </div>
       <div className="offers-strip">
@@ -4241,7 +4335,7 @@ export default function App() {
     <div className="wrap" id="tab-content">
 
       <div className="ctabs">
-        {[["firms","Firms",null],["tools","Tools","\uD83D\uDEE0"],["challenges","Challenges",null],["offers","Offers",null],["giveaways","Giveaway",null],["blog","Research",null],["videos","Videos",null],["points","Pulse Points","\u2B50"]].map(([k,l,icon])=>(
+        {[["firms","Firms",null],["tools","Tools","\uD83D\uDEE0"],["challenges","Challenges",null],["offers","Deals",null],["blog","Research",null],["points","Rewards","\u2B50"]].map(([k,l,icon])=>(
           <button key={k} className={`ctab${tab===k?' on':''}`} onClick={()=>handleTabClick(k)}>
             {icon&&<span className="ctab-icon">{icon}</span>}
             <span>{l}</span>
@@ -4260,9 +4354,9 @@ export default function App() {
       </>}
       {tab==="tools"&&<ToolsTab onSelect={goDetail}/>}
       {tab==="challenges"&&<ChallengesTab onSelect={goDetail}/>}
-      {tab==="offers"&&<OffersTab user={user}/>}
+      {tab==="offers"&&<OffersTab user={user} setTab={handleTabClick}/>}
       {tab==="giveaways"&&<GiveawaysTab/>}
-      {tab==="blog"&&<BlogTab onSelect={goBlog}/>}
+      {tab==="blog"&&<BlogTab onSelect={goBlog} setTab={handleTabClick}/>}
       {tab==="videos"&&<VideosTab/>}
       {tab==="points"&&<PulsePointsTab user={user} onLogin={()=>setShowAuth(true)} ppSection={ppSection} setPpSection={setPpSection}/>}
     </div>
