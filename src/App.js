@@ -963,6 +963,112 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 .research-videos-btn{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.35);color:#ef4444;font-size:13px;font-weight:700;padding:9px 18px;border-radius:999px;cursor:pointer;transition:all .22s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .research-videos-btn:hover{background:rgba(239,68,68,0.18);border-color:#ef4444;color:#fff;transform:translateY(-1px);box-shadow:0 0 16px rgba(239,68,68,0.35)}
 
+/* ══════════════════════════════════════════════════════════════════
+   ─── BENTO EDITORIAL HOMEPAGE ───
+   ══════════════════════════════════════════════════════════════════ */
+.bento-wrap{padding:56px 0 40px;max-width:1280px;margin:0 auto;position:relative}
+.bento-eyebrow{display:flex;align-items:center;justify-content:space-between;padding-bottom:18px;border-bottom:1px solid var(--bdr);margin-bottom:36px;font-size:11px;font-weight:600;color:var(--t4);letter-spacing:1px;text-transform:uppercase}
+.bento-eyebrow-l{display:flex;align-items:center;gap:14px}
+.bento-eyebrow-lbl{font-family:var(--serif);font-style:italic;font-size:16px;color:var(--em);text-transform:none;letter-spacing:0;font-weight:400}
+.bento-eyebrow-sep{width:20px;height:1px;background:var(--bdr2)}
+.bento-eyebrow-txt{color:var(--t2)}
+.bento-eyebrow-r{display:flex;align-items:center;gap:10px;color:var(--t5)}
+.bento-eyebrow-live{display:inline-flex;align-items:center;gap:6px;color:var(--em);font-weight:700}
+.bento-eyebrow-live .dot{width:6px;height:6px;border-radius:50%;background:var(--em);animation:bentoDot 2s ease-in-out infinite;box-shadow:0 0 10px var(--em)}
+@keyframes bentoDot{0%,100%{opacity:1}50%{opacity:.4}}
+
+.bento-lead{font-family:var(--serif);font-size:clamp(48px,8vw,112px);line-height:.92;letter-spacing:-3px;font-weight:400;color:var(--t1);margin-bottom:20px;max-width:1100px}
+.bento-lead em{font-style:italic;color:var(--em);font-weight:400}
+.bento-dek{font-family:var(--serif);font-size:21px;font-style:italic;color:var(--t3);max-width:640px;line-height:1.4;margin-bottom:48px;font-weight:400}
+
+/* 12-column asymmetric grid */
+.bento-grid{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:minmax(160px,auto);gap:14px}
+.bento-card{background:var(--bg1);border:1px solid var(--bdr);border-radius:2px;padding:24px 26px;cursor:pointer;transition:all .22s;position:relative;overflow:hidden;text-align:left;display:flex;flex-direction:column;color:inherit;font-family:inherit}
+.bento-card:hover{border-color:var(--t4);background:var(--bg2);transform:translateY(-2px)}
+.bento-card-eye{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--em);margin-bottom:14px}
+.bento-card-h{font-family:var(--serif);font-size:28px;font-weight:400;line-height:1.1;letter-spacing:-.5px;color:var(--t1);margin-bottom:10px}
+.bento-card-s{font-size:13px;color:var(--t3);line-height:1.55;margin-bottom:auto}
+.bento-card-cta{font-size:12px;font-weight:600;color:var(--em);margin-top:18px;display:inline-flex;align-items:center;gap:6px;letter-spacing:.2px}
+.bento-card-cta span{transition:transform .2s}
+.bento-card:hover .bento-card-cta span{transform:translateX(4px)}
+
+/* QUIZ CARD — BIG HERO */
+.bento-quiz{grid-column:span 7;grid-row:span 2;background:linear-gradient(135deg,rgba(255,120,71,0.08),rgba(167,139,250,0.04) 60%,transparent);border-color:rgba(255,120,71,0.25);min-height:340px}
+.bento-quiz:hover{border-color:var(--em);background:linear-gradient(135deg,rgba(255,120,71,0.14),rgba(167,139,250,0.08) 60%,rgba(255,120,71,0.02))}
+.bento-quiz .bento-card-h{font-size:44px;letter-spacing:-1px;max-width:560px}
+.bento-quiz-preview{margin-top:22px;padding:20px 22px;background:rgba(11,10,9,0.6);border:1px solid var(--bdr);border-radius:2px;max-width:460px}
+.bento-quiz-q{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--em);letter-spacing:1.5px;display:block;margin-bottom:6px}
+.bento-quiz-txt{font-family:var(--serif);font-size:19px;font-weight:400;color:var(--t1);letter-spacing:-.2px}
+.bento-quiz-opts{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.bento-quiz-opts span{padding:6px 14px;border:1px solid var(--bdr2);border-radius:999px;font-size:11px;font-weight:600;color:var(--t2);transition:all .2s}
+.bento-quiz:hover .bento-quiz-opts span:first-child{background:var(--em);color:var(--bg);border-color:var(--em)}
+
+/* RANKED LIST */
+.bento-ranked{grid-column:span 5;grid-row:span 2;min-height:340px;cursor:default}
+.bento-ranked:hover{transform:none}
+.bento-ranked-list{display:flex;flex-direction:column;gap:0;margin-top:10px}
+.bento-ranked-row{display:grid;grid-template-columns:32px 3px 1fr auto;gap:14px;align-items:center;padding:14px 0;border-top:1px solid var(--bdr);background:transparent;border-left:none;border-right:none;border-bottom:none;border-radius:0;cursor:pointer;transition:all .2s;text-align:left;color:inherit;font-family:inherit}
+.bento-ranked-row:hover{padding-left:6px}
+.bento-ranked-row:last-child{border-bottom:1px solid var(--bdr)}
+.bento-ranked-n{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--t5);letter-spacing:1px}
+.bento-ranked-bar{width:3px;height:100%;min-height:22px;border-radius:0}
+.bento-ranked-nm{font-family:var(--serif);font-size:19px;font-weight:400;letter-spacing:-.3px;color:var(--t1)}
+.bento-ranked-ps{font-family:var(--serif);font-size:28px;font-weight:400;color:var(--em);line-height:1;letter-spacing:-.5px}
+
+/* EDITOR'S PICK */
+.bento-pick{grid-column:span 4;grid-row:span 2;min-height:340px;border-color:var(--pick-color,var(--em));background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
+.bento-pick:hover{background:linear-gradient(180deg,rgba(255,255,255,0.04),transparent)}
+.bento-pick-logo{margin:16px 0 18px}
+.bento-pick-name{font-family:var(--serif);font-size:34px;font-weight:400;letter-spacing:-.8px;color:var(--t1);line-height:1;margin-bottom:10px}
+.bento-pick-desc{font-size:12px;color:var(--t4);margin-bottom:24px;font-style:italic;font-family:var(--serif)}
+.bento-pick-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:14px 0;border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);margin-bottom:16px}
+.bento-pick-stats b{display:block;font-family:var(--serif);font-size:22px;font-weight:400;color:var(--t1);letter-spacing:-.3px;line-height:1}
+.bento-pick-stats span{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--t5);letter-spacing:1.2px;margin-top:4px;display:block}
+.bento-pick-deal{font-size:11px;color:var(--em);font-weight:500;letter-spacing:.2px}
+.bento-pick-deal b{font-family:var(--mono);font-size:12px;font-weight:700}
+
+/* SIMULATOR */
+.bento-sim{grid-column:span 4;min-height:220px;background:linear-gradient(180deg,rgba(232,91,96,0.04),transparent)}
+.bento-sim-svg{width:100%;height:80px;margin:10px 0 auto;display:block}
+
+/* DEALS */
+.bento-deals{grid-column:span 4;min-height:220px}
+.bento-code{font-family:var(--mono);color:var(--em);font-weight:700;font-size:24px;letter-spacing:0;font-style:normal}
+.bento-deals-strip{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.bento-deal-pill{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--em);background:var(--emA);border:1px solid var(--bdr3);padding:5px 10px;border-radius:2px;letter-spacing:.3px}
+.bento-deal-pill span{color:var(--t3);margin-left:4px;font-weight:500}
+
+/* REWARDS + RESEARCH + GIVEAWAY */
+.bento-rewards{grid-column:span 4;min-height:220px;background:linear-gradient(180deg,rgba(167,139,250,0.05),transparent)}
+.bento-rewards .bento-card-eye{color:#a78bfa}
+.bento-rewards:hover{border-color:#a78bfa}
+.bento-rewards .bento-card-cta{color:#a78bfa}
+
+.bento-research{grid-column:span 5;min-height:220px}
+
+.bento-giveaway{grid-column:span 3;min-height:220px;background:linear-gradient(180deg,rgba(212,169,103,0.05),transparent)}
+.bento-giveaway .bento-card-eye{color:var(--gold)}
+.bento-giveaway:hover{border-color:var(--gold)}
+.bento-giveaway .bento-card-cta{color:var(--gold)}
+
+@media(max-width:1100px){
+  .bento-grid{grid-template-columns:repeat(6,1fr)}
+  .bento-quiz{grid-column:span 6;grid-row:span 1;min-height:260px}
+  .bento-quiz .bento-card-h{font-size:32px}
+  .bento-ranked{grid-column:span 3}
+  .bento-pick{grid-column:span 3}
+  .bento-sim,.bento-deals,.bento-rewards{grid-column:span 3}
+  .bento-research{grid-column:span 4}
+  .bento-giveaway{grid-column:span 2}
+}
+@media(max-width:680px){
+  .bento-grid{grid-template-columns:1fr}
+  .bento-grid>*{grid-column:span 1 !important;grid-row:span 1 !important;min-height:180px !important}
+  .bento-lead{letter-spacing:-1.5px}
+  .bento-dek{font-size:17px}
+  .bento-eyebrow-txt{display:none}
+}
+
 /* ── HERO V2 (Quiz-forward) ── */
 .heroV2{display:grid;grid-template-columns:1.15fr 1fr;gap:48px;align-items:center;padding:48px 0 40px;position:relative}
 .heroV2-left{max-width:560px}
@@ -4271,76 +4377,132 @@ export default function App() {
     <Ticker/>
     <NavBar tab={tab} setTab={handleTabClick} setPage={setPage} page={page} user={user} onLogin={()=>setShowAuth(true)} onLogout={handleLogout} setPpSection={setPpSection}/>
     <div className="wrap">
-      <div className="heroV2">
-        <div className="heroV2-left">
-          <div className="hero-badge"><span className="dot"/>Live — {DEALS.length} active deals · {FIRMS.length} firms tracked</div>
-          <h1 className="heroV2-title">Find your futures prop firm <em>in 30 seconds.</em></h1>
-          <p className="heroV2-sub">Answer 6 questions. We rank all {FIRMS.length} firms by how well they match your trading style, budget, and rules preferences. No spam, no signup required.</p>
-          <div className="heroV2-actions">
-            <button className="heroV2-primary" onClick={()=>handleTabClick('tools')}>
-              <span>🎯</span>Take the Quiz
-              <span className="heroV2-arrow">→</span>
-            </button>
-            <button className="heroV2-secondary" onClick={()=>handleTabClick('tools')}>
-              <span>📉</span>Drawdown Simulator
-            </button>
+      {/* ══════ EDITORIAL BENTO HOMEPAGE ══════ */}
+      <div className="bento-wrap">
+        {/* Eyebrow: current issue / date / stats */}
+        <div className="bento-eyebrow">
+          <div className="bento-eyebrow-l">
+            <span className="bento-eyebrow-lbl">Vol.01</span>
+            <span className="bento-eyebrow-sep"/>
+            <span className="bento-eyebrow-txt">The futures prop firm guide</span>
           </div>
-          <div className="heroV2-trust">
-            <div className="heroV2-trust-item"><b>TPP</b><span>Universal code</span></div>
-            <div className="heroV2-trust-sep"/>
-            <div className="heroV2-trust-item"><b>{FIRMS.length}</b><span>Firms tracked</span></div>
-            <div className="heroV2-trust-sep"/>
-            <div className="heroV2-trust-item"><b>Up to 90%</b><span>Off via partners</span></div>
+          <div className="bento-eyebrow-r">
+            <span className="bento-eyebrow-live"><span className="dot"/>Live</span>
+            <span>·</span>
+            <span>{FIRMS.length} firms · {DEALS.length} deals</span>
           </div>
         </div>
-        <div className="heroV2-right">
-          <div className="heroV2-card">
-            <div className="heroV2-card-hdr">
-              <div className="heroV2-card-lbl">Top Ranked</div>
-              <div className="heroV2-card-sub">By Pulse Score</div>
+
+        {/* Massive serif lead-in */}
+        <h1 className="bento-lead">
+          Cut through <em>the noise.</em><br/>
+          Pick the <em>right firm.</em>
+        </h1>
+        <p className="bento-dek">A trader's guide to futures prop firms — quiz-matched recommendations, interactive drawdown simulations, and honest scorecards on every rule that matters.</p>
+
+        {/* The bento grid itself */}
+        <div className="bento-grid">
+          {/* CARD 1: Quiz (big, hero) */}
+          <button className="bento-card bento-quiz" onClick={()=>handleTabClick('tools')}>
+            <div className="bento-card-eye">The Quiz</div>
+            <div className="bento-card-h">Which firm fits your trading style?</div>
+            <div className="bento-card-s">Six questions. Every firm scored against your preferences.</div>
+            <div className="bento-quiz-preview">
+              <span className="bento-quiz-q">Q1/6</span>
+              <span className="bento-quiz-txt">What's your trading style?</span>
+              <div className="bento-quiz-opts">
+                <span>Scalper</span><span>Intraday</span><span>Swing</span>
+              </div>
             </div>
-            {[...FIRMS].sort((a,b)=>(PULSE_SCORES[b.name]||0)-(PULSE_SCORES[a.name]||0)).slice(0,4).map((f,i)=>{
-              const ps=PULSE_SCORES[f.name]||75;
-              const deal=DEALS.find(d=>d.firm===f.name);
-              return (
-                <button key={f.id} className="heroV2-firm-row" style={{'--card-accent':f.color}} onClick={()=>goDetail(f)}>
-                  <span className="heroV2-firm-rank">#{i+1}</span>
-                  <FirmLogo f={f} size={34}/>
-                  <div className="heroV2-firm-info">
-                    <div className="heroV2-firm-name">{f.name}</div>
-                    <div className="heroV2-firm-meta">★ {f.rating} · {f.bestFor}</div>
-                  </div>
-                  <div className="heroV2-firm-pulse" style={{color:pulseColor(ps)}}>{ps}</div>
-                  {deal && <span className="heroV2-firm-deal">{deal.pct}</span>}
-                </button>
-              );
-            })}
-            <button className="heroV2-card-footer" onClick={()=>handleTabClick('firms')}>See all {FIRMS.length} firms →</button>
-          </div>
-        </div>
-      </div>
-      <div className="offers-strip">
-        <div className="offers-strip-inner">
-          <div className="offers-strip-head">
-            <div>
-              <div className="offers-strip-title">Exclusive Futures Offers</div>
-              <div className="offers-strip-sub">Live discount codes — use <b style={{color:'var(--gold)',fontFamily:'var(--mono)'}}>TPP</b> at checkout (<b style={{color:'var(--gold)',fontFamily:'var(--mono)'}}>TTPP</b> for Alpha Futures)</div>
+            <div className="bento-card-cta">Start the quiz <span>→</span></div>
+          </button>
+
+          {/* CARD 2: Top Ranked */}
+          <div className="bento-card bento-ranked">
+            <div className="bento-card-eye">Top Ranked</div>
+            <div className="bento-card-h">This week's leaders</div>
+            <div className="bento-ranked-list">
+              {[...FIRMS].sort((a,b)=>(PULSE_SCORES[b.name]||0)-(PULSE_SCORES[a.name]||0)).slice(0,5).map((f,i)=>{
+                const ps=PULSE_SCORES[f.name]||75;
+                return (
+                  <button key={f.id} className="bento-ranked-row" onClick={()=>goDetail(f)}>
+                    <span className="bento-ranked-n">0{i+1}</span>
+                    <span className="bento-ranked-bar" style={{background:f.color}}/>
+                    <span className="bento-ranked-nm">{f.name}</span>
+                    <span className="bento-ranked-ps">{ps}</span>
+                  </button>
+                );
+              })}
             </div>
-            <button className="offers-strip-link" onClick={()=>handleTabClick('offers')}>View all →</button>
           </div>
-          <div className="offers-strip-grid">
-            {DEALS.slice(0,8).map((d,i)=>{
-              const f=FIRMS.find(ff=>ff.name===d.firm);
-              return (<button key={i} className="offer-mini" style={{'--card-accent':d.color}} onClick={()=>{if(f)goDetail(f)}}>
-                <div className="offer-mini-logo">{f?<FirmLogo f={f} size={40}/>:<span>{d.firm[0]}</span>}</div>
-                <div className="offer-mini-info">
-                  <div className="offer-mini-name">{d.firm}</div>
-                  {f&&<div className="offer-mini-rating"><span className="star">★</span>{f.rating} · {(f.reviews/1000).toFixed(1)}k reviews</div>}
+
+          {/* CARD 3: Editor's Pick (featured firm) */}
+          {(() => {
+            const pick = [...FIRMS].sort((a,b)=>(PULSE_SCORES[b.name]||0)-(PULSE_SCORES[a.name]||0))[0];
+            const pickDeal = DEALS.find(d=>d.firm===pick.name);
+            return (
+              <button className="bento-card bento-pick" style={{'--pick-color':pick.color}} onClick={()=>goDetail(pick)}>
+                <div className="bento-card-eye" style={{color:pick.color}}>Editor's Pick</div>
+                <div className="bento-pick-logo"><FirmLogo f={pick} size={64}/></div>
+                <div className="bento-pick-name">{pick.name}</div>
+                <div className="bento-pick-desc">"{pick.bestFor}" · Est. {pick.founded} · {pick.flag} {pick.hq.split(',')[0]}</div>
+                <div className="bento-pick-stats">
+                  <div><b>{PULSE_SCORES[pick.name]}</b><span>Pulse</span></div>
+                  <div><b>★{pick.rating}</b><span>Rating</span></div>
+                  <div><b>{pick.maxAlloc}</b><span>Max</span></div>
                 </div>
-                <div className="offer-mini-pct">{d.pct}</div>
-              </button>);
-            })}
-          </div>
+                {pickDeal && <div className="bento-pick-deal">{pickDeal.pct} with code <b>{pickDeal.code}</b></div>}
+              </button>
+            );
+          })()}
+
+          {/* CARD 4: Drawdown Simulator */}
+          <button className="bento-card bento-sim" onClick={()=>handleTabClick('tools')}>
+            <div className="bento-card-eye">Drawdown Simulator</div>
+            <div className="bento-card-h">See exactly how you blow an account.</div>
+            <svg className="bento-sim-svg" viewBox="0 0 260 100" preserveAspectRatio="none">
+              <path d="M 10 60 L 50 45 L 90 55 L 130 25 L 170 30 L 210 50 L 250 40" fill="none" stroke="#ff7847" strokeWidth="2.5"/>
+              <path d="M 10 80 L 50 80 L 90 80 L 130 65 L 170 65 L 210 70 L 250 70" fill="none" stroke="#e85b60" strokeWidth="1.5" strokeDasharray="4 4"/>
+              <circle cx="130" cy="25" r="4" fill="#ff7847"/>
+            </svg>
+            <div className="bento-card-cta">Run a sim <span>→</span></div>
+          </button>
+
+          {/* CARD 5: Deals */}
+          <button className="bento-card bento-deals" onClick={()=>handleTabClick('offers')}>
+            <div className="bento-card-eye">Today's Deals</div>
+            <div className="bento-card-h">Up to 90% off with <span className="bento-code">TPP</span></div>
+            <div className="bento-deals-strip">
+              {DEALS.slice(0,4).map((d,i)=>(
+                <span key={i} className="bento-deal-pill">{d.pct} <span>{d.firm.split(' ')[0]}</span></span>
+              ))}
+            </div>
+            <div className="bento-card-cta">All {DEALS.length} deals <span>→</span></div>
+          </button>
+
+          {/* CARD 6: Rewards */}
+          <button className="bento-card bento-rewards" onClick={()=>handleTabClick('points')}>
+            <div className="bento-card-eye">Rewards</div>
+            <div className="bento-card-h">Earn PulsePoints.</div>
+            <div className="bento-card-s">Points for every purchase — redeem for free accounts.</div>
+            <div className="bento-card-cta">Join the program <span>→</span></div>
+          </button>
+
+          {/* CARD 7: Research */}
+          <button className="bento-card bento-research" onClick={()=>handleTabClick('blog')}>
+            <div className="bento-card-eye">Research</div>
+            <div className="bento-card-h">{BLOG[0]?.title || 'Latest analysis'}</div>
+            <div className="bento-card-s">{BLOG[0]?.excerpt?.slice(0, 90) || 'Data-driven insights'}…</div>
+            <div className="bento-card-cta">Read more <span>→</span></div>
+          </button>
+
+          {/* CARD 8: Giveaway */}
+          <button className="bento-card bento-giveaway" onClick={()=>handleTabClick('giveaways')}>
+            <div className="bento-card-eye">Weekly</div>
+            <div className="bento-card-h">Win a free $100K account.</div>
+            <div className="bento-card-s">Buy with TPP — drawn every Friday.</div>
+            <div className="bento-card-cta">Enter <span>→</span></div>
+          </button>
         </div>
       </div>
       <div className="hero-divider"/>
