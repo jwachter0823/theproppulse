@@ -935,6 +935,128 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 /* ── COMPARE ── */
 .cmp-tog{background:rgba(6,182,212,0.08);backdrop-filter:blur(8px);border:1.5px solid rgba(6,182,212,0.35);color:#22d3ee;font-family:var(--sans);font-size:12px;font-weight:700;padding:8px 18px;border-radius:999px;cursor:pointer;transition:all .22s;white-space:nowrap;letter-spacing:.3px}
 .cmp-tog:hover{border-color:#22d3ee;color:#fff;background:rgba(6,182,212,0.18);transform:translateY(-1px);box-shadow:0 0 16px rgba(6,182,212,0.35)}
+
+/* ── TOOLS TAB ── */
+.tools-switch{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px;max-width:720px;margin-left:auto;margin-right:auto}
+.tools-switch-btn{background:var(--glass);backdrop-filter:blur(8px);border:1.5px solid var(--bdr2);border-radius:14px;padding:20px 24px;cursor:pointer;transition:all .22s;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--t3);text-align:center}
+.tools-switch-btn:hover{border-color:rgba(34,211,238,0.45);background:rgba(6,182,212,0.06);color:var(--t1);transform:translateY(-2px)}
+.tools-switch-btn.on{border-color:#22d3ee;background:rgba(6,182,212,0.14);color:#fff;box-shadow:0 0 20px rgba(34,211,238,0.25)}
+.tools-switch-ic{font-size:32px;margin-bottom:6px}
+.tools-switch-btn>span:nth-child(2){font-size:16px;font-weight:700;letter-spacing:-.2px}
+.tools-switch-sub{font-size:12px;color:var(--t4);font-weight:500}
+
+/* ── QUIZ ── */
+.qz-wrap{max-width:760px;margin:0 auto;background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--bdr2);border-radius:18px;padding:40px 36px;position:relative;box-shadow:0 0 40px rgba(34,211,238,0.06)}
+.qz-progress-wrap{width:100%;height:4px;background:var(--bg3);border-radius:999px;overflow:hidden;margin-bottom:18px}
+.qz-progress{height:100%;background:linear-gradient(90deg,#22d3ee,#fbbf24);transition:width .4s ease;box-shadow:0 0 12px rgba(34,211,238,0.4)}
+.qz-step-label{font-size:11px;color:var(--em);font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;text-shadow:0 0 6px rgba(6,182,212,0.3)}
+.qz-q{font-size:26px;font-weight:800;color:var(--t1);margin:0 0 6px;letter-spacing:-.4px;line-height:1.25}
+.qz-sub{font-size:14px;color:var(--t4);margin-bottom:26px}
+.qz-opts{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.qz-opt{background:var(--bg3);border:1.5px solid var(--bdr);border-radius:12px;padding:16px 20px;text-align:left;cursor:pointer;transition:all .2s;color:var(--t2)}
+.qz-opt:hover{border-color:#22d3ee;background:rgba(6,182,212,0.08);transform:translateX(4px);box-shadow:0 0 16px rgba(34,211,238,0.15)}
+.qz-opt-l{font-size:15px;font-weight:700;color:var(--t1);margin-bottom:2px}
+.qz-opt-d{font-size:12px;color:var(--t4)}
+.qz-back-btn{background:transparent;border:none;color:var(--t4);font-size:13px;font-weight:600;cursor:pointer;padding:4px 0;transition:color .2s}
+.qz-back-btn:hover{color:var(--em)}
+.qz-reset-btn{position:absolute;top:20px;right:20px;background:var(--emA);border:1px solid var(--bdr2);color:var(--em);font-size:11px;font-weight:700;padding:6px 14px;border-radius:999px;cursor:pointer;transition:all .2s}
+.qz-reset-btn:hover{background:var(--emA2);border-color:var(--em);transform:translateY(-1px)}
+
+/* ── QUIZ RESULTS ── */
+.qz-result-hdr{text-align:center;margin-bottom:28px;padding:16px 0}
+.qz-result-badge{display:inline-block;font-size:11px;font-weight:700;color:var(--gold);background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.25);padding:5px 14px;border-radius:999px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:14px;text-shadow:0 0 6px rgba(251,191,36,0.3)}
+.qz-result-title{font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.4px;margin-bottom:6px}
+.qz-result-title em{color:var(--gold);font-style:normal;text-shadow:var(--glow-gold)}
+.qz-result-sub{font-size:14px;color:var(--t4)}
+.qz-results{display:flex;flex-direction:column;gap:10px}
+.qz-result-card{display:grid;grid-template-columns:40px 56px 1fr auto auto;gap:14px;align-items:center;padding:16px 20px;background:var(--bg3);border:1px solid var(--bdr);border-left:3px solid var(--card-accent,var(--em));border-radius:12px;transition:all .22s}
+.qz-result-card:hover{border-color:var(--card-accent,var(--em));background:var(--bg2);transform:translateY(-1px);box-shadow:0 0 20px rgba(34,211,238,0.08)}
+.qz-result-card.top{background:linear-gradient(90deg,rgba(251,191,36,0.08),rgba(34,211,238,0.04),var(--bg3));box-shadow:0 0 24px rgba(251,191,36,0.12)}
+.qz-rank{font-family:var(--mono);font-size:18px;font-weight:800;color:var(--t4);text-align:center}
+.qz-result-card.top .qz-rank{color:var(--gold);text-shadow:var(--glow-gold)}
+.qz-result-logo{display:flex;align-items:center}
+.qz-result-info{min-width:0}
+.qz-result-name{font-size:15px;font-weight:700;color:var(--t1);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.qz-best{font-size:10px;font-weight:700;color:var(--gold);background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.25);padding:2px 8px;border-radius:999px;letter-spacing:.4px}
+.qz-result-reasons{display:flex;flex-direction:column;gap:3px}
+.qz-reason{font-size:11px;color:var(--t3);line-height:1.4}
+.qz-reason-muted{color:var(--t5);font-style:italic}
+.qz-result-score{text-align:center;min-width:50px}
+.qz-score-v{font-family:var(--mono);font-size:22px;font-weight:800;line-height:1;text-shadow:0 0 10px currentColor}
+.qz-score-l{font-size:9px;color:var(--t4);text-transform:uppercase;letter-spacing:.6px;margin-top:3px;font-weight:700}
+.qz-result-actions{display:flex;flex-direction:column;gap:6px}
+.qz-view-btn{background:var(--emA2);border:1px solid var(--bdr3);color:var(--em);font-size:11px;font-weight:700;padding:7px 14px;border-radius:999px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.qz-view-btn:hover{background:var(--em);color:#050810}
+.qz-deal-btn{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#050810;font-size:11px;font-weight:800;padding:7px 14px;border:none;border-radius:999px;cursor:pointer;box-shadow:var(--glow-gold-sm);transition:all .2s;white-space:nowrap}
+.qz-deal-btn:hover{transform:translateY(-1px);box-shadow:var(--glow-gold)}
+@media(max-width:620px){
+  .qz-wrap{padding:28px 20px}
+  .qz-q{font-size:20px}
+  .qz-result-card{grid-template-columns:30px 44px 1fr;gap:10px}
+  .qz-result-card .qz-result-score,.qz-result-card .qz-result-actions{grid-column:2 / 4;flex-direction:row;justify-content:space-between;align-items:center}
+  .qz-score-v{font-size:18px}
+}
+
+/* ── DRAWDOWN SIMULATOR ── */
+.sim-wrap{max-width:820px;margin:0 auto;background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--bdr2);border-radius:18px;padding:32px 30px;box-shadow:0 0 40px rgba(34,211,238,0.06)}
+.sim-hdr{margin-bottom:24px}
+.sim-title{font-size:22px;font-weight:800;color:var(--t1);letter-spacing:-.3px}
+.sim-sub{font-size:13px;color:var(--t4);margin-top:4px}
+.sim-controls{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px}
+.sim-ctrl-group label{display:block;font-size:10px;color:var(--em);text-transform:uppercase;letter-spacing:.7px;font-weight:700;margin-bottom:6px;text-shadow:0 0 6px rgba(6,182,212,0.2)}
+.sim-ctrl-group select{width:100%;background:var(--bg3);border:1px solid var(--bdr2);border-radius:10px;padding:11px 14px;color:var(--t1);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:all .2s;outline:none}
+.sim-ctrl-group select:hover,.sim-ctrl-group select:focus{border-color:var(--em);box-shadow:0 0 14px rgba(6,182,212,0.2)}
+.sim-chart-wrap{background:var(--bg3);border:1px solid var(--bdr);border-radius:12px;padding:18px;margin-bottom:16px;overflow:hidden}
+.sim-chart{width:100%;height:auto;display:block}
+.sim-result{display:flex;align-items:center;gap:16px;padding:16px 20px;border:1px solid;border-radius:12px;margin-bottom:16px}
+.sim-result-icon{font-size:28px;font-weight:900;line-height:1;flex-shrink:0}
+.sim-result-title{font-size:16px;font-weight:800;margin-bottom:3px}
+.sim-result-desc{font-size:12px;color:var(--t3);line-height:1.5}
+.sim-legend{display:flex;flex-wrap:wrap;gap:14px;font-size:11px;color:var(--t4);padding-top:10px;border-top:1px solid var(--bdr)}
+.sim-legend>div{display:flex;align-items:center;gap:6px}
+.sim-legend-dot{width:12px;height:3px;border-radius:2px;display:inline-block}
+.sim-legend-info{margin-left:auto;color:var(--t3)}
+.sim-legend-info b{color:var(--t1);font-family:var(--mono)}
+@media(max-width:620px){
+  .sim-wrap{padding:22px 16px}
+  .sim-controls{grid-template-columns:1fr}
+  .sim-legend-info{margin-left:0;width:100%}
+}
+
+/* ── FINE PRINT SCORECARD ── */
+.scorecard{background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--bdr2);border-radius:14px;padding:24px 26px;margin:24px 0}
+.scorecard-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:14px}
+.scorecard-title{font-size:18px;font-weight:800;color:var(--t1);letter-spacing:-.2px}
+.scorecard-sub{font-size:12px;color:var(--t4);margin-top:3px}
+.scorecard-score{text-align:right;flex-shrink:0}
+.scorecard-score-v{font-family:var(--mono);font-size:28px;font-weight:800;color:#22c55e;line-height:1;text-shadow:0 0 10px rgba(34,197,94,0.4)}
+.scorecard-score-v span{font-size:16px;color:var(--t5)}
+.scorecard-score-l{font-size:10px;color:var(--t4);text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-top:3px}
+.scorecard-rows{display:flex;flex-direction:column;gap:4px}
+.scorecard-row{display:grid;grid-template-columns:10px 180px 1fr;gap:12px;align-items:center;padding:10px 12px;background:var(--bg3);border:1px solid var(--bdr);border-radius:8px;transition:border .2s}
+.scorecard-row:hover{border-color:var(--bdr2)}
+.scorecard-dot{width:10px;height:10px;border-radius:50%}
+.scorecard-row.tone-green .scorecard-dot{background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,0.5)}
+.scorecard-row.tone-yellow .scorecard-dot{background:#fbbf24;box-shadow:0 0 8px rgba(251,191,36,0.5)}
+.scorecard-row.tone-red .scorecard-dot{background:#ef4444;box-shadow:0 0 8px rgba(239,68,68,0.5)}
+.scorecard-k{font-size:12px;font-weight:700;color:var(--t2);letter-spacing:.1px}
+.scorecard-v{font-size:12px;color:var(--t3);line-height:1.4}
+@media(max-width:620px){
+  .scorecard-row{grid-template-columns:10px 1fr;gap:8px}
+  .scorecard-v{grid-column:1 / 3;padding-left:18px;margin-top:-2px;font-size:11px}
+}
+
+/* ── HERO CTA TOOLS ── */
+.hero-tools-cta{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:620px;margin:18px auto 0}
+.hero-tool-btn{background:linear-gradient(135deg,rgba(34,211,238,0.14),rgba(6,182,212,0.06));border:1.5px solid rgba(34,211,238,0.35);color:#22d3ee;padding:14px 20px;border-radius:12px;cursor:pointer;transition:all .22s;display:flex;align-items:center;gap:12px;text-align:left;font-family:var(--sans)}
+.hero-tool-btn:hover{background:linear-gradient(135deg,rgba(34,211,238,0.22),rgba(6,182,212,0.12));border-color:#22d3ee;transform:translateY(-2px);box-shadow:0 0 24px rgba(34,211,238,0.3)}
+.hero-tool-ic{font-size:24px;flex-shrink:0}
+.hero-tool-txt{flex:1;min-width:0}
+.hero-tool-t{font-size:14px;font-weight:800;color:#fff;letter-spacing:-.1px;margin-bottom:2px}
+.hero-tool-s{font-size:11px;color:var(--t4);font-weight:500}
+@media(max-width:620px){
+  .hero-tools-cta{grid-template-columns:1fr}
+}
 .cmp-tray{position:fixed;bottom:0;left:0;right:0;z-index:150;background:var(--glass2);backdrop-filter:blur(20px) saturate(1.3);border-top:1px solid var(--bdr2);padding:12px 24px;display:flex;align-items:center;justify-content:center;gap:14px;box-shadow:0 -4px 30px rgba(0,0,0,0.4),0 -1px 0 rgba(34,211,238,0.15);animation:trayIn .25s ease-out}
 @keyframes trayIn{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .cmp-tray-firms{display:flex;gap:8px;align-items:center}
@@ -1966,6 +2088,477 @@ const GiveawaysTab = () => (
   </div>
 );
 
+// ═══════════════════════════════════════════════════════════════════════════
+// ── TOOLS: QUIZ + DRAWDOWN SIMULATOR + SCORECARD ──
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── QUIZ SCORING: maps answers → firm scores ──
+const QUIZ_QUESTIONS = [
+  {id:"style", q:"What's your trading style?", sub:"How long do you hold positions?", opts:[
+    {v:"scalp", l:"Scalper", d:"In & out in minutes"},
+    {v:"intraday", l:"Intraday", d:"Minutes to hours"},
+    {v:"swing", l:"Swing", d:"Days at a time"},
+  ]},
+  {id:"budget", q:"What's your budget for an eval?", sub:"One-time or first month", opts:[
+    {v:"low", l:"Under $100", d:"Tight budget"},
+    {v:"mid", l:"$100–$300", d:"Reasonable"},
+    {v:"high", l:"$300+", d:"No limit"},
+  ]},
+  {id:"dd", q:"How do you feel about trailing drawdown?", sub:"The floor that follows your P&L", opts:[
+    {v:"eod", l:"EOD only", d:"Floor snaps at close — safer"},
+    {v:"any", l:"Either works", d:"I know how to manage it"},
+    {v:"static", l:"Prefer static", d:"Floor never moves"},
+  ]},
+  {id:"news", q:"Do you trade news events?", sub:"FOMC, NFP, CPI releases", opts:[
+    {v:"yes", l:"Yes, often", d:"Major releases matter"},
+    {v:"sometimes", l:"Sometimes", d:"Depends on the setup"},
+    {v:"never", l:"Never", d:"I avoid news entirely"},
+  ]},
+  {id:"speed", q:"How important is payout speed?", sub:"Time from request to cash", opts:[
+    {v:"fast", l:"Critical", d:"I want it same-day"},
+    {v:"ok", l:"A few days OK", d:"Within the week"},
+    {v:"any", l:"Doesn't matter", d:"Anything works"},
+  ]},
+  {id:"consistency", q:"Consistency rules?", sub:"% cap on single-day profit", opts:[
+    {v:"none", l:"No consistency", d:"I want freedom"},
+    {v:"ok", l:"Moderate is fine", d:"30–40% is OK"},
+    {v:"any", l:"Whatever", d:"I trade consistently anyway"},
+  ]},
+];
+
+const scoreFirmForQuiz = (firm, answers) => {
+  let score = 50; // base
+  const reasons = [];
+  const name = firm.name;
+
+  // Style
+  if (answers.style === "swing") {
+    // No firm truly allows overnight freely — Tradeify/Apex ban it, GFF Express allows
+    if (name === "Goat Funded Futures") { score += 8; reasons.push("Express plan allows overnight holds"); }
+    else { score -= 5; }
+  }
+  if (answers.style === "scalp" || answers.style === "intraday") {
+    if (name === "Tradeify") { score += 10; reasons.push("Fast payouts (~1hr), great for scalpers"); }
+    if (name === "My Funded Futures") { score += 8; reasons.push("Rapid plan has 90/10 split & daily payouts"); }
+    if (name === "Apex Trader Funding") { score += 6; reasons.push("20-account max lets you scale hard"); }
+  }
+
+  // Budget
+  if (answers.budget === "low") {
+    if (name === "Top One Futures") { score += 10; reasons.push("Elite plan starts at $39/mo"); }
+    if (name === "Tradeify") { score += 8; reasons.push("Growth 25K is $99 one-time — cheapest path"); }
+    if (name === "FundedNext Futures") { score += 6; reasons.push("25K Rapid at $99 one-time"); }
+    if (name === "Goat Funded Futures") { score += 6; reasons.push("5K EOD plan at $29/mo"); }
+  }
+  if (answers.budget === "high") {
+    if (name === "Apex Trader Funding") { score += 6; reasons.push("Up to 20 accounts, $3M total allocation"); }
+    if (name === "My Funded Futures") { score += 5; reasons.push("Pro plans scale to $150K"); }
+  }
+
+  // Drawdown preference
+  if (answers.dd === "eod") {
+    if (name === "Tradeify" || name === "Alpha Futures" || name === "Bulenox" || name === "FundedNext Futures") {
+      score += 10;
+      reasons.push("EOD trailing drawdown — safer for live P&L swings");
+    }
+    if (name === "Apex Trader Funding") { score += 5; reasons.push("EOD plans available (choose at purchase)"); }
+  }
+  if (answers.dd === "static") {
+    if (name === "Goat Funded Futures") { score += 12; reasons.push("Static plan has fixed drawdown that never moves"); }
+    else { score -= 3; }
+  }
+
+  // News trading
+  if (answers.news === "yes") {
+    if (name === "Apex Trader Funding" || name === "Tradeify" || name === "Bulenox" || name === "FundedNext Futures" || name === "Top One Futures") {
+      score += 8;
+      reasons.push("News trading fully allowed");
+    }
+    if (name === "My Funded Futures" || name === "Goat Funded Futures") { score -= 4; }
+  }
+
+  // Payout speed
+  if (answers.speed === "fast") {
+    if (name === "Tradeify") { score += 10; reasons.push("~1 hour payout processing — fastest in industry"); }
+    if (name === "FundedNext Futures" || name === "Goat Funded Futures") { score += 7; reasons.push("24-hour guaranteed payout (or $1K penalty)"); }
+    if (name === "Top One Futures") { score += 6; reasons.push("<24hr average payout speed"); }
+  }
+
+  // Consistency
+  if (answers.consistency === "none") {
+    if (name === "FundedNext Futures") { score += 10; reasons.push("Rapid plan has zero consistency rule"); }
+    if (name === "My Funded Futures") { score += 8; reasons.push("Rapid funded = no consistency"); }
+    if (name === "Alpha Futures") { score += 5; reasons.push("Advanced plan has no consistency rule"); }
+  }
+
+  // Bonus: Pulse Score reflects overall quality
+  const ps = PULSE_SCORES[name] || 75;
+  score += (ps - 85) * 0.3;
+
+  return { score: Math.max(0, Math.min(100, Math.round(score))), reasons: reasons.slice(0, 3) };
+};
+
+// ── QUIZ COMPONENT ──
+const FirmQuiz = ({onSelect}) => {
+  const [step, setStep] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const total = QUIZ_QUESTIONS.length;
+  const current = QUIZ_QUESTIONS[step];
+  const progress = submitted ? 100 : Math.round((step / total) * 100);
+
+  const answer = (v) => {
+    const na = {...answers, [current.id]: v};
+    setAnswers(na);
+    if (step < total - 1) setStep(step + 1);
+    else { setSubmitted(true); }
+  };
+
+  const reset = () => { setStep(0); setAnswers({}); setSubmitted(false); };
+
+  if (submitted) {
+    const results = FIRMS.map(f => ({...f, ...scoreFirmForQuiz(f, answers)})).sort((a,b) => b.score - a.score);
+    const top = results[0];
+    return (
+      <div className="qz-wrap">
+        <div className="qz-result-hdr">
+          <div className="qz-result-badge">Your Match</div>
+          <div className="qz-result-title">Based on your answers, <em>{top.name}</em> is your best fit.</div>
+          <div className="qz-result-sub">We ranked all {FIRMS.length} firms against your preferences below.</div>
+          <button className="qz-reset-btn" onClick={reset}>↻ Retake Quiz</button>
+        </div>
+        <div className="qz-results">
+          {results.map((r, i) => {
+            const deal = DEALS.find(d => d.firm === r.name);
+            return (
+              <div key={r.id} className={`qz-result-card ${i===0?'top':''}`} style={{'--card-accent':r.color}}>
+                <div className="qz-rank">#{i+1}</div>
+                <div className="qz-result-logo"><FirmLogo f={r} size={44}/></div>
+                <div className="qz-result-info">
+                  <div className="qz-result-name">{r.name} {i===0 && <span className="qz-best">★ Best Match</span>}</div>
+                  <div className="qz-result-reasons">
+                    {r.reasons.length > 0 ? r.reasons.map((reason, j) => <span key={j} className="qz-reason">✓ {reason}</span>) : <span className="qz-reason qz-reason-muted">General compatibility</span>}
+                  </div>
+                </div>
+                <div className="qz-result-score">
+                  <div className="qz-score-v" style={{color:r.score>=80?'var(--gold)':r.score>=65?'#22d3ee':'var(--t4)'}}>{r.score}</div>
+                  <div className="qz-score-l">Match</div>
+                </div>
+                <div className="qz-result-actions">
+                  <button className="qz-view-btn" onClick={()=>onSelect(r)}>View Details</button>
+                  {deal && <button className="qz-deal-btn" onClick={()=>trackClick(r.name)}>{deal.pct} Off</button>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="qz-wrap">
+      <div className="qz-progress-wrap"><div className="qz-progress" style={{width:progress+'%'}}/></div>
+      <div className="qz-step-label">Question {step+1} of {total}</div>
+      <h2 className="qz-q">{current.q}</h2>
+      <div className="qz-sub">{current.sub}</div>
+      <div className="qz-opts">
+        {current.opts.map(opt => (
+          <button key={opt.v} className="qz-opt" onClick={()=>answer(opt.v)}>
+            <div className="qz-opt-l">{opt.l}</div>
+            <div className="qz-opt-d">{opt.d}</div>
+          </button>
+        ))}
+      </div>
+      {step > 0 && <button className="qz-back-btn" onClick={()=>setStep(step-1)}>← Back</button>}
+    </div>
+  );
+};
+
+// ── DRAWDOWN SIMULATOR ──
+// Scenarios: preset equity curves that demonstrate DD types
+const DD_SCENARIOS = {
+  "steady": {name:"Steady winner", sub:"+$200/day, 10 days", points:[0,200,400,600,800,1000,1200,1400,1600,1800,2000]},
+  "comeback": {name:"The comeback", sub:"Big dip mid-day, recovers", points:[0,500,800,400,-200,100,500,900,1200,1500,1800]},
+  "volatile": {name:"Volatile trader", sub:"Big swings, net positive", points:[0,800,200,1100,500,1400,700,1600,1000,1900,1500]},
+  "breakdown": {name:"Slow breakdown", sub:"Early gains, late losses", points:[0,500,1000,1500,1800,1500,1100,700,300,-100,-500]},
+  "spike-give-back": {name:"Spike & give back", sub:"Up $1500, gives back $1000", points:[0,300,800,1200,1500,1400,1000,700,400,500,500]},
+};
+
+const FIRM_DD_CONFIG = {
+  "Tradeify": {label:"Tradeify Select 50K", type:"EOD", maxDD:2000, startBalance:50000, lockAt:100},
+  "My Funded Futures": {label:"MFFU Rapid 50K", type:"Intraday", maxDD:2000, startBalance:50000, lockAt:null},
+  "Alpha Futures": {label:"Alpha Standard 50K", type:"EOD", maxDD:2500, startBalance:50000, lockAt:null},
+  "Apex Trader Funding": {label:"Apex EOD 50K", type:"EOD", maxDD:2000, startBalance:50000, lockAt:100},
+  "Top One Futures": {label:"Top One Elite 50K", type:"EOD", maxDD:2000, startBalance:50000, lockAt:null},
+  "FundedNext Futures": {label:"FundedNext Rapid 50K", type:"EOD", maxDD:2500, startBalance:50000, lockAt:null},
+  "Bulenox": {label:"Bulenox Eval 50K", type:"Intraday", maxDD:2500, startBalance:50000, lockAt:null},
+  "Goat Funded Futures": {label:"GFF EOD 50K", type:"EOD", maxDD:2500, startBalance:50000, lockAt:null},
+};
+
+// Simulate drawdown floor based on DD type
+const simulateDD = (points, config) => {
+  const {type, maxDD, lockAt} = config;
+  let floor = -maxDD; // floor relative to starting balance
+  let peakEOD = 0;
+  let locked = false;
+  let blownAt = -1;
+  const floors = [];
+
+  for (let i = 0; i < points.length; i++) {
+    const pnl = points[i];
+    if (type === "Intraday") {
+      // Trails highest equity tick-by-tick
+      if (pnl > peakEOD) peakEOD = pnl;
+      floor = peakEOD - maxDD;
+      if (lockAt !== null && peakEOD >= maxDD + lockAt && !locked) { locked = true; floor = lockAt; }
+    } else if (type === "EOD") {
+      // Only updates at end of day (we treat each point as a day here)
+      if (pnl > peakEOD) peakEOD = pnl;
+      floor = peakEOD - maxDD;
+      if (lockAt !== null && peakEOD >= maxDD + lockAt && !locked) { locked = true; floor = lockAt; }
+    } else {
+      // Static
+      floor = -maxDD;
+    }
+    floors.push(floor);
+    if (pnl <= floor && blownAt === -1) blownAt = i;
+  }
+  return { floors, blownAt, peakEOD };
+};
+
+const DrawdownSim = () => {
+  const [scenarioKey, setScenarioKey] = useState("spike-give-back");
+  const [firmKey, setFirmKey] = useState("Tradeify");
+  const scenario = DD_SCENARIOS[scenarioKey];
+  const firm = FIRMS.find(f => f.name === firmKey);
+  const config = FIRM_DD_CONFIG[firmKey];
+  const sim = simulateDD(scenario.points, config);
+
+  // Chart dimensions
+  const W = 680, H = 280, PAD = 40;
+  const allY = [...scenario.points, ...sim.floors];
+  const minY = Math.min(...allY) - 200;
+  const maxY = Math.max(...allY) + 200;
+  const xScale = (i) => PAD + (i / (scenario.points.length - 1)) * (W - PAD * 2);
+  const yScale = (v) => H - PAD - ((v - minY) / (maxY - minY)) * (H - PAD * 2);
+
+  const pnlPath = scenario.points.map((p, i) => `${i===0?'M':'L'}${xScale(i)},${yScale(p)}`).join(' ');
+  const floorPath = sim.floors.map((f, i) => `${i===0?'M':'L'}${xScale(i)},${yScale(f)}`).join(' ');
+  const zeroY = yScale(0);
+
+  return (
+    <div className="sim-wrap">
+      <div className="sim-hdr">
+        <div className="sim-title">Drawdown Simulator</div>
+        <div className="sim-sub">See how each firm's drawdown floor reacts to the same trading day.</div>
+      </div>
+
+      <div className="sim-controls">
+        <div className="sim-ctrl-group">
+          <label>Firm</label>
+          <select value={firmKey} onChange={e=>setFirmKey(e.target.value)}>
+            {FIRMS.map(f => <option key={f.id} value={f.name}>{FIRM_DD_CONFIG[f.name]?.label || f.name}</option>)}
+          </select>
+        </div>
+        <div className="sim-ctrl-group">
+          <label>Scenario</label>
+          <select value={scenarioKey} onChange={e=>setScenarioKey(e.target.value)}>
+            {Object.entries(DD_SCENARIOS).map(([k,v]) => <option key={k} value={k}>{v.name}</option>)}
+          </select>
+        </div>
+      </div>
+
+      <div className="sim-chart-wrap">
+        <svg viewBox={`0 0 ${W} ${H}`} className="sim-chart">
+          {/* zero line */}
+          <line x1={PAD} y1={zeroY} x2={W-PAD} y2={zeroY} stroke="rgba(255,255,255,0.08)" strokeDasharray="3 3"/>
+          <text x={PAD-5} y={zeroY+3} fill="rgba(255,255,255,0.3)" fontSize="10" textAnchor="end">$0</text>
+          {/* floor path (danger zone) */}
+          <path d={`${floorPath} L${xScale(scenario.points.length-1)},${H-PAD} L${PAD},${H-PAD} Z`} fill="rgba(239,68,68,0.08)"/>
+          <path d={floorPath} fill="none" stroke="#ef4444" strokeWidth="2" strokeDasharray="6 4"/>
+          {/* P&L path */}
+          <path d={pnlPath} fill="none" stroke={firm?.color||'#22d3ee'} strokeWidth="3"/>
+          {/* blown marker */}
+          {sim.blownAt >= 0 && (
+            <g>
+              <circle cx={xScale(sim.blownAt)} cy={yScale(scenario.points[sim.blownAt])} r="8" fill="#ef4444"/>
+              <text x={xScale(sim.blownAt)} y={yScale(scenario.points[sim.blownAt])-14} fill="#ef4444" fontSize="11" fontWeight="700" textAnchor="middle">BLOWN</text>
+            </g>
+          )}
+          {/* labels */}
+          <text x={W-PAD} y={yScale(scenario.points[scenario.points.length-1])-8} fill={firm?.color||'#22d3ee'} fontSize="10" fontWeight="700" textAnchor="end">P&L</text>
+          <text x={W-PAD} y={yScale(sim.floors[sim.floors.length-1])+16} fill="#ef4444" fontSize="10" fontWeight="700" textAnchor="end">Floor</text>
+        </svg>
+      </div>
+
+      <div className="sim-result" style={{background:sim.blownAt>=0?'rgba(239,68,68,0.1)':'rgba(34,197,94,0.1)',borderColor:sim.blownAt>=0?'rgba(239,68,68,0.3)':'rgba(34,197,94,0.3)'}}>
+        {sim.blownAt >= 0 ? (
+          <>
+            <div className="sim-result-icon" style={{color:'#ef4444'}}>✗</div>
+            <div>
+              <div className="sim-result-title" style={{color:'#ef4444'}}>Account Blown</div>
+              <div className="sim-result-desc">Balance hit the drawdown floor on day {sim.blownAt+1}. This is how {firmKey}'s {config.type.toLowerCase()} trailing drawdown bites.</div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="sim-result-icon" style={{color:'#22c55e'}}>✓</div>
+            <div>
+              <div className="sim-result-title" style={{color:'#22c55e'}}>Survived</div>
+              <div className="sim-result-desc">Account made it through. Peak: ${sim.peakEOD.toLocaleString()}. Floor held at ${sim.floors[sim.floors.length-1].toLocaleString()}.</div>
+            </div>
+          </>
+        )}
+      </div>
+
+      <div className="sim-legend">
+        <div><span className="sim-legend-dot" style={{background:firm?.color||'#22d3ee'}}/>Your equity (P&L)</div>
+        <div><span className="sim-legend-dot" style={{background:'#ef4444'}}/>Drawdown floor (you blow here)</div>
+        <div className="sim-legend-info">Type: <b>{config.type}</b> · Max DD: <b>${config.maxDD.toLocaleString()}</b>{config.lockAt ? <> · Locks at +${config.lockAt}</> : null}</div>
+      </div>
+    </div>
+  );
+};
+
+// ── TOOLS TAB (container) ──
+const ToolsTab = ({onSelect}) => {
+  const [tool, setTool] = useState("quiz");
+  return (
+    <div>
+      <div className="sec-hdr"><div><div className="sec-title">Trader Tools</div><div className="sec-sub">Built specifically for futures prop traders</div></div></div>
+      <div className="tools-switch">
+        <button className={`tools-switch-btn ${tool==='quiz'?'on':''}`} onClick={()=>setTool('quiz')}>
+          <span className="tools-switch-ic">🎯</span>
+          <span>Find My Firm</span>
+          <span className="tools-switch-sub">6-question match quiz</span>
+        </button>
+        <button className={`tools-switch-btn ${tool==='sim'?'on':''}`} onClick={()=>setTool('sim')}>
+          <span className="tools-switch-ic">📉</span>
+          <span>Drawdown Sim</span>
+          <span className="tools-switch-sub">See your floor move</span>
+        </button>
+      </div>
+      {tool === "quiz" && <FirmQuiz onSelect={onSelect}/>}
+      {tool === "sim" && <DrawdownSim/>}
+    </div>
+  );
+};
+
+// ── FINE PRINT SCORECARD (used in firm detail pages) ──
+const SCORECARD_DATA = {
+  "Tradeify": [
+    {k:"Activation Fee", tone:"green", v:"$0 — none on any plan"},
+    {k:"Data Feed Required", tone:"yellow", v:"Depends on platform"},
+    {k:"Platform Fees", tone:"green", v:"No platform fee on Tradovate/WealthCharts/TradeSea"},
+    {k:"Reset Cost", tone:"green", v:"~$60–$99 depending on plan"},
+    {k:"Payout Ladder", tone:"green", v:"No caps — withdraw as earned"},
+    {k:"Consistency Rule", tone:"yellow", v:"40% on Select eval / none on Flex funded"},
+    {k:"Trailing Type", tone:"green", v:"EOD trailing (safer) — locks at balance + $100"},
+    {k:"Country Restrictions", tone:"green", v:"Open to most countries"},
+  ],
+  "My Funded Futures": [
+    {k:"Activation Fee", tone:"green", v:"$0 — none on any plan"},
+    {k:"Data Feed Required", tone:"yellow", v:"Depends on platform"},
+    {k:"Platform Fees", tone:"green", v:"No platform fee on most supported platforms"},
+    {k:"Reset Cost", tone:"yellow", v:"$84–$477 (varies by plan/size)"},
+    {k:"Payout Ladder", tone:"yellow", v:"Core capped at $5K, Rapid at $11.25K per cycle"},
+    {k:"Consistency Rule", tone:"yellow", v:"50% eval / 40% Core funded / none Rapid/Pro"},
+    {k:"Trailing Type", tone:"red", v:"Rapid uses INTRADAY trailing (aggressive)"},
+    {k:"Country Restrictions", tone:"green", v:"Open to most countries"},
+  ],
+  "Alpha Futures": [
+    {k:"Activation Fee", tone:"red", v:"$149 on Standard & Advanced ($0 on Zero)"},
+    {k:"Data Feed Required", tone:"yellow", v:"Depends on platform"},
+    {k:"Platform Fees", tone:"green", v:"No platform fee"},
+    {k:"Reset Cost", tone:"yellow", v:"$59–$199 (varies by size)"},
+    {k:"Payout Ladder", tone:"red", v:"Tiered split 70→80→90% (first 2 payouts at 70%)"},
+    {k:"Consistency Rule", tone:"yellow", v:"40% on Standard/Zero funded only"},
+    {k:"Trailing Type", tone:"green", v:"EOD trailing only"},
+    {k:"Country Restrictions", tone:"green", v:"Open globally (UK-based)"},
+  ],
+  "Apex Trader Funding": [
+    {k:"Activation Fee", tone:"red", v:"$79 Intraday / $99 EOD — ongoing"},
+    {k:"Data Feed Required", tone:"red", v:"Required — extra monthly cost"},
+    {k:"Platform Fees", tone:"yellow", v:"Platform subscription often required"},
+    {k:"Reset Cost", tone:"red", v:"No resets in 4.0 — must rebuy eval"},
+    {k:"Payout Ladder", tone:"red", v:"Max 6 payouts per PA lifetime — then account closes"},
+    {k:"Consistency Rule", tone:"yellow", v:"50% on funded only"},
+    {k:"Trailing Type", tone:"yellow", v:"Choose EOD or Intraday at purchase"},
+    {k:"Country Restrictions", tone:"green", v:"Open to most countries"},
+  ],
+  "Top One Futures": [
+    {k:"Activation Fee", tone:"yellow", v:"$149 on Elite plans (none on others)"},
+    {k:"Data Feed Required", tone:"yellow", v:"Depends on platform"},
+    {k:"Platform Fees", tone:"green", v:"No platform fee on most platforms"},
+    {k:"Reset Cost", tone:"green", v:"$35–$149 (cheap on Elite Access)"},
+    {k:"Payout Ladder", tone:"green", v:"No hard caps"},
+    {k:"Consistency Rule", tone:"yellow", v:"15–40% depending on plan"},
+    {k:"Trailing Type", tone:"yellow", v:"Mostly EOD, S2F Pro uses Intraday"},
+    {k:"Country Restrictions", tone:"green", v:"Open to most countries"},
+  ],
+  "FundedNext Futures": [
+    {k:"Activation Fee", tone:"green", v:"$0 — no activation fees"},
+    {k:"Data Feed Required", tone:"green", v:"No separate data fee"},
+    {k:"Platform Fees", tone:"green", v:"No platform fee"},
+    {k:"Reset Cost", tone:"yellow", v:"$91.99–$95"},
+    {k:"Payout Ladder", tone:"green", v:"Guaranteed 24-hour payout + $1K penalty if delayed"},
+    {k:"Consistency Rule", tone:"green", v:"None on Rapid funded"},
+    {k:"Trailing Type", tone:"green", v:"EOD trailing"},
+    {k:"Country Restrictions", tone:"yellow", v:"UAE-based, check restrictions"},
+  ],
+  "Bulenox": [
+    {k:"Activation Fee", tone:"green", v:"$0 — monthly subscription model"},
+    {k:"Data Feed Required", tone:"yellow", v:"Depends on platform"},
+    {k:"Platform Fees", tone:"green", v:"No platform fee on most platforms"},
+    {k:"Reset Cost", tone:"green", v:"Cheap resets — one of the lowest"},
+    {k:"Payout Ladder", tone:"green", v:"100% of first $10K then 90/10"},
+    {k:"Consistency Rule", tone:"yellow", v:"40% on eval and funded"},
+    {k:"Trailing Type", tone:"green", v:"Choose EOD or Trailing at purchase"},
+    {k:"Country Restrictions", tone:"green", v:"Open to most countries"},
+  ],
+  "Goat Funded Futures": [
+    {k:"Activation Fee", tone:"green", v:"$0 on EOD/Static plans"},
+    {k:"Data Feed Required", tone:"yellow", v:"Depends on platform"},
+    {k:"Platform Fees", tone:"green", v:"No platform fee"},
+    {k:"Reset Cost", tone:"yellow", v:"~$99 on EOD plans"},
+    {k:"Payout Ladder", tone:"green", v:"24-hour guaranteed + $1K penalty if late"},
+    {k:"Consistency Rule", tone:"yellow", v:"20–50% depending on plan"},
+    {k:"Trailing Type", tone:"yellow", v:"EOD / Static / Intraday (varies by plan)"},
+    {k:"Country Restrictions", tone:"yellow", v:"Hong Kong-based — check restrictions"},
+  ],
+};
+
+const FinePrintScorecard = ({firm}) => {
+  const rows = SCORECARD_DATA[firm.name];
+  if (!rows) return null;
+  const greenCount = rows.filter(r => r.tone === "green").length;
+  return (
+    <div className="scorecard">
+      <div className="scorecard-hdr">
+        <div>
+          <div className="scorecard-title">Fine Print Scorecard</div>
+          <div className="scorecard-sub">The hidden stuff every trader should check</div>
+        </div>
+        <div className="scorecard-score">
+          <div className="scorecard-score-v">{greenCount}<span>/{rows.length}</span></div>
+          <div className="scorecard-score-l">green flags</div>
+        </div>
+      </div>
+      <div className="scorecard-rows">
+        {rows.map((r,i) => (
+          <div key={i} className={`scorecard-row tone-${r.tone}`}>
+            <div className="scorecard-dot"/>
+            <div className="scorecard-k">{r.k}</div>
+            <div className="scorecard-v">{r.v}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // ── BLOG TAB ──
 const BlogTab = ({onSelect}) => {
   const catColor = c => ({Industry:'#a855f7',Comparison:'#0ea5e9',Strategy:'#06b6d4',News:'#06b6d4',Guide:'#ffbe0b',Education:'#ff6b6b'}[c]||'#06b6d4');
@@ -2211,6 +2804,7 @@ const DetailPage = ({firm,goBack}) => {
       </div>
 
       {/* FAQ Section */}
+      {SCORECARD_DATA[firm.name]&&<FinePrintScorecard firm={firm}/>}
       {FIRM_FAQ[firm.name]&&<FirmFAQSection firm={firm}/>}
     </>:<div className="det-desc">{firm.desc}</div>}
   </div>);
@@ -3601,6 +4195,22 @@ export default function App() {
           <div className="hero-bubble-arrow">→</div>
           <div className="hero-bubble gold"><div className="hero-bubble-n">4</div><div className="hero-bubble-t">Get Rewarded</div></div>
         </div>
+        <div className="hero-tools-cta">
+          <button className="hero-tool-btn" onClick={()=>handleTabClick('tools')}>
+            <span className="hero-tool-ic">🎯</span>
+            <div className="hero-tool-txt">
+              <div className="hero-tool-t">Find My Firm</div>
+              <div className="hero-tool-s">6-question match quiz</div>
+            </div>
+          </button>
+          <button className="hero-tool-btn" onClick={()=>handleTabClick('tools')}>
+            <span className="hero-tool-ic">📉</span>
+            <div className="hero-tool-txt">
+              <div className="hero-tool-t">Drawdown Simulator</div>
+              <div className="hero-tool-s">See exactly how you blow an account</div>
+            </div>
+          </button>
+        </div>
       </div>
       <div className="offers-strip">
         <div className="offers-strip-inner">
@@ -3631,7 +4241,7 @@ export default function App() {
     <div className="wrap" id="tab-content">
 
       <div className="ctabs">
-        {[["firms","Firms",null],["challenges","Challenges",null],["offers","Offers",null],["giveaways","Giveaway",null],["blog","Research",null],["videos","Videos",null],["points","Pulse Points","\u2B50"]].map(([k,l,icon])=>(
+        {[["firms","Firms",null],["tools","Tools","\uD83D\uDEE0"],["challenges","Challenges",null],["offers","Offers",null],["giveaways","Giveaway",null],["blog","Research",null],["videos","Videos",null],["points","Pulse Points","\u2B50"]].map(([k,l,icon])=>(
           <button key={k} className={`ctab${tab===k?' on':''}`} onClick={()=>handleTabClick(k)}>
             {icon&&<span className="ctab-icon">{icon}</span>}
             <span>{l}</span>
@@ -3648,6 +4258,7 @@ export default function App() {
         </div>
         <FirmCards firms={sorted} onSelect={goDetail} user={user} compareFirms={compareFirms} toggleCompare={toggleCompare}/>
       </>}
+      {tab==="tools"&&<ToolsTab onSelect={goDetail}/>}
       {tab==="challenges"&&<ChallengesTab onSelect={goDetail}/>}
       {tab==="offers"&&<OffersTab user={user}/>}
       {tab==="giveaways"&&<GiveawaysTab/>}
