@@ -1,1533 +1,1668 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// PropPulse — clean-slate rebuild
-// Design: "Prime Terminal" — black & phosphor-green monospace terminal
-// aesthetic meets modern typography. Single-page scroll. Command-palette
-// navigation. Everything drawn fresh.
+// PropPulse — multi-page rebuild
+// Design: "Paper & Ink" — warm light theme, deep navy text, coral accent
+// Multi-page hash routing. Each section is its own page.
+// Typography: Manrope (primary) with Fraunces for selective display serif
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { createClient } from "@supabase/supabase-js";
 import {
-  LOGOS, FIRMS, DEALS, BLOG, VIDEOS, CHALLENGES, FUNDED_OVERRIDES,
+  LOGOS, FIRMS, DEALS, BLOG, CHALLENGES, FUNDED_OVERRIDES,
   PULSE_SCORES, AFFILIATE_LINKS, FIRM_PROFILES, FIRM_FAQ,
   QUIZ_QUESTIONS, DD_SCENARIOS, FIRM_DD_CONFIG,
-  SCORECARD_DATA, LOYALTY_TIERS
+  SCORECARD_DATA
 } from "./data";
 
-// ─── SUPABASE (unchanged from old site) ────────────────────────────────────
+// ── SUPABASE (unchanged) ────────────────────────────────────────────────────
 const supabase = createClient(
   "https://lwwtosuwfdliahoyqakx.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx3d3Rvc3V3ZmRsaWFob3lxYWt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDM0NDYsImV4cCI6MjA5MTMxOTQ0Nn0.RCcNmkTsgjInRlL3PwK2AP5bUUTx5G3f2XqYu0OrquU"
 );
 
-// ─── AFFILIATE TRACKING (ported) ───────────────────────────────────────────
 const trackClick = async (firmName) => {
   try {
     const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) {
-      await supabase.from("click_tracking").insert({ user_id: session.user.id, firm: firmName });
-    }
+    if (session?.user) await supabase.from("click_tracking").insert({ user_id: session.user.id, firm: firmName });
   } catch {}
   const url = AFFILIATE_LINKS[firmName];
   if (url) window.open(url, "_blank");
 };
 
-const copyToClipboard = (text) => {
-  if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
-  const ta = document.createElement("textarea");
-  ta.value = text;
-  ta.style.cssText = "position:fixed;left:-9999px";
-  document.body.appendChild(ta);
-  ta.select();
-  try { document.execCommand("copy"); } catch(e) {}
-  document.body.removeChild(ta);
-  return Promise.resolve();
+// ── HASH ROUTER ─────────────────────────────────────────────────────────────
+const useRoute = () => {
+  const [route, setRoute] = useState(() => window.location.hash.slice(1) || "/");
+  useEffect(() => {
+    const h = () => setRoute(window.location.hash.slice(1) || "/");
+    window.addEventListener("hashchange", h);
+    return () => window.removeEventListener("hashchange", h);
+  }, []);
+  return route;
+};
+
+const navigate = (path) => {
+  window.location.hash = path;
+  window.scrollTo({ top: 0, behavior: "instant" });
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// GLOBAL STYLES — "Prime Terminal"
+// STYLES — "Paper & Ink"
 // ═══════════════════════════════════════════════════════════════════════════
 const css = `
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&display=swap');
 
 :root {
-  --bg: #060606;
-  --bg1: #0d0d0e;
-  --bg2: #151517;
-  --bg3: #1e1e21;
-  --line: rgba(255,255,255,0.06);
-  --line2: rgba(255,255,255,0.12);
-  --line3: rgba(255,255,255,0.2);
-  --txt: #f0ede4;
-  --txt2: #c4beaf;
-  --txt3: #8e887b;
-  --txt4: #5c5850;
-  --txt5: #3d3a34;
-  --prime: #a8ff60;
-  --primeA: rgba(168,255,96,0.08);
-  --primeA2: rgba(168,255,96,0.18);
-  --primeDim: #7fc848;
-  --warn: #ffb84d;
-  --danger: #ff6b6b;
-  --info: #7fb8ff;
-  --mono: 'JetBrains Mono', ui-monospace, monospace;
-  --sans: 'Inter', system-ui, sans-serif;
-  --serif: 'Newsreader', Georgia, serif;
+  --paper: #f5f0e6;
+  --paper2: #efe9dc;
+  --paper3: #e8e1d0;
+  --card: #fffdf7;
+  --ink: #1a1d29;
+  --ink2: #3b3f52;
+  --ink3: #6b6f80;
+  --ink4: #9b9ea8;
+  --ink5: #c7c8cc;
+  --line: rgba(26,29,41,0.08);
+  --line2: rgba(26,29,41,0.14);
+  --accent: #e14b35;
+  --accent2: #c63c29;
+  --accentA: rgba(225,75,53,0.08);
+  --accentA2: rgba(225,75,53,0.14);
+  --sage: #4a7c59;
+  --gold: #b8893b;
+  --shade: 0 1px 2px rgba(26,29,41,0.04), 0 4px 12px rgba(26,29,41,0.04);
+  --shade2: 0 2px 4px rgba(26,29,41,0.05), 0 12px 32px rgba(26,29,41,0.08);
+  --sans: 'Manrope', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --serif: 'Fraunces', Georgia, serif;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body, #root {
-  background: var(--bg);
-  color: var(--txt);
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--sans);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.55;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  font-feature-settings: 'ss01', 'cv01';
 }
 
-/* CRT scanline & noise overlay */
+/* Subtle paper texture */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background:
-    repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(168,255,96,0.015) 2px, rgba(168,255,96,0.015) 3px);
-  pointer-events: none;
-  z-index: 100;
-  mix-blend-mode: overlay;
-}
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
   background-image:
-    radial-gradient(circle at 25% 30%, rgba(168,255,96,0.05) 0%, transparent 45%),
-    radial-gradient(circle at 75% 70%, rgba(127,184,255,0.03) 0%, transparent 40%);
+    radial-gradient(circle at 1px 1px, rgba(26,29,41,0.025) 1px, transparent 0);
+  background-size: 18px 18px;
   pointer-events: none;
   z-index: 0;
 }
 
-::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(168,255,96,0.15); border-radius: 0; }
-::-webkit-scrollbar-thumb:hover { background: rgba(168,255,96,0.3); }
-::selection { background: var(--prime); color: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(26,29,41,0.15); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(26,29,41,0.3); }
+::selection { background: var(--accent); color: var(--card); }
 
-a, button { font-family: inherit; }
-button { cursor: pointer; border: none; background: none; color: inherit; }
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; border: none; background: none; color: inherit; font-family: inherit; }
 
-/* ═══ TOP BAR ═══ */
-.tbar {
+/* ═══ NAVIGATION ═══ */
+.nav {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(6,6,6,0.85);
-  backdrop-filter: blur(16px);
+  background: rgba(245,240,230,0.85);
+  backdrop-filter: blur(16px) saturate(1.2);
   border-bottom: 1px solid var(--line);
+}
+.nav-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 18px 40px;
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 24px;
-  padding: 14px 32px;
-  font-family: var(--mono);
-  font-size: 12px;
+  gap: 40px;
 }
-.tbar-left {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.tbar-logo {
-  font-family: var(--mono);
-  font-weight: 700;
-  font-size: 13px;
-  color: var(--txt);
-  letter-spacing: 0.5px;
+.nav-logo {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  color: var(--ink);
+  cursor: pointer;
 }
-.tbar-logo-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--prime);
-  box-shadow: 0 0 10px var(--prime);
-  animation: pulse 2s ease-in-out infinite;
+.nav-logo-dot {
+  width: 10px;
+  height: 10px;
+  background: var(--accent);
+  border-radius: 3px;
+  transform: rotate(45deg);
 }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-.tbar-logo em {
-  font-style: normal;
-  color: var(--prime);
-}
-.tbar-ver {
-  color: var(--txt4);
-  font-size: 10px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 3px 8px;
-  border: 1px solid var(--line2);
-}
-.tbar-status {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  justify-self: center;
-  color: var(--txt3);
-  font-size: 11px;
-}
-.tbar-status b { color: var(--prime); font-weight: 600; }
-.tbar-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.tbar-btn {
-  font-family: var(--mono);
-  font-size: 11px;
+.nav-logo span {
+  font-family: var(--serif);
+  font-style: italic;
   font-weight: 500;
-  color: var(--txt2);
-  padding: 6px 14px;
-  border: 1px solid var(--line2);
+  color: var(--accent);
+}
+.nav-links {
+  display: flex;
+  gap: 4px;
+  justify-self: center;
+}
+.nav-link {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink2);
+  border-radius: 8px;
   transition: all 0.15s;
-  letter-spacing: 0.5px;
+  letter-spacing: -0.1px;
 }
-.tbar-btn:hover { border-color: var(--prime); color: var(--prime); }
-.tbar-btn.primary {
-  background: var(--prime);
-  color: var(--bg);
-  border-color: var(--prime);
-  font-weight: 700;
+.nav-link:hover { color: var(--ink); background: var(--paper2); }
+.nav-link.active {
+  color: var(--accent);
+  background: var(--accentA);
 }
-.tbar-btn.primary:hover { background: #b8ff70; }
-.tbar-cmd {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  border: 1px solid var(--line2);
-  color: var(--txt3);
-  font-size: 11px;
+.nav-right { display: flex; gap: 10px; align-items: center; }
+.nav-btn {
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
   transition: all 0.15s;
+  letter-spacing: -0.1px;
 }
-.tbar-cmd:hover { border-color: var(--prime); color: var(--prime); }
-.tbar-cmd kbd {
-  font-family: var(--mono);
-  font-size: 10px;
-  padding: 2px 5px;
-  background: var(--bg2);
-  border: 1px solid var(--line);
-  border-radius: 2px;
-  color: var(--txt3);
+.nav-btn.ghost {
+  color: var(--ink);
+  border: 1px solid var(--line2);
 }
-.tbar-avatar {
-  width: 28px;
-  height: 28px;
+.nav-btn.ghost:hover { border-color: var(--ink); }
+.nav-btn.primary {
+  background: var(--ink);
+  color: var(--paper);
+}
+.nav-btn.primary:hover { background: var(--ink2); transform: translateY(-1px); }
+.nav-avatar {
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  border: 1px solid var(--line2);
-  background: var(--bg2);
+  background: var(--ink);
   background-size: cover;
   background-position: center;
   cursor: pointer;
+  border: 2px solid var(--paper);
+  box-shadow: 0 0 0 1px var(--line2);
+}
+
+.nav-mob {
+  display: none;
+  background: transparent;
+  font-size: 22px;
+  color: var(--ink);
+}
+.nav-mob-menu {
+  display: none;
+  padding: 12px 24px 20px;
+  border-top: 1px solid var(--line);
+  background: rgba(245,240,230,0.95);
+}
+.nav-mob-menu .nav-link {
+  display: block;
+  padding: 10px 14px;
+  margin-bottom: 2px;
 }
 
 /* ═══ LAYOUT ═══ */
-.app {
-  max-width: 1440px;
+.page {
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 32px;
+  padding: 0 40px;
   position: relative;
   z-index: 1;
 }
-
-.crosshair {
-  position: fixed;
-  pointer-events: none;
-  z-index: 200;
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--prime);
-  opacity: 0.35;
-  letter-spacing: 1px;
+.page-hd {
+  padding: 80px 0 48px;
+  max-width: 900px;
 }
-.crosshair.tl { top: 76px; left: 32px; }
-.crosshair.tr { top: 76px; right: 32px; }
-.crosshair.bl { bottom: 16px; left: 32px; }
-.crosshair.br { bottom: 16px; right: 32px; }
-
-/* ═══ HERO ═══ */
-.hero {
-  padding: 80px 0 100px;
-  position: relative;
-}
-.hero-meta {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 48px;
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--txt3);
-  letter-spacing: 1px;
+.page-eye {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 1.2px;
   text-transform: uppercase;
+  margin-bottom: 18px;
+  padding: 5px 12px;
+  background: var(--accentA);
+  border-radius: 20px;
 }
-.hero-meta-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--prime);
-  animation: pulse 2s ease-in-out infinite;
-  box-shadow: 0 0 8px var(--prime);
-}
-.hero-meta-sep { color: var(--txt5); }
-
-.hero-h1 {
+.page-t {
   font-family: var(--serif);
-  font-size: clamp(56px, 9vw, 136px);
-  line-height: 0.92;
-  letter-spacing: -3px;
+  font-size: clamp(40px, 6vw, 72px);
   font-weight: 400;
-  color: var(--txt);
-  margin-bottom: 32px;
-  max-width: 14ch;
+  letter-spacing: -2px;
+  line-height: 1;
+  color: var(--ink);
+  margin-bottom: 20px;
 }
-.hero-h1 em {
+.page-t em {
   font-style: italic;
-  color: var(--prime);
+  color: var(--accent);
   font-weight: 400;
-  position: relative;
 }
-.hero-h1 em::after {
-  content: '_';
-  animation: blink 1.1s step-end infinite;
-  color: var(--prime);
-}
-@keyframes blink { 50% { opacity: 0; } }
-
-.hero-lead {
-  font-family: var(--serif);
-  font-size: 22px;
-  font-style: italic;
-  color: var(--txt2);
+.page-d {
+  font-size: 18px;
+  color: var(--ink3);
   max-width: 640px;
-  line-height: 1.45;
-  margin-bottom: 56px;
+  line-height: 1.55;
+  font-weight: 400;
 }
 
-.hero-cta-row {
+/* ═══ HOME HERO ═══ */
+.home-hero {
+  padding: 100px 0 80px;
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.home-eye {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: -0.2px;
+  margin-bottom: 28px;
+}
+.home-eye::before {
+  content: '';
+  width: 30px;
+  height: 1.5px;
+  background: var(--accent);
+}
+.home-h1 {
+  font-family: var(--serif);
+  font-size: clamp(52px, 7.5vw, 104px);
+  font-weight: 400;
+  letter-spacing: -3px;
+  line-height: 0.96;
+  color: var(--ink);
+  margin-bottom: 32px;
+}
+.home-h1 em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 400;
+}
+.home-h1 u {
+  text-decoration: none;
+  background: linear-gradient(transparent 62%, rgba(225,75,53,0.25) 62%);
+  padding: 0 4px;
+}
+.home-lead {
+  font-size: 19px;
+  color: var(--ink3);
+  max-width: 520px;
+  line-height: 1.55;
+  margin-bottom: 40px;
+  font-weight: 400;
+}
+.home-cta {
   display: flex;
-  gap: 14px;
+  gap: 12px;
   align-items: center;
   flex-wrap: wrap;
-  margin-bottom: 64px;
+  margin-bottom: 48px;
 }
-.hero-cta {
+.btn-pri {
+  background: var(--accent);
+  color: #fff;
+  padding: 16px 32px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  transition: all 0.18s;
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-family: var(--mono);
-  font-size: 13px;
-  font-weight: 600;
+  letter-spacing: -0.1px;
+  box-shadow: 0 4px 14px rgba(225,75,53,0.25);
+}
+.btn-pri:hover {
+  background: var(--accent2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(225,75,53,0.35);
+}
+.btn-pri-arrow { transition: transform 0.2s; }
+.btn-pri:hover .btn-pri-arrow { transform: translateX(4px); }
+.btn-sec {
+  background: transparent;
+  color: var(--ink);
   padding: 16px 28px;
-  letter-spacing: 0.5px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  border: 1.5px solid var(--ink);
   transition: all 0.18s;
-  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: -0.1px;
 }
-.hero-cta.primary {
-  background: var(--prime);
-  color: var(--bg);
-  border: 1px solid var(--prime);
-}
-.hero-cta.primary:hover {
-  background: transparent;
-  color: var(--prime);
-  box-shadow: 0 0 24px rgba(168,255,96,0.35);
-}
-.hero-cta.ghost {
-  background: transparent;
-  color: var(--txt);
-  border: 1px solid var(--line2);
-}
-.hero-cta.ghost:hover {
-  border-color: var(--prime);
-  color: var(--prime);
-}
-.hero-cta-arrow {
-  transition: transform 0.2s;
-}
-.hero-cta:hover .hero-cta-arrow { transform: translateX(4px); }
-
-/* Live ticker stats strip below hero */
-.tstrip {
+.btn-sec:hover { background: var(--ink); color: var(--paper); transform: translateY(-2px); }
+.home-metrics {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  padding-top: 40px;
   border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  padding: 24px 0;
 }
-.tstrip-item {
-  padding: 0 24px;
-  border-right: 1px solid var(--line);
-  font-family: var(--mono);
-}
-.tstrip-item:last-child { border-right: none; }
-.tstrip-k {
-  font-size: 10px;
-  color: var(--txt4);
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-}
-.tstrip-v {
+.home-metric-v {
   font-family: var(--serif);
-  font-size: 42px;
+  font-size: 40px;
   font-weight: 400;
-  color: var(--txt);
+  letter-spacing: -1.2px;
+  line-height: 1;
+  color: var(--ink);
+}
+.home-metric-v em { font-style: italic; color: var(--accent); font-weight: 400; }
+.home-metric-l {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink3);
+  letter-spacing: -0.1px;
+  margin-top: 6px;
+}
+
+/* Home hero feature image */
+.home-feat {
+  position: relative;
+  aspect-ratio: 3/4;
+  max-height: 620px;
+}
+.home-feat-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 36px 32px;
+  box-shadow: var(--shade2);
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  max-width: 420px;
+}
+.home-feat-cat {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  margin-bottom: 16px;
+}
+.home-feat-logo { margin-bottom: 18px; }
+.home-feat-nm {
+  font-family: var(--serif);
+  font-size: 36px;
+  font-weight: 400;
   letter-spacing: -1px;
   line-height: 1;
+  color: var(--ink);
+  margin-bottom: 10px;
 }
-.tstrip-v small {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--prime);
-  font-weight: 600;
-  margin-left: 6px;
-  letter-spacing: 0;
-}
-
-/* ═══ SECTION ═══ */
-.sec {
-  padding: 120px 0 60px;
-  position: relative;
-}
-.sec-hd {
-  display: grid;
-  grid-template-columns: 80px 1fr auto;
-  gap: 32px;
-  align-items: baseline;
-  padding-bottom: 24px;
-  border-bottom: 2px solid var(--txt);
-  margin-bottom: 48px;
-}
-.sec-ix {
-  font-family: var(--mono);
+.home-feat-tag {
   font-size: 13px;
-  font-weight: 600;
-  color: var(--prime);
-  letter-spacing: 2px;
+  color: var(--ink3);
+  font-weight: 500;
+  margin-bottom: 22px;
 }
-.sec-t {
+.home-feat-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 20px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 22px;
+}
+.home-feat-stat b {
+  display: block;
   font-family: var(--serif);
-  font-size: clamp(36px, 5vw, 72px);
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--ink);
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+.home-feat-stat span {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ink4);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-top: 5px;
+  display: block;
+}
+.home-feat-deal {
+  font-size: 14px;
+  color: var(--ink2);
+  font-weight: 500;
+}
+.home-feat-deal b {
+  background: var(--accentA);
+  color: var(--accent);
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin: 0 4px;
+  letter-spacing: -0.1px;
+}
+.home-feat-sticker {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: var(--accent);
+  color: #fff;
+  padding: 14px 22px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.1px;
+  box-shadow: var(--shade2);
+  transform: rotate(-6deg);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.home-feat-sticker::before { content: '★'; }
+
+/* ═══ HOME SECTIONS ═══ */
+.home-sec {
+  padding: 80px 0;
+  border-top: 1px solid var(--line);
+}
+.home-sec-hd {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.home-sec-t {
+  font-family: var(--serif);
+  font-size: 48px;
   font-weight: 400;
   letter-spacing: -1.5px;
-  line-height: 0.95;
-  color: var(--txt);
+  line-height: 1;
+  color: var(--ink);
 }
-.sec-t em { font-style: italic; color: var(--prime); font-weight: 400; }
-.sec-sub {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--txt3);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  text-align: right;
+.home-sec-t em { font-style: italic; color: var(--accent); font-weight: 400; }
+.home-sec-sub {
+  font-size: 14px;
+  color: var(--ink3);
+  font-weight: 500;
+  margin-top: 6px;
+}
+.home-sec-link {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 18px;
+  border: 1.5px solid var(--line2);
+  border-radius: 999px;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: -0.1px;
+}
+.home-sec-link:hover {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
 }
 
-/* ═══ FIRM TERMINAL TABLE ═══ */
-.term {
-  border: 1px solid var(--line2);
-  background: var(--bg1);
-  font-family: var(--mono);
+/* ═══ FIRM CARDS (home + firms page) ═══ */
+.firm-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
 }
-.term-ctrl {
+.firm-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 28px;
+  cursor: pointer;
+  transition: all 0.22s;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shade);
+}
+.firm-card:hover {
+  border-color: var(--line2);
+  transform: translateY(-4px);
+  box-shadow: var(--shade2);
+}
+.firm-card-tag {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accentA);
+  padding: 4px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+.firm-card-hd {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.firm-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--paper2);
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.firm-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+.firm-logo-fb {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ink3);
+}
+.firm-card-nm {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.5px;
+  line-height: 1.05;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.firm-card-meta {
+  font-size: 12px;
+  color: var(--ink4);
+  font-weight: 500;
+  letter-spacing: -0.1px;
+}
+.firm-card-pulse {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 20px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-  flex-wrap: wrap;
-  gap: 16px;
+  margin-bottom: 16px;
 }
-.term-filters {
-  display: flex;
-  gap: 0;
-  border: 1px solid var(--line2);
-}
-.term-filters button {
-  padding: 8px 16px;
-  font-family: var(--mono);
+.firm-card-pulse-l {
   font-size: 11px;
-  font-weight: 500;
-  color: var(--txt3);
-  border-right: 1px solid var(--line2);
-  background: transparent;
-  letter-spacing: 0.5px;
+  font-weight: 700;
+  color: var(--ink4);
   text-transform: uppercase;
-  transition: all 0.15s;
-}
-.term-filters button:last-child { border-right: none; }
-.term-filters button:hover { background: var(--bg2); color: var(--txt); }
-.term-filters button.on { background: var(--prime); color: var(--bg); font-weight: 700; }
-.term-sort {
-  display: flex;
-  gap: 14px;
-  align-items: center;
-  font-size: 11px;
-  color: var(--txt3);
-}
-.term-sort-lbl {
-  color: var(--txt4);
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-}
-.term-sort button {
-  font-family: var(--mono);
-  color: var(--txt3);
-  font-size: 11px;
-  padding: 4px 0;
-  border-bottom: 1px solid transparent;
-  transition: all 0.15s;
-  letter-spacing: 0.3px;
-}
-.term-sort button:hover { color: var(--txt); }
-.term-sort button.on { color: var(--prime); border-bottom-color: var(--prime); }
-
-.term-colhdr {
-  display: grid;
-  grid-template-columns: 60px 2fr 100px 120px 100px 120px 90px 40px;
-  gap: 16px;
-  padding: 12px 20px;
-  border-bottom: 1px solid var(--line);
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--txt4);
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-.term-row {
-  display: grid;
-  grid-template-columns: 60px 2fr 100px 120px 100px 120px 90px 40px;
-  gap: 16px;
-  padding: 22px 20px;
-  border-bottom: 1px solid var(--line);
-  align-items: center;
-  cursor: pointer;
-  transition: background 0.15s;
-  width: 100%;
-  text-align: left;
-}
-.term-row:hover { background: var(--bg2); }
-.term-row.open { background: var(--bg2); border-bottom-color: var(--prime); }
-.term-rank {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--txt4);
   letter-spacing: 1px;
 }
-.term-rank::before { content: '#'; opacity: 0.4; }
-.term-firm {
+.firm-card-pulse-v {
+  font-family: var(--serif);
+  font-size: 32px;
+  font-weight: 400;
+  color: var(--accent);
+  letter-spacing: -0.8px;
+  line-height: 1;
+}
+.firm-card-rating {
+  font-size: 13px;
+  color: var(--ink2);
+  font-weight: 600;
+}
+.firm-card-rating em {
+  font-style: normal;
+  color: var(--ink4);
+  font-weight: 500;
+  margin-left: 4px;
+}
+.firm-card-desc {
+  font-size: 13.5px;
+  color: var(--ink3);
+  line-height: 1.55;
+  margin-bottom: 22px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+.firm-card-foot {
   display: flex;
   align-items: center;
-  gap: 14px;
-  min-width: 0;
+  justify-content: space-between;
+  gap: 10px;
 }
-.term-firm-lg {
-  width: 40px;
-  height: 40px;
-  border: 1px solid var(--line2);
+.firm-card-deal {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accentA);
+  padding: 6px 12px;
+  border-radius: 6px;
+  letter-spacing: -0.1px;
+}
+.firm-card-view {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+}
+.firm-card:hover .firm-card-view { color: var(--accent); }
+.firm-card-view-arrow { transition: transform 0.2s; }
+.firm-card:hover .firm-card-view-arrow { transform: translateX(3px); }
+
+/* ═══ FIRM DETAIL PAGE ═══ */
+.detail-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink3);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 12px 0;
+  margin-top: 24px;
+  transition: color 0.15s;
+}
+.detail-back:hover { color: var(--accent); }
+.detail-hero {
+  padding: 40px 0 60px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 60px;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+}
+.detail-eye {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+.detail-logo-lg {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
   overflow: hidden;
-  flex-shrink: 0;
-  background: var(--bg2);
+  background: var(--paper2);
+  border: 1px solid var(--line);
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 20px;
 }
-.term-firm-lg img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
-.term-firm-lg-fb {
-  font-family: var(--mono);
-  font-size: 12px;
+.detail-logo-lg img { width: 100%; height: 100%; object-fit: contain; padding: 8px; }
+.detail-nm {
+  font-family: var(--serif);
+  font-size: clamp(48px, 6vw, 72px);
+  font-weight: 400;
+  letter-spacing: -2.5px;
+  line-height: 0.95;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+.detail-nm em { font-style: italic; color: var(--accent); font-weight: 400; }
+.detail-tagline {
+  font-size: 18px;
+  color: var(--ink3);
+  max-width: 580px;
+  line-height: 1.55;
+  margin-bottom: 28px;
+  font-weight: 400;
+}
+.detail-meta {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+  font-size: 13px;
+  color: var(--ink3);
+  font-weight: 500;
+}
+.detail-meta b { color: var(--ink); }
+.detail-side {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: var(--shade);
+}
+.detail-side-pulse {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 22px;
+}
+.detail-side-pulse-v {
+  font-family: var(--serif);
+  font-size: 64px;
+  font-weight: 400;
+  color: var(--accent);
+  letter-spacing: -2px;
+  line-height: 0.9;
+}
+.detail-side-pulse-l {
+  text-align: right;
+}
+.detail-side-pulse-l b {
+  display: block;
+  font-size: 11px;
   font-weight: 700;
-  color: var(--txt3);
+  color: var(--ink3);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
 }
-.term-firm-nm {
+.detail-side-pulse-l span {
+  display: block;
+  font-size: 12px;
+  color: var(--ink4);
+  margin-top: 4px;
+  font-weight: 500;
+}
+.detail-side-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  font-size: 13px;
+  border-top: 1px solid var(--line);
+}
+.detail-side-row:first-child { border-top: none; }
+.detail-side-row span { color: var(--ink3); font-weight: 500; }
+.detail-side-row b { color: var(--ink); font-weight: 600; }
+.detail-side-cta {
+  margin-top: 22px;
+  width: 100%;
+  padding: 14px;
+  text-align: center;
+  border-radius: 999px;
+  justify-content: center;
+}
+
+/* Detail sections */
+.detail-sec {
+  padding: 60px 0;
+  border-bottom: 1px solid var(--line);
+}
+.detail-sec-t {
+  font-family: var(--serif);
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: -1px;
+  color: var(--ink);
+  margin-bottom: 28px;
+}
+.detail-sec-t em { font-style: italic; color: var(--accent); }
+
+.scorecard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.scorecard-row {
+  display: grid;
+  grid-template-columns: 14px 160px 1fr;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 18px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.scorecard-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.scorecard-dot.green { background: var(--sage); }
+.scorecard-dot.yellow { background: var(--gold); }
+.scorecard-dot.red { background: var(--accent); }
+.scorecard-k {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.1px;
+}
+.scorecard-v {
+  font-size: 13px;
+  color: var(--ink3);
+  line-height: 1.5;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+.stat-card {
+  padding: 22px 24px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.stat-k {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink4);
+  text-transform: uppercase;
+  letter-spacing: 1.1px;
+  margin-bottom: 10px;
+}
+.stat-v {
   font-family: var(--serif);
   font-size: 22px;
   font-weight: 500;
-  color: var(--txt);
+  color: var(--ink);
   letter-spacing: -0.4px;
-  line-height: 1.1;
-  margin-bottom: 3px;
+  line-height: 1.25;
 }
-.term-firm-meta {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--txt4);
-  letter-spacing: 0.5px;
+
+.faq-cat {
+  margin-bottom: 28px;
 }
-.term-pulse {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.term-pulse-v {
-  font-family: var(--serif);
-  font-size: 26px;
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: -0.5px;
-  color: var(--prime);
-}
-.term-pulse-bar {
-  height: 2px;
-  background: var(--bg3);
-  overflow: hidden;
-  max-width: 80px;
-}
-.term-pulse-bar span {
-  display: block;
-  height: 100%;
-  background: var(--prime);
-  box-shadow: 0 0 6px rgba(168,255,96,0.5);
-}
-.term-rating {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--txt2);
-}
-.term-rating em {
-  display: block;
-  font-style: normal;
-  font-size: 10px;
-  color: var(--txt4);
-  margin-top: 2px;
-}
-.term-alloc { font-family: var(--mono); font-size: 12px; color: var(--txt2); }
-.term-tag {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--txt3);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-.term-tag.on {
-  color: var(--prime);
-  padding: 4px 8px;
-  border: 1px solid var(--prime);
-  background: var(--primeA);
-}
-.term-deal {
-  font-family: var(--mono);
-  font-size: 11px;
+.faq-cat-t {
+  font-size: 15px;
   font-weight: 700;
-  color: var(--prime);
-  padding: 4px 8px;
-  border: 1px solid var(--prime);
-  background: var(--primeA);
-  letter-spacing: 0.5px;
-  text-align: center;
-}
-.term-deal.none { border-color: var(--line); color: var(--txt5); background: transparent; }
-.term-chev {
-  font-family: var(--mono);
-  font-size: 18px;
-  color: var(--txt4);
-  text-align: center;
-  transition: all 0.2s;
-}
-.term-row.open .term-chev { color: var(--prime); transform: rotate(90deg); }
-
-/* EXPANDED ROW */
-.term-expand {
+  color: var(--accent);
+  margin-bottom: 14px;
+  letter-spacing: -0.2px;
+  padding-bottom: 10px;
   border-bottom: 1px solid var(--line);
-  padding: 32px 20px 40px 96px;
-  background: var(--bg2);
-  animation: slideDown 0.3s ease-out;
 }
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.term-expand-desc {
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 17px;
-  line-height: 1.5;
-  color: var(--txt2);
-  margin-bottom: 28px;
-  max-width: 720px;
-}
-.term-expand-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0;
-  border-top: 1px solid var(--line);
+.faq-item {
+  padding: 16px 0;
   border-bottom: 1px solid var(--line);
-  margin-bottom: 28px;
 }
-.term-expand-cell {
-  padding: 18px 20px;
-  border-right: 1px solid var(--line);
-}
-.term-expand-cell:last-child { border-right: none; }
-.term-expand-lbl {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--txt4);
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-}
-.term-expand-v {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--txt);
-  line-height: 1.4;
-  font-weight: 500;
-}
-.term-expand-scorecard {
-  margin-bottom: 28px;
-}
-.term-sc-row {
-  display: grid;
-  grid-template-columns: 14px 180px 1fr;
-  gap: 14px;
-  align-items: center;
-  padding: 10px 0;
-  border-top: 1px solid var(--line);
-  font-family: var(--mono);
-  font-size: 11px;
-}
-.term-sc-row:last-child { border-bottom: 1px solid var(--line); }
-.term-sc-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-.term-sc-dot.green { background: var(--prime); box-shadow: 0 0 8px rgba(168,255,96,0.6); }
-.term-sc-dot.yellow { background: var(--warn); box-shadow: 0 0 8px rgba(255,184,77,0.5); }
-.term-sc-dot.red { background: var(--danger); box-shadow: 0 0 8px rgba(255,107,107,0.5); }
-.term-sc-k { color: var(--txt3); letter-spacing: 0.5px; }
-.term-sc-v { color: var(--txt); }
-.term-expand-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.term-act {
-  font-family: var(--mono);
-  font-size: 12px;
+.faq-q {
+  font-size: 15px;
   font-weight: 600;
-  padding: 11px 20px;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  border: 1px solid var(--line2);
-  background: transparent;
-  color: var(--txt);
-  transition: all 0.15s;
-  display: inline-flex;
+  color: var(--ink);
+  margin-bottom: 8px;
+  letter-spacing: -0.2px;
+  cursor: pointer;
+  display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  gap: 20px;
 }
-.term-act:hover { border-color: var(--prime); color: var(--prime); }
-.term-act.primary { background: var(--prime); color: var(--bg); border-color: var(--prime); font-weight: 700; }
-.term-act.primary:hover { background: transparent; color: var(--prime); }
+.faq-q::after {
+  content: '+';
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--ink4);
+  transition: transform 0.2s;
+}
+.faq-item.open .faq-q::after {
+  content: '−';
+  color: var(--accent);
+}
+.faq-a {
+  display: none;
+  font-size: 14px;
+  color: var(--ink3);
+  line-height: 1.65;
+  padding-top: 8px;
+}
+.faq-item.open .faq-a { display: block; }
 
-/* ═══ QUIZ ═══ */
-.quiz {
-  border: 1px solid var(--line2);
-  background: var(--bg1);
-  padding: 48px 56px;
-  position: relative;
-  overflow: hidden;
-}
-.quiz::before {
-  content: 'RUN DIAGNOSTIC';
-  position: absolute;
-  top: 14px;
-  right: 20px;
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--prime);
-  letter-spacing: 2px;
+/* ═══ QUIZ PAGE ═══ */
+.quiz-wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 80px 0 100px;
 }
 .quiz-prog {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--prime);
-  letter-spacing: 1.5px;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.quiz-prog-track {
-  flex: 1;
-  max-width: 300px;
-  height: 2px;
-  background: var(--bg3);
-  position: relative;
+  height: 3px;
+  background: var(--paper3);
+  border-radius: 999px;
   overflow: hidden;
+  margin-bottom: 14px;
 }
-.quiz-prog-fill {
+.quiz-prog span {
+  display: block;
   height: 100%;
-  background: var(--prime);
-  box-shadow: 0 0 8px var(--prime);
+  background: var(--accent);
   transition: width 0.4s ease;
+  border-radius: 999px;
+}
+.quiz-step {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
 }
 .quiz-q {
   font-family: var(--serif);
-  font-size: 44px;
+  font-size: 52px;
   font-weight: 400;
-  letter-spacing: -1px;
-  line-height: 1.05;
-  color: var(--txt);
-  margin: 18px 0 8px;
+  letter-spacing: -1.8px;
+  line-height: 1.02;
+  color: var(--ink);
+  margin-bottom: 14px;
 }
 .quiz-sub {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--txt3);
-  letter-spacing: 0.5px;
-  margin-bottom: 32px;
+  font-size: 16px;
+  color: var(--ink3);
+  margin-bottom: 40px;
+  font-weight: 400;
 }
-.quiz-opts {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2px;
-  background: var(--line);
-  border: 1px solid var(--line);
-}
+.quiz-opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
 .quiz-opt {
-  background: var(--bg1);
-  padding: 22px 28px;
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  padding: 22px 26px;
   text-align: left;
-  transition: all 0.15s;
-  display: grid;
-  grid-template-columns: 40px 1fr auto;
-  gap: 20px;
+  transition: all 0.18s;
+  display: flex;
   align-items: center;
+  gap: 20px;
 }
-.quiz-opt:hover { background: var(--bg2); }
-.quiz-opt-ltr {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--prime);
-  letter-spacing: 1px;
-  border: 1px solid var(--prime);
-  width: 28px;
-  height: 28px;
-  display: inline-flex;
+.quiz-opt:hover {
+  border-color: var(--accent);
+  transform: translateX(4px);
+  box-shadow: var(--shade);
+}
+.quiz-opt-letter {
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid var(--line2);
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink3);
+  display: flex;
   align-items: center;
   justify-content: center;
-}
-.quiz-opt:hover .quiz-opt-ltr {
-  background: var(--prime);
-  color: var(--bg);
-}
-.quiz-opt-l {
-  font-family: var(--serif);
-  font-size: 19px;
-  font-weight: 500;
-  color: var(--txt);
-  letter-spacing: -0.3px;
-}
-.quiz-opt-d {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--txt3);
-  letter-spacing: 0.3px;
-  margin-top: 3px;
-}
-.quiz-opt-arrow {
-  font-family: var(--mono);
-  font-size: 16px;
-  color: var(--txt4);
+  flex-shrink: 0;
   transition: all 0.2s;
 }
-.quiz-opt:hover .quiz-opt-arrow {
-  color: var(--prime);
-  transform: translateX(4px);
+.quiz-opt:hover .quiz-opt-letter {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
 }
-.quiz-footer {
-  margin-top: 20px;
-  display: flex;
-  gap: 14px;
-  align-items: center;
+.quiz-opt-content { flex: 1; min-width: 0; }
+.quiz-opt-l {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.2px;
 }
-.quiz-back {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--txt3);
-  padding: 8px 14px;
-  border: 1px solid var(--line2);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  transition: all 0.15s;
-}
-.quiz-back:hover { border-color: var(--prime); color: var(--prime); }
-
-/* Quiz results */
-.quiz-results-hdr {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 32px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid var(--line);
-}
-.quiz-results-tag {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--prime);
-  padding: 4px 10px;
-  border: 1px solid var(--prime);
-  letter-spacing: 1.5px;
-  background: var(--primeA);
-}
-.quiz-results-title {
-  font-family: var(--serif);
-  font-size: 32px;
-  font-weight: 500;
-  color: var(--txt);
-  letter-spacing: -0.6px;
-}
-.quiz-results-title em {
-  font-style: italic;
-  color: var(--prime);
-  font-weight: 500;
-}
-.quiz-result-row {
-  display: grid;
-  grid-template-columns: 40px 44px 1fr 70px auto;
-  gap: 18px;
-  align-items: center;
-  padding: 18px 0;
-  border-bottom: 1px solid var(--line);
-}
-.quiz-result-rank {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--txt4);
-  letter-spacing: 1px;
-}
-.quiz-result-rank::before { content: '#'; opacity: 0.4; }
-.quiz-result-info { min-width: 0; }
-.quiz-result-nm {
-  font-family: var(--serif);
-  font-size: 20px;
-  font-weight: 500;
-  color: var(--txt);
-  margin-bottom: 4px;
-  letter-spacing: -0.3px;
-}
-.quiz-result-reasons {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--txt3);
-  letter-spacing: 0.3px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.quiz-result-reasons span::before { content: '+ '; color: var(--prime); }
-.quiz-result-score {
-  font-family: var(--serif);
-  font-size: 28px;
-  color: var(--prime);
-  font-weight: 500;
-  text-align: right;
-  letter-spacing: -0.5px;
-  line-height: 1;
-}
-.quiz-result-score small {
-  display: block;
-  font-family: var(--mono);
-  font-size: 9px;
-  color: var(--txt4);
-  font-weight: 500;
-  letter-spacing: 1px;
+.quiz-opt-d {
+  font-size: 13px;
+  color: var(--ink4);
   margin-top: 3px;
+  font-weight: 500;
 }
-.quiz-result-actions {
-  display: flex;
+.quiz-opt-arr {
+  font-size: 18px;
+  color: var(--ink5);
+  transition: all 0.2s;
+}
+.quiz-opt:hover .quiz-opt-arr { color: var(--accent); transform: translateX(4px); }
+.quiz-back-btn {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink3);
+  padding: 10px 18px;
+  border-radius: 999px;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
   gap: 6px;
 }
-.quiz-result-btn {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  padding: 7px 12px;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  border: 1px solid var(--line2);
-  color: var(--txt);
-  transition: all 0.15s;
-}
-.quiz-result-btn:hover { border-color: var(--prime); color: var(--prime); }
-.quiz-result-btn.primary { background: var(--prime); color: var(--bg); border-color: var(--prime); font-weight: 700; }
+.quiz-back-btn:hover { color: var(--accent); }
 
-/* ═══ DEALS STRIP ═══ */
-.deals {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0;
-  border: 1px solid var(--line2);
-  background: var(--bg1);
+.results-hd {
+  padding: 60px 0 32px;
+  text-align: center;
 }
-.deals-row {
-  padding: 28px 24px;
-  border-right: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  text-align: left;
-  transition: background 0.15s;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  position: relative;
-}
-.deals-row:hover { background: var(--bg2); }
-.deals-row:hover::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--prime);
-}
-.deals-row-firm {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--serif);
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--txt);
-  letter-spacing: -0.3px;
-}
-.deals-row-logo {
-  width: 26px;
-  height: 26px;
-  border: 1px solid var(--line2);
-  overflow: hidden;
-  background: var(--bg2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.deals-row-logo img { width: 100%; height: 100%; object-fit: contain; padding: 3px; }
-.deals-row-pct {
-  font-family: var(--serif);
-  font-size: 56px;
-  font-weight: 500;
-  color: var(--prime);
-  line-height: 1;
-  letter-spacing: -2px;
-}
-.deals-row-pct em { font-family: var(--mono); font-size: 14px; font-weight: 600; font-style: normal; vertical-align: top; }
-.deals-row-code {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--txt3);
-  letter-spacing: 1px;
-  margin-top: auto;
-}
-.deals-row-code b { color: var(--txt); background: var(--bg3); padding: 3px 6px; margin-left: 4px; }
-.deals-row-desc {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--txt4);
-  line-height: 1.4;
-  letter-spacing: 0.2px;
-}
-
-/* ═══ CHALLENGES ═══ */
-.chal-ctrl {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 28px;
-  flex-wrap: wrap;
-}
-.chal-ctrl select {
-  font-family: var(--mono);
-  font-size: 11px;
-  padding: 10px 14px;
-  background: var(--bg1);
-  color: var(--txt);
-  border: 1px solid var(--line2);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  cursor: pointer;
-  outline: none;
-}
-.chal-ctrl select:focus { border-color: var(--prime); }
-.chal-ctrl button {
-  font-family: var(--mono);
-  font-size: 11px;
-  padding: 10px 16px;
-  background: var(--bg1);
-  color: var(--txt3);
-  border: 1px solid var(--line2);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  transition: all 0.15s;
-}
-.chal-ctrl button:hover { color: var(--txt); }
-.chal-ctrl button.on { background: var(--prime); color: var(--bg); border-color: var(--prime); font-weight: 700; }
-.chal-table {
-  width: 100%;
-  border: 1px solid var(--line2);
-  background: var(--bg1);
-  border-collapse: collapse;
-  font-family: var(--mono);
+.results-tag {
+  display: inline-block;
   font-size: 12px;
-}
-.chal-table thead th {
-  font-size: 10px;
-  color: var(--txt4);
+  font-weight: 700;
+  color: var(--accent);
+  padding: 5px 14px;
+  background: var(--accentA);
+  border-radius: 20px;
   letter-spacing: 1.2px;
   text-transform: uppercase;
-  padding: 14px 16px;
-  text-align: left;
-  border-bottom: 1px solid var(--line);
-  background: var(--bg2);
-  font-weight: 600;
+  margin-bottom: 18px;
 }
-.chal-table tbody td {
-  padding: 16px;
+.results-t {
+  font-family: var(--serif);
+  font-size: 48px;
+  font-weight: 400;
+  letter-spacing: -1.5px;
+  line-height: 1;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+.results-t em { font-style: italic; color: var(--accent); }
+.results-sub { font-size: 16px; color: var(--ink3); font-weight: 500; }
+.result-row {
+  display: grid;
+  grid-template-columns: 40px 52px 1fr 80px auto;
+  gap: 20px;
+  align-items: center;
+  padding: 22px 26px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  margin-bottom: 10px;
+  transition: all 0.18s;
+  box-shadow: var(--shade);
+}
+.result-row:hover { transform: translateY(-2px); box-shadow: var(--shade2); }
+.result-row.top { border-color: var(--accent); background: linear-gradient(90deg, rgba(225,75,53,0.04), var(--card)); }
+.result-rank {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink4);
+  letter-spacing: -0.1px;
+}
+.result-nm {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+.result-reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  font-size: 12px;
+  color: var(--ink3);
+  font-weight: 500;
+}
+.result-reasons span::before { content: '✓ '; color: var(--sage); font-weight: 700; }
+.result-score {
+  font-family: var(--serif);
+  font-size: 36px;
+  color: var(--accent);
+  font-weight: 400;
+  letter-spacing: -0.8px;
+  line-height: 1;
+  text-align: right;
+}
+.result-score small {
+  display: block;
+  font-family: var(--sans);
+  font-size: 10px;
+  color: var(--ink4);
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+.result-act {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.result-btn {
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+  border: 1.5px solid var(--line2);
+  color: var(--ink);
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.result-btn:hover { border-color: var(--ink); }
+.result-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.result-btn.primary:hover { background: var(--accent2); }
+
+/* ═══ DEALS PAGE ═══ */
+.deals-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+.deal-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 28px;
+  transition: all 0.2s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shade);
+}
+.deal-card:hover { transform: translateY(-3px); box-shadow: var(--shade2); border-color: var(--accent); }
+.deal-card-tag {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--gold);
+  background: rgba(184,137,59,0.12);
+  padding: 4px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+.deal-card-hd {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.deal-card-nm {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.3px;
+}
+.deal-card-pct {
+  font-family: var(--serif);
+  font-size: 64px;
+  font-weight: 400;
+  color: var(--accent);
+  line-height: 0.9;
+  letter-spacing: -2.5px;
+  margin-bottom: 6px;
+}
+.deal-card-pct em {
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink4);
+  font-style: normal;
+  vertical-align: top;
+  letter-spacing: -0.2px;
+  margin-left: 4px;
+}
+.deal-card-desc {
+  font-size: 13px;
+  color: var(--ink3);
+  line-height: 1.55;
+  margin-bottom: 18px;
+}
+.deal-card-code {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.deal-card-code-l { font-size: 11px; font-weight: 700; color: var(--ink4); text-transform: uppercase; letter-spacing: 1px; }
+.deal-card-code-v {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ink);
+  padding: 6px 14px;
+  background: var(--paper2);
+  border-radius: 8px;
+  border: 1px dashed var(--ink3);
+  letter-spacing: -0.2px;
+}
+
+/* ═══ CHALLENGES PAGE ═══ */
+.chal-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.chal-filters select {
+  padding: 11px 18px;
+  border: 1.5px solid var(--line2);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  transition: border 0.15s;
+}
+.chal-filters select:focus, .chal-filters select:hover { border-color: var(--accent); }
+.chal-filters button {
+  padding: 11px 18px;
+  border: 1.5px solid var(--line2);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink2);
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s;
+  letter-spacing: -0.1px;
+}
+.chal-filters button:hover { border-color: var(--ink); }
+.chal-filters button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+.chal-tbl {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  font-size: 13px;
+}
+.chal-tbl thead th {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink4);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 16px 18px;
+  text-align: left;
+  background: var(--paper2);
+  border-bottom: 1px solid var(--line);
+}
+.chal-tbl tbody td {
+  padding: 18px;
   border-bottom: 1px solid var(--line);
   vertical-align: middle;
-  color: var(--txt2);
+  color: var(--ink2);
+  font-weight: 500;
 }
-.chal-table tbody tr:hover td { background: var(--bg2); }
-.chal-table tbody tr:last-child td { border-bottom: none; }
-.chal-cell-firm {
+.chal-tbl tbody tr:hover td { background: var(--paper2); }
+.chal-tbl tbody tr:last-child td { border-bottom: none; }
+.chal-tbl-firm {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-.chal-cell-firm img { width: 22px; height: 22px; border: 1px solid var(--line2); padding: 2px; background: var(--bg2); }
-.chal-cell-firm b {
+.chal-tbl-firm img {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--paper2);
+  padding: 2px;
+}
+.chal-tbl-firm b {
   font-family: var(--serif);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
-  color: var(--txt);
+  color: var(--ink);
   letter-spacing: -0.3px;
 }
-.chal-cell-plan {
-  font-family: var(--mono);
+.chal-tbl-plan {
   font-size: 12px;
-  color: var(--prime);
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--accent);
+  margin-top: 2px;
 }
-.chal-cell-price {
+.chal-tbl-price {
   font-family: var(--serif);
   font-size: 18px;
   font-weight: 500;
-  color: var(--prime);
+  color: var(--ink);
   letter-spacing: -0.3px;
 }
 
 /* ═══ SIMULATOR ═══ */
-.sim {
-  border: 1px solid var(--line2);
-  background: var(--bg1);
-  padding: 32px;
+.sim-wrap {
+  max-width: 880px;
+  margin: 0 auto;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 36px;
+  box-shadow: var(--shade);
 }
-.sim-ctrl {
+.sim-ctrls {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
   margin-bottom: 24px;
 }
-.sim-ctrl label {
+.sim-ctrl-l {
   display: block;
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--txt4);
-  letter-spacing: 1.2px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink4);
+  letter-spacing: 1px;
   text-transform: uppercase;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
-.sim-ctrl select {
+.sim-ctrl-s {
   width: 100%;
-  font-family: var(--mono);
-  font-size: 12px;
-  padding: 12px 14px;
-  background: var(--bg2);
-  color: var(--txt);
-  border: 1px solid var(--line2);
-  letter-spacing: 0.4px;
+  padding: 13px 16px;
+  border: 1.5px solid var(--line2);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
   cursor: pointer;
   outline: none;
+  transition: border 0.15s;
 }
-.sim-ctrl select:focus { border-color: var(--prime); }
-.sim-chart-wrap {
-  background: var(--bg2);
+.sim-ctrl-s:focus, .sim-ctrl-s:hover { border-color: var(--accent); }
+.sim-chart {
+  background: var(--paper2);
   border: 1px solid var(--line);
+  border-radius: 14px;
   padding: 20px;
-  position: relative;
-  overflow: hidden;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
-.sim-chart-wrap::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(168,255,96,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(168,255,96,0.03) 1px, transparent 1px);
-  background-size: 24px 24px;
-  pointer-events: none;
-}
-.sim-chart { width: 100%; height: auto; display: block; position: relative; }
+.sim-chart svg { width: 100%; height: auto; display: block; }
 .sim-verdict {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 18px;
   padding: 20px 24px;
-  border: 1px solid;
+  border-radius: 14px;
   margin-bottom: 16px;
-  font-family: var(--mono);
 }
-.sim-verdict.pass { border-color: var(--prime); background: var(--primeA); }
-.sim-verdict.fail { border-color: var(--danger); background: rgba(255,107,107,0.06); }
-.sim-verdict-mark {
-  font-family: var(--serif);
-  font-size: 42px;
-  line-height: 1;
-  font-weight: 500;
+.sim-verdict.pass { background: rgba(74,124,89,0.08); border: 1px solid rgba(74,124,89,0.3); }
+.sim-verdict.fail { background: rgba(225,75,53,0.06); border: 1px solid rgba(225,75,53,0.3); }
+.sim-verdict-ic {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  font-size: 24px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
-.sim-verdict.pass .sim-verdict-mark { color: var(--prime); }
-.sim-verdict.fail .sim-verdict-mark { color: var(--danger); }
+.sim-verdict.pass .sim-verdict-ic { background: var(--sage); color: #fff; }
+.sim-verdict.fail .sim-verdict-ic { background: var(--accent); color: #fff; }
 .sim-verdict-t {
   font-family: var(--serif);
   font-size: 22px;
   font-weight: 500;
-  color: var(--txt);
-  letter-spacing: -0.3px;
-  margin-bottom: 4px;
+  color: var(--ink);
+  letter-spacing: -0.4px;
+  margin-bottom: 3px;
 }
 .sim-verdict-d {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--txt3);
-  line-height: 1.5;
-  letter-spacing: 0.3px;
+  font-size: 13px;
+  color: var(--ink3);
+  line-height: 1.55;
 }
 .sim-legend {
   display: flex;
-  gap: 24px;
+  gap: 20px;
   padding-top: 14px;
   border-top: 1px solid var(--line);
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--txt3);
-  letter-spacing: 0.5px;
+  font-size: 12px;
+  color: var(--ink3);
+  font-weight: 500;
   flex-wrap: wrap;
 }
-.sim-legend span { display: inline-flex; align-items: center; gap: 6px; }
-.sim-legend-dot { width: 12px; height: 2px; display: inline-block; }
+.sim-legend span { display: inline-flex; align-items: center; gap: 8px; }
+.sim-legend-dot { width: 16px; height: 3px; border-radius: 2px; display: inline-block; }
+.sim-info { margin-left: auto; }
+.sim-info b { color: var(--ink); font-weight: 700; }
 
 /* ═══ RESEARCH ═══ */
-.rsearch {
+.research-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 0;
-  border: 1px solid var(--line2);
-  background: var(--bg1);
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
 }
-.rsearch-main {
-  padding: 40px 44px;
-  border-right: 1px solid var(--line);
+.research-feat {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 44px;
   cursor: pointer;
-  transition: background 0.2s;
-  grid-row: span 2;
+  transition: all 0.2s;
+  box-shadow: var(--shade);
 }
-.rsearch-main:hover { background: var(--bg2); }
-.rsearch-cat {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--prime);
-  letter-spacing: 1.5px;
+.research-feat:hover { transform: translateY(-3px); box-shadow: var(--shade2); }
+.research-cat {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  padding: 4px 10px;
+  background: var(--accentA);
+  border-radius: 20px;
+  letter-spacing: 1px;
   text-transform: uppercase;
   margin-bottom: 20px;
 }
-.rsearch-h {
+.research-t {
   font-family: var(--serif);
-  font-size: 38px;
-  font-weight: 500;
-  letter-spacing: -1px;
-  line-height: 1.1;
-  color: var(--txt);
-  margin-bottom: 16px;
-}
-.rsearch-excerpt {
-  font-family: var(--serif);
-  font-size: 15px;
-  font-style: italic;
-  color: var(--txt3);
-  line-height: 1.55;
-  margin-bottom: 18px;
-}
-.rsearch-date {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--txt4);
-  letter-spacing: 0.5px;
-}
-.rsearch-sub {
-  padding: 28px 32px;
-  border-bottom: 1px solid var(--line);
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.rsearch-sub:hover { background: var(--bg2); }
-.rsearch-sub:last-child { border-bottom: none; }
-.rsearch-sub-cat {
-  font-family: var(--mono);
-  font-size: 9px;
-  color: var(--prime);
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-}
-.rsearch-sub-h {
-  font-family: var(--serif);
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--txt);
-  line-height: 1.25;
-  letter-spacing: -0.3px;
-  margin-bottom: 8px;
-}
-.rsearch-sub-date {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--txt4);
-  letter-spacing: 0.5px;
-}
-
-/* ═══ REWARDS CARD ═══ */
-.rw {
-  border: 1px solid var(--line2);
-  background: var(--bg1);
-  padding: 48px 56px;
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 56px;
-  align-items: center;
-}
-.rw-eye {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--prime);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 16px;
-}
-.rw-h {
-  font-family: var(--serif);
-  font-size: 48px;
-  font-weight: 500;
+  font-size: 40px;
+  font-weight: 400;
   letter-spacing: -1.2px;
   line-height: 1.05;
-  color: var(--txt);
-  margin-bottom: 18px;
+  color: var(--ink);
+  margin-bottom: 14px;
 }
-.rw-h em { font-style: italic; color: var(--prime); }
-.rw-d {
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 17px;
-  color: var(--txt3);
-  line-height: 1.5;
-  margin-bottom: 28px;
-  max-width: 480px;
-}
-.rw-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.rw-step {
-  display: grid;
-  grid-template-columns: 42px 1fr;
-  gap: 14px;
-  align-items: center;
-  padding: 14px 18px;
-  border: 1px solid var(--line);
-  background: var(--bg2);
-  transition: all 0.15s;
-}
-.rw-step:hover { border-color: var(--prime); }
-.rw-step-n {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--prime);
-  font-weight: 700;
-  letter-spacing: 1px;
-  border: 1px solid var(--prime);
-  width: 30px;
-  height: 30px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.rw-step-t {
-  font-family: var(--serif);
+.research-excerpt {
   font-size: 16px;
-  color: var(--txt);
-  letter-spacing: -0.3px;
-  margin-bottom: 3px;
+  color: var(--ink3);
+  line-height: 1.55;
+  margin-bottom: 20px;
 }
-.rw-step-s {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--txt4);
-  letter-spacing: 0.4px;
+.research-date {
+  font-size: 12px;
+  color: var(--ink4);
+  font-weight: 500;
+}
+.research-side { display: flex; flex-direction: column; gap: 14px; }
+.research-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: var(--shade);
+}
+.research-card:hover { transform: translateY(-2px); box-shadow: var(--shade2); }
+.research-card .research-cat { margin-bottom: 12px; }
+.research-card-t {
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: -0.4px;
+  line-height: 1.2;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+.research-card-date { font-size: 11px; color: var(--ink4); font-weight: 500; }
+
+/* ═══ REWARDS PAGE ═══ */
+.rewards-wrap {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.rewards-feature {
+  background: linear-gradient(135deg, var(--card) 0%, var(--paper2) 100%);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 56px 48px;
+  text-align: center;
+  margin-bottom: 40px;
+  box-shadow: var(--shade);
+}
+.rewards-feature-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  padding: 5px 14px;
+  background: var(--accentA);
+  border-radius: 20px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.rewards-feature-t {
+  font-family: var(--serif);
+  font-size: 56px;
+  font-weight: 400;
+  letter-spacing: -2px;
+  line-height: 1;
+  color: var(--ink);
+  margin-bottom: 20px;
+}
+.rewards-feature-t em { font-style: italic; color: var(--accent); }
+.rewards-feature-d {
+  font-size: 17px;
+  color: var(--ink3);
+  max-width: 560px;
+  margin: 0 auto 32px;
+  line-height: 1.55;
+  font-weight: 400;
+}
+.rewards-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.rewards-step {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 24px 20px;
+  text-align: left;
+}
+.rewards-step-n {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--accent);
+  letter-spacing: -0.5px;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+.rewards-step-t {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.3px;
+  margin-bottom: 6px;
+}
+.rewards-step-d {
+  font-size: 13px;
+  color: var(--ink3);
+  line-height: 1.5;
+  font-weight: 500;
 }
 
 /* ═══ FOOTER ═══ */
 .ftr {
-  margin-top: 140px;
-  padding: 60px 0 40px;
-  border-top: 2px solid var(--txt);
+  margin-top: 100px;
+  padding: 60px 40px 40px;
+  border-top: 1px solid var(--line);
+  background: var(--paper2);
+}
+.ftr-inner {
+  max-width: 1400px;
+  margin: 0 auto;
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: 48px;
 }
 .ftr-brand {
-  font-family: var(--serif);
-  font-size: 28px;
-  font-weight: 500;
-  color: var(--txt);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--ink);
   letter-spacing: -0.5px;
   margin-bottom: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
 }
-.ftr-brand em { font-style: italic; color: var(--prime); }
-.ftr-tag {
+.ftr-brand span {
   font-family: var(--serif);
   font-style: italic;
-  font-size: 14px;
-  color: var(--txt3);
-  max-width: 320px;
-  line-height: 1.55;
-  margin-bottom: 20px;
+  font-weight: 500;
+  color: var(--accent);
 }
-.ftr-mono {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--txt4);
-  letter-spacing: 0.5px;
+.ftr-tag {
+  font-size: 14px;
+  color: var(--ink3);
+  line-height: 1.55;
+  max-width: 320px;
+  margin-bottom: 16px;
+  font-weight: 400;
 }
 .ftr-col h4 {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--prime);
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  margin-bottom: 20px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 16px;
+  letter-spacing: -0.1px;
 }
 .ftr-col a, .ftr-col button {
   display: block;
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--txt2);
+  font-size: 13px;
+  color: var(--ink3);
   padding: 5px 0;
   transition: color 0.15s;
-  letter-spacing: 0.3px;
-  text-decoration: none;
+  font-weight: 500;
   text-align: left;
 }
-.ftr-col a:hover, .ftr-col button:hover { color: var(--prime); }
+.ftr-col a:hover, .ftr-col button:hover { color: var(--accent); }
 .ftr-btm {
-  grid-column: 1 / -1;
-  padding-top: 32px;
-  margin-top: 24px;
+  max-width: 1400px;
+  margin: 32px auto 0;
+  padding-top: 24px;
   border-top: 1px solid var(--line);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--txt4);
-  letter-spacing: 0.5px;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-/* ═══ SIDEBAR (user panel) ═══ */
-.user-panel {
-  position: fixed;
-  top: 60px;
-  right: 16px;
-  width: 280px;
-  background: var(--bg1);
-  border: 1px solid var(--line2);
-  padding: 20px;
-  z-index: 40;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-}
-.user-panel-hdr {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 16px;
-}
-.user-panel-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 1px solid var(--line2);
-  background: var(--bg2);
-  background-size: cover;
-  background-position: center;
-}
-.user-panel-name {
-  font-family: var(--serif);
-  font-size: 16px;
-  color: var(--txt);
-  letter-spacing: -0.3px;
-  line-height: 1.2;
-}
-.user-panel-email {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--txt4);
-  letter-spacing: 0.3px;
-  margin-top: 3px;
-}
-.user-panel-item {
-  display: block;
-  width: 100%;
-  font-family: var(--mono);
   font-size: 12px;
-  padding: 10px 0;
-  color: var(--txt2);
-  text-align: left;
-  border-top: 1px solid var(--line);
-  transition: color 0.15s;
-  letter-spacing: 0.4px;
+  color: var(--ink4);
+  text-align: center;
+  font-weight: 500;
 }
-.user-panel-item:hover { color: var(--prime); }
-.user-panel-item:first-of-type { border-top: none; }
 
 /* ═══ AUTH MODAL ═══ */
 .auth-bg {
   position: fixed;
   inset: 0;
   z-index: 300;
-  background: rgba(0,0,0,0.85);
+  background: rgba(26,29,41,0.5);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
@@ -1535,195 +1670,622 @@ button { cursor: pointer; border: none; background: none; color: inherit; }
   padding: 20px;
 }
 .auth-box {
-  background: var(--bg1);
-  border: 1px solid var(--line2);
-  padding: 48px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 44px;
   max-width: 420px;
   width: 100%;
   position: relative;
+  box-shadow: var(--shade2);
 }
-.auth-box::before {
-  content: 'TERMINAL.LOGIN';
+.auth-close {
   position: absolute;
   top: 16px;
-  right: 20px;
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--prime);
-  letter-spacing: 1.5px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--paper2);
+  font-size: 14px;
+  color: var(--ink3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
 }
+.auth-close:hover { background: var(--line2); color: var(--ink); }
 .auth-h {
   font-family: var(--serif);
   font-size: 32px;
-  font-weight: 500;
-  color: var(--txt);
-  letter-spacing: -0.5px;
+  font-weight: 400;
+  letter-spacing: -1px;
+  color: var(--ink);
   margin-bottom: 6px;
 }
+.auth-h em { font-style: italic; color: var(--accent); }
 .auth-d {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--txt3);
-  letter-spacing: 0.4px;
-  margin-bottom: 28px;
+  font-size: 14px;
+  color: var(--ink3);
+  margin-bottom: 24px;
+  font-weight: 400;
 }
 .auth-tab {
   display: flex;
-  border: 1px solid var(--line2);
-  margin-bottom: 20px;
+  background: var(--paper2);
+  padding: 3px;
+  border-radius: 999px;
+  margin-bottom: 22px;
 }
 .auth-tab button {
   flex: 1;
-  font-family: var(--mono);
-  font-size: 11px;
   padding: 10px;
-  color: var(--txt3);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink3);
+  border-radius: 999px;
   transition: all 0.15s;
+  letter-spacing: -0.1px;
 }
-.auth-tab button.on { background: var(--prime); color: var(--bg); font-weight: 700; }
+.auth-tab button.on { background: var(--card); color: var(--ink); box-shadow: var(--shade); }
 .auth-inp {
   display: block;
   width: 100%;
-  font-family: var(--mono);
-  font-size: 13px;
-  padding: 13px 16px;
-  background: var(--bg2);
-  color: var(--txt);
-  border: 1px solid var(--line2);
-  margin-bottom: 12px;
-  letter-spacing: 0.3px;
+  padding: 13px 18px;
+  background: var(--card);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 500;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  font-family: inherit;
   outline: none;
   transition: border 0.15s;
 }
-.auth-inp:focus { border-color: var(--prime); }
-.auth-inp::placeholder { color: var(--txt4); }
+.auth-inp:focus { border-color: var(--accent); }
+.auth-inp::placeholder { color: var(--ink4); }
 .auth-sub {
   width: 100%;
-  font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 700;
   padding: 14px;
-  background: var(--prime);
-  color: var(--bg);
-  border: 1px solid var(--prime);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  transition: all 0.15s;
-}
-.auth-sub:hover { background: transparent; color: var(--prime); }
-.auth-close {
-  position: absolute;
-  top: 14px;
-  left: 18px;
-  font-family: var(--mono);
+  background: var(--accent);
+  color: #fff;
+  border-radius: 999px;
   font-size: 14px;
-  color: var(--txt4);
+  font-weight: 700;
+  transition: all 0.15s;
+  margin-top: 6px;
+  letter-spacing: -0.1px;
 }
-.auth-close:hover { color: var(--prime); }
+.auth-sub:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(225,75,53,0.3); }
 .auth-err {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--danger);
-  padding: 8px 12px;
-  border: 1px solid var(--danger);
-  background: rgba(255,107,107,0.06);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  padding: 10px 14px;
+  background: rgba(225,75,53,0.06);
+  border-radius: 8px;
   margin-bottom: 12px;
-  letter-spacing: 0.3px;
 }
 
-/* ═══ COMPARE TRAY ═══ */
-.cmp-tray {
+/* ═══ USER PANEL ═══ */
+.user-panel {
   position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--bg1);
-  border: 1px solid var(--prime);
-  padding: 14px 20px;
+  top: 76px;
+  right: 32px;
+  width: 280px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+  z-index: 45;
+  box-shadow: var(--shade2);
+}
+.user-panel-hd {
   display: flex;
-  gap: 14px;
   align-items: center;
-  z-index: 60;
-  box-shadow: 0 0 40px rgba(168,255,96,0.15);
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 14px;
 }
-.cmp-tray-firms { display: flex; gap: 8px; }
-.cmp-tray-chip {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--prime);
-  padding: 5px 10px;
-  border: 1px solid var(--prime);
-  background: var(--primeA);
-  letter-spacing: 0.3px;
+.user-panel-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--ink);
+  background-size: cover;
+  background-position: center;
 }
-.cmp-tray-go {
-  font-family: var(--mono);
-  font-size: 11px;
+.user-panel-nm {
+  font-size: 14px;
   font-weight: 700;
-  padding: 8px 16px;
-  background: var(--prime);
-  color: var(--bg);
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
+  color: var(--ink);
+  letter-spacing: -0.2px;
 }
-.cmp-tray-clear {
-  font-family: var(--mono);
+.user-panel-em {
   font-size: 11px;
-  color: var(--txt3);
-  padding: 8px 12px;
-  border: 1px solid var(--line2);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
+  color: var(--ink4);
+  margin-top: 2px;
+  font-weight: 500;
 }
-.cmp-tray-clear:hover { color: var(--danger); border-color: var(--danger); }
+.user-panel-item {
+  display: block;
+  width: 100%;
+  padding: 9px 10px;
+  font-size: 13px;
+  color: var(--ink2);
+  text-align: left;
+  border-radius: 8px;
+  transition: background 0.15s;
+  font-weight: 500;
+}
+.user-panel-item:hover { background: var(--paper2); color: var(--ink); }
 
 /* ═══ RESPONSIVE ═══ */
-@media (max-width: 900px) {
-  .tbar { grid-template-columns: auto 1fr auto; gap: 12px; padding: 12px 16px; }
-  .tbar-status, .tbar-cmd { display: none; }
-  .app { padding: 0 16px; }
-  .crosshair { display: none; }
-  .tstrip { grid-template-columns: repeat(2, 1fr); }
-  .tstrip-item:nth-child(2) { border-right: none; }
-  .tstrip-item:nth-child(1), .tstrip-item:nth-child(2) { border-bottom: 1px solid var(--line); padding-bottom: 20px; margin-bottom: 20px; }
-  .sec-hd { grid-template-columns: 1fr; gap: 12px; }
-  .sec-sub { text-align: left; }
-  .term-colhdr, .term-row { grid-template-columns: 40px 1fr 70px 50px; gap: 10px; padding: 16px; }
-  .term-colhdr > span:nth-child(4), .term-colhdr > span:nth-child(5), .term-colhdr > span:nth-child(6) { display: none; }
-  .term-row > *:nth-child(4), .term-row > *:nth-child(5), .term-row > *:nth-child(6) { display: none; }
-  .term-expand { padding: 20px 16px; }
-  .term-expand-grid { grid-template-columns: 1fr 1fr; }
-  .term-expand-cell:nth-child(odd) { border-right: 1px solid var(--line); }
-  .term-expand-cell:nth-child(even) { border-right: none; }
-  .deals { grid-template-columns: 1fr 1fr; }
-  .rsearch { grid-template-columns: 1fr; }
-  .rsearch-main { grid-row: auto; border-right: none; }
-  .quiz { padding: 28px 24px; }
-  .quiz-q { font-size: 28px; }
-  .rw { grid-template-columns: 1fr; gap: 32px; padding: 28px; }
-  .rw-h { font-size: 32px; }
-  .ftr { grid-template-columns: 1fr 1fr; gap: 32px; }
-  .chal-table { font-size: 11px; }
-  .chal-table thead th, .chal-table tbody td { padding: 10px; }
+@media (max-width: 980px) {
+  .nav-inner { grid-template-columns: auto auto; padding: 14px 20px; }
+  .nav-links { display: none; }
+  .nav-mob { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; }
+  .nav-mob-menu { display: block; }
+  .nav-mob-menu.hidden { display: none; }
+  .nav-btn { padding: 8px 12px; font-size: 12px; }
+  .page, .ftr-inner { padding-left: 20px; padding-right: 20px; }
+  .home-hero { grid-template-columns: 1fr; gap: 40px; padding: 60px 0; }
+  .home-h1 { font-size: 52px; }
+  .home-feat { aspect-ratio: auto; max-height: none; }
+  .home-feat-card { position: relative; max-width: none; }
+  .home-feat-sticker { display: none; }
+  .firm-grid, .deals-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+  .detail-hero { grid-template-columns: 1fr; gap: 32px; }
+  .detail-nm { font-size: 44px; }
+  .stat-grid { grid-template-columns: 1fr 1fr; }
+  .scorecard-grid { grid-template-columns: 1fr; }
+  .quiz-q { font-size: 34px; }
+  .research-grid { grid-template-columns: 1fr; }
+  .rewards-feature { padding: 40px 28px; }
+  .rewards-feature-t { font-size: 40px; }
+  .rewards-steps { grid-template-columns: 1fr 1fr; }
+  .ftr-inner { grid-template-columns: 1fr 1fr; gap: 28px; }
+  .home-metrics { grid-template-columns: 1fr 1fr; gap: 20px; }
+  .result-row { grid-template-columns: 30px 44px 1fr auto; gap: 12px; padding: 16px; }
+  .result-act { display: none; }
+  .result-score { font-size: 28px; }
+  .chal-tbl { font-size: 11px; }
+  .chal-tbl thead th, .chal-tbl tbody td { padding: 12px 10px; }
+  .page-hd { padding: 50px 0 32px; }
+  .home-sec { padding: 50px 0; }
+  .home-sec-t { font-size: 34px; }
+  .user-panel { top: 68px; right: 12px; left: 12px; width: auto; }
+  .sim-wrap { padding: 22px; }
+  .sim-ctrls { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .firm-grid, .deals-grid { grid-template-columns: 1fr; }
+  .rewards-steps { grid-template-columns: 1fr; }
 }
 `;
 
 // ═══════════════════════════════════════════════════════════════════════════
-// FIRM LOGO (simple component)
+// SHARED COMPONENTS
 // ═══════════════════════════════════════════════════════════════════════════
-const FirmLogo = ({ firm, size = 40 }) => {
+const Logo = ({ firm, size = 48 }) => {
   const logo = LOGOS[firm.name];
   return (
-    <div className="term-firm-lg" style={{ width: size, height: size }}>
-      {logo ? <img src={logo} alt={firm.name} /> : <span className="term-firm-lg-fb">{firm.initials}</span>}
+    <div className="firm-logo" style={{ width: size, height: size }}>
+      {logo ? <img src={logo} alt={firm.name} /> : <span className="firm-logo-fb">{firm.initials}</span>}
+    </div>
+  );
+};
+
+const pulseColor = s => s >= 92 ? "var(--accent)" : s >= 88 ? "var(--gold)" : "var(--ink3)";
+
+// ═══════════════════════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════════════════════
+const Nav = ({ route, user, onSignIn, onTogglePanel }) => {
+  const [mob, setMob] = useState(false);
+  const links = [
+    ["#/firms", "Firms"],
+    ["#/quiz", "Match Quiz"],
+    ["#/deals", "Deals"],
+    ["#/challenges", "Challenges"],
+    ["#/simulator", "Simulator"],
+    ["#/research", "Research"],
+    ["#/rewards", "Rewards"],
+  ];
+  const isActive = (path) => {
+    const p = path.replace("#", "");
+    if (p === "/firms" && (route.startsWith("/firms") || route.startsWith("/firm/"))) return true;
+    return route === p;
+  };
+  return (
+    <nav className="nav">
+      <div className="nav-inner">
+        <a href="#/" className="nav-logo">
+          <span className="nav-logo-dot" />
+          The <span>PropPulse</span>
+        </a>
+        <div className="nav-links">
+          {links.map(([href, label]) => (
+            <a key={href} href={href} className={`nav-link ${isActive(href) ? "active" : ""}`}>{label}</a>
+          ))}
+        </div>
+        <div className="nav-right">
+          {user ? (
+            <div
+              className="nav-avatar"
+              style={{ backgroundImage: user.user_metadata?.avatar_url ? `url(${user.user_metadata.avatar_url})` : undefined }}
+              onClick={onTogglePanel}
+            />
+          ) : (
+            <>
+              <button className="nav-btn ghost" onClick={onSignIn}>Sign In</button>
+              <a href="#/quiz" className="nav-btn primary">Find My Firm</a>
+            </>
+          )}
+          <button className="nav-mob" onClick={() => setMob(!mob)}>☰</button>
+        </div>
+      </div>
+      <div className={`nav-mob-menu ${mob ? "" : "hidden"}`}>
+        {links.map(([href, label]) => (
+          <a key={href} href={href} className={`nav-link ${isActive(href) ? "active" : ""}`} onClick={() => setMob(false)}>{label}</a>
+        ))}
+      </div>
+    </nav>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FIRM CARD (used across pages)
+// ═══════════════════════════════════════════════════════════════════════════
+const FirmCard = ({ firm }) => {
+  const ps = PULSE_SCORES[firm.name] || 75;
+  const deal = DEALS.find(d => d.firm === firm.name);
+  return (
+    <a href={`#/firm/${firm.id}`} className="firm-card">
+      {firm.bestFor && <span className="firm-card-tag">{firm.bestFor}</span>}
+      <div className="firm-card-hd">
+        <Logo firm={firm} />
+        <div>
+          <div className="firm-card-nm">{firm.name}</div>
+          <div className="firm-card-meta">{firm.flag} {firm.hq.split(",")[0]} · Est. {firm.founded}</div>
+        </div>
+      </div>
+      <div className="firm-card-pulse">
+        <div>
+          <div className="firm-card-pulse-l">Pulse Score</div>
+          <div className="firm-card-pulse-v">{ps}</div>
+        </div>
+        <div className="firm-card-rating">★ {firm.rating}<em>({firm.reviews.toLocaleString()})</em></div>
+      </div>
+      <p className="firm-card-desc">{firm.desc}</p>
+      <div className="firm-card-foot">
+        {deal && <span className="firm-card-deal">{deal.pct} off · {deal.code}</span>}
+        <span className="firm-card-view">View firm <span className="firm-card-view-arrow">→</span></span>
+      </div>
+    </a>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HOME PAGE
+// ═══════════════════════════════════════════════════════════════════════════
+const HomePage = () => {
+  const topFirm = [...FIRMS].sort((a, b) => (PULSE_SCORES[b.name] || 0) - (PULSE_SCORES[a.name] || 0))[0];
+  const topDeal = DEALS.find(d => d.firm === topFirm.name);
+  const sortedFirms = [...FIRMS].sort((a, b) => (PULSE_SCORES[b.name] || 0) - (PULSE_SCORES[a.name] || 0));
+  const topDiscount = DEALS.reduce((m, d) => Math.max(m, parseInt(d.pct)), 0);
+
+  return (
+    <>
+      <div className="page">
+        <section className="home-hero">
+          <div>
+            <div className="home-eye">The futures prop firm index · {FIRMS.length} firms</div>
+            <h1 className="home-h1">
+              Pick the <em>right</em><br />
+              prop firm in<br />
+              <u>30 seconds</u>.
+            </h1>
+            <p className="home-lead">
+              Take our 6-question match quiz. We rank every futures prop firm against your trading style, budget, and rule preferences — with live discount codes and honest scorecards.
+            </p>
+            <div className="home-cta">
+              <a href="#/quiz" className="btn-pri">
+                Take the Quiz <span className="btn-pri-arrow">→</span>
+              </a>
+              <a href="#/firms" className="btn-sec">Browse all firms</a>
+            </div>
+            <div className="home-metrics">
+              <div>
+                <div className="home-metric-v">{FIRMS.length}<em>.</em></div>
+                <div className="home-metric-l">Firms tracked live</div>
+              </div>
+              <div>
+                <div className="home-metric-v">{topDiscount}<em>%</em></div>
+                <div className="home-metric-l">Max discount via TPP</div>
+              </div>
+              <div>
+                <div className="home-metric-v">{DEALS.length}<em>.</em></div>
+                <div className="home-metric-l">Active deal codes</div>
+              </div>
+            </div>
+          </div>
+          <div className="home-feat">
+            <a href={`#/firm/${topFirm.id}`} className="home-feat-card">
+              <div className="home-feat-cat">Editor's Pick · #1 Pulse</div>
+              <div className="home-feat-logo"><Logo firm={topFirm} size={64} /></div>
+              <div className="home-feat-nm">{topFirm.name}</div>
+              <div className="home-feat-tag">{topFirm.bestFor} · {topFirm.flag} {topFirm.hq.split(",")[0]}</div>
+              <div className="home-feat-stats">
+                <div className="home-feat-stat">
+                  <b>{PULSE_SCORES[topFirm.name]}</b>
+                  <span>Pulse</span>
+                </div>
+                <div className="home-feat-stat">
+                  <b>★ {topFirm.rating}</b>
+                  <span>Rating</span>
+                </div>
+                <div className="home-feat-stat">
+                  <b>{topFirm.maxAlloc.replace(/\s.*/, "")}</b>
+                  <span>Max Alloc</span>
+                </div>
+              </div>
+              {topDeal && (
+                <div className="home-feat-deal">
+                  Save <b>{topDeal.pct}</b> with code <b>{topDeal.code}</b>
+                </div>
+              )}
+            </a>
+            {topDeal && <div className="home-feat-sticker">{topDeal.pct} off this week</div>}
+          </div>
+        </section>
+
+        <section className="home-sec">
+          <div className="home-sec-hd">
+            <div>
+              <h2 className="home-sec-t">Top <em>ranked</em> firms</h2>
+              <div className="home-sec-sub">By Pulse Score · updated weekly</div>
+            </div>
+            <a href="#/firms" className="home-sec-link">See all firms →</a>
+          </div>
+          <div className="firm-grid">
+            {sortedFirms.slice(0, 6).map(f => <FirmCard key={f.id} firm={f} />)}
+          </div>
+        </section>
+
+        <section className="home-sec">
+          <div className="home-sec-hd">
+            <div>
+              <h2 className="home-sec-t">Active <em>deal codes</em></h2>
+              <div className="home-sec-sub">Copy, paste, save — universal code: TPP</div>
+            </div>
+            <a href="#/deals" className="home-sec-link">See all deals →</a>
+          </div>
+          <div className="deals-grid">
+            {DEALS.slice(0, 6).map((d, i) => {
+              const f = FIRMS.find(ff => ff.name === d.firm);
+              return (
+                <a key={i} href={f ? `#/firm/${f.id}` : "#/deals"} className="deal-card">
+                  {d.tag && <span className="deal-card-tag">{d.tag}</span>}
+                  <div className="deal-card-hd">
+                    {f && <Logo firm={f} size={36} />}
+                    <div className="deal-card-nm">{d.firm}</div>
+                  </div>
+                  <div className="deal-card-pct">
+                    {d.pct.replace("%", "").replace(" OFF", "")}<em>% OFF</em>
+                  </div>
+                  <div className="deal-card-desc">{d.desc}</div>
+                  <div className="deal-card-code">
+                    <span className="deal-card-code-l">Code</span>
+                    <span className="deal-card-code-v">{d.code}</span>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        </section>
+      </div>
+    </>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FIRMS PAGE
+// ═══════════════════════════════════════════════════════════════════════════
+const FirmsPage = () => {
+  const [sort, setSort] = useState("pulse");
+  const [filter, setFilter] = useState("all");
+  const filtered = FIRMS.filter(f => {
+    if (filter === "instant") return f.instantFund;
+    if (filter === "noDLL") return !f.hasDLL;
+    if (filter === "noConsistency") return !f.hasConsistency;
+    return true;
+  });
+  const sorted = useMemo(() => {
+    const a = [...filtered];
+    if (sort === "pulse") a.sort((x, y) => (PULSE_SCORES[y.name] || 0) - (PULSE_SCORES[x.name] || 0));
+    if (sort === "rating") a.sort((x, y) => y.rating - x.rating);
+    if (sort === "newest") a.sort((x, y) => y.founded - x.founded);
+    if (sort === "alloc") a.sort((x, y) => {
+      const n = s => { const v = parseFloat(s.replace(/[^0-9.]/g, "")); return s.includes("M") ? v * 1000 : v; };
+      return n(y.maxAlloc) - n(x.maxAlloc);
+    });
+    return a;
+  }, [sort, filtered]); // eslint-disable-line
+
+  return (
+    <div className="page">
+      <div className="page-hd">
+        <div className="page-eye">The Firms Index</div>
+        <h1 className="page-t">All <em>{FIRMS.length} firms</em>, ranked and reviewed.</h1>
+        <p className="page-d">Sort by Pulse Score, rating, age, or account size. Filter by rule type. Click any card for the full breakdown.</p>
+      </div>
+      <div className="chal-filters">
+        <button className={filter === "all" ? "on" : ""} onClick={() => setFilter("all")}>All firms</button>
+        <button className={filter === "instant" ? "on" : ""} onClick={() => setFilter("instant")}>Instant fund</button>
+        <button className={filter === "noDLL" ? "on" : ""} onClick={() => setFilter("noDLL")}>No DLL</button>
+        <button className={filter === "noConsistency" ? "on" : ""} onClick={() => setFilter("noConsistency")}>No consistency</button>
+        <div style={{ marginLeft: "auto" }}>
+          <select value={sort} onChange={e => setSort(e.target.value)}>
+            <option value="pulse">Sort by Pulse Score</option>
+            <option value="rating">Sort by Rating</option>
+            <option value="newest">Sort by Newest</option>
+            <option value="alloc">Sort by Max Alloc</option>
+          </select>
+        </div>
+      </div>
+      <div className="firm-grid">
+        {sorted.map(f => <FirmCard key={f.id} firm={f} />)}
+      </div>
     </div>
   );
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// QUIZ SCORING
+// FIRM DETAIL PAGE
+// ═══════════════════════════════════════════════════════════════════════════
+const FirmDetailPage = ({ firmId }) => {
+  const firm = FIRMS.find(f => String(f.id) === String(firmId));
+  const [openFaq, setOpenFaq] = useState(null);
+  if (!firm) return <div className="page"><div className="page-hd"><h1 className="page-t">Firm not found.</h1><a href="#/firms" className="btn-sec" style={{ marginTop: 20 }}>← Back to firms</a></div></div>;
+  const ps = PULSE_SCORES[firm.name] || 75;
+  const deal = DEALS.find(d => d.firm === firm.name);
+  const profile = FIRM_PROFILES[firm.name];
+  const faq = FIRM_FAQ[firm.name] || [];
+  const scorecard = SCORECARD_DATA[firm.name] || [];
+
+  return (
+    <div className="page">
+      <a href="#/firms" className="detail-back">← Back to all firms</a>
+
+      <section className="detail-hero">
+        <div>
+          <div className="detail-eye">{firm.bestFor}</div>
+          <div className="detail-logo-lg"><Logo firm={firm} size={72} /></div>
+          <h1 className="detail-nm">{firm.name}</h1>
+          {profile?.tagline && <p className="detail-tagline">"{profile.tagline}"</p>}
+          <div className="detail-meta">
+            <span>{firm.flag} <b>{firm.hq}</b></span>
+            <span>Est. <b>{firm.founded}</b></span>
+            <span>★ <b>{firm.rating}</b> ({firm.reviews.toLocaleString()} reviews)</span>
+            {profile?.ceo && <span>CEO <b>{profile.ceo}</b></span>}
+          </div>
+          <div className="home-cta">
+            <button className="btn-pri" onClick={() => trackClick(firm.name)}>
+              {deal ? `Claim ${deal.pct} →` : "Visit site →"}
+            </button>
+            <a href="#/quiz" className="btn-sec">Compare in quiz</a>
+          </div>
+        </div>
+
+        <div className="detail-side">
+          <div className="detail-side-pulse">
+            <div className="detail-side-pulse-v">{ps}</div>
+            <div className="detail-side-pulse-l">
+              <b>Pulse Score</b>
+              <span>Out of 100</span>
+            </div>
+          </div>
+          <div className="detail-side-row"><span>Max Allocation</span><b>{firm.maxAlloc}</b></div>
+          <div className="detail-side-row"><span>Profit Split</span><b>{firm.split.split(" ")[0]}</b></div>
+          <div className="detail-side-row"><span>Max Drawdown</span><b>{firm.maxDD}</b></div>
+          <div className="detail-side-row"><span>Payout Speed</span><b>{firm.paySpeed.split("(")[0].trim()}</b></div>
+          <div className="detail-side-row"><span>Drawdown Type</span><b>{firm.drawdownType.split(" /")[0]}</b></div>
+          {deal && (
+            <button className="btn-pri detail-side-cta" onClick={() => trackClick(firm.name)}>
+              Use code <b style={{ margin: "0 4px", background: "rgba(255,255,255,0.2)", padding: "2px 8px", borderRadius: 4 }}>{deal.code}</b> →
+            </button>
+          )}
+        </div>
+      </section>
+
+      <section className="detail-sec">
+        <h2 className="detail-sec-t">About <em>{firm.name}</em></h2>
+        <p style={{ fontSize: 17, color: "var(--ink2)", lineHeight: 1.6, maxWidth: 820, marginBottom: 24 }}>
+          {profile?.description || firm.desc}
+        </p>
+      </section>
+
+      <section className="detail-sec">
+        <h2 className="detail-sec-t">Key <em>metrics</em></h2>
+        <div className="stat-grid">
+          <div className="stat-card">
+            <div className="stat-k">Profit Target</div>
+            <div className="stat-v">{firm.target}</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-k">Daily Drawdown</div>
+            <div className="stat-v">{firm.dailyDD}</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-k">Min Payout</div>
+            <div className="stat-v">{firm.minPayout}</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-k">Reset Fee</div>
+            <div className="stat-v">{firm.reset}</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-k">Platforms</div>
+            <div className="stat-v" style={{ fontSize: 14 }}>{firm.platforms.slice(0, 4).join(", ")}</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-k">Consistency Rule</div>
+            <div className="stat-v">{firm.hasConsistency ? firm.consistencyPct : "None"}</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-k">News Trading</div>
+            <div className="stat-v">{firm.newsTrading ? "Allowed" : "Restricted"}</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-k">EA / Bots</div>
+            <div className="stat-v">{firm.eaAllowed ? "Allowed" : "Restricted"}</div>
+          </div>
+        </div>
+      </section>
+
+      {scorecard.length > 0 && (
+        <section className="detail-sec">
+          <h2 className="detail-sec-t">The <em>fine print</em> scorecard</h2>
+          <div className="scorecard-grid">
+            {scorecard.map((r, i) => (
+              <div key={i} className="scorecard-row">
+                <div className={`scorecard-dot ${r.tone}`} />
+                <div className="scorecard-k">{r.k}</div>
+                <div className="scorecard-v">{r.v}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {faq.length > 0 && (
+        <section className="detail-sec">
+          <h2 className="detail-sec-t">Frequently <em>asked</em></h2>
+          {faq.map((cat, ci) => (
+            <div key={ci} className="faq-cat">
+              <h3 className="faq-cat-t">{cat.cat}</h3>
+              {cat.items.map((item, ii) => {
+                const k = `${ci}-${ii}`;
+                return (
+                  <div key={k} className={`faq-item ${openFaq === k ? "open" : ""}`}>
+                    <div className="faq-q" onClick={() => setOpenFaq(openFaq === k ? null : k)}>{item.q}</div>
+                    <div className="faq-a">{item.a}</div>
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </section>
+      )}
+    </div>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// QUIZ PAGE
 // ═══════════════════════════════════════════════════════════════════════════
 const scoreQuiz = (firm, answers) => {
   let s = 50;
@@ -1746,7 +2308,7 @@ const scoreQuiz = (firm, answers) => {
     if (n === "Apex Trader Funding") { s += 6; reasons.push("20 accounts, $3M total"); }
   }
   if (answers.dd === "eod") {
-    if (["Tradeify","Alpha Futures","Bulenox","FundedNext Futures"].includes(n)) {
+    if (["Tradeify", "Alpha Futures", "Bulenox", "FundedNext Futures"].includes(n)) {
       s += 10; reasons.push("EOD trailing DD");
     }
   }
@@ -1755,14 +2317,13 @@ const scoreQuiz = (firm, answers) => {
     else s -= 3;
   }
   if (answers.news === "yes") {
-    if (["Apex Trader Funding","Tradeify","Bulenox","FundedNext Futures","Top One Futures"].includes(n)) {
+    if (["Apex Trader Funding", "Tradeify", "Bulenox", "FundedNext Futures", "Top One Futures"].includes(n)) {
       s += 8; reasons.push("News trading allowed");
     }
-    if (["My Funded Futures","Goat Funded Futures"].includes(n)) s -= 4;
   }
   if (answers.speed === "fast") {
     if (n === "Tradeify") { s += 10; reasons.push("~1hr payouts"); }
-    if (["FundedNext Futures","Goat Funded Futures"].includes(n)) { s += 7; reasons.push("24hr guaranteed"); }
+    if (["FundedNext Futures", "Goat Funded Futures"].includes(n)) { s += 7; reasons.push("24hr guaranteed"); }
   }
   if (answers.consistency === "none") {
     if (n === "FundedNext Futures") { s += 10; reasons.push("No consistency rule"); }
@@ -1773,8 +2334,204 @@ const scoreQuiz = (firm, answers) => {
   return { score: Math.max(0, Math.min(100, Math.round(s))), reasons: reasons.slice(0, 3) };
 };
 
+const QuizPage = () => {
+  const [step, setStep] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [done, setDone] = useState(false);
+  const total = QUIZ_QUESTIONS.length;
+
+  if (done) {
+    const ranked = FIRMS.map(f => ({ ...f, ...scoreQuiz(f, answers) })).sort((a, b) => b.score - a.score);
+    return (
+      <div className="page">
+        <div className="quiz-wrap">
+          <div className="results-hd">
+            <span className="results-tag">Match found</span>
+            <h1 className="results-t">Your best fit is <em>{ranked[0].name}</em></h1>
+            <p className="results-sub">Based on your preferences, here's how every firm ranks for you.</p>
+          </div>
+          {ranked.map((f, i) => {
+            const deal = DEALS.find(d => d.firm === f.name);
+            return (
+              <div key={f.id} className={`result-row ${i === 0 ? "top" : ""}`}>
+                <div className="result-rank">#{i + 1}</div>
+                <Logo firm={f} size={44} />
+                <div>
+                  <div className="result-nm">{f.name}</div>
+                  <div className="result-reasons">
+                    {f.reasons.length > 0 ? f.reasons.map((r, j) => <span key={j}>{r}</span>) : <span>Baseline match</span>}
+                  </div>
+                </div>
+                <div className="result-score">{f.score}<small>MATCH</small></div>
+                <div className="result-act">
+                  <a href={`#/firm/${f.id}`} className="result-btn">View</a>
+                  {deal && <button className="result-btn primary" onClick={() => trackClick(f.name)}>{deal.pct}</button>}
+                </div>
+              </div>
+            );
+          })}
+          <div style={{ textAlign: "center", marginTop: 32 }}>
+            <button className="btn-sec" onClick={() => { setStep(0); setAnswers({}); setDone(false); }}>↻ Retake quiz</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const q = QUIZ_QUESTIONS[step];
+  const prog = Math.round(((step + 1) / total) * 100);
+
+  const pick = (v) => {
+    const na = { ...answers, [q.id]: v };
+    setAnswers(na);
+    if (step < total - 1) setStep(step + 1);
+    else setDone(true);
+  };
+
+  return (
+    <div className="page">
+      <div className="quiz-wrap">
+        <div className="quiz-prog"><span style={{ width: prog + "%" }} /></div>
+        <div className="quiz-step">Question {step + 1} of {total}</div>
+        <h1 className="quiz-q">{q.q}</h1>
+        <p className="quiz-sub">{q.sub}</p>
+        <div className="quiz-opts">
+          {q.opts.map((o, i) => (
+            <button key={o.v} className="quiz-opt" onClick={() => pick(o.v)}>
+              <span className="quiz-opt-letter">{String.fromCharCode(65 + i)}</span>
+              <span className="quiz-opt-content">
+                <div className="quiz-opt-l">{o.l}</div>
+                <div className="quiz-opt-d">{o.d}</div>
+              </span>
+              <span className="quiz-opt-arr">→</span>
+            </button>
+          ))}
+        </div>
+        {step > 0 && (
+          <button className="quiz-back-btn" onClick={() => setStep(step - 1)}>← Back</button>
+        )}
+      </div>
+    </div>
+  );
+};
+
 // ═══════════════════════════════════════════════════════════════════════════
-// SIMULATE DRAWDOWN
+// DEALS PAGE
+// ═══════════════════════════════════════════════════════════════════════════
+const DealsPage = () => (
+  <div className="page">
+    <div className="page-hd">
+      <div className="page-eye">Live discount codes</div>
+      <h1 className="page-t">Active <em>deals</em> · save up to 90%</h1>
+      <p className="page-d">Every deal verified fresh. Universal code: <b style={{ color: "var(--accent)" }}>TPP</b> (use <b style={{ color: "var(--accent)" }}>TTPP</b> for Alpha Futures).</p>
+    </div>
+    <div className="deals-grid">
+      {DEALS.map((d, i) => {
+        const f = FIRMS.find(ff => ff.name === d.firm);
+        return (
+          <div key={i} className="deal-card" onClick={() => f && trackClick(f.name)}>
+            {d.tag && <span className="deal-card-tag">{d.tag}</span>}
+            <div className="deal-card-hd">
+              {f && <Logo firm={f} size={36} />}
+              <div className="deal-card-nm">{d.firm}</div>
+            </div>
+            <div className="deal-card-pct">
+              {d.pct.replace("%", "").replace(" OFF", "")}<em>% OFF</em>
+            </div>
+            <div className="deal-card-desc">{d.desc}</div>
+            <div className="deal-card-code">
+              <span className="deal-card-code-l">Code</span>
+              <span className="deal-card-code-v">{d.code}</span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+);
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CHALLENGES PAGE
+// ═══════════════════════════════════════════════════════════════════════════
+const ChallengesPage = () => {
+  const [firmF, setFirmF] = useState("");
+  const [sizeF, setSizeF] = useState("");
+  const [instantF, setInstantF] = useState(false);
+  const firms = [...new Set(CHALLENGES.map(c => c.firm))].sort();
+  const sizes = [...new Set(CHALLENGES.map(c => c.size))].sort((a, b) => parseInt(a) - parseInt(b));
+  const filtered = CHALLENGES.filter(c => {
+    if (firmF && c.firm !== firmF) return false;
+    if (sizeF && c.size !== sizeF) return false;
+    if (instantF && !c.instant) return false;
+    return true;
+  });
+  return (
+    <div className="page">
+      <div className="page-hd">
+        <div className="page-eye">The challenge matrix</div>
+        <h1 className="page-t">Every <em>plan</em>, side by side.</h1>
+        <p className="page-d">Filter {CHALLENGES.length}+ evaluation plans across every firm and size. Compare targets, drawdowns, and prices at a glance.</p>
+      </div>
+      <div className="chal-filters">
+        <select value={firmF} onChange={e => setFirmF(e.target.value)}>
+          <option value="">All firms</option>
+          {firms.map(f => <option key={f} value={f}>{f}</option>)}
+        </select>
+        <select value={sizeF} onChange={e => setSizeF(e.target.value)}>
+          <option value="">All sizes</option>
+          {sizes.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+        <button className={instantF ? "on" : ""} onClick={() => setInstantF(!instantF)}>Instant only</button>
+        <span style={{ marginLeft: "auto", fontSize: 13, color: "var(--ink3)", fontWeight: 500 }}>
+          Showing <b style={{ color: "var(--ink)" }}>{filtered.length}</b> of {CHALLENGES.length} plans
+        </span>
+      </div>
+      <div style={{ overflow: "auto", marginBottom: 40 }}>
+        <table className="chal-tbl">
+          <thead>
+            <tr>
+              <th>Firm / Plan</th><th>Size</th><th>Target</th><th>Max Loss</th>
+              <th>DLL</th><th>Drawdown</th><th>Split</th><th>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.slice(0, 60).map((c, i) => {
+              const f = FIRMS.find(ff => ff.name === c.firm);
+              return (
+                <tr key={i}>
+                  <td>
+                    <div className="chal-tbl-firm">
+                      {f && <img src={LOGOS[f.name]} alt="" />}
+                      <div>
+                        <b>{c.firm}</b>
+                        <div className="chal-tbl-plan">{c.plan}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{c.size}</td>
+                  <td>{c.target}</td>
+                  <td>{c.maxLoss}</td>
+                  <td>{c.dll}</td>
+                  <td>{c.drawdown}</td>
+                  <td>{c.split}</td>
+                  <td className="chal-tbl-price">{c.price}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      {filtered.length > 60 && (
+        <p style={{ textAlign: "center", fontSize: 13, color: "var(--ink4)", marginBottom: 40 }}>
+          Showing first 60 of {filtered.length} results. Narrow filters for more.
+        </p>
+      )}
+    </div>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SIMULATOR PAGE
 // ═══════════════════════════════════════════════════════════════════════════
 const simDD = (points, cfg) => {
   const { type, maxDD, lockAt } = cfg;
@@ -1783,9 +2540,8 @@ const simDD = (points, cfg) => {
   for (let i = 0; i < points.length; i++) {
     const p = points[i];
     let floor;
-    if (type === "Static") {
-      floor = -maxDD;
-    } else {
+    if (type === "Static") floor = -maxDD;
+    else {
       if (p > peak) peak = p;
       floor = peak - maxDD;
       if (lockAt !== null && peak >= maxDD + lockAt && !locked) { locked = true; floor = lockAt; }
@@ -1796,254 +2552,170 @@ const simDD = (points, cfg) => {
   return { floors, blownAt, peak };
 };
 
-// ═══════════════════════════════════════════════════════════════════════════
-// FIRM ROW (THE TERMINAL TABLE)
-// ═══════════════════════════════════════════════════════════════════════════
-const FirmRow = ({ firm, rank, open, onToggle, onDetail, toggleCompare, comparing }) => {
-  const ps = PULSE_SCORES[firm.name] || 75;
-  const deal = DEALS.find(d => d.firm === firm.name);
-  const scorecard = SCORECARD_DATA[firm.name] || [];
-  return (
-    <>
-      <button className={`term-row ${open ? 'open' : ''}`} onClick={onToggle}>
-        <span className="term-rank">{String(rank).padStart(2, '0')}</span>
-        <span className="term-firm">
-          <FirmLogo firm={firm} />
-          <span>
-            <span className="term-firm-nm">{firm.name}</span>
-            <span className="term-firm-meta">{firm.flag} {firm.hq.split(',')[0].toUpperCase()} · EST. {firm.founded}</span>
-          </span>
-        </span>
-        <span className="term-pulse">
-          <span className="term-pulse-v">{ps}</span>
-          <span className="term-pulse-bar"><span style={{ width: ps + '%' }} /></span>
-        </span>
-        <span className="term-rating">★{firm.rating}<em>{firm.reviews.toLocaleString()} REV</em></span>
-        <span className="term-alloc">{firm.maxAlloc}</span>
-        <span className={`term-tag ${firm.instantFund ? 'on' : ''}`}>{firm.instantFund ? 'INSTANT' : 'EVAL'}</span>
-        <span className={`term-deal ${!deal ? 'none' : ''}`}>{deal ? deal.pct : '—'}</span>
-        <span className="term-chev">›</span>
-      </button>
-      {open && (
-        <div className="term-expand">
-          <p className="term-expand-desc">"{firm.desc}"</p>
-          <div className="term-expand-grid">
-            <div className="term-expand-cell">
-              <div className="term-expand-lbl">Split</div>
-              <div className="term-expand-v">{firm.split}</div>
-            </div>
-            <div className="term-expand-cell">
-              <div className="term-expand-lbl">Target</div>
-              <div className="term-expand-v">{firm.target}</div>
-            </div>
-            <div className="term-expand-cell">
-              <div className="term-expand-lbl">Max DD</div>
-              <div className="term-expand-v">{firm.maxDD}</div>
-            </div>
-            <div className="term-expand-cell">
-              <div className="term-expand-lbl">Payout</div>
-              <div className="term-expand-v">{firm.paySpeed}</div>
-            </div>
-            <div className="term-expand-cell">
-              <div className="term-expand-lbl">Drawdown</div>
-              <div className="term-expand-v">{firm.drawdownType}</div>
-            </div>
-            <div className="term-expand-cell">
-              <div className="term-expand-lbl">Consistency</div>
-              <div className="term-expand-v">{firm.hasConsistency ? firm.consistencyPct : 'None'}</div>
-            </div>
-            <div className="term-expand-cell">
-              <div className="term-expand-lbl">Platforms</div>
-              <div className="term-expand-v">{firm.platforms.slice(0, 3).join(', ')}{firm.platforms.length > 3 ? ` +${firm.platforms.length - 3}` : ''}</div>
-            </div>
-            <div className="term-expand-cell">
-              <div className="term-expand-lbl">Min Payout</div>
-              <div className="term-expand-v">{firm.minPayout}</div>
-            </div>
-          </div>
-          {scorecard.length > 0 && (
-            <div className="term-expand-scorecard">
-              {scorecard.slice(0, 5).map((r, i) => (
-                <div key={i} className="term-sc-row">
-                  <div className={`term-sc-dot ${r.tone}`} />
-                  <div className="term-sc-k">{r.k}</div>
-                  <div className="term-sc-v">{r.v}</div>
-                </div>
-              ))}
-            </div>
-          )}
-          <div className="term-expand-actions">
-            <button className="term-act primary" onClick={(e) => { e.stopPropagation(); trackClick(firm.name); }}>
-              {deal ? `Claim ${deal.pct} →` : 'Visit Site →'}
-            </button>
-            <button className="term-act" onClick={(e) => { e.stopPropagation(); onDetail(firm); }}>Full Profile</button>
-            {toggleCompare && (
-              <button className="term-act" onClick={(e) => { e.stopPropagation(); toggleCompare(firm); }}>
-                {comparing ? '✓ Comparing' : '+ Compare'}
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-    </>
-  );
-};
-
-// ═══════════════════════════════════════════════════════════════════════════
-// QUIZ COMPONENT
-// ═══════════════════════════════════════════════════════════════════════════
-const Quiz = ({ onDetail }) => {
-  const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState({});
-  const [done, setDone] = useState(false);
-  const total = QUIZ_QUESTIONS.length;
-
-  if (done) {
-    const ranked = FIRMS.map(f => ({ ...f, ...scoreQuiz(f, answers) })).sort((a, b) => b.score - a.score);
-    return (
-      <div className="quiz">
-        <div className="quiz-results-hdr">
-          <span className="quiz-results-tag">MATCH FOUND</span>
-          <span className="quiz-results-title">Your best fit is <em>{ranked[0].name}</em></span>
-          <button className="quiz-back" onClick={() => { setDone(false); setStep(0); setAnswers({}); }} style={{ marginLeft: 'auto' }}>↻ Re-run</button>
-        </div>
-        {ranked.map((f, i) => {
-          const deal = DEALS.find(d => d.firm === f.name);
-          return (
-            <div key={f.id} className="quiz-result-row">
-              <div className="quiz-result-rank">{String(i + 1).padStart(2, '0')}</div>
-              <FirmLogo firm={f} size={40} />
-              <div className="quiz-result-info">
-                <div className="quiz-result-nm">{f.name}</div>
-                <div className="quiz-result-reasons">
-                  {f.reasons.length > 0 ? f.reasons.map((r, j) => <span key={j}>{r}</span>) : <span style={{ fontStyle: 'italic' }}>Baseline match</span>}
-                </div>
-              </div>
-              <div className="quiz-result-score">{f.score}<small>MATCH</small></div>
-              <div className="quiz-result-actions">
-                <button className="quiz-result-btn" onClick={() => onDetail(f)}>View</button>
-                {deal && <button className="quiz-result-btn primary" onClick={() => trackClick(f.name)}>{deal.pct}</button>}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-
-  const q = QUIZ_QUESTIONS[step];
-  const prog = Math.round((step / total) * 100);
-
-  const pick = (v) => {
-    const na = { ...answers, [q.id]: v };
-    setAnswers(na);
-    if (step < total - 1) setStep(step + 1);
-    else setDone(true);
-  };
-
-  return (
-    <div className="quiz">
-      <div className="quiz-prog">
-        Q.{step + 1} / {total}
-        <div className="quiz-prog-track"><div className="quiz-prog-fill" style={{ width: prog + '%' }} /></div>
-      </div>
-      <h3 className="quiz-q">{q.q}</h3>
-      <p className="quiz-sub">{q.sub.toUpperCase()}</p>
-      <div className="quiz-opts">
-        {q.opts.map((o, i) => (
-          <button key={o.v} className="quiz-opt" onClick={() => pick(o.v)}>
-            <span className="quiz-opt-ltr">{String.fromCharCode(65 + i)}</span>
-            <span>
-              <span className="quiz-opt-l">{o.l}</span>
-              <span className="quiz-opt-d">{o.d}</span>
-            </span>
-            <span className="quiz-opt-arrow">→</span>
-          </button>
-        ))}
-      </div>
-      {step > 0 && (
-        <div className="quiz-footer">
-          <button className="quiz-back" onClick={() => setStep(step - 1)}>← Back</button>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// ═══════════════════════════════════════════════════════════════════════════
-// DRAWDOWN SIMULATOR
-// ═══════════════════════════════════════════════════════════════════════════
-const Sim = () => {
+const SimulatorPage = () => {
   const [sce, setSce] = useState("spike-give-back");
-  const [firm, setFirm] = useState("Tradeify");
+  const [firmN, setFirmN] = useState("Tradeify");
   const scenario = DD_SCENARIOS[sce];
-  const cfg = FIRM_DD_CONFIG[firm];
-  const f = FIRMS.find(x => x.name === firm);
+  const cfg = FIRM_DD_CONFIG[firmN];
+  const firm = FIRMS.find(f => f.name === firmN);
   const sim = simDD(scenario.points, cfg);
 
-  const W = 720, H = 260, P = 36;
+  const W = 720, H = 280, P = 36;
   const all = [...scenario.points, ...sim.floors];
   const minY = Math.min(...all) - 200;
   const maxY = Math.max(...all) + 200;
   const xs = i => P + (i / (scenario.points.length - 1)) * (W - P * 2);
   const ys = v => H - P - ((v - minY) / (maxY - minY)) * (H - P * 2);
-  const pnlPath = scenario.points.map((p, i) => `${i === 0 ? 'M' : 'L'}${xs(i)},${ys(p)}`).join(' ');
-  const floorPath = sim.floors.map((p, i) => `${i === 0 ? 'M' : 'L'}${xs(i)},${ys(p)}`).join(' ');
+  const pnlPath = scenario.points.map((p, i) => `${i === 0 ? "M" : "L"}${xs(i)},${ys(p)}`).join(" ");
+  const floorPath = sim.floors.map((p, i) => `${i === 0 ? "M" : "L"}${xs(i)},${ys(p)}`).join(" ");
 
   return (
-    <div className="sim">
-      <div className="sim-ctrl">
-        <div>
-          <label>FIRM</label>
-          <select value={firm} onChange={e => setFirm(e.target.value)}>
-            {FIRMS.map(ff => <option key={ff.id} value={ff.name}>{FIRM_DD_CONFIG[ff.name]?.label || ff.name}</option>)}
-          </select>
-        </div>
-        <div>
-          <label>SCENARIO</label>
-          <select value={sce} onChange={e => setSce(e.target.value)}>
-            {Object.entries(DD_SCENARIOS).map(([k, v]) => <option key={k} value={k}>{v.name}</option>)}
-          </select>
-        </div>
+    <div className="page">
+      <div className="page-hd">
+        <div className="page-eye">Drawdown Simulator</div>
+        <h1 className="page-t">See <em>exactly</em> how you blow an account.</h1>
+        <p className="page-d">Pick a firm and a scenario. Watch how the drawdown floor moves against the equity curve. This is why EOD trailing feels different from intraday.</p>
       </div>
-      <div className="sim-chart-wrap">
-        <svg viewBox={`0 0 ${W} ${H}`} className="sim-chart">
-          <line x1={P} y1={ys(0)} x2={W - P} y2={ys(0)} stroke="rgba(255,255,255,0.1)" strokeDasharray="4 4" />
-          <path d={`${floorPath} L${xs(scenario.points.length - 1)},${H - P} L${P},${H - P} Z`} fill="rgba(255,107,107,0.06)" />
-          <path d={floorPath} fill="none" stroke="#ff6b6b" strokeWidth="1.5" strokeDasharray="6 4" />
-          <path d={pnlPath} fill="none" stroke={f?.color || '#a8ff60'} strokeWidth="2.5" />
-          {sim.blownAt >= 0 && (
-            <g>
-              <circle cx={xs(sim.blownAt)} cy={ys(scenario.points[sim.blownAt])} r="6" fill="#ff6b6b" />
-              <text x={xs(sim.blownAt)} y={ys(scenario.points[sim.blownAt]) - 14} fill="#ff6b6b" fontSize="11" fontWeight="700" textAnchor="middle" fontFamily="var(--mono)">BLOWN</text>
-            </g>
-          )}
-        </svg>
-      </div>
-      <div className={`sim-verdict ${sim.blownAt >= 0 ? 'fail' : 'pass'}`}>
-        <span className="sim-verdict-mark">{sim.blownAt >= 0 ? '✗' : '✓'}</span>
-        <div>
-          <div className="sim-verdict-t">{sim.blownAt >= 0 ? 'Account Terminated' : 'Account Survived'}</div>
-          <div className="sim-verdict-d">
-            {sim.blownAt >= 0
-              ? `Balance hit the drawdown floor on day ${sim.blownAt + 1}. This is how ${firm}'s ${cfg.type.toLowerCase()} trailing drawdown bites.`
-              : `Peak: $${sim.peak.toLocaleString()} · Final floor: $${sim.floors[sim.floors.length - 1].toLocaleString()}`}
+      <div className="sim-wrap">
+        <div className="sim-ctrls">
+          <div>
+            <label className="sim-ctrl-l">Firm</label>
+            <select className="sim-ctrl-s" value={firmN} onChange={e => setFirmN(e.target.value)}>
+              {FIRMS.map(f => <option key={f.id} value={f.name}>{FIRM_DD_CONFIG[f.name]?.label || f.name}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="sim-ctrl-l">Scenario</label>
+            <select className="sim-ctrl-s" value={sce} onChange={e => setSce(e.target.value)}>
+              {Object.entries(DD_SCENARIOS).map(([k, v]) => <option key={k} value={k}>{v.name}</option>)}
+            </select>
           </div>
         </div>
-      </div>
-      <div className="sim-legend">
-        <span><i className="sim-legend-dot" style={{ background: f?.color || 'var(--prime)' }} />EQUITY (P&L)</span>
-        <span><i className="sim-legend-dot" style={{ background: '#ff6b6b' }} />DRAWDOWN FLOOR</span>
-        <span style={{ marginLeft: 'auto' }}>TYPE: <b style={{ color: 'var(--prime)' }}>{cfg.type.toUpperCase()}</b> · MAX: <b style={{ color: 'var(--prime)' }}>${cfg.maxDD.toLocaleString()}</b></span>
+        <div className="sim-chart">
+          <svg viewBox={`0 0 ${W} ${H}`}>
+            <line x1={P} y1={ys(0)} x2={W - P} y2={ys(0)} stroke="rgba(26,29,41,0.1)" strokeDasharray="4 4" />
+            <text x={P - 4} y={ys(0) + 4} fill="rgba(26,29,41,0.3)" fontSize="10" textAnchor="end">$0</text>
+            <path d={`${floorPath} L${xs(scenario.points.length - 1)},${H - P} L${P},${H - P} Z`} fill="rgba(225,75,53,0.06)" />
+            <path d={floorPath} fill="none" stroke="#e14b35" strokeWidth="1.5" strokeDasharray="6 4" />
+            <path d={pnlPath} fill="none" stroke={firm?.color || "#1a1d29"} strokeWidth="2.5" />
+            {sim.blownAt >= 0 && (
+              <g>
+                <circle cx={xs(sim.blownAt)} cy={ys(scenario.points[sim.blownAt])} r="6" fill="#e14b35" />
+                <text x={xs(sim.blownAt)} y={ys(scenario.points[sim.blownAt]) - 14} fill="#e14b35" fontSize="11" fontWeight="700" textAnchor="middle">BLOWN</text>
+              </g>
+            )}
+          </svg>
+        </div>
+        <div className={`sim-verdict ${sim.blownAt >= 0 ? "fail" : "pass"}`}>
+          <div className="sim-verdict-ic">{sim.blownAt >= 0 ? "✗" : "✓"}</div>
+          <div>
+            <div className="sim-verdict-t">{sim.blownAt >= 0 ? "Account blown" : "Account survived"}</div>
+            <div className="sim-verdict-d">
+              {sim.blownAt >= 0
+                ? `Balance hit the drawdown floor on day ${sim.blownAt + 1}. This is how ${firmN}'s ${cfg.type.toLowerCase()} trailing drawdown bites.`
+                : `Peak: $${sim.peak.toLocaleString()} · Final floor: $${sim.floors[sim.floors.length - 1].toLocaleString()}`}
+            </div>
+          </div>
+        </div>
+        <div className="sim-legend">
+          <span><i className="sim-legend-dot" style={{ background: firm?.color || "#1a1d29" }} /> Equity (P&L)</span>
+          <span><i className="sim-legend-dot" style={{ background: "#e14b35" }} /> Drawdown floor</span>
+          <span className="sim-info">Type: <b>{cfg.type}</b> · Max: <b>${cfg.maxDD.toLocaleString()}</b></span>
+        </div>
       </div>
     </div>
   );
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
+// RESEARCH PAGE
+// ═══════════════════════════════════════════════════════════════════════════
+const ResearchPage = () => {
+  const posts = BLOG.slice(0, 9);
+  const feature = posts[0];
+  const sides = posts.slice(1, 3);
+  const rest = posts.slice(3);
+  return (
+    <div className="page">
+      <div className="page-hd">
+        <div className="page-eye">Research &amp; analysis</div>
+        <h1 className="page-t">Dispatches <em>from the floor</em>.</h1>
+        <p className="page-d">Weekly deep-dives on prop firm rules, payout behavior, rule changes, and the state of the industry.</p>
+      </div>
+      <div className="research-grid">
+        {feature && (
+          <div className="research-feat">
+            <div className="research-cat">{feature.cat}</div>
+            <h2 className="research-t">{feature.title}</h2>
+            <p className="research-excerpt">{feature.excerpt}</p>
+            <div className="research-date">{feature.date} · {feature.time} read</div>
+          </div>
+        )}
+        <div className="research-side">
+          {sides.map(p => (
+            <div key={p.id} className="research-card">
+              <div className="research-cat">{p.cat}</div>
+              <div className="research-card-t">{p.title}</div>
+              <div className="research-card-date">{p.date} · {p.time} read</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      {rest.length > 0 && (
+        <div className="firm-grid" style={{ marginTop: 40 }}>
+          {rest.map(p => (
+            <div key={p.id} className="research-card">
+              <div className="research-cat">{p.cat}</div>
+              <div className="research-card-t">{p.title}</div>
+              <div className="research-card-date">{p.date} · {p.time} read</div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// REWARDS PAGE
+// ═══════════════════════════════════════════════════════════════════════════
+const RewardsPage = ({ onSignIn, user }) => (
+  <div className="page">
+    <div className="rewards-wrap" style={{ padding: "80px 0 60px" }}>
+      <div className="rewards-feature">
+        <span className="rewards-feature-tag">The PulsePoints Program</span>
+        <h1 className="rewards-feature-t">Get <em>paid</em><br />to pick a firm.</h1>
+        <p className="rewards-feature-d">
+          Every purchase with code TPP earns PulsePoints. Submit a screenshot, redeem for free prop accounts, community perks, and exclusive drops.
+        </p>
+        <div className="home-cta" style={{ justifyContent: "center", marginBottom: 0 }}>
+          <button className="btn-pri" onClick={user ? undefined : onSignIn}>
+            {user ? "View Dashboard" : "Join the Program"} <span className="btn-pri-arrow">→</span>
+          </button>
+        </div>
+      </div>
+      <div className="rewards-steps">
+        {[
+          ["01", "Sign Up", "Free · 30 seconds"],
+          ["02", "Buy with TPP", "Save 10–90% at checkout"],
+          ["03", "Submit Proof", "Receipt screenshot"],
+          ["04", "Earn & Redeem", "Free accounts + perks"],
+        ].map(([n, t, d]) => (
+          <div key={n} className="rewards-step">
+            <div className="rewards-step-n">{n}</div>
+            <div className="rewards-step-t">{t}</div>
+            <div className="rewards-step-d">{d}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+// ═══════════════════════════════════════════════════════════════════════════
 // AUTH MODAL
 // ═══════════════════════════════════════════════════════════════════════════
-const Auth = ({ onClose, onAuth }) => {
+const AuthModal = ({ onClose, onAuth }) => {
   const [mode, setMode] = useState("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -2064,18 +2736,16 @@ const Auth = ({ onClose, onAuth }) => {
         if (error) throw error;
         if (data.user) onAuth(data.user);
       }
-    } catch (e) {
-      setErr(e.message || "Something went wrong.");
-    }
+    } catch (e) { setErr(e.message || "Something went wrong."); }
     setBusy(false);
   };
 
   return (
-    <div className="auth-bg" onClick={(e) => e.target === e.currentTarget && onClose()}>
+    <div className="auth-bg" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="auth-box">
         <button className="auth-close" onClick={onClose}>✕</button>
-        <h2 className="auth-h">{mode === "signin" ? "Welcome Back" : "Create Account"}</h2>
-        <p className="auth-d">{mode === "signin" ? "Sign in to track your picks and earn PulsePoints." : "Join the community. Earn points. Get deals."}</p>
+        <h2 className="auth-h">{mode === "signin" ? <>Welcome <em>back</em></> : <>Create <em>account</em></>}</h2>
+        <p className="auth-d">{mode === "signin" ? "Sign in to earn PulsePoints and track your picks." : "Join the program. Earn points. Get deals."}</p>
         <div className="auth-tab">
           <button className={mode === "signin" ? "on" : ""} onClick={() => setMode("signin")}>Sign In</button>
           <button className={mode === "signup" ? "on" : ""} onClick={() => setMode("signup")}>Sign Up</button>
@@ -2088,7 +2758,7 @@ const Auth = ({ onClose, onAuth }) => {
           <input className="auth-inp" type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
           <input className="auth-inp" type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
           <button type="submit" className="auth-sub" disabled={busy}>
-            {busy ? "Loading..." : (mode === "signin" ? "Access Terminal" : "Create Account")}
+            {busy ? "Loading..." : (mode === "signin" ? "Sign In" : "Create Account")}
           </button>
         </form>
       </div>
@@ -2097,98 +2767,50 @@ const Auth = ({ onClose, onAuth }) => {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// CHALLENGES TABLE (compact)
+// FOOTER
 // ═══════════════════════════════════════════════════════════════════════════
-const ChallengesTable = () => {
-  const [firm, setFirm] = useState("");
-  const [size, setSize] = useState("");
-  const [instant, setInstant] = useState(false);
-
-  const filtered = CHALLENGES.filter(c => {
-    if (firm && c.firm !== firm) return false;
-    if (size && c.size !== size) return false;
-    if (instant && !c.instant) return false;
-    return true;
-  });
-
-  const firms = [...new Set(CHALLENGES.map(c => c.firm))];
-  const sizes = [...new Set(CHALLENGES.map(c => c.size))].sort((a, b) => parseInt(a) - parseInt(b));
-
-  return (
-    <>
-      <div className="chal-ctrl">
-        <select value={firm} onChange={e => setFirm(e.target.value)}>
-          <option value="">ALL FIRMS</option>
-          {firms.map(f => <option key={f} value={f}>{f}</option>)}
-        </select>
-        <select value={size} onChange={e => setSize(e.target.value)}>
-          <option value="">ALL SIZES</option>
-          {sizes.map(s => <option key={s} value={s}>{s}</option>)}
-        </select>
-        <button className={instant ? "on" : ""} onClick={() => setInstant(!instant)}>Instant Only</button>
+const Footer = () => (
+  <footer className="ftr">
+    <div className="ftr-inner">
+      <div>
+        <div className="ftr-brand">
+          <span style={{ display: "inline-block", width: 10, height: 10, background: "var(--accent)", borderRadius: 3, transform: "rotate(45deg)" }} />
+          The <span>PropPulse</span>
+        </div>
+        <p className="ftr-tag">A trader's guide to futures prop firms. Quiz-matched recommendations, interactive drawdown sims, and honest scorecards.</p>
       </div>
-      <div style={{ overflow: 'auto' }}>
-        <table className="chal-table">
-          <thead>
-            <tr>
-              <th>Firm / Plan</th>
-              <th>Size</th>
-              <th>Target</th>
-              <th>Max Loss</th>
-              <th>DLL</th>
-              <th>Drawdown</th>
-              <th>Split</th>
-              <th>Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.slice(0, 40).map((c, i) => {
-              const f = FIRMS.find(ff => ff.name === c.firm);
-              return (
-                <tr key={i}>
-                  <td>
-                    <div className="chal-cell-firm">
-                      {f && <img src={LOGOS[f.name]} alt="" />}
-                      <div>
-                        <b>{c.firm}</b>
-                        <div className="chal-cell-plan">{c.plan}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>{c.size}</td>
-                  <td>{c.target}</td>
-                  <td>{c.maxLoss}</td>
-                  <td>{c.dll}</td>
-                  <td>{c.drawdown}</td>
-                  <td>{c.split}</td>
-                  <td className="chal-cell-price">{c.price}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      <div className="ftr-col">
+        <h4>Explore</h4>
+        <a href="#/firms">All Firms</a>
+        <a href="#/quiz">Match Quiz</a>
+        <a href="#/simulator">Simulator</a>
+        <a href="#/challenges">Challenges</a>
       </div>
-      {filtered.length > 40 && (
-        <p style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--txt4)', textAlign: 'center', padding: 16, letterSpacing: 0.5 }}>
-          SHOWING 40 OF {filtered.length} RESULTS · REFINE FILTERS FOR MORE
-        </p>
-      )}
-    </>
-  );
-};
+      <div className="ftr-col">
+        <h4>Resources</h4>
+        <a href="#/deals">Deals</a>
+        <a href="#/research">Research</a>
+        <a href="#/rewards">Rewards</a>
+      </div>
+      <div className="ftr-col">
+        <h4>Connect</h4>
+        <a href="https://discord.gg/pP9vfJ7WqK" target="_blank" rel="noreferrer">Discord</a>
+        <a href="https://x.com/PropPulseMedia" target="_blank" rel="noreferrer">Twitter / X</a>
+        <a href="https://www.youtube.com/@ThePropPulse" target="_blank" rel="noreferrer">YouTube</a>
+      </div>
+    </div>
+    <div className="ftr-btm">© 2026 PropPulse Media · Disclosure: We may earn a commission on partner firms. We never rank by commission — only by trader outcome.</div>
+  </footer>
+);
 
 // ═══════════════════════════════════════════════════════════════════════════
 // MAIN APP
 // ═══════════════════════════════════════════════════════════════════════════
 export default function App() {
+  const route = useRoute();
   const [user, setUser] = useState(null);
   const [showAuth, setShowAuth] = useState(false);
   const [showPanel, setShowPanel] = useState(false);
-  const [openFirm, setOpenFirm] = useState(null);
-  const [compareFirms, setCompareFirms] = useState([]);
-  const [sort, setSort] = useState("pulse");
-  const [filter, setFilter] = useState("all");
-  const [time, setTime] = useState(new Date());
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setUser(session?.user || null));
@@ -2196,390 +2818,43 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  useEffect(() => {
-    const t = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(t);
-  }, []);
-
   const logout = async () => { await supabase.auth.signOut(); setUser(null); setShowPanel(false); };
 
-  const toggleCompare = (f) => {
-    setCompareFirms(prev =>
-      prev.find(x => x.id === f.id) ? prev.filter(x => x.id !== f.id) :
-      prev.length < 4 ? [...prev, f] : prev
-    );
-  };
-
-  const filtered = FIRMS.filter(f => {
-    if (filter === "instant") return f.instantFund;
-    if (filter === "noDLL") return !f.hasDLL;
-    if (filter === "noConsistency") return !f.hasConsistency;
-    return true;
-  });
-
-  const sorted = useMemo(() => {
-    const a = [...filtered];
-    if (sort === "pulse") a.sort((x, y) => (PULSE_SCORES[y.name] || 0) - (PULSE_SCORES[x.name] || 0));
-    if (sort === "rating") a.sort((x, y) => y.rating - x.rating);
-    if (sort === "newest") a.sort((x, y) => y.founded - x.founded);
-    if (sort === "alloc") a.sort((x, y) => {
-      const n = s => { const v = parseFloat(s.replace(/[^0-9.]/g, '')); return s.includes('M') ? v * 1000 : v; };
-      return n(y.maxAlloc) - n(x.maxAlloc);
-    });
-    return a;
-  }, [sort, filter]);
-
-  const onDetail = (f) => {
-    setOpenFirm(openFirm === f.id ? null : f.id);
-    setTimeout(() => {
-      const el = document.querySelector('.term-row.open');
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 50);
-  };
-
-  const fmt = (d) => d.toTimeString().slice(0, 8) + " UTC";
-
-  const topDeal = DEALS.reduce((best, d) => {
-    const pct = parseInt(d.pct);
-    return pct > best.pct ? { pct, firm: d.firm } : best;
-  }, { pct: 0, firm: '' });
+  // Route matcher
+  let page;
+  if (route === "/" || route === "") page = <HomePage />;
+  else if (route === "/firms") page = <FirmsPage />;
+  else if (route.startsWith("/firm/")) page = <FirmDetailPage firmId={route.split("/firm/")[1]} />;
+  else if (route === "/quiz") page = <QuizPage />;
+  else if (route === "/deals") page = <DealsPage />;
+  else if (route === "/challenges") page = <ChallengesPage />;
+  else if (route === "/simulator") page = <SimulatorPage />;
+  else if (route === "/research") page = <ResearchPage />;
+  else if (route === "/rewards") page = <RewardsPage onSignIn={() => setShowAuth(true)} user={user} />;
+  else page = <div className="page"><div className="page-hd"><h1 className="page-t">Page not found.</h1><a href="#/" className="btn-sec" style={{ marginTop: 20 }}>← Back home</a></div></div>;
 
   return (
     <>
       <style>{css}</style>
-
-      {/* CROSSHAIRS (decorative terminal markers) */}
-      <div className="crosshair tl">[TOP.L]</div>
-      <div className="crosshair tr">[TOP.R]</div>
-      <div className="crosshair bl">[BTM.L]</div>
-      <div className="crosshair br">[BTM.R]</div>
-
-      {/* TOP BAR */}
-      <div className="tbar">
-        <div className="tbar-left">
-          <div className="tbar-logo">
-            <span className="tbar-logo-dot" />
-            PROPPULSE<em>//</em>TERMINAL
-          </div>
-          <span className="tbar-ver">v2026.4</span>
-        </div>
-        <div className="tbar-status">
-          <span>FIRMS <b>{FIRMS.length}</b></span>
-          <span>DEALS <b>{DEALS.length}</b></span>
-          <span>MAX_DISCOUNT <b>{topDeal.pct}%</b></span>
-          <span>{fmt(time)}</span>
-        </div>
-        <div className="tbar-right">
-          <button className="tbar-btn" onClick={() => document.getElementById('sec-quiz').scrollIntoView({ behavior: 'smooth' })}>QUIZ</button>
-          <button className="tbar-btn" onClick={() => document.getElementById('sec-firms').scrollIntoView({ behavior: 'smooth' })}>INDEX</button>
-          <button className="tbar-btn" onClick={() => document.getElementById('sec-deals').scrollIntoView({ behavior: 'smooth' })}>DEALS</button>
-          {user ? (
-            <div
-              className="tbar-avatar"
-              style={{ backgroundImage: user.user_metadata?.avatar_url ? `url(${user.user_metadata.avatar_url})` : undefined }}
-              onClick={() => setShowPanel(!showPanel)}
-            />
-          ) : (
-            <button className="tbar-btn primary" onClick={() => setShowAuth(true)}>SIGN IN</button>
-          )}
-        </div>
-      </div>
-
-      {/* USER PANEL */}
+      <Nav route={route} user={user} onSignIn={() => setShowAuth(true)} onTogglePanel={() => setShowPanel(!showPanel)} />
       {user && showPanel && (
         <div className="user-panel">
-          <div className="user-panel-hdr">
-            <div
-              className="user-panel-avatar"
-              style={{ backgroundImage: user.user_metadata?.avatar_url ? `url(${user.user_metadata.avatar_url})` : undefined }}
-            />
+          <div className="user-panel-hd">
+            <div className="user-panel-avatar" style={{ backgroundImage: user.user_metadata?.avatar_url ? `url(${user.user_metadata.avatar_url})` : undefined }} />
             <div>
-              <div className="user-panel-name">{user.user_metadata?.username || user.email?.split('@')[0]}</div>
-              <div className="user-panel-email">{user.email}</div>
+              <div className="user-panel-nm">{user.user_metadata?.username || user.email?.split("@")[0]}</div>
+              <div className="user-panel-em">{user.email}</div>
             </div>
           </div>
-          <button className="user-panel-item">MY DASHBOARD</button>
-          <button className="user-panel-item">SUBMIT PURCHASE</button>
-          <button className="user-panel-item">REWARDS STORE</button>
-          <button className="user-panel-item" onClick={logout}>SIGN OUT</button>
+          <a href="#/rewards" className="user-panel-item" onClick={() => setShowPanel(false)}>My Dashboard</a>
+          <a href="#/rewards" className="user-panel-item" onClick={() => setShowPanel(false)}>Submit Purchase</a>
+          <a href="#/rewards" className="user-panel-item" onClick={() => setShowPanel(false)}>Rewards Store</a>
+          <button className="user-panel-item" onClick={logout}>Sign Out</button>
         </div>
       )}
-
-      <div className="app">
-        {/* HERO */}
-        <section className="hero">
-          <div className="hero-meta">
-            <span className="hero-meta-dot" />
-            <span>SYSTEM STATUS: ONLINE</span>
-            <span className="hero-meta-sep">·</span>
-            <span>BROADCAST {fmt(time)}</span>
-            <span className="hero-meta-sep">·</span>
-            <span>Q2.2026</span>
-          </div>
-          <h1 className="hero-h1">
-            The prop firm<br />
-            <em>terminal.</em>
-          </h1>
-          <p className="hero-lead">
-            Stop guessing. Pick the right futures prop firm with a six-question match quiz, an interactive drawdown simulator, and honest scorecards on every rule that matters.
-          </p>
-          <div className="hero-cta-row">
-            <button className="hero-cta primary" onClick={() => document.getElementById('sec-quiz').scrollIntoView({ behavior: 'smooth' })}>
-              RUN DIAGNOSTIC <span className="hero-cta-arrow">→</span>
-            </button>
-            <button className="hero-cta ghost" onClick={() => document.getElementById('sec-firms').scrollIntoView({ behavior: 'smooth' })}>
-              BROWSE INDEX
-            </button>
-          </div>
-
-          <div className="tstrip">
-            <div className="tstrip-item">
-              <div className="tstrip-k">FIRMS TRACKED</div>
-              <div className="tstrip-v">{FIRMS.length}<small>LIVE</small></div>
-            </div>
-            <div className="tstrip-item">
-              <div className="tstrip-k">ACTIVE DEALS</div>
-              <div className="tstrip-v">{DEALS.length}<small>↑{topDeal.pct}% MAX</small></div>
-            </div>
-            <div className="tstrip-item">
-              <div className="tstrip-k">TOP PULSE</div>
-              <div className="tstrip-v">{Math.max(...Object.values(PULSE_SCORES))}<small>TRADEIFY</small></div>
-            </div>
-            <div className="tstrip-item">
-              <div className="tstrip-k">UNIVERSAL CODE</div>
-              <div className="tstrip-v" style={{ fontFamily: 'var(--mono)' }}>TPP<small>-10–90%</small></div>
-            </div>
-          </div>
-        </section>
-
-        {/* QUIZ SECTION */}
-        <section className="sec" id="sec-quiz">
-          <div className="sec-hd">
-            <div className="sec-ix">01 / DIAGNOSTIC</div>
-            <h2 className="sec-t">The <em>match quiz</em></h2>
-            <div className="sec-sub">6 QUESTIONS · 30 SECONDS · NO SIGNUP</div>
-          </div>
-          <Quiz onDetail={f => setOpenFirm(f.id)} />
-        </section>
-
-        {/* FIRMS INDEX */}
-        <section className="sec" id="sec-firms">
-          <div className="sec-hd">
-            <div className="sec-ix">02 / THE INDEX</div>
-            <h2 className="sec-t">All <em>{FIRMS.length} firms</em>, ranked.</h2>
-            <div className="sec-sub">CLICK ANY ROW TO EXPAND</div>
-          </div>
-          <div className="term">
-            <div className="term-ctrl">
-              <div className="term-filters">
-                <button className={filter === 'all' ? 'on' : ''} onClick={() => setFilter('all')}>ALL</button>
-                <button className={filter === 'instant' ? 'on' : ''} onClick={() => setFilter('instant')}>INSTANT</button>
-                <button className={filter === 'noDLL' ? 'on' : ''} onClick={() => setFilter('noDLL')}>NO DLL</button>
-                <button className={filter === 'noConsistency' ? 'on' : ''} onClick={() => setFilter('noConsistency')}>NO CONSISTENCY</button>
-              </div>
-              <div className="term-sort">
-                <span className="term-sort-lbl">SORT</span>
-                {[["pulse", "Pulse"], ["rating", "Rating"], ["newest", "Newest"], ["alloc", "Alloc"]].map(([k, l]) => (
-                  <button key={k} className={sort === k ? 'on' : ''} onClick={() => setSort(k)}>{l}</button>
-                ))}
-              </div>
-            </div>
-            <div className="term-colhdr">
-              <span>RANK</span>
-              <span>FIRM</span>
-              <span>PULSE</span>
-              <span>RATING</span>
-              <span>MAX ALLOC</span>
-              <span>TYPE</span>
-              <span>DEAL</span>
-              <span></span>
-            </div>
-            {sorted.map((f, i) => (
-              <FirmRow
-                key={f.id}
-                firm={f}
-                rank={i + 1}
-                open={openFirm === f.id}
-                onToggle={() => setOpenFirm(openFirm === f.id ? null : f.id)}
-                onDetail={() => {}}
-                toggleCompare={toggleCompare}
-                comparing={compareFirms.some(x => x.id === f.id)}
-              />
-            ))}
-          </div>
-        </section>
-
-        {/* DEALS */}
-        <section className="sec" id="sec-deals">
-          <div className="sec-hd">
-            <div className="sec-ix">03 / OFFERS</div>
-            <h2 className="sec-t">Active <em>discount codes</em></h2>
-            <div className="sec-sub">{DEALS.length} DEALS · COPY CODE AT CHECKOUT</div>
-          </div>
-          <div className="deals">
-            {DEALS.map((d, i) => {
-              const f = FIRMS.find(ff => ff.name === d.firm);
-              return (
-                <button key={i} className="deals-row" onClick={() => f && trackClick(f.name)}>
-                  <div className="deals-row-firm">
-                    {f && (
-                      <div className="deals-row-logo"><img src={LOGOS[f.name]} alt="" /></div>
-                    )}
-                    {d.firm}
-                  </div>
-                  <div className="deals-row-pct">{d.pct.split('%')[0]}<em>%OFF</em></div>
-                  <div className="deals-row-desc">{d.desc}</div>
-                  <div className="deals-row-code">CODE: <b>{d.code}</b></div>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* CHALLENGES */}
-        <section className="sec" id="sec-challenges">
-          <div className="sec-hd">
-            <div className="sec-ix">04 / MATRIX</div>
-            <h2 className="sec-t">Challenge <em>comparison</em></h2>
-            <div className="sec-sub">ALL PLANS · FILTER BY FIRM / SIZE</div>
-          </div>
-          <ChallengesTable />
-        </section>
-
-        {/* SIMULATOR */}
-        <section className="sec" id="sec-sim">
-          <div className="sec-hd">
-            <div className="sec-ix">05 / SIMULATOR</div>
-            <h2 className="sec-t">Drawdown <em>simulator</em></h2>
-            <div className="sec-sub">SEE WHERE YOUR FLOOR MOVES</div>
-          </div>
-          <Sim />
-        </section>
-
-        {/* RESEARCH */}
-        <section className="sec" id="sec-research">
-          <div className="sec-hd">
-            <div className="sec-ix">06 / DISPATCH</div>
-            <h2 className="sec-t">Research <em>&amp; analysis</em></h2>
-            <div className="sec-sub">DATA-DRIVEN INSIGHTS FOR PROP TRADERS</div>
-          </div>
-          <div className="rsearch">
-            {BLOG.slice(0, 1).map(p => (
-              <div key={p.id} className="rsearch-main" onClick={() => window.open('#', '_self')}>
-                <div className="rsearch-cat">{p.cat.toUpperCase()}</div>
-                <h3 className="rsearch-h">{p.title}</h3>
-                <p className="rsearch-excerpt">{p.excerpt}</p>
-                <div className="rsearch-date">{p.date.toUpperCase()} · {p.time}</div>
-              </div>
-            ))}
-            {BLOG.slice(1, 3).map(p => (
-              <div key={p.id} className="rsearch-sub">
-                <div className="rsearch-sub-cat">{p.cat.toUpperCase()}</div>
-                <h4 className="rsearch-sub-h">{p.title}</h4>
-                <div className="rsearch-sub-date">{p.date.toUpperCase()}</div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* REWARDS */}
-        <section className="sec" id="sec-rewards">
-          <div className="sec-hd">
-            <div className="sec-ix">07 / LOYALTY</div>
-            <h2 className="sec-t">Earn <em>PulsePoints</em></h2>
-            <div className="sec-sub">BUY · SUBMIT · REDEEM</div>
-          </div>
-          <div className="rw">
-            <div>
-              <div className="rw-eye">THE PULSEPOINTS PROGRAM</div>
-              <h3 className="rw-h">Get <em>paid</em> to pick the right firm.</h3>
-              <p className="rw-d">Every purchase you make with code TPP earns PulsePoints. Redeem them for free prop accounts, exclusive discounts, and community perks.</p>
-              <button className="hero-cta primary" onClick={() => user ? setShowPanel(true) : setShowAuth(true)}>
-                {user ? 'VIEW DASHBOARD' : 'JOIN THE PROGRAM'} <span className="hero-cta-arrow">→</span>
-              </button>
-            </div>
-            <div className="rw-steps">
-              <div className="rw-step">
-                <div className="rw-step-n">01</div>
-                <div>
-                  <div className="rw-step-t">Sign up</div>
-                  <div className="rw-step-s">FREE · 30 SECONDS</div>
-                </div>
-              </div>
-              <div className="rw-step">
-                <div className="rw-step-n">02</div>
-                <div>
-                  <div className="rw-step-t">Buy with TPP</div>
-                  <div className="rw-step-s">SAVE 10–90% AT CHECKOUT</div>
-                </div>
-              </div>
-              <div className="rw-step">
-                <div className="rw-step-n">03</div>
-                <div>
-                  <div className="rw-step-t">Submit proof</div>
-                  <div className="rw-step-s">RECEIPT SCREENSHOT</div>
-                </div>
-              </div>
-              <div className="rw-step">
-                <div className="rw-step-n">04</div>
-                <div>
-                  <div className="rw-step-t">Earn &amp; redeem</div>
-                  <div className="rw-step-s">FREE ACCOUNTS + PERKS</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* FOOTER */}
-        <footer className="ftr">
-          <div>
-            <div className="ftr-brand">The <em>PropPulse</em></div>
-            <p className="ftr-tag">"A trader's guide to futures prop firms. Quiz-matched recommendations, interactive drawdown sims, and honest scorecards."</p>
-            <div className="ftr-mono">© 2026 PROPPULSE MEDIA · ALL RIGHTS RESERVED</div>
-          </div>
-          <div className="ftr-col">
-            <h4>Navigate</h4>
-            <button onClick={() => document.getElementById('sec-firms').scrollIntoView({ behavior: 'smooth' })}>The Index</button>
-            <button onClick={() => document.getElementById('sec-quiz').scrollIntoView({ behavior: 'smooth' })}>Match Quiz</button>
-            <button onClick={() => document.getElementById('sec-sim').scrollIntoView({ behavior: 'smooth' })}>Simulator</button>
-            <button onClick={() => document.getElementById('sec-deals').scrollIntoView({ behavior: 'smooth' })}>Deals</button>
-            <button onClick={() => document.getElementById('sec-challenges').scrollIntoView({ behavior: 'smooth' })}>Challenges</button>
-          </div>
-          <div className="ftr-col">
-            <h4>Resources</h4>
-            <button onClick={() => document.getElementById('sec-research').scrollIntoView({ behavior: 'smooth' })}>Research</button>
-            <button onClick={() => document.getElementById('sec-rewards').scrollIntoView({ behavior: 'smooth' })}>PulsePoints</button>
-            <a href="https://discord.gg/pP9vfJ7WqK" target="_blank" rel="noreferrer">Discord</a>
-            <a href="https://x.com/PropPulseMedia" target="_blank" rel="noreferrer">Twitter / X</a>
-            <a href="https://www.youtube.com/@ThePropPulse" target="_blank" rel="noreferrer">YouTube</a>
-          </div>
-          <div className="ftr-col">
-            <h4>Disclosure</h4>
-            <p style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--txt4)', lineHeight: 1.55, letterSpacing: 0.3 }}>
-              PropPulse may earn a commission on partner firms. We never rank by commission — only by trader outcome. See methodology.
-            </p>
-          </div>
-          <div className="ftr-btm">
-            <span>BUILT FOR FUTURES TRADERS · NO AFFILIATION WITHOUT DISCLOSURE</span>
-            <span>{fmt(time)}</span>
-          </div>
-        </footer>
-      </div>
-
-      {/* COMPARE TRAY */}
-      {compareFirms.length >= 2 && (
-        <div className="cmp-tray">
-          <div className="cmp-tray-firms">
-            {compareFirms.map(f => <div key={f.id} className="cmp-tray-chip">{f.name}</div>)}
-          </div>
-          <button className="cmp-tray-go">COMPARE {compareFirms.length}</button>
-          <button className="cmp-tray-clear" onClick={() => setCompareFirms([])}>CLEAR</button>
-        </div>
-      )}
-
-      {/* AUTH MODAL */}
-      {showAuth && <Auth onClose={() => setShowAuth(false)} onAuth={u => { setUser(u); setShowAuth(false); }} />}
+      {page}
+      <Footer />
+      {showAuth && <AuthModal onClose={() => setShowAuth(false)} onAuth={u => { setUser(u); setShowAuth(false); }} />}
     </>
   );
 }
