@@ -1,4788 +1,2585 @@
-import { useState, useMemo, useEffect, useCallback, useRef } from "react";
-import { createClient } from "@supabase/supabase-js";
+// ═══════════════════════════════════════════════════════════════════════════
+// PropPulse — clean-slate rebuild
+// Design: "Prime Terminal" — black & phosphor-green monospace terminal
+// aesthetic meets modern typography. Single-page scroll. Command-palette
+// navigation. Everything drawn fresh.
+// ═══════════════════════════════════════════════════════════════════════════
 
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { createClient } from "@supabase/supabase-js";
+import {
+  LOGOS, FIRMS, DEALS, BLOG, VIDEOS, CHALLENGES, FUNDED_OVERRIDES,
+  PULSE_SCORES, AFFILIATE_LINKS, FIRM_PROFILES, FIRM_FAQ,
+  QUIZ_QUESTIONS, DD_SCENARIOS, FIRM_DD_CONFIG,
+  SCORECARD_DATA, LOYALTY_TIERS
+} from "./data";
+
+// ─── SUPABASE (unchanged from old site) ────────────────────────────────────
 const supabase = createClient(
   "https://lwwtosuwfdliahoyqakx.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx3d3Rvc3V3ZmRsaWFob3lxYWt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDM0NDYsImV4cCI6MjA5MTMxOTQ0Nn0.RCcNmkTsgjInRlL3PwK2AP5bUUTx5G3f2XqYu0OrquU"
 );
 
-// ─── LOGOS (base64 embedded) ────────────────────────────────────────────────
-const LOGOS = {
-  "Tradeify": "data:image/jpeg;base64,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",
-  "My Funded Futures": "data:image/png;base64,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",
-  "Alpha Futures": "data:image/png;base64,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",
-  "Apex Trader Funding": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAAAAAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAoHBwgHBgoICAgLCgoLDhgQDg0NDh0VFhEYIx8lJCIfIiEmKzcvJik0KSEiMEExNDk7Pj4+JS5ESUM8SDc9Pjv/2wBDAQoLCw4NDhwQEBw7KCIoOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozv/wAARCABAAEADASIAAhEBAxEB/8QAGgAAAgMBAQAAAAAAAAAAAAAAAAYBBAUHAv/EADIQAAAFAQUFBwQDAQAAAAAAAAABAgMEBQYREhUxEyFRYWIHFEFScYGhIiNCcpGx0dL/xAAaAQEAAgMBAAAAAAAAAAAAAAAAAQIEBQYH/8QAIxEAAgEDAwQDAAAAAAAAAAAAAAERAgMFBBMVEiFBUSIxsf/aAAwDAQACEQMRAD8AuZwfnBnHWEXNVcQZqriPQePRzWyPWcdYM46wi5qriDNVcQ49DZHrOOsGcdYRc1VxBmquIcehsj1nB+cGcdYRc1VxBmquIcehsmLtgbYUNtzGpZqlrr9ejU4lYW1qxPL8jZb1H/H9kNc8kkpk2ysnkkvGwb5MuGyR3G5gPCR+ug8bYdNT2s0mHWFUhuAg6A2gmELbTfpuM8GikctfHffcKlouz2DVo5VayMhk0Oli7sTn21/or8T6T+NBj0ZeqYrUF3p14OebYWYESbVJRRYEV2S8rRDSTUfvw9wwNWcs5Z1eK1laJ2SnedOgXqUXJSvD49Qx2atuqpVVmhWUokelQr8b7604lk2Wp3FuvPQrzPeYm5lqkvgp/ArC8ipXbGV2zlOan1FhtLLiiQezdJZtqPQlXaX3eF4X9sH3tetV3iSxQI6/oYMnpFx/mZfSn2I7/chzPbcxOnydyq3Nx9yK7KT7FLGfEakSrnTqNJjRTNMmd9t93TC0W/AX7HvPkRFxGV4iBy/U/ZmwaMSXAioJx2GqY/5HV4Wk+pJ3q/khs0ztDrtMmNuNrZ7qjd3JDSW2buRJLcfPX1CqAQ239g7KtyzfaRTsRlsZradSuJ5n/tPx6GPVDp8bs9s7PmyXUPvnepS0ldjItyEFfxM9/M+Q49FlyIUlEiK8tl1s70rQdxkNOsWrq1cjNx5r6TaQeLChBJJR8Tu1CXEAqT3Z8152pyiWo5LhrU4ZbjMzP4/wU8Z8RaXU5TkEoSnDNkriu5Fp/Ypieqr2IJ8RAnxECoAAkAAgAAAAAASAP//Z",
-  "Top One Futures": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAANFElEQVRo3u2Za5BcxXXHz6O7772zM7Mz+5qVVhIrLVo9gAUFSbzCRoJAgjCRbWwSFxicckHZFVyOY5OKq+wvoZxKpZxUEccOSlkxFLgCGEwBBmFMBSEQLoEAIZAAaSWtHitpH9rdmZ3dmfvoPvkwKyHxIR7B2qaS/X+bOzOnz6/P6dN9+gLMalazmtWsZjWr/3tCBMBTHwDx4xj7vXgPiADsKfbV9LPfDsNMW0UCcQCgMl7jhQWvowEAwoHJ4luDyUQ4DSfySQVAAAE0nF3Wkj6vCQPPxREAoDZQCSd3jRXfHZbIzvCMzay1hs7G7IpWbvYlSiAB9BgAJLSgAI2yJ6qlN4cn+4sAMxaEjwuAiCICAF5LqnFFuzc/7ZyDyKFG0DoaKAGA6chKFEMiYJCIw8Pl4pvHw5Gp0//++wDA6XnklM72FFLdOVRiQ4eE5JEUk4mdQ6W9YwCQXZzP9LRho3KhEyfskSQ4tWes9NaQrcSnm/odAtTSnTG9rCVzQQullQsTdEC+lkim3hsuvj1iKwkhAIATYF819rSklraiQVeNhYA8JeWk9PZI+b0RSWTakbPHOGuAU0EPFmSbVhVUWzpOYoiFDQNTdKA0/tqx8EQFAJCwlh2IIE4AwGsOcqvmmM4sOpdEVjQapZPB8uj2wcqhUs04nGVKnQ3AyUDrZi+/eq7flRMRCS0oYsPxUFh89cjk/uIHVgVQMQBIYk+f4PSixuyqeabNS2ILiUOPEbG6b3x829FoNDx9oBkFQAAB5ansqjnpC1vQQ1e1gkgB44Qrbj9WemvQJYKIcHK+/bnppis7AGD0pYHq0TLUNglBECGN2Z5C9uI5kGVXSVCEfHaRTO4YKb52zIZJ/Qz1ASCAQLqrKX/1OSan4tCKA/aZE5nYNTz66+PTmxQjOhAR3eg3XdaeXtZiGQCALEy+OzL2yvGoVAVEJBAnIKAyXtOl7ZnzW6wiW7VIoD2Ox5PRF/rLe8fqRKg3An4h3X7beUgWq855TIrC/aXRLQOVgRLU0h0AnJBRuZWF3MoCZExSSQgcADgk5TOU4/HXhsa3H3ORBUKE6UAFHdmm3g5vUdYlDkMLPoGjY/fvqg5O1uMY18mYXVnILM1BKOwzlJKRXx0e+e/+pBQiISKLcwCQXdbS/pnuzEUtQGQT56UYmUmz9jCJhHydXpJLL26xk3E0MgUCSIwIcSmc2DVix+OG9ozKGGdFp3VSiisHS/VMb90Ai5vTC3MIzlXd4Z+8M3WoCIREKA5AXGpOes767pY181UDSWhZo0nraKBy/Mm+8tsjqUImKAQoAGHiNepsT6GhIxsPT8UTIQgQowCGxycn94zmLizoAJXS1YHy5P7xegBUnSmEBEojOaayTSoOCRHEWTBpXVjbmVtVsB7AZIxMQT6VnKgO/3L/8OvHJXEAcGDjztaL21vXnqOagngqwSRJX5DPLs6NbR8c2twfTcREIIR2yirn2Bg2SFxvbtcBUNuzCFkDOgbDSOBiAY1tl3bMXbOAmv2kEqsoppyBkMZePnZ084G4FMHJlkCsG9p2dGz3yNw1C3OXt6NxMhkL67Y1HS09LUc3Hxp+9ajEAhpYIysmA0R0auiZiQAxKkXOCiBKYhuXNHWs68p0ZuMocZVIB6Q4GNtdHHimb/JICRCQEBwICAAgIBDE5ejgU++PvHl03nWL88sbE2eTSkw51XlTd+vquUee2VfaN8ZEiokYker0q841IJBb2pxbmhMLIpLrzM2/ocs0aTuVoEG/0YsGK4d+tvfI031RKUQiIgQnclpLhiLEBAhRMRx941h4vJqen0nNSYkTCZ3f5ret7Ei3p3VrwD4pT5f3jxffH53JCDCTNgrCRDf5mUIqqliyaFqCpBgNPN5/ZHO/DROs1XjrBIBZOWtPjc6kEpsAADKCg+G3jo++OzJvbefca+erZpOUYwHXekkhiZ0kTht1cg38ZoJ6ABBAiIA1O2MR0cbOz2q0OLj16IGn+iojUwCIzCIOrCDhwvXngoX9T+49eYKQBdctBEMHntwjVoAQiWyUHPxl39D2gYV/trhw+VxhiKZiZhQCpYmJ6nK/HoCaFWRko6yOUaHv+eO7Tux7dM/o+ycAAAkJ0VoLAIWL2hd+enF+RfP+R/fWcgcBRERlTdcXulsvaut/fM/gjkEBISYRqZyo7P7JzuOvDHR9bknjeU1xGEECZIjqSO2zSyFkIEWkmRzt3bj74AsHxAkSAoJYsSCZ+dmuzy9tW92aWLFh8uG/C7hKkjo33fN3q4dfHdr3s3cnDpemM0pg9P0TY//wyoKrFnbdvEQUkiKcyTIKAADMyJp0oOPB8PCWfnHCiq1zYEVnzLnrl86/7hxuwHgqZgfKZ+Yz6ggxKp9cCQTs3N5C28Vthzcd7HvivXgiAkJWbBN7eMvBzvXnmoJRmpBmGgCYyLBKwJqYNNtYbGKJacEfL1z0F92pjoydqNgqKKOdFaXUdCH/AIBYKzSOGZOqsJaum5fMWTt3/3/tOfRCv00sArJRrEkphYZr5/CZBNDEvjKJiqzWYh2AFHral9/a09TT4sI4KcVeKlCa40rkCIwxihWcdlRUzMYYUYIEJm2SxNpS3NiWWfm3ly66rmvX/W8N7hxy1imtjVZaGV33IqgfQGfZt4pJbLY9c/6NPYuu7URy1ckEUQWF9MSRiZ0Pv7n808saC1kiMmd64KFKk5fydHmo9M5/vtnz5xdkOvKVYlUm7TkXtC/4p7kHntu/8/F30qLTHCjWHs40gI+6kf0pcV5zw43/sj7V4lXKsatSPusrZ3b9Yvevf7wtLEerb7y4QWlN7J0JYEg1kh9yDNTQt6nv0EuHLv/y6uV/sjzhOJqISeOF68/vvqILyJJwwL6HeoYBDHKKPQCLqRSiJEWb0YHXagZ3j2y691cHXj8IACZlfFYBeUYpjWdY1qhS7DOT4xgNT41Xnv/nF/teOHD1V3sLy1vDUhiV4kw6EEAX2xT76reQQipgT1hqHXq22Q/L0dZ7X936yLYkTJBQnIgTj72AfENa0xlTqIgD9pEp5rjWxyBh/xuH7r/zoStuuuTyW1Zn8pmwXEVCqyRgX1G9jtVdRlEFygMCYfAazJ5X9//inucG+4cQCemDyymPTAN7mr1TEajtgxp1AwVMGFN4cncWJLSRe/GBre+9tPdTX7928epFcTUCkBT7um6A33zqq42nWXvsG1bZoOG5f39x4zceHDo4wkoJuFqDCwCIEJDxOEixZ0hD7Rx6MoU8ZXwOAvZO3VCIExHHiocODm/8xoPP/ejFtN9gSBvlGTJQX79bTz+AAAIRpigdo1Wie6+/LCknLz+zzUZJbceZjoCgR57HvkfmtBxAAFHEPgfAbMhDwZOGERBsYtnwFesu/aPrL9NgBDFFDa5y2tAfMwK1lN2xeSdOQVM+R5bnL+64/e7bvrPhm0tXdosTETm17xr2PfZ85aszFzGj9jnw2TfkTz9hEhFxsvTi7u9s+Js77r5tfncHWc7nc1DBHVvePjX0xwYQQcQjfUf/9a7/GB+YKLQWOOHqWHXZiiXf/fFdX/veHe3zCtY6AGBmTZ7HxiOjTtVBBABgUoaNIWPYY2YAsNa1zyvc+b07vrvxrmUrllXHqpxwoaWtODDxg29tOLJ3oM5737rWSo1hx9a3v/2Fv7/h5nXrb72uqa2pOF4iwWs/c9Ula1c99cCmJ+57OokSj3yPA4+9D5URhcrnQJR4ZJIo8QNv/ZfW3fDFdY35zMT4RIJJoa2tdKL88D1PPPXTZyrlSv231vUu9lrRqE5WH9nw2EvPbP3inTet+VQvIhRLpZSXuv2bt121bs2jG59QpH0yAQcfBmAOOBByCr011/d+7svru5Z2lkoTk8WpfGMeBF54YssD//bIscPHEbFWlOt0rO5zN0wvJyKaKE5sfX7brtff61y0cHH3InQ0Waq0zmnpveYP/cCgUDqV2fXGu9tffmP6plFk5eV/sPKSFWElTmcb1q7rbcxnyuPVBj9oyud3v9H3/W/f89h9T5ZLZSISkbO6o677NHpSzjlERMQd23b+9S13rfvstX95563zzukojRfjJErphsQmhj1V28hO1lGFymPfYFWxiidDxaqjfc6RgwM/vHvD0z9/zia25rpz7mz9OWsAABCRWkY56556ZNOW51/50h23fP7Wz6byfml8AhF99vjM05hC9thTqBko39w+NVn56b0P3bfhweJoqZYzH8H1jw4wjeEEAImoNFa65x9/+PTjz37tW1+9+k/XRmGkRBvtwXQFQgAwymjQ+Ya855vnn938g+//qO/9fYhIxM7ZmXtj9pGECKd62DXXXPnYpoeGyof+6utfAQBmrhXNr9x5+1D50M+ffXjtNb21XxLRJ+vtNxLWurCGdLp3zZXZbPb0bzPZbO+aKxvS6WnX6+4Yf9cipo/5g0+EPtQQ/y8PZzWrWc1qVrP6f67/AXnGyD678+mFAAAAAElFTkSuQmCC",
-  "FundedNext Futures": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAABAGlDQ1BpY2MAABiVY2BgPMEABCwGDAy5eSVFQe5OChGRUQrsDxgYgRAMEpOLCxhwA6Cqb9cgai/r4lGHC3CmpBYnA+kPQKxSBLQcaKQIkC2SDmFrgNhJELYNiF1eUlACZAeA2EUhQc5AdgqQrZGOxE5CYicXFIHU9wDZNrk5pckIdzPwpOaFBgNpDiCWYShmCGJwZ3AC+R+iJH8RA4PFVwYG5gkIsaSZDAzbWxkYJG4hxFQWMDDwtzAwbDuPEEOESUFiUSJYiAWImdLSGBg+LWdg4I1kYBC+wMDAFQ0LCBxuUwC7zZ0hHwjTGXIYUoEingx5DMkMekCWEYMBgyGDGQCm1j8/yRb+6wAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAB2lBMVEUAAAABAQEDAwMCAgIAAAIBAQIAAAEcHBybm5u0tLSvr6+wsLCurq68vLxGRkYsLCylpaWqqqoeHh4DAwQNDCJGQLRGQLVEPq5FP7FFP7JDPq0ICBbCwsL////8/Pz+/v77+/tgYGDd3d3Y2NgfHx8EBAUlIWBqYv9qYf9nX/5pYP9oYP5pYf9mXvoNDCEXFxfx8fFYWFgdHR36+vr5+fne3t4lJSUEBAYbGEViWfVjW/1gWPlhWftiWv1fV/UMCx/w8PDV1dUvLy80NDQzMzMyMjI5OTkJCQnk5OQrKysFBQgZF0FhWfJlXf9jW/9hWfgMCyAYGBjKysowMDD9/f3q6uoWFDlfV+1hWfnMzMwEBAQKCgoNDQ2NjY339/fv7+86OjoGBQgTEjJdVednXv/z8/Pf39/g4OBMTEwhISGzs7OTk5P4+PhBQUEQDypcVOVlXfwLCh2GhoZJSUkODSZWT9gPDibm5ubj4+NOTk4gICCysrIGBgZ7e3tRUVEFBQcHBxPNzc0HBwcMDAwPDw9ycnJZWVkFBQZoaGhhYWEFBQXLy8teXl5qampVVVVzc3Pt7e3IyMj29vZDQ0Py8vIQEBCnp6e7u7uxsbF8fHw8PDy3t7esrKwVFRVjf/IoAAAAAWJLR0Qd6wNxkQAAAAd0SU1FB+oDGBUoD34JRUQAAAG4SURBVEjH7dLnV9NQHMbxXxMUBJGpVOVJKspehUQRZFYBFVlSEAqUoQhoQNmjqCyVISAiU/hfuUkpHHpbD285p98XyblJPrlJbogCBbp8mQTRk2AiUWAbVtAVdxe6AxNX/Z+l4JBroWFG18NvUERkVDTFUOzNW3Fms/n2nbu8jYcEI9mCe5QA3H9AiZSUnJKalp6RmeUFTJRtZRfKshvk5EJR8fAR5dHj/IInhUXFJTwoRZnt6TO98orKCGZVPH9BL6nqVXVhTW0dB+pL8dozEqkBUOwqGsuZaHpTXdTMz1BvRYujtbVSr41sQFg7nOjopC7qfvuu2McMPXC+7zVKsPb1Ax/oIzT0DDAx+OnzkC8gn36lnGgd0DA02TnCxOjYuC+gTrib1KamARfN0BeoduUrfaOsWW7d2DvMzbctGC3q7+AiwUHfoUj2H/STWzUDnP9KLrZz0BIUC5ZpxSdYNX4fluABTPyCRcEamS42gy7WJUnFhrdgK/0bm2fAJiHUAEz0aXbLn2AvcfJI/Ay62PoLbZp7qO2d3fYz3r+3u++5xEEH/w6POPCfRD+HBdHf6PypQIEuS8dV7WBvcOmmpwAAAB50RVh0aWNjOmNvcHlyaWdodABHb29nbGUgSW5jLiAyMDE2rAszOAAAABR0RVh0aWNjOmRlc2NyaXB0aW9uAHNSR0K6kHMHAAAAAElFTkSuQmCC",
-  "Goat Funded Futures": "data:image/webp;base64,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",
-  "Bulenox": "data:image/jpeg;base64,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",
+// ─── AFFILIATE TRACKING (ported) ───────────────────────────────────────────
+const trackClick = async (firmName) => {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      await supabase.from("click_tracking").insert({ user_id: session.user.id, firm: firmName });
+    }
+  } catch {}
+  const url = AFFILIATE_LINKS[firmName];
+  if (url) window.open(url, "_blank");
 };
 
-// ─── DATA ───────────────────────────────────────────────────────────────────
-const FIRMS = [
-  { id:1, name:"Tradeify", initials:"T", logoUrl:"https://www.google.com/s2/favicons?domain=tradeify.co&sz=128", founded:2021, rating:4.7, reviews:2437, pulse:96, trend:"up", maxAlloc:"$750K", country:"US", flag:"🇺🇸", platforms:["Tradovate","WealthCharts","TradeSea"], challenge:"Straight to Funded", steps:0, split:"90/10 (Select) / 100% first $15K (Growth)", target:"N/A", dailyDD:"$2,250", maxDD:"$3,500", minPayout:"$250", paySpeed:"~1 hour processing", reset:"$60–$99 (varies by plan)", hq:"Austin, TX", color:"#0ea5e9", brandGrad:"linear-gradient(135deg,#0ea5e9,#0284c7)", desc:"Fast-growing futures prop firm with their signature Straight-to-Funded model (Tradeify 3.0). No subscription fees — one-time plan fees. Known for ~1-hour payout processing and trader-friendly drawdown rules.", instantFund:true, sizes:["25K","50K","100K","150K"], payoutType:"Daily / 5-Day / Per Goal", minDaysPass:"1 day (Lightning) / 3 (Select)", drawdownType:"EOD Trailing", hasDLL:false, hasConsistency:true, consistencyPct:"20–40%", newsTrading:true, eaAllowed:true, rewardsRedeemable:true, bestFor:"Editor's Pick" },
-  { id:2, name:"My Funded Futures", initials:"MFF", logoUrl:"https://www.google.com/s2/favicons?domain=myfundedfutures.com&sz=128", founded:2023, rating:4.9, reviews:16890, pulse:93, trend:"up", maxAlloc:"Up to 5 sim-funded accounts", country:"US", flag:"🇺🇸", platforms:["NinjaTrader","Tradovate","Rithmic","TradingView","Quantower","DeepDOM"], challenge:"Flex / Rapid / Pro", steps:1, split:"80/20 (Flex/Pro) → 90/10 (Rapid)", target:"$1,500–$9,000", dailyDD:"None", maxDD:"$1,000–$4,500", minPayout:"$250 (Flex) / $500 (Rapid) / $1,000 (Pro)", paySpeed:"Instant to 6-12 business hours", reset:"Varies by plan/size", hq:"Dover, DE", color:"#a855f7", brandGrad:"linear-gradient(135deg,#a855f7,#7c3aed)", desc:"Highest-rated futures prop firm (4.9/5). Current plans are Flex, Rapid, and Pro. Flex uses EOD drawdown with no funded consistency, Rapid offers daily payout eligibility with a 90/10 split, and Pro keeps the 14-day payout cadence. Zero activation fees on all plans.", instantFund:false, sizes:["25K","50K","100K","150K"], payoutType:"5-Day / Daily / 14-Day", minDaysPass:"2 days", drawdownType:"EOD / Intraday (Rapid funded)", hasDLL:false, hasConsistency:true, consistencyPct:"50% eval only", newsTrading:true, eaAllowed:true, rewardsRedeemable:false, bestFor:"Highest Rated" },
-  { id:3, name:"Alpha Futures", initials:"AF", logoUrl:"https://www.google.com/s2/favicons?domain=alphafutures.io&sz=128", founded:2024, rating:4.9, reviews:3320, pulse:92, trend:"up", maxAlloc:"$450K", country:"GB", flag:"🇬🇧", platforms:["NinjaTrader","Tradovate","TradingView"], challenge:"Standard / Advanced / Zero", steps:1, split:"70→80→90% (Standard) | 90/10 flat (Advanced/Zero)", target:"$1,500–$12,000", dailyDD:"Standard/Zero only | Advanced none", maxDD:"$1,000–$6,000", minPayout:"$200", paySpeed:"Within 48 business hours", reset:"$59–$419 (varies by plan)", hq:"London, UK", color:"#8b5cf6", brandGrad:"linear-gradient(135deg,#8b5cf6,#6d28d9)", desc:"UK-based futures prop firm (Alpha Futures Limited). Standard uses tiered split payouts, Advanced is 90/10 with no funded consistency or DLL, and Zero offers one-day-pass evaluations with $0 activation fees. Max $15,000 payout cap on Standard and Advanced.", instantFund:false, sizes:["25K","50K","100K","150K"], payoutType:"14-Day (Standard) / 5 Winning Days (Advanced/Zero)", minDaysPass:"1 day (Zero) / 3 days (Standard/Advanced)", drawdownType:"EOD Trailing", hasDLL:true, hasConsistency:true, consistencyPct:"50% eval / 40% Standard & Zero funded / none on Advanced funded", newsTrading:true, eaAllowed:false, rewardsRedeemable:false, bestFor:"Most Transparent" },
-  { id:4, name:"Apex Trader Funding", initials:"ATF", logoUrl:"https://www.google.com/s2/favicons?domain=apextraderfunding.com&sz=128", founded:2021, rating:4.4, reviews:18070, pulse:94, trend:"flat", maxAlloc:"$3M (20 accts)", country:"US", flag:"🇺🇸", platforms:["Rithmic","Tradovate","WealthCharts"], challenge:"1-Step Eval", steps:1, split:"100% first $25K → 90/10", target:"$6,000", dailyDD:"$1,500 (EOD only)", maxDD:"$3,000", minPayout:"$500", paySpeed:"Automated via Deel", reset:"No resets (rebuy eval)", hq:"Austin, TX", color:"#f97316", brandGrad:"linear-gradient(135deg,#f97316,#ea580c)", desc:"The largest futures prop firm by volume with $720M+ in payouts. Rebuilt with 4.0 (March 1, 2026): one-time fees, $79 activation across all plans, EOD or Intraday drawdown choice, 50% consistency (funded only), 30-day eval window, automated payouts via Deel. Metals suspended, overnight flat by 4:59 PM ET.", instantFund:false, sizes:["25K","50K","100K","150K"], payoutType:"After 5 Qualifying Days", minDaysPass:"1 day", drawdownType:"EOD Trailing / Intraday Trailing", hasDLL:true, hasConsistency:true, consistencyPct:"50% (funded only)", newsTrading:true, eaAllowed:true, rewardsRedeemable:false, bestFor:"Most Accounts (20)" },
-  { id:5, name:"Top One Futures", initials:"T1", logoUrl:"https://www.google.com/s2/favicons?domain=toponefutures.com&sz=128", founded:2025, rating:4.7, reviews:3041, pulse:87, trend:"up", maxAlloc:"Up to $1.5M sim capital", country:"US", flag:"🇺🇸", platforms:["NinjaTrader","Tradovate","TradingView"], challenge:"Elite / Elite Daily / Elite Access / Instant / S2F / Ignite", steps:1, split:"90/10", target:"$1,500–$9,000", dailyDD:"Varies by plan", maxDD:"$1,000–$5,000", minPayout:"$500 on Elite Access", paySpeed:"<24 hrs avg", reset:"$35–$149 (varies)", hq:"Cheyenne, WY", color:"#06b6d4", brandGrad:"linear-gradient(135deg,#06b6d4,#0891b2)", desc:"Rapidly growing futures firm with multiple plan types including Elite, new Elite Daily, Elite Access, Instant Sim Funded, S2F Sim PRO, and IGNITE. Elite Access now uses a $39 one-time evaluation fee with activation from $139. Manual trading only — Top One prohibits EAs and bots.", instantFund:true, sizes:["25K","50K","100K","150K"], payoutType:"Daily / 5-day / <24hr plan-dependent", minDaysPass:"1 day (Elite/Access) / none (Elite Daily) / 10 (S2F rules)", drawdownType:"EOD Trailing / Intraday (S2F Pro)", hasDLL:true, hasConsistency:true, consistencyPct:"15–45% (varies by plan)", newsTrading:true, eaAllowed:false, rewardsRedeemable:true, bestFor:"Most Plan Options" },
-  { id:6, name:"FundedNext Futures", initials:"FN", logoUrl:"https://www.google.com/s2/favicons?domain=fundednext.com&sz=128", founded:2022, rating:4.4, reviews:63192, pulse:91, trend:"flat", maxAlloc:"$700K challenge / $300K funded", country:"AE", flag:"🇦🇪", platforms:["NinjaTrader","Tradovate","TradingView"], challenge:"Rapid / Legacy / Bolt", steps:1, split:"80/20 → 95/5 (Rapid/Legacy) | 80/20 (Bolt)", target:"$1,500–$6,000", dailyDD:"Bolt only", maxDD:"$1,000–$3,000", minPayout:"$250–$500", paySpeed:"24-hr guaranteed (~5 hr avg)", reset:"Discounted challenge resets", hq:"Ajman, UAE", color:"#06b6d4", brandGrad:"linear-gradient(135deg,#06b6d4,#0891b2)", desc:"Operated by GrowthNext F.Z.E. (Ajman, UAE). FundedNext Futures currently offers Rapid, Legacy, and Bolt one-step challenges in $25K, $50K, and $100K sizes. Rapid has no challenge consistency, Legacy is the more structured model, and Bolt is the fixed $50K speed model.", instantFund:false, sizes:["25K","50K","100K"], payoutType:"Within 24 Hours", minDaysPass:"No minimum", drawdownType:"EOD Trailing", hasDLL:true, hasConsistency:true, consistencyPct:"None (Rapid) / 40% (Legacy & Bolt challenge)", newsTrading:true, eaAllowed:true, rewardsRedeemable:false, bestFor:"Fastest Guaranteed Payouts" },
-  { id:10, name:"Bulenox", initials:"BX", logoUrl:"https://www.google.com/s2/favicons?domain=bulenox.com&sz=128", founded:2022, rating:4.6, reviews:1400, pulse:92, trend:"up", maxAlloc:"$250K per account (up to 5 accounts)", country:"US", flag:"🇺🇸", platforms:["NinjaTrader","Tradovate","Bookmap","Rithmic"], challenge:"1-Step Eval", steps:1, split:"100% first $10K → 90/10", target:"$1,500–$15,000", dailyDD:"Option 2 only (EOD)", maxDD:"$1,500–$5,500", minPayout:"$500", paySpeed:"1–5 days", reset:"Varies by plan", hq:"Wilmington, DE", color:"#ec4899", brandGrad:"linear-gradient(135deg,#ec4899,#db2777)", desc:"Two drawdown options: Option 1 (Trailing, no DLL, full contracts day 1) or Option 2 (EOD, DLL applies, scaling). Monthly subscription pricing. Frequent 40–60% discount coupons. Up to 5 concurrent accounts allowed.", instantFund:false, sizes:["25K","50K","100K","150K","250K"], payoutType:"Weekly", minDaysPass:"No minimum", drawdownType:"EOD (Opt 2) or Trailing (Opt 1)", hasDLL:true, hasConsistency:true, consistencyPct:"40%", newsTrading:true, eaAllowed:true, rewardsRedeemable:false, bestFor:"Most Drawdown Flexibility" },
-  { id:11, name:"Goat Funded Futures", initials:"GFF", logoUrl:"https://www.google.com/s2/favicons?domain=goatfundedfutures.com&sz=128", founded:2023, rating:4.4, reviews:500, pulse:93, trend:"new", maxAlloc:"$750K (scaling)", country:"HK", flag:"🇭🇰", platforms:["NinjaTrader","Tradovate","TradingView","Quantower","Project X","Volumetrica","DeepCharts","MT5"], challenge:"EOD / Static / Instant", steps:1, split:"80/20 → up to 95–100%", target:"6–10% (model-dependent)", dailyDD:"2.5% (EOD funded) / 3% (Instant)", maxDD:"5–10% (trailing, varies)", minPayout:"Varies by plan", paySpeed:"24-hr guaranteed (or $1K penalty)", reset:"Varies", hq:"Hong Kong", color:"#16a34a", brandGrad:"linear-gradient(135deg,#16a34a,#15803d)", desc:"Futures sister brand of Goat Funded Trader, founded 2023 by Edoardo Dalla Torre (HQ Hong Kong). Three funding paths: EOD Trailing (monthly sub), Static non-trailing (monthly sub), and Instant (one-time fee, 5% trailing + 3% daily cap, 20% consistency). CME/COMEX/NYMEX/CBOT futures only. $7M+ in payouts distributed. 24-hour payout guarantee with $1,000 penalty if missed.", instantFund:true, sizes:["5K","25K","50K","100K","150K"], payoutType:"Bi-weekly / On-demand (varies)", minDaysPass:"Varies by plan", drawdownType:"EOD Trailing / Static / Intraday (Instant)", hasDLL:true, hasConsistency:true, consistencyPct:"20% (Instant) / Varies", newsTrading:true, eaAllowed:true, rewardsRedeemable:true, bestFor:"PFM Redemption Partner" },
-];
-
-const DEALS = [
-  { firm:"Tradeify", pct:"40% OFF", code:"TPP", color:"#0ea5e9", desc:"40% off all accounts (first 5 uses) then 30% off subsequent", tag:"3.0 LAUNCH", expires:"" },
-  { firm:"Apex Trader Funding", pct:"90% OFF", code:"TPP", color:"#f97316", desc:"90% off all one-time evaluation fees (4.0 accounts)", tag:"HOT", expires:"" },
-  { firm:"My Funded Futures", pct:"50% OFF", code:"TPP", color:"#a855f7", desc:"50% off all Pro accounts for new users", tag:"", expires:"" },
-  { firm:"Top One Futures", pct:"60% OFF", code:"TPP", color:"#06b6d4", desc:"60% off all evaluation and instant funding accounts", tag:"", expires:"" },
-  { firm:"Alpha Futures", pct:"15% OFF", code:"TTPP", color:"#8b5cf6", desc:"15% off all evaluations", tag:"", expires:"" },
-  { firm:"FundedNext Futures", pct:"30% OFF", code:"TPP", color:"#06b6d4", desc:"30% off all futures challenge accounts", tag:"", expires:"" },
-  { firm:"Bulenox", pct:"75% OFF", code:"TPP", color:"#3b82f6", desc:"75% off all evaluation accounts", tag:"HOT", expires:"" },
-  { firm:"Goat Funded Futures", pct:"50% OFF", code:"TPP", color:"#16a34a", desc:"50% off all funding paths (EOD / Static / Instant)", tag:"REWARDS PARTNER", expires:"" },
-];
-
-
-const BLOG = [
-  { id:1, title:"The State of Futures Prop Firms in 2026", date:"Mar 22, 2026", cat:"Industry", time:"6 min", color:"#a855f7",
-    excerpt:"The futures prop firm landscape has shifted dramatically. Here's where the industry stands heading into Q2 2026.",
-    body:`The futures prop trading industry in 2026 looks nothing like it did two years ago. The market has matured, consolidated, and split into clear tiers — and if you're choosing a firm today, the decision matters more than ever.
-
-**The Big Shift: One-Time Fees vs Subscriptions**
-
-The most significant industry trend is the migration from monthly subscriptions to one-time evaluation fees. Firms like Lucid Trading, FundedNext Futures, Apex Trader Funding, and Bulenox now charge a single payment with no recurring costs. This fundamentally changes the economics for traders — you're no longer bleeding $150/month while trying to pass. Tradeify and My Funded Futures still run subscription models on their standard plans, though Tradeify's Lightning Funded offers a one-time payment alternative.
-
-**EOD Drawdown Is Now Standard**
-
-Two years ago, intraday trailing drawdown was common. In 2026, End-of-Day trailing drawdown has become the industry standard. Every major firm we track uses EOD on their primary accounts. This matters because EOD drawdown only updates at market close — a midday dip that recovers by 4:00 PM doesn't count against you. The exception: MFFU's Rapid plan still uses intraday trailing, which is the tradeoff for getting daily payouts.
-
-**Payout Speed Is the New Battleground**
-
-Firms are competing aggressively on payout speed. Lucid Trading processes payouts in an average of 15 minutes. Tradeify handles most within 24 hours, often same-day. My Funded Futures approves most instantly. Compare that to 2024, when 3-5 business days was considered fast. The bar has been raised permanently.
-
-**The Consistency Rule Spectrum**
-
-Consistency rules vary wildly: FundedNext has none. Lucid Flex has none on funded accounts. Tradeify Select sits at 40%. Topstep and Apex are at 50%. Top One Futures has the strictest at 30%. Understanding where your trading style falls on this spectrum is crucial before choosing a firm.
-
-**What to Watch for Q2 2026**
-
-Live capital transitions are becoming more common. Tradeify Elite, Lucid LucidLive, and Topstep's Express Funded all offer paths to real CME capital. This is the future — sim-funded as a proving ground, live capital as the destination. Expect more firms to build this path in the coming months.`},
-
-  { id:2, title:"Apex vs Tradeify: Which Futures Prop Firm Is Right For You?", date:"Mar 18, 2026", cat:"Comparison", time:"8 min", color:"#0ea5e9",
-    excerpt:"Two of the biggest names in futures funding compared side-by-side on rules, fees, payouts, and who each firm is best for.",
-    body:`Apex Trader Funding and Tradeify are two of the most popular futures prop firms, but they're built for different traders. Here's a no-nonsense comparison based on actual rules and data.
-
-**Pricing & Fee Structure**
-
-Apex underwent a major overhaul in March 2026, moving to one-time fees. A 50K account costs $167 plus a $130-$160 activation fee, totaling roughly $297-$327. Tradeify Select runs $159/month (subscription) with zero activation fee. Tradeify Lightning (instant funding) is $349 one-time for 50K. If you pass Tradeify Select in one month, you've spent $159 total. If it takes two months, that's $318. Apex's one-time model caps your cost, while Tradeify's subscription is cheaper if you're fast but more expensive if you're not.
-
-**Profit Split**
-
-Apex wins on paper: 100% of your first $25,000, then 90/10. That's hard to beat for the initial payout phase. Tradeify's Select Flex offers 90/10 from day one with no 100% phase, but you keep a consistent split without the step-down. For traders who plan to withdraw steadily over months, the difference narrows significantly.
-
-**Drawdown Rules**
-
-Both offer EOD trailing drawdown. Tradeify's drawdown locks at starting balance + $100 once your EOD balance exceeds the drawdown amount — meaning your floor stops moving relatively early. Apex's EOD drawdown trails with your highest EOD balance and doesn't lock the same way. This is a meaningful advantage for Tradeify.
-
-**Daily Loss Limits**
-
-Neither firm has a daily loss limit on their primary plans. Tradeify Select Flex has no DLL. Apex removed DLL in their March 2026 update. Both firms give you full freedom to manage risk your way.
-
-**Consistency Rules**
-
-Apex: 50% on funded accounts (loosened from 30% in the March update). Tradeify Select: 40% on evaluation, no consistency on funded Select Flex accounts. This is a significant difference — Tradeify funded traders have no consistency constraint, while Apex funded traders still need to spread their profits across multiple days.
-
-**Who Should Choose What?**
-
-Choose Apex if: You want the largest possible account sizes (up to $300K), you want 100% profit on your first $25K, or you want to run up to 20 accounts simultaneously.
-
-Choose Tradeify if: You value drawdown locking, want no funded consistency rule (Select Flex), prefer daily payout options (Select Daily), or want instant funding without evaluation (Lightning).`},
-
-  { id:3, title:"How to Stack Multiple Prop Firm Accounts for Maximum Payouts", date:"Mar 14, 2026", cat:"Strategy", time:"5 min", color:"#ec4899",
-    excerpt:"Running multiple funded accounts across different firms is how serious traders maximize income. Here's the playbook.",
-    body:`Most profitable prop firm traders don't rely on a single account. They stack multiple funded accounts across different firms to maximize payout potential while diversifying risk. Here's how to do it effectively.
-
-**Why Stack Accounts?**
-
-The math is simple: each funded account has payout caps and withdrawal limits. A single 50K account at most firms caps you at $1,000-$3,000 per payout cycle. But five 50K accounts across different firms? That's $5,000-$15,000 per cycle from the same trading strategy. The key is that you're not increasing your per-trade risk — you're multiplying the payout surface area.
-
-**The Diversification Strategy**
-
-Don't put all your accounts at one firm. Spread across 2-3 firms to protect against rule changes, platform outages, or payout delays at any single firm. A solid stack for 2026 might look like: 2x Tradeify Select Flex 50K (no DLL, no funded consistency), 2x Lucid Flex 50K (no DLL, fastest payouts), and 1x Bulenox 50K (weekly payouts, different payout day). This gives you different payout schedules, different firms' infrastructure, and different rule sets that hedge each other.
-
-**Managing Risk Across Accounts**
-
-The #1 mistake in multi-account trading: sizing as if each account is independent. If you're trading the same instrument (say NQ) across 5 accounts, a gap against you hits all 5. Treat your total exposure as one position. If your normal size is 2 contracts on a single 50K, consider running 1 contract each on 5 accounts rather than 2 contracts on each.
-
-**Payout Timing Optimization**
-
-Stagger your payout requests. If all 5 accounts hit their targets the same week, don't request all 5 on Monday. Spread them across the week so you have consistent cash flow. Some firms process faster on certain days — Bulenox does Wednesdays, Lucid is anytime, Tradeify is 24-48 hours. Use these differences to your advantage.
-
-**Cost Management**
-
-Track your total evaluation spend as a business expense. If you're spending $500-800/month on evaluations across firms, that's your cost of capital. The goal: generate more in payouts per month than you spend on evaluations. Most profitable stackers hit this breakeven within 2-3 months and then it's pure profit from there.`},
-
-  { id:4, title:"March 2026 Prop Firm Rule Changes: Everything You Need to Know", date:"Mar 10, 2026", cat:"News", time:"4 min", color:"#06b6d4",
-    excerpt:"Apex's massive overhaul, Lucid's February updates, and Tradeify's Select launch — every rule change that matters.",
-    body:`Several major firms made significant rule changes in early 2026. Here's what happened and how it affects your trading.
-
-**Apex Trader Funding — March 2026 Overhaul**
-
-Apex essentially rebuilt their product. Monthly recurring fees are gone, replaced with one-time payments. The MAE (Maximum Adverse Excursion) rule that punished traders for drawdown during winning trades has been eliminated. The 5/1 risk-reward restriction is gone. No more payout denials requiring video reviews or chart screenshots. The consistency rule loosened from 30% to 50%. However, accounts now close after 6 payouts and must be restarted. This is a fundamental shift from "keep trading forever" to a more structured cycle.
-
-**Lucid Trading — February 2026 Updates**
-
-LucidBlack was discontinued and merged into an upgraded LucidPro with 3-day payout cycles. LucidDirect removed the 8-day minimum trading requirement — you can now request payouts as fast as you hit the profit target. A new 100K Direct account was added ($799). LucidLive was completely rebuilt: the old escrow system is gone, replaced with a $0 start plus one-time bonus model. LucidMaxx launched as an invite-only tier for proven traders with daily payouts, no caps, and live capital.
-
-**Tradeify — Select Plan Launch**
-
-Tradeify's Select plan (launched late 2025) is now their flagship product. The key innovation: you pass one evaluation and then choose between two funded paths — Select Flex (5-day payouts, no DLL) or Select Daily (daily payouts with DLL). This "evaluate first, commit later" approach is unique in the industry. They've also confirmed over $150M in total payouts processed.
-
-**My Funded Futures — Rapid Plan Update**
-
-MFFU upgraded the Rapid plan profit split from 80/20 to 90/10 effective January 12, 2026. This makes Rapid directly competitive with Tradeify Select Daily for daily payout seekers, though Rapid uses intraday trailing drawdown (more aggressive) vs Tradeify's EOD trailing.
-
-**The Takeaway**
-
-The trend is clear: firms are removing restrictive rules, moving to one-time fees, and competing on payout speed and flexibility. Traders have more power than ever. Use it wisely — compare the rules that matter for YOUR strategy, not just the marketing headlines.`},
-
-  { id:5, title:"Best Futures Prop Firms for NQ Scalpers in 2026", date:"Mar 6, 2026", cat:"Guide", time:"7 min", color:"#f97316",
-    excerpt:"If you scalp NQ (Micro or Mini Nasdaq futures), not all prop firms are created equal. Here's which ones actually fit.",
-    body:`Scalping NQ futures is one of the most popular strategies in prop trading, but the firm you choose can make or break your results. NQ moves fast — 20-50+ points in minutes during the US session — and your firm's rules need to support that volatility.
-
-**Why NQ Scalpers Need Specific Rules**
-
-NQ is volatile. A 30-point adverse move on 1 MNQ contract is $600. On 1 NQ mini, it's $600. Scalpers often see 10-20 point drawdowns before their trades work. This means: tight daily loss limits will kill you, intraday trailing drawdown is dangerous, and consistency rules punish the "one big winner" pattern that scalpers naturally produce.
-
-**Top Picks for NQ Scalpers**
-
-1. **Lucid Trading — LucidFlex** (Pulse Score: 97)
-Why: Zero daily loss limit, zero funded consistency rule, EOD trailing drawdown. This is the most scalper-friendly rule set in the industry. Start with a 50K account ($99 one-time), scale up as your equity grows. The 2-mini starting limit on Flex is the main constraint — you need to build $1,000+ in profit before unlocking 3 minis.
-
-2. **Tradeify — Select Flex** (Pulse Score: 98)
-Why: No DLL on Flex, EOD trailing drawdown that locks early (at balance + $100). The 40% consistency rule during evaluation requires 3+ days to pass, but once funded, Select Flex has no consistency rule. The drawdown lock is a huge advantage for scalpers — once it locks, your floor is fixed.
-
-3. **My Funded Futures — Core** (Pulse Score: 94)
-Why: No DLL, static drawdown on funded accounts (locks and never moves up again). The 40% consistency rule applies on funded, so you can't rely solely on one monster day per cycle. The $77/month for a 50K is the cheapest subscription entry for this quality of rules.
-
-4. **Apex Trader Funding — EOD** (Pulse Score: 89)
-Why: No DLL, 100% of first $25K. The 50% consistency rule is more forgiving post-March 2026. Best for scalpers who produce consistent daily results rather than one big winner. The ability to run up to 20 accounts simultaneously is unmatched.
-
-**Firms to Avoid for NQ Scalping**
-
-Alpha Futures: Prohibits EAs/bots entirely. If you use any automation in your scalping workflow, this is a non-starter. The soft DLL is better than a hard breach, but still limits aggressive scalping sessions.
-
-Top One Futures: 30% consistency rule is the strictest in the industry. For NQ scalpers who naturally produce 1-2 big winning days per week, this rule will deny payouts consistently.
-
-**The Bottom Line**
-
-For pure NQ scalping, Lucid Flex + Tradeify Select Flex is the ideal combination. Both have no DLL, both use EOD drawdown, and together they give you diversified payout schedules with the most lenient funded rules available.`},
-
-  { id:6, title:"EOD vs Intraday Trailing Drawdown: Why It's the Most Important Rule", date:"Mar 2, 2026", cat:"Education", time:"5 min", color:"#eab308",
-    excerpt:"This single rule difference is responsible for more blown accounts than any other factor in prop trading.",
-    body:`If you only understand one thing about prop firm rules, make it this: the difference between End-of-Day (EOD) and Intraday Trailing drawdown. It's the #1 reason traders blow funded accounts.
-
-**How Intraday Trailing Drawdown Works**
-
-Your drawdown limit moves UP in real-time as your unrealized profit grows — and it never moves back down. Example on a 50K account with $2,000 drawdown: you enter a trade that goes +$1,000 unrealized. Your drawdown floor has now moved from $48,000 to $49,000 permanently. If the trade reverses and you close at breakeven, you've just lost $1,000 of drawdown room without losing any actual money. Do this 2-3 times in a session and you've effectively eliminated your entire drawdown buffer.
-
-**How End-of-Day (EOD) Trailing Drawdown Works**
-
-Your drawdown limit only updates once per day based on your CLOSING balance. That same trade scenario — up $1,000 intraday, close at breakeven — changes nothing. Your drawdown floor stays at $48,000 because your end-of-day balance didn't change. You could go up $3,000 intraday, give back $2,500, close up $500, and your drawdown only trails by $500. The intraday fluctuations are invisible to EOD drawdown.
-
-**Why This Matters for Real Trading**
-
-In live NQ or ES trading, it's completely normal to see 10-20+ point adverse excursions before your trade works. On a 2-contract NQ position, a 15-point pullback is $600 of unrealized drawdown. With intraday trailing, that $600 is permanently consumed even if you end up profitable. With EOD, it doesn't matter unless you close the day at a loss.
-
-**Which Firms Use Which**
-
-EOD Trailing (better for most traders): Tradeify (all plans), Lucid (all plans), Alpha Futures, Top One Futures, FundedNext, Topstep, Bulenox (EOD option), Take Profit Trader, Apex (EOD option).
-
-Intraday Trailing (more aggressive): MFFU Rapid (the tradeoff for daily payouts), Apex (intraday option), Bulenox (trailing option).
-
-**The Drawdown Lock: The Best Feature No One Talks About**
-
-Several firms now offer drawdown locking. On Tradeify, once your EOD balance exceeds the drawdown by $100, the floor locks at starting balance + $100 and NEVER moves again. On MFFU funded accounts, the drawdown becomes static. This effectively turns a trailing drawdown into a fixed floor, giving you unlimited upside with a known worst-case floor. This is arguably the single most trader-friendly rule innovation in prop trading.
-
-**Bottom Line**
-
-Always choose EOD trailing drawdown unless you have a specific reason not to (like MFFU Rapid's daily payouts). The difference in account survival rate is massive, and it's the one rule that protects you from normal market volatility that has nothing to do with your trading skill.`},
-];
-
-// ─── VIDEOS ─────────────────────────────────────────────────────────────────
-// Add videos here: just drop in the YouTube video ID and metadata.
-// To get the ID: from a URL like https://youtube.com/watch?v=dQw4w9WgXcQ the ID is "dQw4w9WgXcQ"
-const VIDEOS = [
-  {id:"dRhMfFMzSfA",title:"How I Passed a $150K Apex Account in Under 1 Hour (All Trades Shown)",firm:"Apex Trader Funding",cat:"Strategy",date:"Mar 2026",duration:"18:32"},
-  {id:"SXR7C0kJrIc",title:"ICT Concepts Explained — Smart Money Trading for Beginners",firm:null,cat:"Education",date:"2025",duration:"42:15"},
-  {id:"L7G0OfJUgN8",title:"Day Trading Futures for Beginners — Complete Step by Step Guide",firm:null,cat:"Guide",date:"2025",duration:"28:47"},
-  {id:"5mQ5hGeBA6U",title:"How to ACTUALLY Pass a Prop Firm Evaluation (Futures Edition)",firm:null,cat:"Strategy",date:"2025",duration:"22:10"},
-  {id:"jk-GVX9aFhg",title:"EOD vs Intraday Trailing Drawdown — Which Should You Choose?",firm:null,cat:"Education",date:"2026",duration:"15:33"},
-  {id:"bfbEKfKt4F0",title:"NQ Scalping Strategy That Actually Works — Live Trading",firm:null,cat:"Strategy",date:"2025",duration:"34:20"},
-  {id:"Yy9siocXRCo",title:"Risk Management for Funded Accounts — Stop Blowing Drawdown",firm:null,cat:"Education",date:"2025",duration:"19:45"},
-  {id:"MfC_oGImigA",title:"Topstep vs Apex vs Tradeify — Best Prop Firm 2026 Comparison",firm:null,cat:"Comparison",date:"2026",duration:"25:18"},
-];
-
-
-// ─── CHALLENGES (per account size, per firm) ────────────────────────────────
-const CHALLENGES = [
-  // TRADEIFY
-    {firm:"Tradeify",plan:"Select",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"40%",split:"90/10",payout:"Daily or 5-Day",standard:true,instant:false,news:true,ea:true,price:"$109 one-time"},
-  {firm:"Tradeify",plan:"Growth",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"$600",drawdown:"EOD Trailing",minDays:"1 day",consistency:"None (Eval)",split:"100% first $15K → 90/10",payout:"Per Profit Goal",standard:false,instant:false,news:true,ea:true,price:"$99 one-time"},
-{firm:"Tradeify",plan:"Select",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"40%",split:"90/10",payout:"Daily or 5-Day",standard:true,instant:false,news:true,ea:true,price:"$165 one-time"},
-  {firm:"Tradeify",plan:"Select",size:"100K",target:"$6,000",maxLoss:"$3,500",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"40%",split:"90/10",payout:"Daily or 5-Day",standard:true,instant:false,news:true,ea:true,price:"$265 one-time"},
-  {firm:"Tradeify",plan:"Select",size:"150K",target:"$9,000",maxLoss:"$4,500",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"40%",split:"90/10",payout:"Daily or 5-Day",standard:true,instant:false,news:true,ea:true,price:"$369 one-time"},
-  {firm:"Tradeify",plan:"Lightning",size:"50K",target:"N/A (Instant)",maxLoss:"$2,000",dll:"$1,250",drawdown:"EOD Trailing",minDays:"None",consistency:"20%",split:"90/10",payout:"Per Profit Goal",standard:false,instant:true,news:true,ea:true,price:"$492 one-time"},
-  {firm:"Tradeify",plan:"Lightning",size:"100K",target:"N/A (Instant)",maxLoss:"$3,500",dll:"$2,500",drawdown:"EOD Trailing",minDays:"None",consistency:"20%",split:"90/10",payout:"Per Profit Goal",standard:false,instant:true,news:true,ea:true,price:"$660 one-time"},
-  {firm:"Tradeify",plan:"Lightning",size:"150K",target:"N/A (Instant)",maxLoss:"$5,250",dll:"$3,000",drawdown:"EOD Trailing",minDays:"None",consistency:"20%",split:"90/10",payout:"Per Profit Goal",standard:false,instant:true,news:true,ea:true,price:"$796 one-time"},
-  // MY FUNDED FUTURES
-  {firm:"My Funded Futures",plan:"Flex",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"None",drawdown:"EOD Trailing",minDays:"2 days",consistency:"50% (eval) / None (funded)",split:"80/20",payout:"5 Winning Days",standard:false,instant:false,news:true,ea:true,price:"Budget plan"},
-  {firm:"My Funded Futures",plan:"Flex",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"None",drawdown:"EOD Trailing",minDays:"2 days",consistency:"50% (eval) / None (funded)",split:"80/20",payout:"5 Winning Days",standard:true,instant:false,news:true,ea:true,price:"$77/mo or $229 one-time"},
-  {firm:"My Funded Futures",plan:"Rapid",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"None",drawdown:"EOD Trailing",minDays:"2 days",consistency:"50% (eval) / None (funded)",split:"90/10",payout:"Daily",standard:false,instant:false,news:true,ea:true,price:"25K available"},
-  {firm:"My Funded Futures",plan:"Rapid",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"None",drawdown:"EOD Trailing",minDays:"2 days",consistency:"50% (eval) / None (funded)",split:"90/10",payout:"Daily",standard:false,instant:false,news:true,ea:true,price:"$129/mo or $157 one-time"},
-  {firm:"My Funded Futures",plan:"Rapid",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"None",drawdown:"EOD Trailing",minDays:"2 days",consistency:"50% (eval) / None (funded)",split:"90/10",payout:"Daily",standard:false,instant:false,news:true,ea:true,price:"$199/mo or $267 one-time"},
-  {firm:"My Funded Futures",plan:"Rapid",size:"150K",target:"$9,000",maxLoss:"$4,500",dll:"None",drawdown:"EOD Trailing",minDays:"2 days",consistency:"50% (eval) / None (funded)",split:"90/10",payout:"Daily",standard:false,instant:false,news:true,ea:true,price:"$329/mo or $347 one-time"},
-  {firm:"My Funded Futures",plan:"Pro",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"None",drawdown:"EOD Trailing",minDays:"2 days",consistency:"50% (eval) / None (funded)",split:"80/20",payout:"Bi-Weekly",standard:false,instant:false,news:true,ea:true,price:"$229/mo or $629 one-time"},
-  {firm:"My Funded Futures",plan:"Pro",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"None",drawdown:"EOD Trailing",minDays:"2 days",consistency:"50% (eval) / None (funded)",split:"80/20",payout:"Bi-Weekly",standard:false,instant:false,news:true,ea:true,price:"$329/mo or $829 one-time"},
-  {firm:"My Funded Futures",plan:"Pro",size:"150K",target:"$9,000",maxLoss:"$4,500",dll:"None",drawdown:"EOD Trailing",minDays:"2 days",consistency:"50% (eval) / None (funded)",split:"80/20",payout:"Bi-Weekly",standard:false,instant:false,news:true,ea:true,price:"$477/mo or $1,127 one-time"},
-  // ALPHA FUTURES
-  {firm:"Alpha Futures",plan:"Standard",size:"50K",target:"$3,000",maxLoss:"$2,500",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"50% (eval) / 40% (funded)",split:"70→80→90%",payout:"14 Days",standard:true,instant:false,news:true,ea:false,price:"$79/mo"},
-  {firm:"Alpha Futures",plan:"Standard",size:"100K",target:"$6,000",maxLoss:"$3,500",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"50% (eval) / 40% (funded)",split:"70→80→90%",payout:"14 Days",standard:true,instant:false,news:true,ea:false,price:"$159/mo"},
-  {firm:"Alpha Futures",plan:"Standard",size:"150K",target:"$9,000",maxLoss:"$4,500",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"50% (eval) / 40% (funded)",split:"70→80→90%",payout:"14 Days",standard:true,instant:false,news:true,ea:false,price:"$239/mo"},
-  {firm:"Alpha Futures",plan:"Advanced",size:"50K",target:"$4,000",maxLoss:"$1,750",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"50% (eval) / None (funded)",split:"90/10",payout:"5 Winning Days",standard:false,instant:false,news:true,ea:false,price:"$139/mo"},
-  {firm:"Alpha Futures",plan:"Advanced",size:"100K",target:"$8,000",maxLoss:"$3,500",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"50% (eval) / None (funded)",split:"90/10",payout:"5 Winning Days",standard:false,instant:false,news:true,ea:false,price:"$279/mo"},
-  {firm:"Alpha Futures",plan:"Advanced",size:"150K",target:"$12,000",maxLoss:"$5,250",dll:"None",drawdown:"EOD Trailing",minDays:"3 days",consistency:"50% (eval) / None (funded)",split:"90/10",payout:"5 Winning Days",standard:false,instant:false,news:true,ea:false,price:"$419/mo"},
-  {firm:"Alpha Futures",plan:"Zero",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"$500 (eval) / $500 funded",drawdown:"EOD Trailing",minDays:"1 day",consistency:"None (eval) / 40% (funded)",split:"90/10",payout:"5 Winning Days",standard:false,instant:false,news:true,ea:false,price:"$79/mo"},
-  {firm:"Alpha Futures",plan:"Zero",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"$1,000 (eval) / $1,000 funded",drawdown:"EOD Trailing",minDays:"1 day",consistency:"None (eval) / 40% (funded)",split:"90/10",payout:"5 Winning Days",standard:false,instant:false,news:true,ea:false,price:"$119/mo"},
-  {firm:"Alpha Futures",plan:"Zero",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"$2,000 (eval) / $2,000 funded",drawdown:"EOD Trailing",minDays:"1 day",consistency:"None (eval) / 40% (funded)",split:"90/10",payout:"5 Winning Days",standard:false,instant:false,news:true,ea:false,price:"$239/mo"},
-  // APEX TRADER FUNDING (4.0 — March 2026)
-  {firm:"Apex Trader Funding",plan:"EOD",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"$750 (soft)",drawdown:"EOD Trailing",minDays:"1 day",consistency:"50% (Funded)",split:"100% first $25K",payout:"After 5 Days",standard:true,instant:false,news:true,ea:true,price:"$177 one-time + $99 activation"},
-  {firm:"Apex Trader Funding",plan:"EOD",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"$1,000 (soft)",drawdown:"EOD Trailing",minDays:"1 day",consistency:"50% (Funded)",split:"100% first $25K",payout:"After 5 Days",standard:true,instant:false,news:true,ea:true,price:"$197 one-time + $99 activation"},
-  {firm:"Apex Trader Funding",plan:"EOD",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"$1,500 (soft)",drawdown:"EOD Trailing",minDays:"1 day",consistency:"50% (Funded)",split:"100% first $25K",payout:"After 5 Days",standard:true,instant:false,news:true,ea:true,price:"$297 one-time + $99 activation"},
-  {firm:"Apex Trader Funding",plan:"EOD",size:"150K",target:"$9,000",maxLoss:"$4,000",dll:"$2,000 (soft)",drawdown:"EOD Trailing",minDays:"1 day",consistency:"50% (Funded)",split:"100% first $25K",payout:"After 5 Days",standard:true,instant:false,news:true,ea:true,price:"$397 one-time + $99 activation"},
-  {firm:"Apex Trader Funding",plan:"Intraday",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"None",drawdown:"Intraday Trailing",minDays:"1 day",consistency:"50% (Funded)",split:"100% first $25K",payout:"After 5 Days",standard:false,instant:false,news:true,ea:true,price:"$118 one-time + $79 activation"},
-  {firm:"Apex Trader Funding",plan:"Intraday",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"None",drawdown:"Intraday Trailing",minDays:"1 day",consistency:"50% (Funded)",split:"100% first $25K",payout:"After 5 Days",standard:false,instant:false,news:true,ea:true,price:"$131 one-time + $79 activation"},
-  {firm:"Apex Trader Funding",plan:"Intraday",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"None",drawdown:"Intraday Trailing",minDays:"1 day",consistency:"50% (Funded)",split:"100% first $25K",payout:"After 5 Days",standard:false,instant:false,news:true,ea:true,price:"$198 one-time + $79 activation"},
-  {firm:"Apex Trader Funding",plan:"Intraday",size:"150K",target:"$9,000",maxLoss:"$4,000",dll:"None",drawdown:"Intraday Trailing",minDays:"1 day",consistency:"50% (Funded)",split:"100% first $25K",payout:"After 5 Days",standard:false,instant:false,news:true,ea:true,price:"$265 one-time + $79 activation"},
-  // TOP ONE FUTURES (Rebuilt — 5 plans: Elite, Elite Access, Instant Sim Funded, S2F Sim PRO, IGNITE)
-  {firm:"Top One Futures",plan:"Elite",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"$625",drawdown:"EOD Trailing",minDays:"1 day",consistency:"25%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:false,news:true,ea:false,price:"$39/mo + $149 activation"},
-  {firm:"Top One Futures",plan:"Elite",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"$1,250",drawdown:"EOD Trailing",minDays:"1 day",consistency:"25%",split:"90/10",payout:"<24 hrs avg",standard:true,instant:false,news:true,ea:false,price:"$63/mo + $149 activation"},
-  {firm:"Top One Futures",plan:"Elite",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"$2,500",drawdown:"EOD Trailing",minDays:"1 day",consistency:"25%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:false,news:true,ea:false,price:"$125/mo + $149 activation"},
-  {firm:"Top One Futures",plan:"Elite",size:"150K",target:"$9,000",maxLoss:"$4,500",dll:"$3,750",drawdown:"EOD Trailing",minDays:"1 day",consistency:"25%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:false,news:true,ea:false,price:"$185/mo + $149 activation"},
-  {firm:"Top One Futures",plan:"Elite Daily",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"$500 funded",drawdown:"EOD Trailing",minDays:"No min",consistency:"45% (eval)",split:"90/10",payout:"Daily Eligible",standard:false,instant:false,news:true,ea:false,price:"No activation fee"},
-  {firm:"Top One Futures",plan:"Elite Daily",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"$1,000 funded",drawdown:"EOD Trailing",minDays:"No min",consistency:"45% (eval)",split:"90/10",payout:"Daily Eligible",standard:false,instant:false,news:true,ea:false,price:"No activation fee"},
-  {firm:"Top One Futures",plan:"Elite Daily",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"$1,250 funded",drawdown:"EOD Trailing",minDays:"No min",consistency:"45% (eval)",split:"90/10",payout:"Daily Eligible",standard:false,instant:false,news:true,ea:false,price:"No activation fee"},
-  {firm:"Top One Futures",plan:"Elite Access",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"None (eval) / $500 funded",drawdown:"EOD Trailing",minDays:"1 day",consistency:"None (eval) / 40% (funded)",split:"90/10",payout:"5 Profitable Days",standard:false,instant:true,news:true,ea:false,price:"$39 one-time + from $139 activation"},
-  {firm:"Top One Futures",plan:"Elite Access",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"None (eval) / $1,000 funded",drawdown:"EOD Trailing",minDays:"1 day",consistency:"None (eval) / 40% (funded)",split:"90/10",payout:"5 Profitable Days",standard:false,instant:true,news:true,ea:false,price:"$39 one-time + from $139 activation"},
-  {firm:"Top One Futures",plan:"Elite Access",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"None (eval) / $1,250 funded",drawdown:"EOD Trailing",minDays:"1 day",consistency:"None (eval) / 40% (funded)",split:"90/10",payout:"5 Profitable Days",standard:false,instant:true,news:true,ea:false,price:"$39 one-time + from $139 activation"},
-  {firm:"Top One Futures",plan:"Elite Access",size:"150K",target:"$9,000",maxLoss:"$4,000",dll:"None (eval) / $1,750 funded",drawdown:"EOD Trailing",minDays:"1 day",consistency:"None (eval) / 40% (funded)",split:"90/10",payout:"5 Profitable Days",standard:false,instant:true,news:true,ea:false,price:"$39 one-time + from $139 activation"},
-  {firm:"Top One Futures",plan:"Instant Sim Funded",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"$625",drawdown:"EOD Trailing",minDays:"None",consistency:"20%",split:"90/10",payout:"<24 hrs",standard:false,instant:true,news:true,ea:false,price:"$210 one-time"},
-  {firm:"Top One Futures",plan:"Instant Sim Funded",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"$1,250",drawdown:"EOD Trailing",minDays:"None",consistency:"20%",split:"90/10",payout:"<24 hrs",standard:false,instant:true,news:true,ea:false,price:"$340 one-time"},
-  {firm:"Top One Futures",plan:"Instant Sim Funded",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"$2,500",drawdown:"EOD Trailing",minDays:"None",consistency:"20%",split:"90/10",payout:"<24 hrs",standard:false,instant:true,news:true,ea:false,price:"$411 one-time"},
-  {firm:"Top One Futures",plan:"Instant Sim Funded",size:"150K",target:"$9,000",maxLoss:"$4,500",dll:"$3,750",drawdown:"EOD Trailing",minDays:"None",consistency:"20%",split:"90/10",payout:"<24 hrs",standard:false,instant:true,news:true,ea:false,price:"$470 one-time"},
-  {firm:"Top One Futures",plan:"S2F Sim PRO",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"$500",drawdown:"Intraday Trailing",minDays:"10 days",consistency:"20%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:false,news:true,ea:false,price:"$154/mo"},
-  {firm:"Top One Futures",plan:"S2F Sim PRO",size:"50K",target:"$3,000",maxLoss:"$1,625",dll:"$1,000",drawdown:"Intraday Trailing",minDays:"10 days",consistency:"20%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:false,news:true,ea:false,price:"$253/mo"},
-  {firm:"Top One Futures",plan:"S2F Sim PRO",size:"100K",target:"$6,000",maxLoss:"$3,250",dll:"$2,000",drawdown:"Intraday Trailing",minDays:"10 days",consistency:"20%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:false,news:true,ea:false,price:"$379/mo"},
-  {firm:"Top One Futures",plan:"S2F Sim PRO",size:"150K",target:"$9,000",maxLoss:"$5,000",dll:"$3,000",drawdown:"Intraday Trailing",minDays:"10 days",consistency:"20%",split:"90/10",payout:"<24 hrs avg",standard:false,instant:false,news:true,ea:false,price:"$436/mo"},
-  {firm:"Top One Futures",plan:"IGNITE",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"$500",drawdown:"EOD Trailing",minDays:"None",consistency:"15%",split:"90/10",payout:"5% Cycle Target",standard:false,instant:true,news:true,ea:false,price:"$131 one-time"},
-  {firm:"Top One Futures",plan:"IGNITE",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"$1,000",drawdown:"EOD Trailing",minDays:"None",consistency:"15%",split:"90/10",payout:"5% Cycle Target",standard:false,instant:true,news:true,ea:false,price:"$239 one-time"},
-  {firm:"Top One Futures",plan:"IGNITE",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"$2,000",drawdown:"EOD Trailing",minDays:"None",consistency:"15%",split:"90/10",payout:"5% Cycle Target",standard:false,instant:true,news:true,ea:false,price:"$338 one-time"},
-  {firm:"Top One Futures",plan:"IGNITE",size:"150K",target:"$9,000",maxLoss:"$4,500",dll:"$3,000",drawdown:"EOD Trailing",minDays:"None",consistency:"15%",split:"90/10",payout:"5% Cycle Target",standard:false,instant:true,news:true,ea:false,price:"$479 one-time"},
-  // FUNDEDNEXT FUTURES (max size is 100K for futures — no 150K/200K)
-  {firm:"FundedNext Futures",plan:"Rapid",size:"25K",target:"$1,500",maxLoss:"$1,000",dll:"None",drawdown:"EOD Trailing",minDays:"No min",consistency:"None (eval) / 40% (funded)",split:"80/20→95/5",payout:"Within 24 Hrs",standard:false,instant:false,news:true,ea:true,price:"$99 one-time"},
-  {firm:"FundedNext Futures",plan:"Rapid",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"None",drawdown:"EOD Trailing",minDays:"No min",consistency:"None (eval) / 40% (funded)",split:"80/20→95/5",payout:"Within 24 Hrs",standard:true,instant:false,news:true,ea:true,price:"$199 one-time"},
-  {firm:"FundedNext Futures",plan:"Rapid",size:"100K",target:"$6,000",maxLoss:"$2,500",dll:"None",drawdown:"EOD Trailing",minDays:"No min",consistency:"None (eval) / 40% (funded)",split:"80/20→95/5",payout:"Within 24 Hrs",standard:true,instant:false,news:true,ea:true,price:"$249 one-time"},
-  {firm:"FundedNext Futures",plan:"Legacy",size:"50K",target:"$3,000",maxLoss:"$2,000",dll:"None",drawdown:"EOD Trailing",minDays:"No min",consistency:"40% (eval) / None (funded)",split:"80/20→95/5",payout:"Within 24 Hrs",standard:false,instant:false,news:true,ea:true,price:"$159 one-time"},
-  {firm:"FundedNext Futures",plan:"Legacy",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"None",drawdown:"EOD Trailing",minDays:"No min",consistency:"40% (eval) / None (funded)",split:"80/20→95/5",payout:"Within 24 Hrs",standard:false,instant:false,news:true,ea:true,price:"$249 one-time"},
-  {firm:"FundedNext Futures",plan:"Bolt",size:"50K",target:"$3,000",maxLoss:"$2,500",dll:"$1,000",drawdown:"EOD Trailing",minDays:"No min",consistency:"40%",split:"80/20",payout:"Within 24 Hrs",standard:false,instant:false,news:true,ea:true,price:"$99 one-time"},
-  // BULENOX (monthly pricing, not one-time. DLL applies to Option 2 only)
-  {firm:"Bulenox",plan:"Eval",size:"25K",target:"$1,500",maxLoss:"$1,500",dll:"$500 (Opt 2 only)",drawdown:"EOD or Trailing",minDays:"No min",consistency:"40%",split:"100% first $10K → 90/10",payout:"Weekly",standard:true,instant:false,news:true,ea:true,price:"~$145/mo"},
-  {firm:"Bulenox",plan:"Eval",size:"50K",target:"$3,000",maxLoss:"$2,500",dll:"$1,100 (Opt 2 only)",drawdown:"EOD or Trailing",minDays:"No min",consistency:"40%",split:"100% first $10K → 90/10",payout:"Weekly",standard:true,instant:false,news:true,ea:true,price:"$175/mo"},
-  {firm:"Bulenox",plan:"Eval",size:"100K",target:"$6,000",maxLoss:"$3,000",dll:"$2,200 (Opt 2 only)",drawdown:"EOD or Trailing",minDays:"No min",consistency:"40%",split:"100% first $10K → 90/10",payout:"Weekly",standard:true,instant:false,news:true,ea:true,price:"$215/mo"},
-  {firm:"Bulenox",plan:"Eval",size:"150K",target:"$9,000",maxLoss:"$4,500",dll:"$2,200 (Opt 2 only)",drawdown:"EOD or Trailing",minDays:"No min",consistency:"40%",split:"100% first $10K → 90/10",payout:"Weekly",standard:true,instant:false,news:true,ea:true,price:"$325/mo"},
-  {firm:"Bulenox",plan:"Eval",size:"250K",target:"$15,000",maxLoss:"$5,500",dll:"$2,500 (Opt 2 only)",drawdown:"EOD or Trailing",minDays:"No min",consistency:"40%",split:"100% first $10K → 90/10",payout:"Weekly",standard:true,instant:false,news:true,ea:true,price:"$535/mo"},
-  // GOAT FUNDED FUTURES (pricing/rules should be verified at goatfundedfutures.com — estimates based on industry averages)
-  {firm:"Goat Funded Futures",plan:"EOD Trailing",size:"5K",target:"$300 (6%)",maxLoss:"$250 (5%)",dll:"$150 (3%)",drawdown:"EOD Trailing",minDays:"Varies",consistency:"Varies",split:"80/20 → 95%",payout:"Bi-weekly",standard:true,instant:false,news:true,ea:true,price:"$29/mo"},
-  {firm:"Goat Funded Futures",plan:"EOD Trailing",size:"25K",target:"$1,500 (6%)",maxLoss:"$1,250 (5%)",dll:"$750 (3%)",drawdown:"EOD Trailing",minDays:"Varies",consistency:"Varies",split:"80/20 → 95%",payout:"Bi-weekly",standard:true,instant:false,news:true,ea:true,price:"$79/mo"},
-  {firm:"Goat Funded Futures",plan:"EOD Trailing",size:"50K",target:"$3,000 (6%)",maxLoss:"$2,500 (5%)",dll:"$1,500 (3%)",drawdown:"EOD Trailing",minDays:"Varies",consistency:"Varies",split:"80/20 → 95%",payout:"Bi-weekly",standard:true,instant:false,news:true,ea:true,price:"$129/mo"},
-  {firm:"Goat Funded Futures",plan:"EOD Trailing",size:"100K",target:"$6,000 (6%)",maxLoss:"$5,000 (5%)",dll:"$3,000 (3%)",drawdown:"EOD Trailing",minDays:"Varies",consistency:"Varies",split:"80/20 → 95%",payout:"Bi-weekly",standard:true,instant:false,news:true,ea:true,price:"$199/mo"},
-  {firm:"Goat Funded Futures",plan:"EOD Trailing",size:"150K",target:"$9,000 (6%)",maxLoss:"$7,500 (5%)",dll:"$4,500 (3%)",drawdown:"EOD Trailing",minDays:"Varies",consistency:"Varies",split:"80/20 → 95%",payout:"Bi-weekly",standard:true,instant:false,news:true,ea:true,price:"$279/mo"},
-  {firm:"Goat Funded Futures",plan:"Static",size:"25K",target:"$1,500 (6%)",maxLoss:"$1,250 (5% fixed)",dll:"$750 (3%)",drawdown:"Static (non-trailing)",minDays:"Varies",consistency:"Varies",split:"80/20 → 95%",payout:"Bi-weekly",standard:false,instant:false,news:true,ea:true,price:"$99/mo"},
-  {firm:"Goat Funded Futures",plan:"Static",size:"50K",target:"$3,000 (6%)",maxLoss:"$2,500 (5% fixed)",dll:"$1,500 (3%)",drawdown:"Static (non-trailing)",minDays:"Varies",consistency:"Varies",split:"80/20 → 95%",payout:"Bi-weekly",standard:false,instant:false,news:true,ea:true,price:"$159/mo"},
-  {firm:"Goat Funded Futures",plan:"Static",size:"100K",target:"$6,000 (6%)",maxLoss:"$5,000 (5% fixed)",dll:"$3,000 (3%)",drawdown:"Static (non-trailing)",minDays:"Varies",consistency:"Varies",split:"80/20 → 95%",payout:"Bi-weekly",standard:false,instant:false,news:true,ea:true,price:"$249/mo"},
-  {firm:"Goat Funded Futures",plan:"Static",size:"150K",target:"$9,000 (6%)",maxLoss:"$7,500 (5% fixed)",dll:"$4,500 (3%)",drawdown:"Static (non-trailing)",minDays:"Varies",consistency:"Varies",split:"80/20 → 95%",payout:"Bi-weekly",standard:false,instant:false,news:true,ea:true,price:"$349/mo"},
-  {firm:"Goat Funded Futures",plan:"Instant",size:"5K",target:"N/A (Instant)",maxLoss:"$250 (5% trailing)",dll:"$150 (3%)",drawdown:"Intraday Trailing",minDays:"None",consistency:"20%",split:"80/20 → 95%",payout:"On-demand",standard:false,instant:true,news:true,ea:true,price:"$99 one-time"},
-  {firm:"Goat Funded Futures",plan:"Instant",size:"25K",target:"N/A (Instant)",maxLoss:"$1,250 (5% trailing)",dll:"$750 (3%)",drawdown:"Intraday Trailing",minDays:"None",consistency:"20%",split:"80/20 → 95%",payout:"On-demand",standard:false,instant:true,news:true,ea:true,price:"$249 one-time"},
-  {firm:"Goat Funded Futures",plan:"Instant",size:"50K",target:"N/A (Instant)",maxLoss:"$2,500 (5% trailing)",dll:"$1,500 (3%)",drawdown:"Intraday Trailing",minDays:"None",consistency:"20%",split:"80/20 → 95%",payout:"On-demand",standard:false,instant:true,news:true,ea:true,price:"$399 one-time"},
-  {firm:"Goat Funded Futures",plan:"Instant",size:"100K",target:"N/A (Instant)",maxLoss:"$5,000 (5% trailing)",dll:"$3,000 (3%)",drawdown:"Intraday Trailing",minDays:"None",consistency:"20%",split:"80/20 → 95%",payout:"On-demand",standard:false,instant:true,news:true,ea:true,price:"$699 one-time"},
-  // GOAT FUNDED FUTURES — Express (one-step, one-time fee)
-  {firm:"Goat Funded Futures",plan:"Express",size:"25K",target:"$1,500 (6%)",maxLoss:"$1,000 (4%)",dll:"None",drawdown:"EOD Trailing",minDays:"No min",consistency:"None (eval) / 30% (funded)",split:"100% first $10K → 90/10",payout:"5 Winning Days",standard:false,instant:false,news:true,ea:true,price:"$74 one-time"},
-  {firm:"Goat Funded Futures",plan:"Express",size:"50K",target:"$3,000 (6%)",maxLoss:"$1,500 (3%)",dll:"None",drawdown:"EOD Trailing",minDays:"No min",consistency:"None (eval) / 30% (funded)",split:"100% first $10K → 90/10",payout:"5 Winning Days",standard:false,instant:false,news:true,ea:true,price:"$124 one-time"},
-  {firm:"Goat Funded Futures",plan:"Express",size:"100K",target:"$5,000 (5%)",maxLoss:"$2,000 (2%)",dll:"None",drawdown:"EOD Trailing",minDays:"No min",consistency:"None (eval) / 30% (funded)",split:"100% first $10K → 90/10",payout:"5 Winning Days",standard:false,instant:false,news:true,ea:true,price:"$199 one-time"},
-  {firm:"Goat Funded Futures",plan:"Express",size:"150K",target:"$7,500 (5%)",maxLoss:"$3,000 (2%)",dll:"None",drawdown:"EOD Trailing",minDays:"No min",consistency:"None (eval) / 30% (funded)",split:"100% first $10K → 90/10",payout:"5 Winning Days",standard:false,instant:false,news:true,ea:true,price:"$299 one-time"},
-];
-
-// Funded-phase overrides — only fields that DIFFER from eval. Keyed by "firm|plan".
-const FUNDED_OVERRIDES = {
-  "Tradeify|Select":{consistency:"None (Flex) / 50% (Daily)",dll:"None (Flex) / $500–$1,750 (Daily)",drawdown:"EOD Trailing (locks at balance + $100)",minDays:"N/A",target:"N/A"},
-  "Tradeify|Growth":{consistency:"35%",dll:"$600–$3,750",drawdown:"EOD Trailing (locks at balance + $100)",minDays:"N/A",target:"N/A"},
-  "Tradeify|Lightning":{consistency:"20→25→30% (progressive)",minDays:"N/A",target:"N/A"},
-  "My Funded Futures|Flex":{consistency:"None",drawdown:"EOD (locks at balance)",minDays:"5 winning days",target:"N/A",payout:"5 Winning Days ($250 min)"},
-  "My Funded Futures|Rapid":{consistency:"None",drawdown:"Intraday Trailing",minDays:"24 hours after first trade",target:"N/A",payout:"Daily ($500 min)"},
-  "My Funded Futures|Pro":{consistency:"None",drawdown:"EOD (locks at balance)",minDays:"14 calendar days",target:"N/A"},
-  "Alpha Futures|Standard":{consistency:"40%",split:"70→80→90%",minDays:"14 days",target:"N/A"},
-  "Alpha Futures|Advanced":{consistency:"None",dll:"None",split:"90/10",minDays:"5 winning days",target:"N/A"},
-  "Alpha Futures|Zero":{consistency:"40%",split:"90/10",minDays:"5 winning days",target:"N/A"},
-  "Apex Trader Funding|EOD":{consistency:"50%",dll:"$750–$2,000 (soft, pauses trading)",drawdown:"EOD Trailing (locks at balance + $100)",minDays:"5 qualifying days",target:"N/A",split:"100% first $25K → 90/10"},
-  "Apex Trader Funding|Intraday":{consistency:"50%",dll:"Tier-based",drawdown:"Intraday Trailing (locks at balance + $100)",minDays:"5 qualifying days",target:"N/A",split:"100% first $25K → 90/10"},
-  "Top One Futures|Elite":{consistency:"25%",target:"N/A",minDays:"N/A"},
-  "Top One Futures|Elite Daily":{consistency:"None",dll:"$500–$1,250",target:"N/A",minDays:"Daily eligibility"},
-  "Top One Futures|Elite Access":{consistency:"None (eval) / 40% funded",dll:"None (eval) / $500–$1,750 funded",target:"N/A",minDays:"5 profitable days"},
-  "Top One Futures|Instant Sim Funded":{consistency:"20%",target:"N/A",minDays:"N/A"},
-  "Top One Futures|S2F Sim PRO":{consistency:"20%",target:"N/A",minDays:"N/A"},
-  "Top One Futures|IGNITE":{consistency:"15%",target:"N/A",minDays:"N/A"},
-  "FundedNext Futures|Rapid":{consistency:"None",minDays:"N/A",target:"N/A",split:"80/20→95/5"},
-  "Bulenox|Eval":{consistency:"40%",minDays:"N/A",target:"N/A",split:"100% first $10K → 90/10"},
-  "Goat Funded Futures|EOD Trailing":{consistency:"Varies",dll:"2.5% daily loss (funded)",drawdown:"EOD Trailing (resets daily)",minDays:"Varies",target:"N/A"},
-  "Goat Funded Futures|Static":{consistency:"Varies",dll:"Static",drawdown:"Static (non-trailing)",minDays:"Varies",target:"N/A"},
-  "Goat Funded Futures|Instant":{consistency:"20%",dll:"3% daily",drawdown:"5% trailing (funded)",minDays:"7 winning days (10 calendar days first payout)",target:"N/A"},
-  "Goat Funded Futures|Express":{consistency:"30%",dll:"None",drawdown:"EOD Trailing",minDays:"5 winning days",target:"N/A"},
+const copyToClipboard = (text) => {
+  if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.cssText = "position:fixed;left:-9999px";
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand("copy"); } catch(e) {}
+  document.body.removeChild(ta);
+  return Promise.resolve();
 };
 
-const LOGO_URL = "data:image/png;base64,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";
-
+// ═══════════════════════════════════════════════════════════════════════════
+// GLOBAL STYLES — "Prime Terminal"
+// ═══════════════════════════════════════════════════════════════════════════
 const css = `
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
-/* ═══════════════════════════════════════════════════════════════════════
-   "MIDNIGHT EDITORIAL" — complete rebrand
-   Warm off-black base · Coral primary · Violet accent · Serif display
-   ═══════════════════════════════════════════════════════════════════════ */
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
-:root{
-  /* Warm off-black surfaces (no cold blue undertones) */
-  --bg:#0b0a09;--bg1:#131210;--bg2:#1a1816;--bg3:#221f1c;--bg4:#2a2722;
-  --glass:rgba(19,18,16,0.72);--glass2:rgba(11,10,9,0.92);
-  /* Borders derived from text, not accent — more editorial */
-  --bdr:rgba(250,246,240,0.06);--bdr2:rgba(250,246,240,0.1);--bdr3:rgba(255,120,71,0.35);
-  /* Primary: warm electric coral (replaces cyan) */
-  --em:#ff7847;--em2:#ffa07a;--em3:#ffc4a3;--emA:rgba(255,120,71,0.08);--emA2:rgba(255,120,71,0.16);
-  /* Semantic colors - warmer tones */
-  --green:#78c094;--red:#e85b60;--amber:#f4a53c;--gold:#d4a967;
-  /* Text hierarchy - warm off-white */
-  --t1:#faf6f0;--t2:#e8e0d5;--t3:#c5bcab;--t4:#8a8073;--t5:#5a5349;
-  /* Typography - serif display + clean sans */
-  --serif:'Instrument Serif',Georgia,serif;
-  --sans:'Inter',system-ui,-apple-system,sans-serif;
-  --mono:'JetBrains Mono',ui-monospace,monospace;
-  /* Softer shadows, less glow */
-  --glow:0 0 0 1px rgba(255,120,71,0.3),0 4px 16px rgba(255,120,71,0.15),0 0 32px rgba(255,120,71,0.08);
-  --glow-sm:0 0 0 1px rgba(255,120,71,0.25),0 2px 10px rgba(255,120,71,0.15);
-  --glow-box:0 0 0 1px rgba(250,246,240,0.04),0 8px 24px rgba(0,0,0,0.35),0 2px 6px rgba(0,0,0,0.25);
-  --glow-gold:0 0 0 1px rgba(212,169,103,0.35),0 4px 14px rgba(212,169,103,0.2);
-  --glow-gold-sm:0 0 0 1px rgba(212,169,103,0.25),0 2px 8px rgba(212,169,103,0.15);
-  --glow-green:0 0 0 1px rgba(120,192,148,0.3),0 2px 8px rgba(120,192,148,0.15);
-  --glow-red:0 0 0 1px rgba(232,91,96,0.3),0 2px 8px rgba(232,91,96,0.15);
-}
-*{margin:0;padding:0;box-sizing:border-box}
-body,#root{background:var(--bg);color:var(--t1);font-family:var(--sans);font-size:15px;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden;font-feature-settings:'ss01','cv11'}
-/* Subtle noise texture instead of grid */
-body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle at 1px 1px,rgba(250,246,240,0.015) 1px,transparent 0);background-size:24px 24px;pointer-events:none;z-index:0}
-::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(250,246,240,0.12);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:rgba(255,120,71,0.4)}
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
 
-/* ── AMBIENT (subtle warm glow, not laser-cyan) ── */
-.ambient{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.6}
-.ambient::before{content:'';position:absolute;width:1800px;height:800px;top:-400px;left:50%;transform:translateX(-50%);background:radial-gradient(ellipse,rgba(255,120,71,0.12) 0%,rgba(255,120,71,0.04) 30%,transparent 65%);border-radius:50%;animation:ambPulse 18s ease-in-out infinite}
-.ambient::after{content:'';position:absolute;width:1200px;height:1200px;bottom:-500px;right:-400px;background:radial-gradient(circle,rgba(167,139,250,0.08) 0%,rgba(167,139,250,0.03) 30%,transparent 60%);border-radius:50%;animation:ambPulse 22s ease-in-out infinite reverse}
-@keyframes ambPulse{0%,100%{opacity:1;transform:translateX(-50%) scale(1)}50%{opacity:.65;transform:translateX(-50%) scale(1.04)}}
-.ambient-gold{position:absolute;width:900px;height:900px;top:30%;left:-200px;background:radial-gradient(circle,rgba(212,169,103,0.06) 0%,rgba(212,169,103,0.02) 35%,transparent 60%);border-radius:50%}
-.edge-glow{display:none}
-.side-glow-l,.side-glow-r{display:none}
-.top-glow{position:fixed;top:0;left:0;right:0;height:1px;z-index:101;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(255,120,71,0.6) 30%,rgba(167,139,250,0.5) 70%,transparent);box-shadow:0 0 20px rgba(255,120,71,0.25)}
-.page{position:relative;z-index:1;overflow-x:hidden}
-
-/* ── TICKER ── */
-.ticker{background:rgba(8,12,22,0.9);border-bottom:1px solid var(--bdr2);height:34px;overflow:hidden;box-shadow:0 2px 16px rgba(6,182,212,0.08)}
-.ticker-track{display:flex;align-items:center;gap:32px;height:100%;white-space:nowrap;animation:tScroll 60s linear infinite;padding:0 20px}
-@keyframes tScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.tick{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--t3);flex-shrink:0}
-.tick b{color:var(--gold);font-family:var(--mono);font-size:11px;font-weight:700;text-shadow:var(--glow-gold-sm)}
-.tick-name{color:var(--em2);font-weight:700;text-shadow:0 0 8px rgba(6,182,212,0.2)}
-.tick-sep{color:var(--t5);font-size:8px}
-
-/* ── NAV ── */
-.nav{position:sticky;top:0;z-index:100;background:var(--glass2);backdrop-filter:blur(24px) saturate(1.2);border-bottom:1px solid var(--bdr);height:62px;display:flex;align-items:center;padding:0 36px;gap:12px;box-shadow:0 1px 0 rgba(250,246,240,0.03),0 8px 32px rgba(0,0,0,0.3)}
-.nav::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(251,191,36,0.3),rgba(34,211,238,0.4),rgba(251,191,36,0.3),transparent)}
-.nav-logo{display:flex;align-items:center;gap:9px;cursor:pointer;margin-right:auto}
-.nav-logo-mark{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.nav-logo img{width:32px;height:32px;border-radius:4px}
-.nav-logo-text{font-family:var(--serif);font-size:22px;font-weight:400;letter-spacing:-.5px;color:var(--t1);font-style:italic}
-.nav-logo-text span{font-family:var(--serif);font-style:italic;color:var(--em);font-weight:400}
-.nav-tabs{display:flex;gap:2px}
-.nav-tab{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:none;border:1px solid transparent;color:var(--t3);font-family:var(--sans);font-size:13px;font-weight:600;padding:8px 18px;border-radius:999px;cursor:pointer;transition:all .2s;line-height:1}
-.nav-tab-icon{display:inline-flex;align-items:center;font-size:13px;line-height:1}
-.nav-tab:hover{color:var(--em);background:var(--emA);border-color:var(--bdr2);text-shadow:0 0 8px rgba(6,182,212,0.3);box-shadow:0 0 12px rgba(6,182,212,0.15)}
-.nav-tab.on{color:var(--em);background:var(--emA2);border-color:var(--bdr3);text-shadow:var(--glow-sm);box-shadow:0 0 14px rgba(6,182,212,0.2),inset 0 0 12px rgba(6,182,212,0.06)}
-.nav-code{font-family:var(--mono);font-size:12px;font-weight:700;color:#050810;background:linear-gradient(135deg,#fbbf24,#f59e0b);border:none;padding:8px 20px;border-radius:999px;cursor:pointer;transition:all .2s;margin-left:8px;box-shadow:var(--glow-gold-sm)}
-.nav-code:hover{box-shadow:var(--glow-gold);transform:translateY(-1px)}
-.nav-burger{display:none;background:none;border:none;color:var(--em);font-size:22px;cursor:pointer;padding:4px 8px;text-shadow:var(--glow-sm)}
-.mob-menu{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:99;padding:96px 16px 20px;display:flex;flex-direction:column;gap:4px;overflow-y:auto}
-.mob-menu button{background:var(--glass);border:1px solid var(--bdr2);color:var(--t2);font-family:var(--sans);font-size:16px;font-weight:600;padding:16px 24px;text-align:left;border-radius:999px;cursor:pointer;margin-bottom:8px;transition:all .22s}
-.mob-menu button:hover{color:var(--em);text-shadow:var(--glow-sm)}
-.mob-menu button.on{color:var(--em);background:var(--emA2);text-shadow:var(--glow-sm);box-shadow:inset 0 0 20px rgba(6,182,212,0.05)}
-
-/* ── WRAP ── */
-.wrap{max-width:1440px;margin:0 auto;padding:0 36px}
-
-/* ── HERO ── */
-.hero{position:relative;text-align:center;max-width:880px;margin:0 auto;padding:64px 0 48px}
-.hero::before{content:'';position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);width:700px;height:400px;background:radial-gradient(ellipse,rgba(6,182,212,0.12) 0%,rgba(251,191,36,0.06) 35%,transparent 65%);border-radius:50%;pointer-events:none}
-.hero-divider{width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(251,191,36,0.25),rgba(34,211,238,0.3),rgba(251,191,36,0.25),transparent);margin-bottom:28px}
-.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:4px;background:transparent;border:1px solid var(--bdr2);font-size:11px;font-weight:600;color:var(--t3);margin-bottom:22px;letter-spacing:.4px;text-transform:uppercase}
-.hero-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold),0 0 14px rgba(251,191,36,0.6);animation:heroDot 2s ease-in-out infinite}
-@keyframes heroDot{0%,100%{opacity:1}50%{opacity:.5}}
-.hero h1{font-family:var(--sans);font-size:54px;font-weight:800;line-height:1.1;letter-spacing:-1.2px;color:var(--t1);margin-bottom:18px}
-.hero h1 em{font-style:normal;font-weight:900;background:linear-gradient(135deg,var(--em),var(--gold));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 14px rgba(34,211,238,0.25))}
-.hero h1 .gold{font-weight:800;color:var(--gold);text-shadow:var(--glow-gold-sm)}
-.hero p{color:var(--t3);font-size:17px;line-height:1.6;max-width:620px;margin:0 auto 28px}
-.hero p b{color:var(--gold);font-weight:700;text-shadow:var(--glow-gold-sm)}
-.hero-pills{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:28px}
-.hero-pill{font-size:12px;font-weight:600;padding:7px 16px;border-radius:24px;border:1px solid var(--bdr2);background:rgba(8,14,28,0.7);backdrop-filter:blur(8px);color:var(--t3);display:flex;align-items:center;gap:5px;transition:all .2s}
-.hero-pill:hover{border-color:var(--bdr3);box-shadow:var(--glow-box)}
-.hero-pill b{color:var(--gold);text-shadow:0 0 6px rgba(251,191,36,0.3)}
-.hero-pill .cy{color:var(--em);text-shadow:0 0 6px rgba(6,182,212,0.3)}
-.hero-stats{display:flex;justify-content:center;gap:44px;padding-top:28px;border-top:1px solid rgba(251,191,36,0.08);margin-top:4px}
-.hero-stat{text-align:center}
-.hero-stat b{font-family:var(--mono);font-size:30px;font-weight:800;display:block;line-height:1.1}
-.hero-stat small{font-size:11px;color:var(--t4);font-weight:600;margin-top:6px;display:block;text-transform:uppercase;letter-spacing:.8px}
-.hero-steps{display:flex;justify-content:center;gap:12px;margin:28px 0 30px;flex-wrap:wrap}
-.hero-step{display:flex;align-items:center;gap:10px;background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--bdr2);border-radius:14px;padding:14px 20px;min-width:200px;transition:all .2s}
-.hero-step:hover{border-color:var(--bdr3);transform:translateY(-2px);box-shadow:0 8px 24px rgba(6,182,212,0.1),0 0 0 1px rgba(34,211,238,0.15)}
-.hero-step-n{font-family:var(--mono);font-size:16px;font-weight:800;color:var(--em);text-shadow:var(--glow-sm);flex-shrink:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:var(--emA2);border:1px solid var(--bdr3);border-radius:50%}
-.hero-step-t{font-size:14px;font-weight:600;color:var(--t2);line-height:1.3;text-align:left}
-.hero-step-t span{color:var(--gold);font-weight:700}
-.hero-ctas{display:flex;justify-content:center;gap:12px;margin-bottom:32px;flex-wrap:wrap}
-.hero-trust{display:flex;justify-content:center;align-items:center;gap:20px;flex-wrap:wrap;font-size:12px;color:var(--t4);margin-bottom:8px}
-.hero-trust .trust-item{display:inline-flex;align-items:center;gap:6px}
-.hero-trust .trust-check{color:var(--green);font-weight:800;text-shadow:0 0 6px rgba(16,185,129,0.4)}
-
-/* ── HERO STAT CHIPS (legacy, unused) ── */
-.hero-chips{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;margin:4px 0 26px}
-.hero-chip{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--bdr2);transition:all .2s}
-.hero-chip:hover{border-color:var(--bdr3);transform:translateY(-1px);box-shadow:0 4px 16px rgba(6,182,212,0.1)}
-.hero-chip b{font-family:var(--mono);font-size:15px;font-weight:800;color:var(--em);text-shadow:var(--glow-sm);line-height:1}
-.hero-chip b.gold{color:var(--gold);text-shadow:var(--glow-gold-sm)}
-.hero-chip span{font-size:12px;font-weight:600;color:var(--t3);white-space:nowrap}
-
-/* ── HERO STEP BUBBLES ── */
-.hero-bubbles{display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap;margin:34px auto 10px;max-width:920px}
-.hero-bubble{display:inline-flex;align-items:center;gap:12px;padding:14px 24px;border-radius:999px;background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--bdr2);transition:all .22s;cursor:pointer;position:relative}
-.hero-bubble:hover{border-color:var(--bdr3);transform:translateY(-2px);box-shadow:0 8px 24px rgba(6,182,212,0.12),0 0 0 1px rgba(34,211,238,0.2)}
-.hero-bubble-n{font-family:var(--mono);font-size:14px;font-weight:800;color:var(--em);text-shadow:var(--glow-sm);width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:var(--emA2);border:1px solid var(--bdr3);border-radius:50%;flex-shrink:0}
-.hero-bubble-t{font-family:var(--sans);font-size:15px;font-weight:700;color:var(--t1);letter-spacing:-.1px}
-.hero-bubble-t span{color:var(--gold);font-family:var(--mono);text-shadow:var(--glow-gold-sm)}
-.hero-bubble.gold{border-color:rgba(251,191,36,0.4);background:linear-gradient(135deg,rgba(251,191,36,0.12),rgba(245,158,11,0.06));box-shadow:0 0 24px rgba(251,191,36,0.15)}
-.hero-bubble.gold .hero-bubble-n{color:var(--gold);background:rgba(251,191,36,0.15);border-color:rgba(251,191,36,0.4);text-shadow:var(--glow-gold-sm)}
-.hero-bubble.gold .hero-bubble-t{color:var(--gold);text-shadow:var(--glow-gold-sm)}
-.hero-bubble.gold:hover{border-color:rgba(251,191,36,0.6);box-shadow:0 8px 32px rgba(251,191,36,0.25),0 0 0 1px rgba(251,191,36,0.35)}
-.hero-bubble-arrow{font-size:18px;font-weight:700;color:var(--t5);opacity:.6;padding:0 2px}
-@media(max-width:900px){
-  .hero-bubbles{gap:8px}
-  .hero-bubble{padding:12px 18px}
-  .hero-bubble-t{font-size:13.5px}
-  .hero-bubble-arrow{display:none}
+:root {
+  --bg: #060606;
+  --bg1: #0d0d0e;
+  --bg2: #151517;
+  --bg3: #1e1e21;
+  --line: rgba(255,255,255,0.06);
+  --line2: rgba(255,255,255,0.12);
+  --line3: rgba(255,255,255,0.2);
+  --txt: #f0ede4;
+  --txt2: #c4beaf;
+  --txt3: #8e887b;
+  --txt4: #5c5850;
+  --txt5: #3d3a34;
+  --prime: #a8ff60;
+  --primeA: rgba(168,255,96,0.08);
+  --primeA2: rgba(168,255,96,0.18);
+  --primeDim: #7fc848;
+  --warn: #ffb84d;
+  --danger: #ff6b6b;
+  --info: #7fb8ff;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+  --sans: 'Inter', system-ui, sans-serif;
+  --serif: 'Newsreader', Georgia, serif;
 }
 
-/* ── FEATURED OFFERS STRIP ── */
-.offers-strip{position:relative;margin:36px auto 8px;max-width:1280px;padding:1px;border-radius:6px;background:linear-gradient(135deg,rgba(255,120,71,0.3),rgba(167,139,250,0.2));box-shadow:0 4px 30px rgba(0,0,0,0.35)}
-.offers-strip::before{content:'';position:absolute;inset:-24px;border-radius:36px;background:radial-gradient(ellipse 60% 50% at center,rgba(34,211,238,0.16) 0%,rgba(251,191,36,0.08) 45%,transparent 75%);z-index:-1;filter:blur(32px);animation:stripPulse 5s ease-in-out infinite;pointer-events:none}
-@keyframes stripBorder{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-@keyframes stripPulse{0%,100%{opacity:.55}50%{opacity:.85}}
-.offers-strip-inner{position:relative;background:var(--bg1);border-radius:22px;padding:28px 30px}
-.offers-strip-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap}
-.offers-strip-title{display:flex;align-items:center;gap:10px;font-family:var(--sans);font-size:18px;font-weight:800;color:var(--t1);letter-spacing:-.2px}
-.offers-strip-title::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
-.offers-strip-sub{font-size:12px;color:var(--t4);font-weight:600}
-.offers-strip-link{font-size:12px;font-weight:700;color:var(--em);cursor:pointer;background:var(--emA);border:1px solid var(--bdr2);padding:8px 18px;border-radius:999px;transition:all .22s;text-shadow:var(--glow-sm)}
-.offers-strip-link:hover{background:var(--emA2);color:var(--em);border-color:var(--em);transform:translateY(-1px);box-shadow:0 0 14px rgba(6,182,212,0.2)}
-.offers-strip-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.offer-mini{display:flex;align-items:center;gap:12px;padding:14px;background:var(--bg2);border:1px solid var(--bdr);border-radius:14px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;text-align:left}
-.offer-mini::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--card-accent,var(--em)),transparent);opacity:.4;transition:opacity .2s}
-.offer-mini:hover{border-color:var(--bdr3);transform:translateY(-2px);box-shadow:0 8px 24px rgba(6,182,212,0.1),0 0 0 1px rgba(34,211,238,0.2);background:var(--bg3)}
-.offer-mini:hover::before{opacity:1}
-.offer-mini-logo{width:40px;height:40px;border-radius:10px;flex-shrink:0;overflow:hidden;border:1px solid var(--bdr2);background:var(--bg3);display:flex;align-items:center;justify-content:center}
-.offer-mini-info{flex:1;min-width:0}
-.offer-mini-name{font-family:var(--sans);font-size:14px;font-weight:700;color:var(--t1);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
-.offer-mini-rating{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--t4);font-weight:600}
-.offer-mini-rating .star{color:var(--gold);font-size:10px}
-.offer-mini-pct{font-family:var(--sans);font-size:13px;font-weight:800;color:var(--gold);padding:4px 10px;border-radius:6px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);text-shadow:var(--glow-gold-sm);flex-shrink:0;white-space:nowrap}
-@media(max-width:980px){
-  .offers-strip-grid{grid-template-columns:repeat(2,1fr)}
-  .offers-strip{margin:28px 16px 8px}
-}
-@media(max-width:520px){
-  .offers-strip-inner{padding:18px}
-  .offers-strip-grid{display:flex;grid-template-columns:none;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:6px;margin:0 -18px;padding-left:18px;padding-right:18px;scrollbar-width:none}
-  .offers-strip-grid::-webkit-scrollbar{display:none}
-  .offers-strip-grid>*{flex:0 0 78%;scroll-snap-align:start}
-  .offers-strip-head{flex-wrap:wrap}
-  .offers-strip-title{font-size:16px}
-  .offers-strip-sub{font-size:11px}
-}
-.hero-cta-primary{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#050810;font-family:var(--sans);font-size:16px;font-weight:700;padding:14px 40px;border:none;border-radius:999px;cursor:pointer;box-shadow:var(--glow-gold-sm),0 4px 16px rgba(0,0,0,0.3);transition:all .22s}
-.hero-cta-primary:hover{box-shadow:var(--glow-gold),0 8px 28px rgba(251,191,36,0.3);transform:translateY(-2px)}
-.hero-cta-secondary{background:var(--emA2);border:1px solid var(--bdr3);color:var(--em);font-family:var(--sans);font-size:15px;font-weight:700;padding:14px 36px;border-radius:999px;cursor:pointer;transition:all .22s;text-shadow:0 0 6px rgba(6,182,212,0.2)}
-.hero-cta-secondary:hover{background:var(--em);color:#050810;border-color:var(--em);box-shadow:0 0 22px rgba(34,211,238,0.4),0 0 0 1px rgba(34,211,238,0.25);transform:translateY(-2px);text-shadow:none}
-
-/* ── TABS ── */
-.ctabs{display:flex;justify-content:center;gap:8px;margin-bottom:36px;padding-bottom:6px;flex-wrap:wrap;scrollbar-width:none;-ms-overflow-style:none}
-.ctabs::-webkit-scrollbar{display:none}
-.ctab{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:transparent;border:1px solid var(--bdr);color:var(--t3);font-family:var(--sans);font-size:13px;font-weight:500;padding:10px 20px;border-radius:8px;cursor:pointer;transition:all .2s;position:relative;line-height:1;letter-spacing:.1px}
-.ctab .ctab-icon{display:inline-flex;align-items:center;font-size:14px;line-height:1}
-.ctab:hover{color:var(--em);border-color:var(--bdr3);text-shadow:0 0 8px rgba(6,182,212,0.3);transform:translateY(-1px);box-shadow:0 4px 16px rgba(6,182,212,0.12)}
-.ctab.on{color:var(--t1);background:var(--bg3);border-color:var(--t2);font-weight:600}
-
-/* ── SECTION HEADERS ── */
-.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
-.sec-title{font-family:var(--serif);font-size:32px;font-weight:400;color:var(--t1);letter-spacing:-.8px;line-height:1}
-.sec-sub{font-size:13px;color:var(--t4);margin-top:6px;font-weight:500}
-
-/* ── FILTERS ── */
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
-.f-btn{background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--bdr2);color:var(--t3);font-family:var(--sans);font-size:12.5px;font-weight:600;padding:8px 18px;border-radius:999px;cursor:pointer;transition:all .2s}
-.f-btn:hover{border-color:var(--bdr3);color:var(--em);transform:translateY(-1px);text-shadow:0 0 6px rgba(6,182,212,0.3);box-shadow:0 0 14px rgba(6,182,212,0.15)}
-.f-btn.on{background:var(--emA2);border-color:var(--em);color:var(--em);box-shadow:0 0 16px rgba(6,182,212,0.25),0 0 0 1px rgba(34,211,238,0.15),inset 0 0 12px rgba(6,182,212,0.06);text-shadow:var(--glow-sm)}
-.view-tog{display:flex;gap:2px;background:var(--bg2);border:1px solid var(--bdr2);border-radius:7px;padding:2px}
-.vt{background:none;border:none;color:var(--t5);font-family:var(--sans);font-size:12px;font-weight:600;padding:6px 16px;border-radius:999px;cursor:pointer;transition:all .22s}
-.vt:hover{color:var(--em)}
-.vt.on{background:var(--bg3);color:var(--em);text-shadow:var(--glow-sm);box-shadow:0 0 8px rgba(6,182,212,0.08)}
-
-/* ── PULSE LEADERBOARD ── */
-.lb{margin-bottom:36px}
-.lb-hdr{display:grid;grid-template-columns:28px 36px 1fr 170px 64px 56px 90px;align-items:center;gap:12px;padding:0 18px 10px;font-size:10px;font-weight:700;color:var(--em);text-transform:uppercase;letter-spacing:.8px;text-shadow:0 0 6px rgba(6,182,212,0.15)}
-.lb-row{display:grid;grid-template-columns:28px 36px 1fr 170px 64px 56px 90px;align-items:center;gap:12px;padding:13px 18px;border-radius:10px;background:var(--glass);backdrop-filter:blur(6px);border:1px solid var(--bdr);cursor:pointer;transition:all .25s;margin-bottom:5px;position:relative;overflow:hidden;box-shadow:0 0 1px rgba(6,182,212,0.1)}
-.lb-row::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(34,211,238,0.1),transparent)}
-.lb-row:hover{border-color:var(--bdr3);background:var(--bg2);box-shadow:var(--glow-box);transform:translateX(3px)}
-.lb-row:hover::before{background:linear-gradient(90deg,transparent,rgba(34,211,238,0.5),transparent)}
-.lb-rank{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--t4);text-align:center}
-.lb-row:nth-child(-n+3) .lb-rank{color:var(--em);text-shadow:var(--glow-sm);font-size:13px}
-.lb-logo{width:36px;height:36px;border-radius:8px;overflow:hidden;background:var(--bg3);border:1px solid var(--bdr2);flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 0 6px rgba(6,182,212,0.06)}
-.lb-logo img{width:100%;height:100%;object-fit:contain;padding:3px}
-.lb-logo-fb{font-size:10px;font-weight:800;color:#fff}
-.lb-name-c{min-width:0}
-.lb-name{font-size:14px;font-weight:700;color:var(--t1);display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lb-meta{font-size:11px;color:var(--t4);margin-top:2px}
-.lb-bar-c{position:relative;height:24px}
-.lb-bar-bg{position:absolute;inset:0;background:var(--bg4);border-radius:5px;overflow:hidden;box-shadow:inset 0 0 8px rgba(0,0,0,0.3)}
-.lb-bar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,rgba(6,182,212,0.9),rgba(34,211,238,0.6),rgba(103,232,249,0.3));transition:width .8s cubic-bezier(.22,1,.36,1);position:relative;box-shadow:0 0 8px rgba(34,211,238,0.4)}
-.lb-bar-fill::after{content:'';position:absolute;right:0;top:0;bottom:0;width:4px;background:#67e8f9;border-radius:0 5px 5px 0;box-shadow:0 0 6px #22d3ee,0 0 14px rgba(34,211,238,0.5),0 0 28px rgba(34,211,238,0.2)}
-.lb-score{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:13px;font-weight:800;color:#fff;text-shadow:0 0 4px rgba(0,0,0,0.8),0 0 8px rgba(34,211,238,0.3);z-index:1}
-.lb-rating{font-family:var(--mono);font-size:12px;font-weight:700;text-align:center;color:var(--em2);text-shadow:0 0 6px rgba(6,182,212,0.2)}
-.lb-trend{font-size:11px;font-weight:700;text-align:center}
-.lb-deal{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--gold);background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.15);padding:6px 14px;border-radius:999px;text-align:center;cursor:pointer;transition:all .22s;text-shadow:var(--glow-gold-sm)}
-.lb-deal:hover{border-color:rgba(251,191,36,0.5);background:rgba(251,191,36,0.18);box-shadow:var(--glow-gold-sm),0 4px 14px rgba(251,191,36,0.25);transform:translateY(-1px)}
-.lb-deal-na{color:var(--t5);text-align:center;font-size:11px}
-.tp{color:var(--gold);font-size:10px;text-shadow:var(--glow-gold-sm)}
-
-/* ── FIRM CARDS ── */
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(360px,100%),1fr));gap:18px}
-.fcard{background:var(--bg1);backdrop-filter:blur(8px);border:1px solid var(--bdr);border-radius:4px;padding:28px 24px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,0.3);display:flex;flex-direction:column}
-.fcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--card-accent,var(--em));opacity:.85}
-.fcard::after{display:none}
-.fcard::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--card-accent,rgba(6,182,212,0.3)),rgba(34,211,238,0.1),transparent)}
-.fcard::after{content:'';position:absolute;top:0;left:0;bottom:0;width:100px;background:linear-gradient(90deg,var(--card-glow,rgba(6,182,212,0.04)),transparent);pointer-events:none;transition:opacity .3s}
-.fcard:hover{border-color:rgba(250,246,240,0.15);background:var(--bg2);transform:translateY(-3px);box-shadow:0 20px 40px rgba(0,0,0,0.4),0 1px 0 rgba(250,246,240,0.04)}
-.fcard:hover::before{background:linear-gradient(90deg,var(--card-accent,rgba(6,182,212,0.6)),rgba(251,191,36,0.2),transparent)}
-.fcard-top{display:flex;align-items:center;gap:14px;margin-bottom:16px}
-.fcard-logo{width:42px;height:42px;border-radius:10px;overflow:hidden;background:var(--bg3);border:1px solid var(--bdr2);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 8px rgba(6,182,212,0.06)}
-.fcard-logo img{width:100%;height:100%;object-fit:contain;padding:4px}
-.fcard-logo-fb{font-size:11px;font-weight:800;color:#fff}
-.fcard-info{flex:1;min-width:0}
-.fcard-name{font-family:var(--serif);font-size:22px;font-weight:400;letter-spacing:-.4px;display:flex;align-items:center;gap:5px;line-height:1.1}
-.fcard-sub{font-size:11px;color:var(--t4);margin-top:2px}
-.fcard-deal{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--em);background:var(--emA);border:1px solid var(--bdr3);padding:5px 10px;border-radius:3px;letter-spacing:.3px;text-transform:uppercase}
-.fcard-desc{font-size:14px;color:var(--t4);line-height:1.55;margin-bottom:16px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1}
-.fcard-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px;align-items:stretch}
-.fcard-stat{background:transparent;border:none;border-top:1px solid var(--bdr);border-radius:0;padding:10px 0;min-height:62px;display:flex;flex-direction:column;justify-content:flex-start}
-.fcard-sl{font-size:9px;color:var(--t5);text-transform:uppercase;letter-spacing:1.2px;font-weight:700}
-.fcard-sv{font-family:var(--mono);font-size:13px;font-weight:600;margin-top:4px;color:var(--t1);overflow:hidden;text-overflow:ellipsis;letter-spacing:-.2px}
-.fcard-foot{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--bdr);margin-top:auto}
-.best-for{font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:.3px;white-space:nowrap;position:relative;overflow:hidden}
-.best-for::before{content:'';position:absolute;inset:0;border-radius:20px;opacity:0.6;filter:blur(8px);z-index:-1}
-
-/* ── NEWSLETTER ── */
-.nl-section{position:relative;margin:48px 0 0;padding:56px 0;border-top:1px solid var(--bdr2);overflow:hidden}
-.nl-section::before{content:'';position:absolute;top:-1px;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(251,191,36,0.5),rgba(34,211,238,0.4),rgba(251,191,36,0.5),transparent)}
-.nl-section::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:800px;height:400px;background:radial-gradient(ellipse,rgba(6,182,212,0.08) 0%,rgba(251,191,36,0.04) 35%,transparent 65%);border-radius:50%;pointer-events:none}
-.nl-inner{max-width:600px;margin:0 auto;text-align:center;position:relative;z-index:1}
-.nl-inner h3{font-size:28px;font-weight:800;margin-bottom:10px;letter-spacing:-.3px}
-.nl-inner h3 span{color:var(--gold);text-shadow:var(--glow-gold)}
-.nl-inner p{color:var(--t3);font-size:15px;margin-bottom:24px;line-height:1.7;max-width:480px;margin-left:auto;margin-right:auto}
-.nl-form{display:flex;gap:10px;max-width:480px;margin:0 auto}
-.nl-input{flex:1;background:var(--bg3);border:1px solid var(--bdr2);border-radius:10px;padding:16px 20px;color:var(--t1);font-family:var(--sans);font-size:15px;outline:none;transition:all .2s}
-.nl-input:focus{border-color:var(--em);box-shadow:0 0 12px rgba(6,182,212,0.15)}
-.nl-btn{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#050810;font-family:var(--sans);font-size:15px;font-weight:700;padding:16px 36px;border:none;border-radius:999px;cursor:pointer;box-shadow:var(--glow-gold-sm);transition:all .22s;white-space:nowrap}
-.nl-btn:hover{box-shadow:var(--glow-gold),0 6px 20px rgba(251,191,36,0.3);transform:translateY(-2px)}
-.nl-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
-.nl-success{color:var(--green);font-size:15px;font-weight:600;margin-top:16px;text-shadow:var(--glow-green)}
-.nl-pills{display:flex;justify-content:center;gap:10px;margin-top:20px;flex-wrap:wrap}
-.nl-pill{font-size:12px;color:var(--t3);padding:6px 14px;border:1px solid var(--bdr2);border-radius:20px;background:var(--bg2)}
-.fcard-pulse{display:flex;align-items:center;gap:7px}
-.fcard-pl{font-size:9px;color:var(--t4);font-weight:700;text-transform:uppercase;letter-spacing:1.2px}
-.fcard-pv{font-family:var(--serif);font-size:26px;font-weight:400;color:var(--em);letter-spacing:-.5px;line-height:1}
-@keyframes pulsGlow{0%,100%{text-shadow:var(--glow-gold)}50%{text-shadow:0 0 6px #fde68a,0 0 18px rgba(251,191,36,0.5),0 0 40px rgba(251,191,36,0.25),0 0 80px rgba(251,191,36,0.1)}}
-.fcard-btn{background:transparent;border:1px solid var(--bdr2);color:var(--t2);font-family:var(--sans);font-size:12px;font-weight:600;padding:10px 22px;border-radius:4px;cursor:pointer;transition:all .18s;letter-spacing:.1px}
-.fcard-btn:hover{background:var(--t1);color:var(--bg);border-color:var(--t1);transform:translateY(-1px)}
-
-/* ── TABLE ── */
-.tbl-wrap{border:1px solid var(--bdr2);border-radius:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--glass);box-shadow:0 0 1px rgba(6,182,212,0.1),0 0 20px rgba(0,0,0,0.2)}
-.tbl{width:100%;border-collapse:collapse;min-width:900px}
-.tbl th{background:var(--bg2);padding:14px 18px;font-size:11px;font-weight:700;color:var(--em);text-transform:uppercase;letter-spacing:.8px;text-align:left;border-bottom:1px solid var(--bdr2);white-space:nowrap;text-shadow:0 0 6px rgba(6,182,212,0.15)}
-.tbl td{padding:14px 18px;font-size:14px;border-bottom:1px solid var(--bdr);color:var(--t2);white-space:nowrap}
-.tbl tbody tr{cursor:pointer;transition:all .2s}
-.tbl tbody tr:hover{background:rgba(6,182,212,0.06);box-shadow:inset 0 0 30px rgba(6,182,212,0.04),0 0 12px rgba(6,182,212,0.06)}
-.tbl .mono{font-family:var(--mono);font-weight:700;color:var(--em2)}
-.tbl .good{color:var(--green);font-weight:700;text-shadow:0 0 6px rgba(16,185,129,0.3)}
-.tbl .warn{color:var(--amber);font-weight:700;text-shadow:0 0 6px rgba(255,190,11,0.3)}
-
-/* ── CHALLENGES ── */
-.ch-wrap{border:1px solid var(--bdr2);border-radius:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--glass);box-shadow:0 0 2px rgba(6,182,212,0.15),0 0 20px rgba(0,0,0,0.2),0 0 40px rgba(6,182,212,0.04)}
-.ch-hero{margin-bottom:24px}
-.ch-hero .sec-title{font-size:32px;letter-spacing:-.5px;background:linear-gradient(135deg,var(--em),var(--gold));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 12px rgba(34,211,238,0.25))}
-.ch-hero .sec-sub{font-size:14px;color:var(--t3);margin-top:6px}
-.ch-phase-group{display:inline-flex;gap:4px;padding:4px;background:var(--bg2);border:1px solid var(--bdr2);border-radius:999px;margin-bottom:18px}
-.ch-phase-btn{font-family:var(--sans);font-size:14px;font-weight:700;padding:10px 28px;border-radius:999px;border:none;background:transparent;color:var(--t3);cursor:pointer;transition:all .18s}
-.ch-phase-btn:hover{color:var(--em)}
-.ch-phase-btn.on{background:linear-gradient(135deg,var(--em),#0ea5e9);color:#050810;box-shadow:0 0 18px rgba(34,211,238,0.35),0 2px 8px rgba(0,0,0,0.3)}
-.ch-filters-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
-.ch-chip{font-family:var(--sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:999px;border:1px solid var(--bdr2);background:var(--glass);backdrop-filter:blur(8px);color:var(--t3);cursor:pointer;transition:all .18s}
-.ch-chip:hover{border-color:var(--bdr3);color:var(--em);transform:translateY(-1px)}
-.ch-chip.on{background:var(--emA2);border-color:var(--em);color:var(--em);box-shadow:0 0 14px rgba(34,211,238,0.2),inset 0 0 12px rgba(6,182,212,0.08);text-shadow:var(--glow-sm)}
-.ch-size-label{font-size:11px;color:var(--t4);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-right:4px}
-.ch-count{font-size:13px;color:var(--t3);margin-bottom:14px}
-.ch-count b{color:var(--em);font-family:var(--mono);font-weight:700;text-shadow:var(--glow-sm)}
-.ch-count .funded-badge{color:var(--gold);font-size:11px;font-weight:700;margin-left:10px;padding:3px 10px;border-radius:999px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);text-shadow:var(--glow-gold-sm)}
-.ch-list{display:flex;flex-direction:column;gap:14px}
-.ch-empty{text-align:center;padding:60px 24px;color:var(--t4);background:var(--glass);border:1px dashed var(--bdr2);border-radius:16px;font-size:15px}
-.f-search{width:100%;max-width:320px;background:linear-gradient(135deg,rgba(8,15,27,0.94),rgba(5,12,22,0.88));border:1px solid rgba(34,211,238,0.22);border-radius:16px;padding:13px 16px;color:var(--t1);font-family:var(--sans);font-size:14px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.03),0 0 0 1px rgba(6,182,212,0.04),0 10px 30px rgba(0,0,0,0.18);outline:none;transition:border-color .18s,box-shadow .18s,transform .18s,background .18s}
-.f-search::placeholder{color:rgba(186,214,223,0.58)}
-.f-search:hover{border-color:rgba(34,211,238,0.3);box-shadow:inset 0 1px 0 rgba(255,255,255,0.04),0 0 0 1px rgba(6,182,212,0.08),0 12px 32px rgba(0,0,0,0.22)}
-.f-search:focus{border-color:rgba(34,211,238,0.72);background:linear-gradient(135deg,rgba(8,15,27,0.98),rgba(7,18,31,0.94));box-shadow:0 0 0 1px rgba(34,211,238,0.18),0 0 0 4px rgba(34,211,238,0.09),0 0 26px rgba(34,211,238,0.14),0 16px 40px rgba(0,0,0,0.26);transform:translateY(-1px)}
-.ch-card{display:grid;grid-template-columns:minmax(220px,1.55fr) repeat(4,minmax(88px,1fr)) 176px;gap:18px;align-items:center;padding:22px 26px;background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--bdr2);border-radius:18px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;box-shadow:0 0 1px rgba(6,182,212,0.1),0 2px 8px rgba(0,0,0,0.2)}
-.ch-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--card-accent,var(--em)),transparent);opacity:0;transition:opacity .2s}
-.ch-card::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--card-accent,rgba(34,211,238,0.3)),transparent);opacity:0.4}
-.ch-card:hover{border-color:var(--bdr3);transform:translateY(-3px);box-shadow:0 10px 40px rgba(6,182,212,0.12),0 0 0 1px rgba(34,211,238,0.2),inset 0 0 40px rgba(6,182,212,0.04)}
-.ch-card:hover::before{opacity:1}
-.ch-firm{display:flex;align-items:center;gap:14px;min-width:0;grid-row:span 2}
-.ch-firm-logo{flex-shrink:0;width:48px;height:48px;border-radius:12px;overflow:hidden;border:1px solid var(--bdr2);background:var(--bg2);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1px rgba(6,182,212,0.08)}
-.ch-firm-info{min-width:0;flex:1}
-.ch-firm-name{font-family:var(--sans);font-size:17px;font-weight:700;color:var(--t1);line-height:1.2;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ch-firm-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.ch-firm-plan{display:inline-flex;align-items:center;font-family:var(--sans);font-size:11px;font-weight:700;color:var(--em);background:var(--emA2);padding:3px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.8px;border:1px solid rgba(34,211,238,0.2)}
-.ch-firm-size{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--t2)}
-.ch-firm-instant{font-size:10px;font-weight:700;color:var(--gold);background:rgba(251,191,36,0.1);padding:2px 8px;border-radius:999px;letter-spacing:.5px;text-shadow:var(--glow-gold-sm)}
-.ch-stat{display:flex;flex-direction:column;gap:4px;min-width:0}
-.ch-stat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--t4)}
-.ch-stat-val{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--t1);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ch-stat-val.price{font-family:var(--sans);font-size:14px;color:var(--t1);white-space:normal;line-height:1.3}
-.ch-stat-val.good{color:var(--green);text-shadow:0 0 10px rgba(16,185,129,0.3)}
-.ch-stat-val.warn{color:var(--amber);text-shadow:0 0 6px rgba(255,190,11,0.25)}
-.ch-cta{display:inline-flex;align-items:center;justify-content:center;gap:6px;align-self:center;justify-self:end;grid-row:span 2;width:176px;min-height:52px;font-family:var(--sans);font-size:13px;font-weight:700;color:var(--em);padding:11px 22px;border-radius:999px;border:1px solid var(--bdr3);background:var(--emA2);cursor:pointer;transition:all .2s;white-space:nowrap;text-transform:uppercase;letter-spacing:.8px}
-.ch-card:hover .ch-cta{background:linear-gradient(135deg,var(--em),#0ea5e9);color:#050810;border-color:transparent;box-shadow:0 0 22px rgba(34,211,238,0.5)}
-@media(max-width:1280px){
-  .ch-card{grid-template-columns:minmax(180px,1.25fr) repeat(3,minmax(88px,1fr)) 164px;row-gap:16px;column-gap:14px}
-  .ch-firm{grid-row:span 2}
-  .ch-cta{grid-row:span 2;align-self:center}
-}
-@media(max-width:820px){
-  .ch-card{grid-template-columns:1fr 1fr;padding:20px;row-gap:16px;column-gap:14px}
-  .ch-firm{grid-row:auto;grid-column:1 / -1}
-  .ch-cta{grid-row:auto;grid-column:1 / -1;justify-self:stretch;width:auto}
-  .ch-hero .sec-title{font-size:26px}
-  .ch-phase-btn{padding:9px 20px;font-size:13px}
-  .f-search{max-width:none}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body, #root {
+  background: var(--bg);
+  color: var(--txt);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.55;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-/* ── OFFERS ── */
-.offers-list{display:flex;flex-direction:column;gap:12px}
-.offer-row{display:flex;align-items:center;gap:18px;padding:16px 20px;background:var(--glass);backdrop-filter:blur(6px);border:1px solid var(--bdr2);border-radius:12px;transition:all .2s;position:relative;overflow:hidden;box-shadow:0 0 1px rgba(6,182,212,0.1)}
-.offer-row::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--card-accent,rgba(251,191,36,0.15)),transparent)}
-.offer-row:hover{border-color:var(--bdr3);background:var(--bg2);box-shadow:var(--glow-box)}
-.offer-row:hover::before{background:linear-gradient(90deg,var(--card-accent,rgba(251,191,36,0.5)),rgba(34,211,238,0.2),transparent)}
-.offer-pct{font-family:var(--mono);font-size:18px;font-weight:800;color:var(--gold);min-width:90px;text-shadow:var(--glow-gold)}
-.offer-info{flex:1;min-width:0}
-.offer-firm{font-size:14px;font-weight:700;color:var(--t1);display:flex;align-items:center;gap:7px}
-.offer-desc{font-size:12px;color:var(--t4);margin-top:3px;line-height:1.5}
-.offer-tag{font-size:9px;font-weight:700;color:var(--gold);background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.15);padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.4px;text-shadow:0 0 4px rgba(251,191,36,0.3)}
-.offer-code{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--em);background:var(--bg3);padding:9px 18px;border-radius:999px;border:1px solid var(--bdr3);cursor:pointer;transition:all .22s;white-space:nowrap;text-shadow:0 0 6px rgba(6,182,212,0.2)}
-.offer-code:hover{background:var(--em);color:#050810;border-color:var(--em);transform:translateY(-1px);box-shadow:0 0 22px rgba(34,211,238,0.4),0 0 0 1px rgba(34,211,238,0.25);text-shadow:none}
-
-/* ── GIVEAWAY ── */
-.gw-prize{background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--bdr2);border-radius:16px;padding:32px;text-align:center;position:relative;overflow:hidden;margin-bottom:24px;box-shadow:0 0 1px rgba(6,182,212,0.2),0 0 30px rgba(0,0,0,0.2)}
-.gw-prize::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),var(--em),var(--gold),transparent)}
-.gw-prize::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center top,rgba(6,182,212,0.06) 0%,transparent 60%);pointer-events:none}
-.gw-val{font-family:var(--mono);font-size:36px;font-weight:800;color:var(--gold);margin:10px 0;text-shadow:var(--glow-gold);animation:pulsGlow 3s ease-in-out infinite}
-.gw-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:24px 0}
-.gw-step{background:var(--glass);backdrop-filter:blur(6px);border:1px solid var(--bdr2);border-radius:12px;padding:20px;text-align:center;transition:all .2s;box-shadow:0 0 1px rgba(6,182,212,0.1)}
-.gw-step:hover{border-color:var(--bdr3);box-shadow:var(--glow-box)}
-.gw-step-n{font-family:var(--mono);font-size:22px;font-weight:800;color:var(--em);text-shadow:var(--glow-sm)}
-.gw-step-t{font-size:13px;font-weight:700;margin:6px 0 3px;color:var(--t1)}
-.gw-step-d{font-size:11px;color:var(--t4);line-height:1.45}
-.gw-btn{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#050810;font-family:var(--sans);font-size:15px;font-weight:700;padding:14px 40px;border:none;border-radius:999px;cursor:pointer;box-shadow:var(--glow-gold),0 4px 16px rgba(0,0,0,0.3);transition:all .22s}
-.gw-btn:hover{box-shadow:0 0 6px #fde68a,0 0 22px rgba(251,191,36,0.55),0 0 50px rgba(251,191,36,0.3),0 0 90px rgba(251,191,36,0.12),0 6px 20px rgba(0,0,0,0.3);transform:translateY(-2px)}
-.gw-rules{background:var(--glass);border:1px solid var(--bdr2);border-radius:12px;padding:20px;margin-top:24px}
-.gw-rules h4{font-size:13px;font-weight:700;margin-bottom:10px;color:var(--em2);text-shadow:0 0 8px rgba(6,182,212,0.15)}
-.gw-rules li{color:var(--t3);font-size:12px;line-height:1.7;list-style:none;padding-left:18px;position:relative}
-.gw-rules li::before{content:'\\2713';position:absolute;left:0;color:var(--em);font-size:10px;text-shadow:var(--glow-sm)}
-
-/* ── BLOG ── */
-.blog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:12px}
-.blog-card{background:var(--glass);backdrop-filter:blur(6px);border:1px solid var(--bdr2);border-radius:12px;padding:24px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;box-shadow:0 0 1px rgba(6,182,212,0.1)}
-.blog-card:hover{border-color:var(--card-accent,var(--bdr3));background:var(--bg2);transform:translateY(-2px);box-shadow:0 0 2px var(--card-accent,rgba(6,182,212,0.3)),0 0 16px var(--card-glow,rgba(6,182,212,0.1)),0 8px 28px rgba(0,0,0,0.25)}
-.blog-cat{font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
-.blog-title{font-family:var(--sans);font-size:18px;font-weight:700;line-height:1.35;margin-bottom:8px;color:var(--t1)}
-.blog-excerpt{font-size:13px;color:var(--t4);line-height:1.55;margin-bottom:10px}
-.blog-date{font-size:11px;color:var(--t5)}
-
-/* ── BLOG POST ── */
-.blog-body{font-size:16px;line-height:1.8;color:var(--t2)}
-.blog-h2{font-family:var(--sans);font-size:22px;font-weight:700;margin:32px 0 12px;color:var(--em2);text-shadow:0 0 10px rgba(6,182,212,0.15)}
-.blog-p{margin:0 0 18px;line-height:1.8}
-.blog-p strong{color:var(--em2);font-weight:700}
-
-/* ── DETAIL ── */
-.det{padding:36px 0 60px}
-.det-back{display:inline-flex;align-items:center;gap:6px;background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--bdr2);color:var(--t3);font-family:var(--sans);font-size:12px;font-weight:600;padding:9px 20px;border-radius:999px;cursor:pointer;margin:24px 0 24px;transition:all .22s}
-.det-back:hover{border-color:var(--em);color:var(--em);text-shadow:var(--glow-sm);transform:translateY(-1px);box-shadow:0 0 16px rgba(6,182,212,0.2)}
-.det-hero{display:flex;align-items:center;gap:20px;margin-bottom:28px}
-.det-name{font-family:var(--sans);font-size:30px;font-weight:800;letter-spacing:-.3px}
-.det-sub{font-size:13px;color:var(--t4);margin-top:3px}
-.det-pulse-badge{background:var(--bg2);border:1px solid var(--bdr2);border-radius:9px;padding:6px 14px;display:inline-flex;align-items:center;gap:7px;margin-top:10px;box-shadow:0 0 12px rgba(6,182,212,0.06)}
-.det-pulse-lbl{font-size:10px;color:var(--t4);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
-.det-pulse-v{font-family:var(--mono);font-size:20px;font-weight:800;color:var(--gold);text-shadow:var(--glow-gold)}
-.det-deal{display:flex;align-items:center;gap:16px;padding:14px 20px;background:var(--glass);border:1px solid var(--bdr2);border-radius:10px;margin-bottom:24px;box-shadow:0 0 1px rgba(6,182,212,0.15)}
-.det-desc{background:var(--glass);backdrop-filter:blur(6px);border:1px solid var(--bdr2);border-radius:12px;padding:22px;color:var(--t2);font-size:14px;line-height:1.75}
-.det-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px;margin-bottom:24px}
-.det-stat{background:var(--glass);border:1px solid var(--bdr);border-radius:9px;padding:14px 16px}
-.det-stat-l{font-size:10px;color:var(--em);text-transform:uppercase;letter-spacing:.8px;font-weight:700;text-shadow:0 0 6px rgba(6,182,212,0.15)}
-.det-stat-v{font-family:var(--mono);font-size:13px;font-weight:700;margin-top:4px;color:var(--t1)}
-.det-section{background:var(--glass);border:1px solid var(--bdr2);border-radius:12px;overflow:hidden;margin-bottom:18px;box-shadow:0 0 1px rgba(6,182,212,0.1)}
-.info-row{display:flex;justify-content:space-between;align-items:flex-start;padding:14px 20px;border-bottom:1px solid var(--bdr)}
-.info-row:last-child{border-bottom:none}
-.info-label{color:var(--t3);font-size:13px;font-weight:600;min-width:140px;flex-shrink:0}
-.info-val{font-size:13px;font-weight:600;color:var(--t1);text-align:right;line-height:1.55;max-width:62%}
-.info-val.hl{color:var(--em);text-shadow:var(--glow-sm)}
-.det-sec-title{display:flex;align-items:center;gap:7px;margin:28px 0 12px;font-size:15px;font-weight:700}
-.det-pc{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
-
-/* ── FOOTER ── */
-.foot{border-top:1px solid var(--bdr2);padding:36px 0;margin-top:48px;position:relative}
-.foot::before{content:'';position:absolute;top:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(251,191,36,0.3),rgba(34,211,238,0.3),rgba(251,191,36,0.3),transparent)}
-.foot-in{display:flex;justify-content:space-between;gap:36px;flex-wrap:wrap}
-.foot-brand{max-width:260px}
-.foot-brand-n{font-size:15px;font-weight:700;margin-bottom:5px;display:flex;align-items:center;gap:6px}
-.foot-brand-n span{color:var(--gold);text-shadow:var(--glow-gold-sm)}
-.foot-brand-d{font-size:11px;color:var(--t5);line-height:1.6}
-.foot-col h4{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--em);margin-bottom:8px;text-shadow:0 0 6px rgba(6,182,212,0.15)}
-.foot-col a{display:block;font-size:12px;color:var(--t4);text-decoration:none;margin-bottom:4px;cursor:pointer;transition:color .12s}
-.foot-col a:hover{color:var(--em);text-shadow:0 0 8px rgba(6,182,212,0.2)}
-.foot-bot{text-align:center;margin-top:24px;padding-top:14px;border-top:1px solid var(--bdr);font-size:10px;color:var(--t5)}
-
-/* ── TOAST ── */
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#050810;font-size:12px;font-weight:700;padding:10px 24px;border-radius:8px;z-index:999;box-shadow:var(--glow-gold),0 4px 16px rgba(0,0,0,.4);animation:tI .25s ease-out,tO .25s ease-in 1.4s forwards}
-@keyframes tI{from{opacity:0;transform:translateX(-50%) translateY(14px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-@keyframes tO{to{opacity:0;transform:translateX(-50%) translateY(14px)}}
-
-/* ── AUTH MODAL ── */
-.auth-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
-.auth-modal{background:var(--bg1);border:1px solid var(--bdr2);border-radius:16px;padding:32px;max-width:400px;width:100%;position:relative;box-shadow:var(--glow-box),0 20px 60px rgba(0,0,0,0.5)}
-.auth-modal h2{font-size:22px;font-weight:800;margin-bottom:6px;text-align:center}
-.auth-modal h2 span{color:var(--gold);text-shadow:var(--glow-gold-sm)}
-.auth-modal p{color:var(--t4);font-size:13px;text-align:center;margin-bottom:20px}
-.auth-close{position:absolute;top:12px;right:16px;background:none;border:none;color:var(--t4);font-size:20px;cursor:pointer}
-.auth-close:hover{color:var(--em)}
-.auth-input{width:100%;background:var(--bg3);border:1px solid var(--bdr2);border-radius:8px;padding:11px 14px;color:var(--t1);font-family:var(--sans);font-size:14px;margin-bottom:10px;outline:none;transition:border-color .15s}
-.auth-input:focus{border-color:var(--em);box-shadow:0 0 8px rgba(6,182,212,0.1)}
-.auth-btn{width:100%;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#050810;font-family:var(--sans);font-size:14px;font-weight:700;padding:13px 24px;border:none;border-radius:999px;cursor:pointer;margin-top:6px;box-shadow:var(--glow-gold-sm);transition:all .22s}
-.auth-btn:hover{box-shadow:var(--glow-gold),0 6px 20px rgba(251,191,36,0.3);transform:translateY(-1px)}
-.auth-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
-.auth-toggle{color:var(--t4);font-size:12px;text-align:center;margin-top:14px}
-.auth-toggle button{background:none;border:none;color:var(--em);font-weight:700;cursor:pointer;text-decoration:underline}
-.auth-err{background:rgba(255,71,87,0.1);border:1px solid rgba(255,71,87,0.2);color:var(--red);font-size:12px;padding:8px 12px;border-radius:6px;margin-bottom:10px}
-
-/* ── PULSE POINTS ── */
-.pp{max-width:900px;margin:0 auto}
-.pp-header{text-align:center;margin-bottom:28px}
-.pp-header h2{font-size:22px;font-weight:800;margin-bottom:4px}
-.pp-header h2 span{color:var(--gold);text-shadow:var(--glow-gold-sm)}
-.pp-balance{display:inline-flex;align-items:center;gap:10px;background:var(--glass);border:1px solid rgba(251,191,36,0.15);border-radius:14px;padding:16px 28px;margin:16px 0}
-.pp-balance-n{font-family:var(--mono);font-size:36px;font-weight:900;color:var(--gold);text-shadow:var(--glow-gold)}
-.pp-balance-l{font-size:12px;color:var(--t4);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-.pp-tabs{display:flex;justify-content:center;gap:8px;margin:32px 0 28px;flex-wrap:wrap}
-.pp-tab{background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--bdr2);color:var(--t3);font-family:var(--sans);font-size:13px;font-weight:600;padding:9px 20px;border-radius:999px;cursor:pointer;transition:all .22s}
-.pp-tab:hover{color:var(--em);border-color:var(--bdr3);transform:translateY(-1px);box-shadow:0 0 14px rgba(6,182,212,0.15);text-shadow:0 0 6px rgba(6,182,212,0.3)}
-.pp-tab.on{background:var(--emA2);border-color:var(--em);color:var(--em);text-shadow:var(--glow-sm);box-shadow:0 0 18px rgba(6,182,212,0.25),0 0 0 1px rgba(34,211,238,0.15),inset 0 0 12px rgba(6,182,212,0.06)}
-.pp-card{background:var(--glass);border:1px solid var(--bdr2);border-radius:16px;padding:24px 26px;margin-bottom:16px;box-shadow:0 0 1px rgba(6,182,212,0.1)}
-.pp-card h3{font-size:15px;font-weight:700;margin-bottom:14px;color:var(--em2);text-shadow:0 0 8px rgba(6,182,212,0.15)}
-.pp-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bdr);gap:12px}
-.pp-row:last-child{border-bottom:none}
-.pp-status{font-family:var(--mono);font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;text-transform:uppercase}
-.pp-status.pending{background:rgba(251,191,36,0.1);color:var(--gold)}
-.pp-status.approved{background:rgba(16,185,129,0.1);color:var(--green)}
-.pp-status.processing{background:rgba(34,211,238,0.1);color:var(--em)}
-.pp-status.fulfilled{background:rgba(16,185,129,0.15);color:var(--green)}
-.pp-status.rejected{background:rgba(255,71,87,0.1);color:var(--red)}
-.pp-form label{display:block;font-size:12px;font-weight:600;color:var(--t3);margin-bottom:5px;margin-top:12px}
-.pp-form select{width:100%;background:var(--bg3);border:1px solid var(--bdr2);border-radius:8px;padding:10px 14px;color:var(--t1);font-family:var(--sans);font-size:13px;outline:none;appearance:none}
-.pp-form select:focus{border-color:var(--em)}
-.pp-submit{background:linear-gradient(135deg,var(--em),#0891b2);color:#050810;font-family:var(--sans);font-size:13px;font-weight:700;padding:11px 28px;border:none;border-radius:999px;cursor:pointer;margin-top:16px;box-shadow:var(--glow-sm);transition:all .22s}
-.pp-submit:hover{box-shadow:0 0 22px rgba(34,211,238,0.4),0 0 0 1px rgba(34,211,238,0.25);transform:translateY(-2px)}
-.pp-submit:disabled{opacity:0.5;cursor:not-allowed;transform:none}
-.pp-rewards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
-.pp-reward{background:var(--glass);border:1px solid var(--bdr2);border-radius:10px;padding:16px;text-align:center;transition:all .2s}
-.pp-reward:hover{border-color:rgba(251,191,36,0.2);box-shadow:0 0 12px rgba(251,191,36,0.06)}
-.pp-reward-pts{font-family:var(--mono);font-size:22px;font-weight:800;color:var(--gold);text-shadow:var(--glow-gold-sm)}
-.pp-reward-name{font-size:13px;font-weight:600;margin:6px 0 10px;color:var(--t2)}
-.pp-reward-btn{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#050810;font-size:11px;font-weight:700;border:none;padding:7px 18px;border-radius:999px;cursor:pointer;box-shadow:var(--glow-gold-sm);transition:all .22s}
-.pp-reward-btn:hover{box-shadow:var(--glow-gold),0 4px 14px rgba(251,191,36,0.3);transform:translateY(-1px)}
-.pp-reward-btn:disabled{opacity:0.4;cursor:not-allowed}
-.rw-card{transition:all .3s ease;position:relative;overflow:hidden}
-.rw-card:hover{transform:translateY(-6px);border-color:rgba(251,191,36,0.4) !important;box-shadow:0 0 8px rgba(251,191,36,0.5),0 0 24px rgba(251,191,36,0.35),0 0 60px rgba(251,191,36,0.2),0 0 120px rgba(251,191,36,0.1),0 0 200px rgba(251,191,36,0.05),0 20px 60px rgba(0,0,0,0.3) !important}
-.rw-card.instant:hover{border-color:rgba(34,211,238,0.4) !important;box-shadow:0 0 8px rgba(34,211,238,0.5),0 0 24px rgba(34,211,238,0.35),0 0 60px rgba(34,211,238,0.2),0 0 120px rgba(34,211,238,0.1),0 0 200px rgba(34,211,238,0.05),0 20px 60px rgba(0,0,0,0.3) !important}
-.rw-card.locked-bronze:hover{border-color:rgba(205,127,50,0.4) !important;box-shadow:0 0 6px rgba(205,127,50,0.4),0 0 20px rgba(205,127,50,0.25),0 0 50px rgba(205,127,50,0.12),0 0 100px rgba(205,127,50,0.06),0 16px 48px rgba(0,0,0,0.3) !important}
-.rw-card.locked-silver:hover{border-color:rgba(192,192,192,0.4) !important;box-shadow:0 0 6px rgba(192,192,192,0.4),0 0 20px rgba(192,192,192,0.25),0 0 50px rgba(192,192,192,0.12),0 0 100px rgba(192,192,192,0.06),0 16px 48px rgba(0,0,0,0.3) !important}
-.rw-card.locked-gold:hover{border-color:rgba(251,191,36,0.3) !important;box-shadow:0 0 6px rgba(251,191,36,0.3),0 0 20px rgba(251,191,36,0.2),0 0 50px rgba(251,191,36,0.1),0 0 100px rgba(251,191,36,0.05),0 16px 48px rgba(0,0,0,0.3) !important}
-.rw-card.locked-diamond:hover{border-color:rgba(103,232,249,0.4) !important;box-shadow:0 0 6px rgba(103,232,249,0.4),0 0 20px rgba(103,232,249,0.25),0 0 50px rgba(103,232,249,0.12),0 0 100px rgba(103,232,249,0.06),0 16px 48px rgba(0,0,0,0.3) !important}
-.tier-card{transition:all .3s ease;cursor:pointer}
-.tier-card:hover{transform:translateY(-4px) scale(1.03)}
-.tier-card.tc-bronze:hover{border-color:rgba(205,127,50,0.5) !important;box-shadow:0 0 8px rgba(205,127,50,0.5),0 0 24px rgba(205,127,50,0.35),0 0 60px rgba(205,127,50,0.2),0 0 120px rgba(205,127,50,0.1) !important}
-.tier-card.tc-silver:hover{border-color:rgba(192,192,192,0.5) !important;box-shadow:0 0 8px rgba(192,192,192,0.5),0 0 24px rgba(192,192,192,0.35),0 0 60px rgba(192,192,192,0.2),0 0 120px rgba(192,192,192,0.1) !important}
-.tier-card.tc-gold:hover{border-color:rgba(251,191,36,0.5) !important;box-shadow:0 0 10px rgba(251,191,36,0.6),0 0 30px rgba(251,191,36,0.4),0 0 70px rgba(251,191,36,0.2),0 0 140px rgba(251,191,36,0.1) !important}
-.tier-card.tc-platinum:hover{border-color:rgba(229,228,226,0.5) !important;box-shadow:0 0 10px rgba(229,228,226,0.6),0 0 30px rgba(229,228,226,0.4),0 0 70px rgba(229,228,226,0.2),0 0 140px rgba(229,228,226,0.1) !important}
-.tier-card.tc-diamond:hover{border-color:rgba(103,232,249,0.5) !important;box-shadow:0 0 12px rgba(103,232,249,0.6),0 0 36px rgba(103,232,249,0.45),0 0 80px rgba(103,232,249,0.25),0 0 160px rgba(103,232,249,0.1) !important}
-.tier-card.tc-master:hover{border-color:rgba(167,139,250,0.5) !important;box-shadow:0 0 12px rgba(167,139,250,0.6),0 0 36px rgba(167,139,250,0.45),0 0 80px rgba(167,139,250,0.25),0 0 160px rgba(167,139,250,0.1) !important}
-.tier-card.tc-grandmaster:hover{border-color:rgba(244,114,182,0.5) !important;box-shadow:0 0 14px rgba(244,114,182,0.6),0 0 40px rgba(244,114,182,0.45),0 0 90px rgba(244,114,182,0.25),0 0 180px rgba(244,114,182,0.1) !important}
-.tier-card.tc-legend:hover{border-color:rgba(251,146,60,0.5) !important;box-shadow:0 0 14px rgba(251,146,60,0.7),0 0 40px rgba(251,146,60,0.5),0 0 100px rgba(251,146,60,0.3),0 0 200px rgba(251,146,60,0.12) !important}
-.tier-card.tc-mythic:hover{border-color:rgba(244,63,94,0.5) !important;box-shadow:0 0 16px rgba(244,63,94,0.7),0 0 45px rgba(244,63,94,0.5),0 0 110px rgba(244,63,94,0.3),0 0 220px rgba(244,63,94,0.12) !important}
-.tier-card.tc-immortal:hover{border-color:rgba(254,240,138,0.6) !important;box-shadow:0 0 20px rgba(254,240,138,0.8),0 0 50px rgba(254,240,138,0.6),0 0 120px rgba(254,240,138,0.35),0 0 250px rgba(254,240,138,0.15),0 0 400px rgba(254,240,138,0.05) !important}
-.pp-card{transition:all .25s ease}
-.pp-card:hover{border-color:var(--bdr3);box-shadow:0 0 4px rgba(6,182,212,0.2),0 0 16px rgba(6,182,212,0.1),0 0 40px rgba(6,182,212,0.05)}
-.task-card{transition:all .25s ease}
-.task-card:hover{transform:translateX(3px);box-shadow:0 0 4px rgba(6,182,212,0.2),0 0 16px rgba(6,182,212,0.1),0 0 36px rgba(6,182,212,0.05) !important}
-.review-card{transition:all .25s ease}
-.review-card:hover{transform:translateY(-2px);border-color:rgba(250,204,21,0.2) !important;box-shadow:0 0 6px rgba(250,204,21,0.2),0 0 20px rgba(250,204,21,0.1),0 0 50px rgba(250,204,21,0.05) !important}
-.pp-login-prompt{text-align:center;padding:40px 20px}
-.pp-login-prompt h3{font-size:18px;font-weight:700;margin-bottom:8px}
-.pp-login-prompt p{color:var(--t4);font-size:13px;margin-bottom:16px}
-.nav-user{display:flex;align-items:center;gap:8px;margin-left:4px}
-.nav-pts{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--gold);text-shadow:0 0 4px rgba(251,191,36,0.3)}
-.nav-avatar{width:28px;height:28px;border-radius:50%;background:var(--bg3);border:1px solid var(--bdr2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--em);cursor:pointer;transition:all .15s}
-.nav-avatar:hover{border-color:var(--em);box-shadow:var(--glow-sm)}
-.nav-login{font-size:12px;font-weight:600;color:var(--em);background:var(--emA);border:1px solid var(--bdr3);padding:7px 18px;border-radius:999px;cursor:pointer;transition:all .22s}
-.nav-login:hover{background:var(--emA2);border-color:var(--em);box-shadow:0 0 14px rgba(6,182,212,0.2);transform:translateY(-1px)}
-.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:199;animation:fadeIn .2s ease}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
-.panel{position:fixed;top:0;right:0;bottom:0;width:320px;background:#080c16;border-left:1px solid rgba(34,211,238,0.1);z-index:200;display:flex;flex-direction:column;overflow-y:auto;animation:slideIn .25s ease;box-shadow:-8px 0 40px rgba(0,0,0,0.6),-2px 0 20px rgba(6,182,212,0.05);isolation:isolate}
-.panel-close{position:absolute;top:14px;right:14px;background:none;border:none;color:#94a3b8;font-size:18px;cursor:pointer;z-index:1}
-.panel-close:hover{color:#22d3ee}
-.panel-header{text-align:center;padding:28px 20px 20px;background:#0a0e16;border-bottom:1px solid rgba(148,163,184,0.08)}
-.panel-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#22d3ee,#0891b2);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#050810;margin:0 auto 10px;box-shadow:0 0 4px rgba(6,182,212,0.6),0 0 12px rgba(6,182,212,0.3)}
-.panel-name{font-size:16px;font-weight:700;color:#f0f9ff}
-.panel-email{font-size:11px;color:#64748b;margin-top:3px}
-.panel-pts{padding:14px 20px;margin:12px 16px;background:#0e1420;border:1px solid rgba(251,191,36,0.18);border-radius:14px;cursor:pointer;transition:all .22s}
-.panel-pts:hover{border-color:rgba(251,191,36,0.45);box-shadow:0 0 18px rgba(251,191,36,0.2),0 0 0 1px rgba(251,191,36,0.15);transform:translateY(-1px)}
-.panel-pts-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.panel-pts-label{font-size:12px;font-weight:600;color:#7dd3fc}
-.panel-pts-val{font-family:var(--mono);font-size:20px;font-weight:800;color:#fbbf24;text-shadow:0 0 4px rgba(251,191,36,0.5),0 0 10px rgba(251,191,36,0.25)}
-.panel-bar-bg{height:4px;background:#1b2538;border-radius:2px;overflow:hidden}
-.panel-bar-fill{height:100%;background:linear-gradient(90deg,#fbbf24,#fde68a);border-radius:2px;transition:width .5s ease;box-shadow:0 0 6px rgba(251,191,36,0.3)}
-.panel-pts-next{display:flex;justify-content:space-between;font-size:10px;color:#475569;margin-top:6px}
-.panel-section-label{font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:1px;padding:14px 16px 6px}
-.panel-item{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;color:#bae6fd;font-family:var(--sans);font-size:13px;font-weight:500;padding:10px 16px;cursor:pointer;transition:all .12s;text-align:left}
-.panel-item:hover{background:#0e1420;color:#22d3ee}
-.panel-icon{font-size:16px;width:22px;text-align:center}
-.panel-divider{height:1px;background:rgba(148,163,184,0.08);margin:4px 16px}
-.panel-logout{color:#ff4757}
-.panel-logout:hover{background:rgba(255,71,87,0.06);color:#ff4757}
-.acct-page{max-width:640px;margin:0 auto;padding:40px 20px}
-.acct-back{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:var(--t4);font-family:var(--sans);font-size:13px;cursor:pointer;margin-bottom:24px;padding:0;transition:color .15s}
-.acct-back:hover{color:var(--em)}
-.acct-card{background:var(--glass);border:1px solid var(--bdr);border-radius:14px;padding:24px;margin-bottom:16px}
-.acct-card h3{font-size:14px;font-weight:700;color:var(--em2);margin:0 0 16px;display:flex;align-items:center;gap:8px}
-.acct-avatar-wrap{display:flex;align-items:center;gap:20px;margin-bottom:16px}
-.acct-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#22d3ee,#0891b2);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#050810;box-shadow:0 0 6px rgba(6,182,212,0.6),0 0 16px rgba(6,182,212,0.3);overflow:hidden;position:relative;flex-shrink:0}
-.acct-avatar img{width:100%;height:100%;object-fit:cover}
-.acct-avatar-upload{font-size:12px;color:var(--em);cursor:pointer;font-weight:600;transition:color .15s;background:none;border:none;font-family:var(--sans);padding:0}
-.acct-avatar-upload:hover{color:var(--gold)}
-.acct-field{margin-bottom:14px}
-.acct-field label{display:block;font-size:11px;font-weight:600;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.acct-input{width:100%;background:var(--bg3);border:1px solid var(--bdr2);border-radius:8px;padding:11px 14px;color:var(--t1);font-family:var(--sans);font-size:13px;outline:none;box-sizing:border-box;transition:border-color .15s}
-.acct-input:focus{border-color:var(--em)}
-.acct-save{background:linear-gradient(135deg,#22d3ee,#0891b2);color:#050810;font-family:var(--sans);font-size:12px;font-weight:700;padding:10px 24px;border:none;border-radius:999px;cursor:pointer;transition:all .22s;box-shadow:var(--glow-sm)}
-.acct-save:hover{box-shadow:0 0 22px rgba(34,211,238,0.45),0 0 0 1px rgba(34,211,238,0.25);transform:translateY(-1px)}
-.acct-save:disabled{opacity:.5;cursor:not-allowed}
-.acct-msg{font-size:11px;margin-top:8px}
-.acct-tier-banner{display:flex;align-items:center;gap:12px;padding:16px;background:var(--bg3);border-radius:10px;margin-bottom:12px}
-.acct-tier-icon{font-size:28px}
-.acct-tier-info{flex:1}
-.acct-tier-name{font-size:16px;font-weight:800}
-.acct-tier-pts{font-size:11px;color:var(--t4);margin-top:2px}
-.acct-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.acct-stat{background:var(--bg3);border-radius:8px;padding:12px;text-align:center}
-.acct-stat b{display:block;font-size:18px;font-weight:800;font-family:var(--mono)}
-.acct-stat small{font-size:10px;color:var(--t4);margin-top:2px;display:block}
-
-/* ── COMPARE ── */
-.faq-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:linear-gradient(135deg,rgba(34,211,238,0.15),rgba(251,191,36,0.1));border:1px solid rgba(34,211,238,0.25);color:var(--em2);font-family:var(--sans);font-size:15px;font-weight:700;padding:16px;border-radius:999px;cursor:pointer;transition:all .25s;margin:24px 0;text-shadow:0 0 8px rgba(6,182,212,0.2)}
-.faq-btn:hover{background:linear-gradient(135deg,rgba(34,211,238,0.25),rgba(251,191,36,0.18));border-color:var(--em);box-shadow:0 0 24px rgba(34,211,238,0.3),0 0 0 1px rgba(34,211,238,0.2);transform:translateY(-2px)}
-.faq-wrap{margin:24px 0}
-.faq-search{width:100%;background:var(--bg3);border:1px solid var(--bdr2);border-radius:8px;padding:11px 16px;color:var(--t1);font-family:var(--sans);font-size:14px;outline:none;margin-bottom:16px;transition:border-color .15s}
-.faq-search:focus{border-color:var(--em);box-shadow:0 0 8px rgba(6,182,212,0.1)}
-.faq-cat{margin-bottom:14px}
-.faq-cat-title{font-size:14px;font-weight:700;color:var(--gold);padding:10px 0;border-bottom:1px solid var(--bdr);margin-bottom:8px;text-shadow:0 0 6px rgba(251,191,36,0.15)}
-.faq-item{background:var(--glass);border:1px solid var(--bdr);border-radius:9px;margin-bottom:6px;overflow:hidden;transition:all .2s}
-.faq-item:hover{border-color:var(--bdr2)}
-.faq-q{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;font-size:13px;font-weight:600;color:var(--t2);transition:color .15s}
-.faq-q:hover{color:var(--em)}
-.faq-q span{font-size:14px;color:var(--t4);transition:transform .2s;flex-shrink:0;margin-left:8px}
-.faq-a{padding:0 16px 14px;font-size:13px;color:var(--t3);line-height:1.7;border-top:1px solid var(--bdr)}
-/* ── COMPARE ── */
-.cmp-tog{background:rgba(6,182,212,0.08);backdrop-filter:blur(8px);border:1.5px solid rgba(6,182,212,0.35);color:#22d3ee;font-family:var(--sans);font-size:12px;font-weight:700;padding:8px 18px;border-radius:999px;cursor:pointer;transition:all .22s;white-space:nowrap;letter-spacing:.3px}
-.cmp-tog:hover{border-color:#22d3ee;color:#fff;background:rgba(6,182,212,0.18);transform:translateY(-1px);box-shadow:0 0 16px rgba(6,182,212,0.35)}
-
-/* ── DEALS GIVEAWAY BANNER ── */
-.deals-giveaway-banner{display:flex;align-items:center;gap:16px;background:linear-gradient(90deg,rgba(251,191,36,0.12),rgba(168,85,247,0.1),rgba(34,211,238,0.08));border:1px solid rgba(251,191,36,0.3);border-radius:14px;padding:16px 22px;margin-bottom:24px;cursor:pointer;transition:all .22s;width:100%;text-align:left;box-shadow:0 0 24px rgba(251,191,36,0.1)}
-.deals-giveaway-banner:hover{transform:translateY(-1px);border-color:rgba(251,191,36,0.5);box-shadow:0 0 32px rgba(251,191,36,0.2)}
-.deals-giveaway-ic{font-size:28px;flex-shrink:0}
-.deals-giveaway-txt{flex:1}
-.deals-giveaway-t{font-size:15px;font-weight:800;color:var(--gold);text-shadow:var(--glow-gold-sm);letter-spacing:-.1px}
-.deals-giveaway-s{font-size:12px;color:var(--t3);margin-top:2px}
-.deals-giveaway-arrow{font-size:20px;color:var(--gold);flex-shrink:0;transition:transform .22s}
-.deals-giveaway-banner:hover .deals-giveaway-arrow{transform:translateX(4px)}
-
-/* ── RESEARCH VIDEOS BUTTON ── */
-.research-videos-btn{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.35);color:#ef4444;font-size:13px;font-weight:700;padding:9px 18px;border-radius:999px;cursor:pointer;transition:all .22s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
-.research-videos-btn:hover{background:rgba(239,68,68,0.18);border-color:#ef4444;color:#fff;transform:translateY(-1px);box-shadow:0 0 16px rgba(239,68,68,0.35)}
-
-/* ══════════════════════════════════════════════════════════════════
-   ─── SINGLE-PAGE SCROLL LAYOUT ───
-   ══════════════════════════════════════════════════════════════════ */
-.pp-section{position:relative;padding:100px 0 60px;border-top:1px solid var(--bdr);scroll-margin-top:80px}
-.pp-section:first-of-type{border-top:none;padding-top:40px}
-.pp-section-mark{position:absolute;top:56px;right:0;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--t5);letter-spacing:2px;background:var(--bg);padding:0 8px;pointer-events:none}
-
-/* Right-side floating scroll rail */
-.scrollrail{position:fixed;right:32px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:50;padding:16px 12px;background:var(--glass2);backdrop-filter:blur(12px);border:1px solid var(--bdr);border-radius:4px}
-.scrollrail button{display:flex;align-items:center;gap:10px;background:transparent;border:none;color:var(--t4);font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.4px;padding:6px 4px;cursor:pointer;transition:color .2s;text-align:right}
-.scrollrail button:hover{color:var(--t1)}
-.scrollrail-dot{width:6px;height:6px;border-radius:50%;background:var(--t5);transition:all .2s;flex-shrink:0;order:2}
-.scrollrail button:hover .scrollrail-dot{background:var(--em);box-shadow:0 0 10px var(--em)}
-.scrollrail-lbl{order:1}
-@media(max-width:900px){
-  .scrollrail{display:none}
+/* CRT scanline & noise overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(168,255,96,0.015) 2px, rgba(168,255,96,0.015) 3px);
+  pointer-events: none;
+  z-index: 100;
+  mix-blend-mode: overlay;
+}
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 25% 30%, rgba(168,255,96,0.05) 0%, transparent 45%),
+    radial-gradient(circle at 75% 70%, rgba(127,184,255,0.03) 0%, transparent 40%);
+  pointer-events: none;
+  z-index: 0;
 }
 
-/* ══════════════════════════════════════════════════════════════════
-   ─── THE INDEX — editorial firm list ───
-   ══════════════════════════════════════════════════════════════════ */
-.idx{max-width:1280px;margin:0 auto;padding:64px 0 40px;border-top:1px solid var(--bdr)}
-.idx-hdr{display:flex;align-items:flex-end;justify-content:space-between;padding-bottom:24px;border-bottom:2px solid var(--t1);margin-bottom:28px;gap:32px;flex-wrap:wrap}
-.idx-hdr-l{display:flex;align-items:baseline;gap:20px}
-.idx-hdr-mark{font-family:var(--serif);font-size:72px;font-style:italic;color:var(--em);font-weight:400;line-height:.8}
-.idx-hdr-title{font-family:var(--serif);font-size:44px;font-weight:400;color:var(--t1);letter-spacing:-1.2px;line-height:1;margin-bottom:4px}
-.idx-hdr-sub{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--t3);font-weight:400}
-.idx-filter{display:flex;gap:0;flex-wrap:wrap;border:1px solid var(--bdr2);border-radius:2px;overflow:hidden}
-.idx-filter button{background:transparent;border:none;color:var(--t3);font-family:var(--sans);font-size:11px;font-weight:600;padding:10px 16px;cursor:pointer;transition:all .18s;letter-spacing:.3px;border-right:1px solid var(--bdr2)}
-.idx-filter button:last-child{border-right:none}
-.idx-filter button:hover{background:var(--bg2);color:var(--t1)}
-.idx-filter button.on{background:var(--t1);color:var(--bg)}
-.idx-sort{display:flex;align-items:center;gap:6px;margin-bottom:14px;font-family:var(--sans);padding:4px 0}
-.idx-sort-lbl{font-size:11px;color:var(--t5);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-right:10px}
-.idx-sort button{background:transparent;border:none;color:var(--t4);font-size:12px;font-weight:500;padding:6px 12px;cursor:pointer;transition:color .18s;font-family:inherit;letter-spacing:.2px;border-bottom:1px solid transparent}
-.idx-sort button:hover{color:var(--t1)}
-.idx-sort button.on{color:var(--em);border-bottom-color:var(--em)}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(168,255,96,0.15); border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: rgba(168,255,96,0.3); }
+::selection { background: var(--prime); color: var(--bg); }
 
-.idx-cols{display:grid;grid-template-columns:56px 1fr 140px 120px 120px 90px 32px;gap:20px;padding:12px 0;border-bottom:1px solid var(--bdr);font-family:var(--sans);font-size:10px;font-weight:700;color:var(--t5);text-transform:uppercase;letter-spacing:1.4px}
+a, button { font-family: inherit; }
+button { cursor: pointer; border: none; background: none; color: inherit; }
 
-.idx-rows{display:flex;flex-direction:column}
-.idx-row-wrap{border-bottom:1px solid var(--bdr);transition:all .2s}
-.idx-row-wrap:hover{background:var(--bg1)}
-.idx-row-wrap.open{background:var(--bg1);border-bottom-color:var(--t4)}
-.idx-row{display:grid;grid-template-columns:56px 1fr 140px 120px 120px 90px 32px;gap:20px;align-items:center;padding:18px 0;width:100%;background:transparent;border:none;cursor:pointer;text-align:left;font-family:inherit;color:inherit}
-.idx-row-rank{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--t5);letter-spacing:1px}
-.idx-row-firm{display:flex;align-items:center;gap:14px;min-width:0;position:relative}
-.idx-row-accent{position:absolute;left:-12px;top:0;bottom:0;width:3px;background:var(--f-color);opacity:0;transition:opacity .2s}
-.idx-row:hover .idx-row-accent,.idx-row-wrap.open .idx-row-accent{opacity:1}
-.idx-row-info{min-width:0}
-.idx-row-nm{display:block;font-family:var(--serif);font-size:22px;font-weight:400;letter-spacing:-.4px;color:var(--t1);line-height:1.1;margin-bottom:4px}
-.idx-row-meta{display:block;font-size:11px;color:var(--t4);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.idx-row-pulse{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
-.idx-row-pulse-v{font-family:var(--serif);font-size:24px;font-weight:400;letter-spacing:-.3px;line-height:1}
-.idx-row-pulse-bar{display:block;width:100%;max-width:120px;height:2px;background:var(--bdr);border-radius:0;overflow:hidden}
-.idx-row-pulse-bar span{display:block;height:100%}
-.idx-row-rating{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--t2);letter-spacing:-.2px}
-.idx-row-rating em{display:block;font-style:normal;font-size:10px;color:var(--t5);font-weight:500;margin-top:3px}
-.idx-row-alloc{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--t2)}
-.idx-row-deal b{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--em);background:var(--emA);border:1px solid var(--bdr3);padding:4px 8px;border-radius:2px;letter-spacing:.3px}
-.idx-row-nodeal{color:var(--t5);font-size:14px}
-.idx-row-chev{font-size:24px;color:var(--t4);line-height:1;transition:transform .2s;text-align:center}
-.idx-row-chev.open{transform:rotate(90deg);color:var(--em)}
-.idx-row:hover .idx-row-chev{color:var(--t1)}
-
-.idx-row-expand{padding:0 0 32px 76px;animation:idxExpand .3s ease-out}
-@keyframes idxExpand{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-.idx-expand-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:24px;padding:20px 0;border-top:1px solid var(--bdr);margin-bottom:20px}
-.idx-expand-col{min-width:0}
-.idx-expand-lbl{font-size:10px;font-weight:700;color:var(--t5);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px}
-.idx-expand-v{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--t1);line-height:1.45}
-.idx-expand-desc{font-family:var(--serif);font-style:italic;font-size:16px;color:var(--t3);line-height:1.55;margin-bottom:22px;max-width:820px}
-.idx-expand-actions{display:flex;gap:10px;flex-wrap:wrap}
-.idx-expand-primary{background:var(--em);color:var(--bg);border:1px solid var(--em);font-family:var(--sans);font-size:13px;font-weight:700;padding:11px 22px;border-radius:2px;cursor:pointer;transition:all .18s;letter-spacing:.2px}
-.idx-expand-primary:hover{background:#ff8a5e;border-color:#ff8a5e;transform:translateY(-1px);box-shadow:0 4px 16px rgba(255,120,71,0.3)}
-.idx-expand-secondary{background:transparent;color:var(--t1);border:1px solid var(--bdr2);font-family:var(--sans);font-size:13px;font-weight:600;padding:11px 22px;border-radius:2px;cursor:pointer;transition:all .18s;letter-spacing:.2px}
-.idx-expand-secondary:hover{border-color:var(--t1);background:var(--bg3)}
-.idx-expand-compare{background:transparent;color:var(--t3);border:1px solid var(--bdr);font-family:var(--sans);font-size:12px;font-weight:600;padding:11px 18px;border-radius:2px;cursor:pointer;transition:all .18s;letter-spacing:.2px}
-.idx-expand-compare:hover{color:var(--t1);border-color:var(--t3)}
-.idx-expand-compare.on{background:var(--emA);color:var(--em);border-color:var(--em)}
-
-@media(max-width:980px){
-  .idx-cols{display:none}
-  .idx-row{grid-template-columns:40px 1fr auto;gap:12px}
-  .idx-row-pulse,.idx-row-rating,.idx-row-alloc,.idx-row-deal{display:none}
-  .idx-row-nm{font-size:18px}
-  .idx-row-expand{padding-left:0}
-  .idx-expand-grid{grid-template-columns:1fr 1fr;gap:16px}
-  .idx-hdr{flex-direction:column;align-items:flex-start}
-  .idx-hdr-title{font-size:32px}
+/* ═══ TOP BAR ═══ */
+.tbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(6,6,6,0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 24px;
+  padding: 14px 32px;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.tbar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.tbar-logo {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--txt);
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.tbar-logo-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--prime);
+  box-shadow: 0 0 10px var(--prime);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.tbar-logo em {
+  font-style: normal;
+  color: var(--prime);
+}
+.tbar-ver {
+  color: var(--txt4);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border: 1px solid var(--line2);
+}
+.tbar-status {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  justify-self: center;
+  color: var(--txt3);
+  font-size: 11px;
+}
+.tbar-status b { color: var(--prime); font-weight: 600; }
+.tbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tbar-btn {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--txt2);
+  padding: 6px 14px;
+  border: 1px solid var(--line2);
+  transition: all 0.15s;
+  letter-spacing: 0.5px;
+}
+.tbar-btn:hover { border-color: var(--prime); color: var(--prime); }
+.tbar-btn.primary {
+  background: var(--prime);
+  color: var(--bg);
+  border-color: var(--prime);
+  font-weight: 700;
+}
+.tbar-btn.primary:hover { background: #b8ff70; }
+.tbar-cmd {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 1px solid var(--line2);
+  color: var(--txt3);
+  font-size: 11px;
+  transition: all 0.15s;
+}
+.tbar-cmd:hover { border-color: var(--prime); color: var(--prime); }
+.tbar-cmd kbd {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 2px 5px;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  color: var(--txt3);
+}
+.tbar-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--line2);
+  background: var(--bg2);
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
 }
 
-/* ══════════════════════════════════════════════════════════════════
-   ─── BENTO EDITORIAL HOMEPAGE ───
-   ══════════════════════════════════════════════════════════════════ */
-.bento-wrap{padding:56px 0 40px;max-width:1280px;margin:0 auto;position:relative}
-.bento-eyebrow{display:flex;align-items:center;justify-content:space-between;padding-bottom:18px;border-bottom:1px solid var(--bdr);margin-bottom:36px;font-size:11px;font-weight:600;color:var(--t4);letter-spacing:1px;text-transform:uppercase}
-.bento-eyebrow-l{display:flex;align-items:center;gap:14px}
-.bento-eyebrow-lbl{font-family:var(--serif);font-style:italic;font-size:16px;color:var(--em);text-transform:none;letter-spacing:0;font-weight:400}
-.bento-eyebrow-sep{width:20px;height:1px;background:var(--bdr2)}
-.bento-eyebrow-txt{color:var(--t2)}
-.bento-eyebrow-r{display:flex;align-items:center;gap:10px;color:var(--t5)}
-.bento-eyebrow-live{display:inline-flex;align-items:center;gap:6px;color:var(--em);font-weight:700}
-.bento-eyebrow-live .dot{width:6px;height:6px;border-radius:50%;background:var(--em);animation:bentoDot 2s ease-in-out infinite;box-shadow:0 0 10px var(--em)}
-@keyframes bentoDot{0%,100%{opacity:1}50%{opacity:.4}}
-
-.bento-lead{font-family:var(--serif);font-size:clamp(48px,8vw,112px);line-height:.92;letter-spacing:-3px;font-weight:400;color:var(--t1);margin-bottom:20px;max-width:1100px}
-.bento-lead em{font-style:italic;color:var(--em);font-weight:400}
-.bento-dek{font-family:var(--serif);font-size:21px;font-style:italic;color:var(--t3);max-width:640px;line-height:1.4;margin-bottom:48px;font-weight:400}
-
-/* 12-column asymmetric grid */
-.bento-grid{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:minmax(160px,auto);gap:14px}
-.bento-card{background:var(--bg1);border:1px solid var(--bdr);border-radius:2px;padding:24px 26px;cursor:pointer;transition:all .22s;position:relative;overflow:hidden;text-align:left;display:flex;flex-direction:column;color:inherit;font-family:inherit}
-.bento-card:hover{border-color:var(--t4);background:var(--bg2);transform:translateY(-2px)}
-.bento-card-eye{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--em);margin-bottom:14px}
-.bento-card-h{font-family:var(--serif);font-size:28px;font-weight:400;line-height:1.1;letter-spacing:-.5px;color:var(--t1);margin-bottom:10px}
-.bento-card-s{font-size:13px;color:var(--t3);line-height:1.55;margin-bottom:auto}
-.bento-card-cta{font-size:12px;font-weight:600;color:var(--em);margin-top:18px;display:inline-flex;align-items:center;gap:6px;letter-spacing:.2px}
-.bento-card-cta span{transition:transform .2s}
-.bento-card:hover .bento-card-cta span{transform:translateX(4px)}
-
-/* QUIZ CARD — BIG HERO */
-.bento-quiz{grid-column:span 7;grid-row:span 2;background:linear-gradient(135deg,rgba(255,120,71,0.08),rgba(167,139,250,0.04) 60%,transparent);border-color:rgba(255,120,71,0.25);min-height:340px}
-.bento-quiz:hover{border-color:var(--em);background:linear-gradient(135deg,rgba(255,120,71,0.14),rgba(167,139,250,0.08) 60%,rgba(255,120,71,0.02))}
-.bento-quiz .bento-card-h{font-size:44px;letter-spacing:-1px;max-width:560px}
-.bento-quiz-preview{margin-top:22px;padding:20px 22px;background:rgba(11,10,9,0.6);border:1px solid var(--bdr);border-radius:2px;max-width:460px}
-.bento-quiz-q{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--em);letter-spacing:1.5px;display:block;margin-bottom:6px}
-.bento-quiz-txt{font-family:var(--serif);font-size:19px;font-weight:400;color:var(--t1);letter-spacing:-.2px}
-.bento-quiz-opts{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-.bento-quiz-opts span{padding:6px 14px;border:1px solid var(--bdr2);border-radius:999px;font-size:11px;font-weight:600;color:var(--t2);transition:all .2s}
-.bento-quiz:hover .bento-quiz-opts span:first-child{background:var(--em);color:var(--bg);border-color:var(--em)}
-
-/* RANKED LIST */
-.bento-ranked{grid-column:span 5;grid-row:span 2;min-height:340px;cursor:default}
-.bento-ranked:hover{transform:none}
-.bento-ranked-list{display:flex;flex-direction:column;gap:0;margin-top:10px}
-.bento-ranked-row{display:grid;grid-template-columns:32px 3px 1fr auto;gap:14px;align-items:center;padding:14px 0;border-top:1px solid var(--bdr);background:transparent;border-left:none;border-right:none;border-bottom:none;border-radius:0;cursor:pointer;transition:all .2s;text-align:left;color:inherit;font-family:inherit}
-.bento-ranked-row:hover{padding-left:6px}
-.bento-ranked-row:last-child{border-bottom:1px solid var(--bdr)}
-.bento-ranked-n{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--t5);letter-spacing:1px}
-.bento-ranked-bar{width:3px;height:100%;min-height:22px;border-radius:0}
-.bento-ranked-nm{font-family:var(--serif);font-size:19px;font-weight:400;letter-spacing:-.3px;color:var(--t1)}
-.bento-ranked-ps{font-family:var(--serif);font-size:28px;font-weight:400;color:var(--em);line-height:1;letter-spacing:-.5px}
-
-/* EDITOR'S PICK */
-.bento-pick{grid-column:span 4;grid-row:span 2;min-height:340px;border-color:var(--pick-color,var(--em));background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
-.bento-pick:hover{background:linear-gradient(180deg,rgba(255,255,255,0.04),transparent)}
-.bento-pick-logo{margin:16px 0 18px}
-.bento-pick-name{font-family:var(--serif);font-size:34px;font-weight:400;letter-spacing:-.8px;color:var(--t1);line-height:1;margin-bottom:10px}
-.bento-pick-desc{font-size:12px;color:var(--t4);margin-bottom:24px;font-style:italic;font-family:var(--serif)}
-.bento-pick-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:14px 0;border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);margin-bottom:16px}
-.bento-pick-stats b{display:block;font-family:var(--serif);font-size:22px;font-weight:400;color:var(--t1);letter-spacing:-.3px;line-height:1}
-.bento-pick-stats span{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--t5);letter-spacing:1.2px;margin-top:4px;display:block}
-.bento-pick-deal{font-size:11px;color:var(--em);font-weight:500;letter-spacing:.2px}
-.bento-pick-deal b{font-family:var(--mono);font-size:12px;font-weight:700}
-
-/* SIMULATOR */
-.bento-sim{grid-column:span 4;min-height:220px;background:linear-gradient(180deg,rgba(232,91,96,0.04),transparent)}
-.bento-sim-svg{width:100%;height:80px;margin:10px 0 auto;display:block}
-
-/* DEALS */
-.bento-deals{grid-column:span 4;min-height:220px}
-.bento-code{font-family:var(--mono);color:var(--em);font-weight:700;font-size:24px;letter-spacing:0;font-style:normal}
-.bento-deals-strip{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
-.bento-deal-pill{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--em);background:var(--emA);border:1px solid var(--bdr3);padding:5px 10px;border-radius:2px;letter-spacing:.3px}
-.bento-deal-pill span{color:var(--t3);margin-left:4px;font-weight:500}
-
-/* REWARDS + RESEARCH + GIVEAWAY */
-.bento-rewards{grid-column:span 4;min-height:220px;background:linear-gradient(180deg,rgba(167,139,250,0.05),transparent)}
-.bento-rewards .bento-card-eye{color:#a78bfa}
-.bento-rewards:hover{border-color:#a78bfa}
-.bento-rewards .bento-card-cta{color:#a78bfa}
-
-.bento-research{grid-column:span 5;min-height:220px}
-
-.bento-giveaway{grid-column:span 3;min-height:220px;background:linear-gradient(180deg,rgba(212,169,103,0.05),transparent)}
-.bento-giveaway .bento-card-eye{color:var(--gold)}
-.bento-giveaway:hover{border-color:var(--gold)}
-.bento-giveaway .bento-card-cta{color:var(--gold)}
-
-@media(max-width:1100px){
-  .bento-grid{grid-template-columns:repeat(6,1fr)}
-  .bento-quiz{grid-column:span 6;grid-row:span 1;min-height:260px}
-  .bento-quiz .bento-card-h{font-size:32px}
-  .bento-ranked{grid-column:span 3}
-  .bento-pick{grid-column:span 3}
-  .bento-sim,.bento-deals,.bento-rewards{grid-column:span 3}
-  .bento-research{grid-column:span 4}
-  .bento-giveaway{grid-column:span 2}
-}
-@media(max-width:680px){
-  .bento-grid{grid-template-columns:1fr}
-  .bento-grid>*{grid-column:span 1 !important;grid-row:span 1 !important;min-height:180px !important}
-  .bento-lead{letter-spacing:-1.5px}
-  .bento-dek{font-size:17px}
-  .bento-eyebrow-txt{display:none}
+/* ═══ LAYOUT ═══ */
+.app {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 32px;
+  position: relative;
+  z-index: 1;
 }
 
-/* ── HERO V2 (Quiz-forward) ── */
-.heroV2{display:grid;grid-template-columns:1.15fr 1fr;gap:48px;align-items:center;padding:48px 0 40px;position:relative}
-.heroV2-left{max-width:560px}
-.heroV2-title{font-family:var(--serif);font-size:68px;font-weight:400;line-height:0.98;letter-spacing:-2px;margin:18px 0 20px;color:var(--t1)}
-.heroV2-title em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--em);text-shadow:0 0 40px rgba(255,120,71,0.2);display:inline-block}
-.heroV2-sub{font-size:16px;line-height:1.65;color:var(--t3);margin:0 0 28px;max-width:520px}
-.heroV2-actions{display:flex;gap:12px;margin-bottom:32px;flex-wrap:wrap}
-.heroV2-primary{background:var(--em);color:var(--bg);font-family:var(--sans);font-size:14px;font-weight:700;padding:14px 26px;border:1px solid var(--em);border-radius:4px;cursor:pointer;box-shadow:0 4px 20px rgba(255,120,71,0.25);transition:all .2s;display:inline-flex;align-items:center;gap:10px;letter-spacing:.1px}
-.heroV2-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(255,120,71,0.4);background:#ff8a5e}
-.heroV2-arrow{transition:transform .22s}
-.heroV2-primary:hover .heroV2-arrow{transform:translateX(4px)}
-.heroV2-secondary{background:transparent;border:1px solid var(--bdr2);color:var(--t2);font-family:var(--sans);font-size:14px;font-weight:600;padding:13px 22px;border-radius:4px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:10px;letter-spacing:.1px}
-.heroV2-secondary:hover{background:var(--bg3);border-color:var(--t2);color:var(--t1);transform:translateY(-2px)}
-.heroV2-trust{display:flex;align-items:center;gap:16px;padding-top:24px;border-top:1px solid var(--bdr)}
-.heroV2-trust-item{display:flex;flex-direction:column;gap:2px}
-.heroV2-trust-item b{font-family:var(--serif);font-size:22px;font-weight:400;color:var(--em);letter-spacing:-.3px;line-height:1}
-.heroV2-trust-item span{font-size:11px;color:var(--t4);font-weight:600;letter-spacing:.2px}
-.heroV2-trust-sep{width:1px;height:32px;background:var(--bdr)}
-
-.heroV2-right{display:flex;justify-content:flex-end}
-.heroV2-card{width:100%;max-width:440px;background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--bdr2);border-radius:18px;padding:22px;box-shadow:0 0 60px rgba(34,211,238,0.08),0 20px 60px rgba(0,0,0,0.3);position:relative;overflow:hidden}
-.heroV2-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(255,120,71,0.5),rgba(167,139,250,0.5),transparent)}
-.heroV2-card-hdr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;padding:0 4px}
-.heroV2-card-lbl{font-size:11px;font-weight:800;color:var(--em);text-transform:uppercase;letter-spacing:.8px;text-shadow:0 0 8px rgba(6,182,212,0.3)}
-.heroV2-card-sub{font-size:11px;color:var(--t4);font-weight:500}
-.heroV2-firm-row{display:grid;grid-template-columns:30px 34px 1fr auto auto;gap:10px;align-items:center;padding:12px 10px;background:transparent;border:1px solid transparent;border-left:2px solid var(--card-accent,var(--em));border-radius:10px;cursor:pointer;transition:all .2s;text-align:left;margin-bottom:4px;width:100%}
-.heroV2-firm-row:hover{background:var(--bg3);border-color:var(--bdr2);border-left-color:var(--card-accent);transform:translateX(3px)}
-.heroV2-firm-rank{font-family:var(--mono);font-size:13px;font-weight:800;color:var(--t5);text-align:center}
-.heroV2-firm-info{min-width:0}
-.heroV2-firm-name{font-size:13px;font-weight:700;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.heroV2-firm-meta{font-size:10px;color:var(--t4);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.heroV2-firm-pulse{font-family:var(--mono);font-size:18px;font-weight:800;text-shadow:0 0 10px currentColor;letter-spacing:-.5px}
-.heroV2-firm-deal{font-family:var(--mono);font-size:10px;font-weight:800;color:var(--gold);background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);padding:3px 8px;border-radius:5px;white-space:nowrap;text-shadow:var(--glow-gold-sm)}
-.heroV2-card-footer{width:100%;background:transparent;border:none;color:var(--em);font-size:12px;font-weight:700;padding:12px 4px 4px;cursor:pointer;text-align:center;transition:color .2s;margin-top:4px;border-top:1px solid var(--bdr)}
-.heroV2-card-footer:hover{color:#22d3ee}
-@media(max-width:980px){
-  .heroV2{grid-template-columns:1fr;gap:28px;padding:28px 0 20px}
-  .heroV2-title{font-size:38px}
-  .heroV2-sub{font-size:15px}
-  .heroV2-right{justify-content:center}
+.crosshair {
+  position: fixed;
+  pointer-events: none;
+  z-index: 200;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--prime);
+  opacity: 0.35;
+  letter-spacing: 1px;
 }
-@media(max-width:520px){
-  .heroV2-title{font-size:30px;letter-spacing:-.6px}
-  .heroV2-sub{font-size:14px}
-  .heroV2-primary,.heroV2-secondary{width:100%;justify-content:center}
-  .heroV2-trust{flex-wrap:wrap;gap:12px}
-  .heroV2-firm-row{grid-template-columns:24px 30px 1fr auto;gap:8px}
-  .heroV2-firm-deal{display:none}
+.crosshair.tl { top: 76px; left: 32px; }
+.crosshair.tr { top: 76px; right: 32px; }
+.crosshair.bl { bottom: 16px; left: 32px; }
+.crosshair.br { bottom: 16px; right: 32px; }
+
+/* ═══ HERO ═══ */
+.hero {
+  padding: 80px 0 100px;
+  position: relative;
 }
+.hero-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 48px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--txt3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.hero-meta-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--prime);
+  animation: pulse 2s ease-in-out infinite;
+  box-shadow: 0 0 8px var(--prime);
+}
+.hero-meta-sep { color: var(--txt5); }
 
-/* ── TOOLS TAB ── */
-.tools-switch{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px;max-width:720px;margin-left:auto;margin-right:auto}
-.tools-switch-btn{background:var(--glass);backdrop-filter:blur(8px);border:1.5px solid var(--bdr2);border-radius:14px;padding:20px 24px;cursor:pointer;transition:all .22s;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--t3);text-align:center}
-.tools-switch-btn:hover{border-color:rgba(34,211,238,0.45);background:rgba(6,182,212,0.06);color:var(--t1);transform:translateY(-2px)}
-.tools-switch-btn.on{border-color:#22d3ee;background:rgba(6,182,212,0.14);color:#fff;box-shadow:0 0 20px rgba(34,211,238,0.25)}
-.tools-switch-ic{font-size:32px;margin-bottom:6px}
-.tools-switch-btn>span:nth-child(2){font-size:16px;font-weight:700;letter-spacing:-.2px}
-.tools-switch-sub{font-size:12px;color:var(--t4);font-weight:500}
+.hero-h1 {
+  font-family: var(--serif);
+  font-size: clamp(56px, 9vw, 136px);
+  line-height: 0.92;
+  letter-spacing: -3px;
+  font-weight: 400;
+  color: var(--txt);
+  margin-bottom: 32px;
+  max-width: 14ch;
+}
+.hero-h1 em {
+  font-style: italic;
+  color: var(--prime);
+  font-weight: 400;
+  position: relative;
+}
+.hero-h1 em::after {
+  content: '_';
+  animation: blink 1.1s step-end infinite;
+  color: var(--prime);
+}
+@keyframes blink { 50% { opacity: 0; } }
 
-/* ── QUIZ ── */
-.qz-wrap{max-width:760px;margin:0 auto;background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--bdr2);border-radius:18px;padding:40px 36px;position:relative;box-shadow:0 0 40px rgba(34,211,238,0.06)}
-.qz-progress-wrap{width:100%;height:4px;background:var(--bg3);border-radius:999px;overflow:hidden;margin-bottom:18px}
-.qz-progress{height:100%;background:linear-gradient(90deg,#22d3ee,#fbbf24);transition:width .4s ease;box-shadow:0 0 12px rgba(34,211,238,0.4)}
-.qz-step-label{font-size:11px;color:var(--em);font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;text-shadow:0 0 6px rgba(6,182,212,0.3)}
-.qz-q{font-size:26px;font-weight:800;color:var(--t1);margin:0 0 6px;letter-spacing:-.4px;line-height:1.25}
-.qz-sub{font-size:14px;color:var(--t4);margin-bottom:26px}
-.qz-opts{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
-.qz-opt{background:var(--bg3);border:1.5px solid var(--bdr);border-radius:12px;padding:16px 20px;text-align:left;cursor:pointer;transition:all .2s;color:var(--t2)}
-.qz-opt:hover{border-color:#22d3ee;background:rgba(6,182,212,0.08);transform:translateX(4px);box-shadow:0 0 16px rgba(34,211,238,0.15)}
-.qz-opt-l{font-size:15px;font-weight:700;color:var(--t1);margin-bottom:2px}
-.qz-opt-d{font-size:12px;color:var(--t4)}
-.qz-back-btn{background:transparent;border:none;color:var(--t4);font-size:13px;font-weight:600;cursor:pointer;padding:4px 0;transition:color .2s}
-.qz-back-btn:hover{color:var(--em)}
-.qz-reset-btn{position:absolute;top:20px;right:20px;background:var(--emA);border:1px solid var(--bdr2);color:var(--em);font-size:11px;font-weight:700;padding:6px 14px;border-radius:999px;cursor:pointer;transition:all .2s}
-.qz-reset-btn:hover{background:var(--emA2);border-color:var(--em);transform:translateY(-1px)}
-
-/* ── QUIZ RESULTS ── */
-.qz-result-hdr{text-align:center;margin-bottom:28px;padding:16px 0}
-.qz-result-badge{display:inline-block;font-size:11px;font-weight:700;color:var(--gold);background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.25);padding:5px 14px;border-radius:999px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:14px;text-shadow:0 0 6px rgba(251,191,36,0.3)}
-.qz-result-title{font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.4px;margin-bottom:6px}
-.qz-result-title em{color:var(--gold);font-style:normal;text-shadow:var(--glow-gold)}
-.qz-result-sub{font-size:14px;color:var(--t4)}
-.qz-results{display:flex;flex-direction:column;gap:10px}
-.qz-result-card{display:grid;grid-template-columns:40px 56px 1fr auto auto;gap:14px;align-items:center;padding:16px 20px;background:var(--bg3);border:1px solid var(--bdr);border-left:3px solid var(--card-accent,var(--em));border-radius:12px;transition:all .22s}
-.qz-result-card:hover{border-color:var(--card-accent,var(--em));background:var(--bg2);transform:translateY(-1px);box-shadow:0 0 20px rgba(34,211,238,0.08)}
-.qz-result-card.top{background:linear-gradient(90deg,rgba(251,191,36,0.08),rgba(34,211,238,0.04),var(--bg3));box-shadow:0 0 24px rgba(251,191,36,0.12)}
-.qz-rank{font-family:var(--mono);font-size:18px;font-weight:800;color:var(--t4);text-align:center}
-.qz-result-card.top .qz-rank{color:var(--gold);text-shadow:var(--glow-gold)}
-.qz-result-logo{display:flex;align-items:center}
-.qz-result-info{min-width:0}
-.qz-result-name{font-size:15px;font-weight:700;color:var(--t1);margin-bottom:4px;display:flex;align-items:center;gap:8px}
-.qz-best{font-size:10px;font-weight:700;color:var(--gold);background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.25);padding:2px 8px;border-radius:999px;letter-spacing:.4px}
-.qz-result-reasons{display:flex;flex-direction:column;gap:3px}
-.qz-reason{font-size:11px;color:var(--t3);line-height:1.4}
-.qz-reason-muted{color:var(--t5);font-style:italic}
-.qz-result-score{text-align:center;min-width:50px}
-.qz-score-v{font-family:var(--mono);font-size:22px;font-weight:800;line-height:1;text-shadow:0 0 10px currentColor}
-.qz-score-l{font-size:9px;color:var(--t4);text-transform:uppercase;letter-spacing:.6px;margin-top:3px;font-weight:700}
-.qz-result-actions{display:flex;flex-direction:column;gap:6px}
-.qz-view-btn{background:var(--emA2);border:1px solid var(--bdr3);color:var(--em);font-size:11px;font-weight:700;padding:7px 14px;border-radius:999px;cursor:pointer;transition:all .2s;white-space:nowrap}
-.qz-view-btn:hover{background:var(--em);color:#050810}
-.qz-deal-btn{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#050810;font-size:11px;font-weight:800;padding:7px 14px;border:none;border-radius:999px;cursor:pointer;box-shadow:var(--glow-gold-sm);transition:all .2s;white-space:nowrap}
-.qz-deal-btn:hover{transform:translateY(-1px);box-shadow:var(--glow-gold)}
-@media(max-width:620px){
-  .qz-wrap{padding:28px 20px}
-  .qz-q{font-size:20px}
-  .qz-result-card{grid-template-columns:30px 44px 1fr;gap:10px}
-  .qz-result-card .qz-result-score,.qz-result-card .qz-result-actions{grid-column:2 / 4;flex-direction:row;justify-content:space-between;align-items:center}
-  .qz-score-v{font-size:18px}
+.hero-lead {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-style: italic;
+  color: var(--txt2);
+  max-width: 640px;
+  line-height: 1.45;
+  margin-bottom: 56px;
 }
 
-/* ── DRAWDOWN SIMULATOR ── */
-.sim-wrap{max-width:820px;margin:0 auto;background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--bdr2);border-radius:18px;padding:32px 30px;box-shadow:0 0 40px rgba(34,211,238,0.06)}
-.sim-hdr{margin-bottom:24px}
-.sim-title{font-size:22px;font-weight:800;color:var(--t1);letter-spacing:-.3px}
-.sim-sub{font-size:13px;color:var(--t4);margin-top:4px}
-.sim-controls{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px}
-.sim-ctrl-group label{display:block;font-size:10px;color:var(--em);text-transform:uppercase;letter-spacing:.7px;font-weight:700;margin-bottom:6px;text-shadow:0 0 6px rgba(6,182,212,0.2)}
-.sim-ctrl-group select{width:100%;background:var(--bg3);border:1px solid var(--bdr2);border-radius:10px;padding:11px 14px;color:var(--t1);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:all .2s;outline:none}
-.sim-ctrl-group select:hover,.sim-ctrl-group select:focus{border-color:var(--em);box-shadow:0 0 14px rgba(6,182,212,0.2)}
-.sim-chart-wrap{background:var(--bg3);border:1px solid var(--bdr);border-radius:12px;padding:18px;margin-bottom:16px;overflow:hidden}
-.sim-chart{width:100%;height:auto;display:block}
-.sim-result{display:flex;align-items:center;gap:16px;padding:16px 20px;border:1px solid;border-radius:12px;margin-bottom:16px}
-.sim-result-icon{font-size:28px;font-weight:900;line-height:1;flex-shrink:0}
-.sim-result-title{font-size:16px;font-weight:800;margin-bottom:3px}
-.sim-result-desc{font-size:12px;color:var(--t3);line-height:1.5}
-.sim-legend{display:flex;flex-wrap:wrap;gap:14px;font-size:11px;color:var(--t4);padding-top:10px;border-top:1px solid var(--bdr)}
-.sim-legend>div{display:flex;align-items:center;gap:6px}
-.sim-legend-dot{width:12px;height:3px;border-radius:2px;display:inline-block}
-.sim-legend-info{margin-left:auto;color:var(--t3)}
-.sim-legend-info b{color:var(--t1);font-family:var(--mono)}
-@media(max-width:620px){
-  .sim-wrap{padding:22px 16px}
-  .sim-controls{grid-template-columns:1fr}
-  .sim-legend-info{margin-left:0;width:100%}
+.hero-cta-row {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 64px;
+}
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 16px 28px;
+  letter-spacing: 0.5px;
+  transition: all 0.18s;
+  text-transform: uppercase;
+}
+.hero-cta.primary {
+  background: var(--prime);
+  color: var(--bg);
+  border: 1px solid var(--prime);
+}
+.hero-cta.primary:hover {
+  background: transparent;
+  color: var(--prime);
+  box-shadow: 0 0 24px rgba(168,255,96,0.35);
+}
+.hero-cta.ghost {
+  background: transparent;
+  color: var(--txt);
+  border: 1px solid var(--line2);
+}
+.hero-cta.ghost:hover {
+  border-color: var(--prime);
+  color: var(--prime);
+}
+.hero-cta-arrow {
+  transition: transform 0.2s;
+}
+.hero-cta:hover .hero-cta-arrow { transform: translateX(4px); }
+
+/* Live ticker stats strip below hero */
+.tstrip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 24px 0;
+}
+.tstrip-item {
+  padding: 0 24px;
+  border-right: 1px solid var(--line);
+  font-family: var(--mono);
+}
+.tstrip-item:last-child { border-right: none; }
+.tstrip-k {
+  font-size: 10px;
+  color: var(--txt4);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.tstrip-v {
+  font-family: var(--serif);
+  font-size: 42px;
+  font-weight: 400;
+  color: var(--txt);
+  letter-spacing: -1px;
+  line-height: 1;
+}
+.tstrip-v small {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--prime);
+  font-weight: 600;
+  margin-left: 6px;
+  letter-spacing: 0;
 }
 
-/* ── FINE PRINT SCORECARD ── */
-.scorecard{background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--bdr2);border-radius:14px;padding:24px 26px;margin:24px 0}
-.scorecard-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:14px}
-.scorecard-title{font-size:18px;font-weight:800;color:var(--t1);letter-spacing:-.2px}
-.scorecard-sub{font-size:12px;color:var(--t4);margin-top:3px}
-.scorecard-score{text-align:right;flex-shrink:0}
-.scorecard-score-v{font-family:var(--mono);font-size:28px;font-weight:800;color:#22c55e;line-height:1;text-shadow:0 0 10px rgba(34,197,94,0.4)}
-.scorecard-score-v span{font-size:16px;color:var(--t5)}
-.scorecard-score-l{font-size:10px;color:var(--t4);text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-top:3px}
-.scorecard-rows{display:flex;flex-direction:column;gap:4px}
-.scorecard-row{display:grid;grid-template-columns:10px 180px 1fr;gap:12px;align-items:center;padding:10px 12px;background:var(--bg3);border:1px solid var(--bdr);border-radius:8px;transition:border .2s}
-.scorecard-row:hover{border-color:var(--bdr2)}
-.scorecard-dot{width:10px;height:10px;border-radius:50%}
-.scorecard-row.tone-green .scorecard-dot{background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,0.5)}
-.scorecard-row.tone-yellow .scorecard-dot{background:#fbbf24;box-shadow:0 0 8px rgba(251,191,36,0.5)}
-.scorecard-row.tone-red .scorecard-dot{background:#ef4444;box-shadow:0 0 8px rgba(239,68,68,0.5)}
-.scorecard-k{font-size:12px;font-weight:700;color:var(--t2);letter-spacing:.1px}
-.scorecard-v{font-size:12px;color:var(--t3);line-height:1.4}
-@media(max-width:620px){
-  .scorecard-row{grid-template-columns:10px 1fr;gap:8px}
-  .scorecard-v{grid-column:1 / 3;padding-left:18px;margin-top:-2px;font-size:11px}
+/* ═══ SECTION ═══ */
+.sec {
+  padding: 120px 0 60px;
+  position: relative;
+}
+.sec-hd {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 32px;
+  align-items: baseline;
+  padding-bottom: 24px;
+  border-bottom: 2px solid var(--txt);
+  margin-bottom: 48px;
+}
+.sec-ix {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--prime);
+  letter-spacing: 2px;
+}
+.sec-t {
+  font-family: var(--serif);
+  font-size: clamp(36px, 5vw, 72px);
+  font-weight: 400;
+  letter-spacing: -1.5px;
+  line-height: 0.95;
+  color: var(--txt);
+}
+.sec-t em { font-style: italic; color: var(--prime); font-weight: 400; }
+.sec-sub {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--txt3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-align: right;
 }
 
-/* ── HERO CTA TOOLS ── */
-.hero-tools-cta{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:620px;margin:18px auto 0}
-.hero-tool-btn{background:linear-gradient(135deg,rgba(34,211,238,0.14),rgba(6,182,212,0.06));border:1.5px solid rgba(34,211,238,0.35);color:#22d3ee;padding:14px 20px;border-radius:12px;cursor:pointer;transition:all .22s;display:flex;align-items:center;gap:12px;text-align:left;font-family:var(--sans)}
-.hero-tool-btn:hover{background:linear-gradient(135deg,rgba(34,211,238,0.22),rgba(6,182,212,0.12));border-color:#22d3ee;transform:translateY(-2px);box-shadow:0 0 24px rgba(34,211,238,0.3)}
-.hero-tool-ic{font-size:24px;flex-shrink:0}
-.hero-tool-txt{flex:1;min-width:0}
-.hero-tool-t{font-size:14px;font-weight:800;color:#fff;letter-spacing:-.1px;margin-bottom:2px}
-.hero-tool-s{font-size:11px;color:var(--t4);font-weight:500}
-@media(max-width:620px){
-  .hero-tools-cta{grid-template-columns:1fr}
+/* ═══ FIRM TERMINAL TABLE ═══ */
+.term {
+  border: 1px solid var(--line2);
+  background: var(--bg1);
+  font-family: var(--mono);
 }
-.cmp-tray{position:fixed;bottom:0;left:0;right:0;z-index:150;background:var(--glass2);backdrop-filter:blur(20px) saturate(1.3);border-top:1px solid var(--bdr2);padding:12px 24px;display:flex;align-items:center;justify-content:center;gap:14px;box-shadow:0 -4px 30px rgba(0,0,0,0.4),0 -1px 0 rgba(34,211,238,0.15);animation:trayIn .25s ease-out}
-@keyframes trayIn{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.cmp-tray-firms{display:flex;gap:8px;align-items:center}
-.cmp-tray-chip{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--bdr2);border-radius:999px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--t2)}
-.cmp-tray-chip button{background:none;border:none;color:var(--t5);font-size:14px;cursor:pointer;padding:0 0 0 4px;line-height:1}
-.cmp-tray-chip button:hover{color:var(--red)}
-.cmp-tray-go{background:linear-gradient(135deg,#22d3ee,#0891b2);color:#050810;font-family:var(--sans);font-size:13px;font-weight:700;padding:10px 26px;border:none;border-radius:999px;cursor:pointer;box-shadow:var(--glow-sm);transition:all .22s}
-.cmp-tray-go:hover{box-shadow:0 0 22px rgba(34,211,238,0.45),0 0 0 1px rgba(34,211,238,0.25);transform:translateY(-2px)}
-.cmp-tray-clear{background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--bdr2);color:var(--t3);font-family:var(--sans);font-size:12px;font-weight:600;padding:9px 18px;border-radius:999px;cursor:pointer;transition:all .22s}
-.cmp-tray-clear:hover{border-color:var(--red);color:var(--red)}
-.cmp-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(10px);z-index:250;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto}
-.cmp-modal{background:var(--bg1);border:1px solid var(--bdr2);border-radius:16px;max-width:1280px;width:100%;position:relative;box-shadow:var(--glow-box),0 20px 60px rgba(0,0,0,0.5);overflow:hidden}
-.cmp-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--bdr2);background:var(--bg2)}
-.cmp-header h2{font-size:18px;font-weight:700;color:var(--t1)}
-.cmp-header h2 span{color:var(--em);text-shadow:var(--glow-sm)}
-.cmp-close{background:none;border:none;color:var(--t4);font-size:20px;cursor:pointer}
-.cmp-close:hover{color:var(--em)}
-.cmp-topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-top:10px;flex-wrap:wrap}
-.cmp-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.cmp-control-label{font-size:10px;font-weight:700;color:var(--t5);text-transform:uppercase;letter-spacing:.9px;margin-right:2px}
-.cmp-pills{display:flex;gap:6px;flex-wrap:wrap}
-.cmp-pills .f-btn{padding:6px 12px;font-size:11px}
-.cmp-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:18px 24px;border-bottom:1px solid var(--bdr2);background:linear-gradient(180deg,rgba(255,255,255,0.015),transparent)}
-.cmp-summary-card{background:var(--glass);border:1px solid var(--bdr);border-radius:12px;padding:14px 14px 12px;min-height:92px}
-.cmp-summary-label{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--t5);margin-bottom:8px}
-.cmp-summary-firm{font-size:14px;font-weight:800;color:var(--t1)}
-.cmp-summary-note{font-size:11px;color:var(--t4);margin-top:4px;line-height:1.45}
-.cmp-grid{display:grid;gap:0}
-.cmp-row{display:grid;border-bottom:1px solid var(--bdr);align-items:stretch}
-.cmp-row:last-child{border-bottom:none}
-.cmp-row:hover{background:rgba(6,182,212,0.03)}
-.cmp-label{padding:12px 18px;font-size:12px;font-weight:700;color:var(--em);text-transform:uppercase;letter-spacing:.5px;background:var(--bg2);display:flex;align-items:center;border-right:1px solid var(--bdr);position:sticky;left:0;z-index:2}
-.cmp-cell{padding:12px 16px;font-size:13px;color:var(--t2);display:flex;align-items:center;border-right:1px solid var(--bdr);line-height:1.5;word-break:break-word}
-.cmp-cell:last-child{border-right:none}
-.cmp-cell.best{color:var(--green);font-weight:700}
-.cmp-cell.good{background:rgba(16,185,129,0.08);color:#b6f5d6}
-.cmp-cell.bad{background:rgba(255,71,87,0.08);color:#ffb3bc}
-.cmp-cell.bestish{box-shadow:inset 0 0 0 1px rgba(34,211,238,0.18)}
-.cmp-firm-hdr{text-align:center;padding:18px 12px;border-right:1px solid var(--bdr);background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
-.cmp-firm-hdr:last-child{border-right:none}
-.cmp-firm-name{font-size:14px;font-weight:700;margin-top:8px}
-.cmp-firm-meta{font-size:11px;color:var(--t4);margin-top:4px;line-height:1.45}
-.cmp-firm-pulse{font-family:var(--mono);font-size:16px;font-weight:800;margin-top:4px}
-.cmp-plan-select{width:100%;margin-top:10px;background:var(--bg3);border:1px solid var(--bdr2);border-radius:9px;padding:9px 10px;color:var(--t1);font-family:var(--sans);font-size:12px;outline:none}
-.cmp-plan-select:focus{border-color:var(--em)}
-.cmp-firm-tags{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:10px}
-.cmp-tag{font-size:10px;font-weight:700;padding:4px 8px;border-radius:999px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:var(--t3)}
-.cmp-deal-btn{display:inline-block;margin-top:8px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#050810;font-size:11px;font-weight:700;padding:6px 16px;border:none;border-radius:999px;cursor:pointer;box-shadow:var(--glow-gold-sm);transition:all .22s}
-.cmp-deal-btn:hover{box-shadow:var(--glow-gold),0 4px 12px rgba(251,191,36,0.3);transform:translateY(-1px)}
-.cmp-legend{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 24px;border-bottom:1px solid var(--bdr2);background:rgba(255,255,255,0.012)}
-.cmp-legend-item{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--t4)}
-.cmp-legend-swatch{width:12px;height:12px;border-radius:999px;border:1px solid var(--bdr2);flex-shrink:0}
-.cmp-empty{padding:18px 14px;color:var(--t4);font-size:12px;line-height:1.6}
+.term-ctrl {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.term-filters {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--line2);
+}
+.term-filters button {
+  padding: 8px 16px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--txt3);
+  border-right: 1px solid var(--line2);
+  background: transparent;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all 0.15s;
+}
+.term-filters button:last-child { border-right: none; }
+.term-filters button:hover { background: var(--bg2); color: var(--txt); }
+.term-filters button.on { background: var(--prime); color: var(--bg); font-weight: 700; }
+.term-sort {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  font-size: 11px;
+  color: var(--txt3);
+}
+.term-sort-lbl {
+  color: var(--txt4);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+.term-sort button {
+  font-family: var(--mono);
+  color: var(--txt3);
+  font-size: 11px;
+  padding: 4px 0;
+  border-bottom: 1px solid transparent;
+  transition: all 0.15s;
+  letter-spacing: 0.3px;
+}
+.term-sort button:hover { color: var(--txt); }
+.term-sort button.on { color: var(--prime); border-bottom-color: var(--prime); }
 
-/* ── MOBILE ── */
-@media(max-width:768px){
-  .wrap{padding:0 16px}
-  .nav{padding:0 16px;gap:6px}
-  .nav-tabs{display:none}
-  .nav-burger{display:block}
-  .hero{padding:40px 0 28px}
-  .hero h1{font-size:34px;letter-spacing:-.6px}
-  .hero p{font-size:14.5px}
-  .hero-badge{font-size:11px;padding:6px 14px;margin-bottom:16px}
-  .hero-stats{gap:18px;flex-wrap:wrap;justify-content:center;padding-top:20px}
-  .hero-stat b{font-size:22px}
-  .hero-stat small{font-size:9px;letter-spacing:.3px}
-  .hero-steps{gap:8px}
-  .hero-step{min-width:unset;flex:1 1 100%;padding:12px 14px}
-  .hero-step-t{font-size:12.5px}
-  .hero-trust{gap:12px;font-size:11px}
-  .hero-ctas{flex-direction:column;align-items:center}
-  .hero-cta-primary,.hero-cta-secondary{width:100%;max-width:280px;text-align:center}
-  .cmp-topbar{flex-direction:column;align-items:stretch}
-  .cmp-summary{grid-template-columns:1fr 1fr}
-  .cmp-tray{padding:10px 14px;gap:8px;flex-wrap:wrap;justify-content:center}
-  .cmp-tray-firms{flex-wrap:wrap;justify-content:center}
-  .cmp-overlay{padding:20px 10px}
-  .cmp-modal{border-radius:12px}
-  .cmp-label{font-size:10px;padding:10px 12px}
-  .cmp-cell{font-size:11px;padding:10px 10px}
-  .nl-form{flex-direction:column}
-  .nl-btn{width:100%}
-  .lb-hdr{display:none}
-  .lb-row{grid-template-columns:24px 30px 1fr 110px;gap:8px;padding:10px 14px}
-  .lb-rating,.lb-trend,.lb-deal{display:none}
-  .cards{grid-template-columns:1fr}
-  .fcard-grid{grid-template-columns:1fr 1fr}
-  .ctabs{overflow-x:auto;-webkit-overflow-scrolling:touch;justify-content:flex-start;gap:0;padding:0 2px;margin-bottom:20px}
-  .ctab{white-space:nowrap;flex-shrink:0;padding:10px 13px;font-size:12.5px}
-  .filters{justify-content:center !important}
-  .f-btn{font-size:11px;padding:5px 11px}
-  .det-pc{grid-template-columns:1fr}
-  .blog-grid{grid-template-columns:1fr}
-  .foot-in{flex-direction:column;gap:20px}
-  .offer-row{flex-wrap:wrap;gap:12px}
-  .offer-pct{min-width:70px;font-size:16px}
-  .pp-rewards{grid-template-columns:1fr 1fr}
-  .pp-balance-n{font-size:28px}
-  .pp-hdr-grid{grid-template-columns:1fr !important}
-  .auth-modal{margin:16px;padding:24px}
-  .nav-login{display:none}
-  .panel{width:100%}
+.term-colhdr {
+  display: grid;
+  grid-template-columns: 60px 2fr 100px 120px 100px 120px 90px 40px;
+  gap: 16px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--line);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--txt4);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
 }
-@media(max-width:560px){
-  .cmp-summary{grid-template-columns:1fr}
+.term-row {
+  display: grid;
+  grid-template-columns: 60px 2fr 100px 120px 100px 120px 90px 40px;
+  gap: 16px;
+  padding: 22px 20px;
+  border-bottom: 1px solid var(--line);
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.15s;
+  width: 100%;
+  text-align: left;
 }
-@media(max-width:420px){
-  .hero h1{font-size:28px;letter-spacing:-.4px}
-  .hero p{font-size:13.5px}
-  .hero-stats{gap:12px}
-  .hero-stat b{font-size:18px}
-  .lb-row{grid-template-columns:22px 1fr 90px;gap:6px}
-  .lb-logo{display:none}
-  .det-name{font-size:22px}
-  .fcard{padding:18px}
-  .cards{grid-template-columns:1fr}
-  .ctab{padding:9px 10px;font-size:11px}
-  .f-btn{font-size:10px;padding:4px 9px}
+.term-row:hover { background: var(--bg2); }
+.term-row.open { background: var(--bg2); border-bottom-color: var(--prime); }
+.term-rank {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--txt4);
+  letter-spacing: 1px;
+}
+.term-rank::before { content: '#'; opacity: 0.4; }
+.term-firm {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+.term-firm-lg {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line2);
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--bg2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.term-firm-lg img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+.term-firm-lg-fb {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--txt3);
+}
+.term-firm-nm {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--txt);
+  letter-spacing: -0.4px;
+  line-height: 1.1;
+  margin-bottom: 3px;
+}
+.term-firm-meta {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--txt4);
+  letter-spacing: 0.5px;
+}
+.term-pulse {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.term-pulse-v {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.5px;
+  color: var(--prime);
+}
+.term-pulse-bar {
+  height: 2px;
+  background: var(--bg3);
+  overflow: hidden;
+  max-width: 80px;
+}
+.term-pulse-bar span {
+  display: block;
+  height: 100%;
+  background: var(--prime);
+  box-shadow: 0 0 6px rgba(168,255,96,0.5);
+}
+.term-rating {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--txt2);
+}
+.term-rating em {
+  display: block;
+  font-style: normal;
+  font-size: 10px;
+  color: var(--txt4);
+  margin-top: 2px;
+}
+.term-alloc { font-family: var(--mono); font-size: 12px; color: var(--txt2); }
+.term-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--txt3);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.term-tag.on {
+  color: var(--prime);
+  padding: 4px 8px;
+  border: 1px solid var(--prime);
+  background: var(--primeA);
+}
+.term-deal {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--prime);
+  padding: 4px 8px;
+  border: 1px solid var(--prime);
+  background: var(--primeA);
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+.term-deal.none { border-color: var(--line); color: var(--txt5); background: transparent; }
+.term-chev {
+  font-family: var(--mono);
+  font-size: 18px;
+  color: var(--txt4);
+  text-align: center;
+  transition: all 0.2s;
+}
+.term-row.open .term-chev { color: var(--prime); transform: rotate(90deg); }
+
+/* EXPANDED ROW */
+.term-expand {
+  border-bottom: 1px solid var(--line);
+  padding: 32px 20px 40px 96px;
+  background: var(--bg2);
+  animation: slideDown 0.3s ease-out;
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.term-expand-desc {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--txt2);
+  margin-bottom: 28px;
+  max-width: 720px;
+}
+.term-expand-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 28px;
+}
+.term-expand-cell {
+  padding: 18px 20px;
+  border-right: 1px solid var(--line);
+}
+.term-expand-cell:last-child { border-right: none; }
+.term-expand-lbl {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--txt4);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.term-expand-v {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--txt);
+  line-height: 1.4;
+  font-weight: 500;
+}
+.term-expand-scorecard {
+  margin-bottom: 28px;
+}
+.term-sc-row {
+  display: grid;
+  grid-template-columns: 14px 180px 1fr;
+  gap: 14px;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+.term-sc-row:last-child { border-bottom: 1px solid var(--line); }
+.term-sc-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.term-sc-dot.green { background: var(--prime); box-shadow: 0 0 8px rgba(168,255,96,0.6); }
+.term-sc-dot.yellow { background: var(--warn); box-shadow: 0 0 8px rgba(255,184,77,0.5); }
+.term-sc-dot.red { background: var(--danger); box-shadow: 0 0 8px rgba(255,107,107,0.5); }
+.term-sc-k { color: var(--txt3); letter-spacing: 0.5px; }
+.term-sc-v { color: var(--txt); }
+.term-expand-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.term-act {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 11px 20px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: 1px solid var(--line2);
+  background: transparent;
+  color: var(--txt);
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.term-act:hover { border-color: var(--prime); color: var(--prime); }
+.term-act.primary { background: var(--prime); color: var(--bg); border-color: var(--prime); font-weight: 700; }
+.term-act.primary:hover { background: transparent; color: var(--prime); }
+
+/* ═══ QUIZ ═══ */
+.quiz {
+  border: 1px solid var(--line2);
+  background: var(--bg1);
+  padding: 48px 56px;
+  position: relative;
+  overflow: hidden;
+}
+.quiz::before {
+  content: 'RUN DIAGNOSTIC';
+  position: absolute;
+  top: 14px;
+  right: 20px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--prime);
+  letter-spacing: 2px;
+}
+.quiz-prog {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--prime);
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.quiz-prog-track {
+  flex: 1;
+  max-width: 300px;
+  height: 2px;
+  background: var(--bg3);
+  position: relative;
+  overflow: hidden;
+}
+.quiz-prog-fill {
+  height: 100%;
+  background: var(--prime);
+  box-shadow: 0 0 8px var(--prime);
+  transition: width 0.4s ease;
+}
+.quiz-q {
+  font-family: var(--serif);
+  font-size: 44px;
+  font-weight: 400;
+  letter-spacing: -1px;
+  line-height: 1.05;
+  color: var(--txt);
+  margin: 18px 0 8px;
+}
+.quiz-sub {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--txt3);
+  letter-spacing: 0.5px;
+  margin-bottom: 32px;
+}
+.quiz-opts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+.quiz-opt {
+  background: var(--bg1);
+  padding: 22px 28px;
+  text-align: left;
+  transition: all 0.15s;
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  gap: 20px;
+  align-items: center;
+}
+.quiz-opt:hover { background: var(--bg2); }
+.quiz-opt-ltr {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--prime);
+  letter-spacing: 1px;
+  border: 1px solid var(--prime);
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.quiz-opt:hover .quiz-opt-ltr {
+  background: var(--prime);
+  color: var(--bg);
+}
+.quiz-opt-l {
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 500;
+  color: var(--txt);
+  letter-spacing: -0.3px;
+}
+.quiz-opt-d {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--txt3);
+  letter-spacing: 0.3px;
+  margin-top: 3px;
+}
+.quiz-opt-arrow {
+  font-family: var(--mono);
+  font-size: 16px;
+  color: var(--txt4);
+  transition: all 0.2s;
+}
+.quiz-opt:hover .quiz-opt-arrow {
+  color: var(--prime);
+  transform: translateX(4px);
+}
+.quiz-footer {
+  margin-top: 20px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.quiz-back {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--txt3);
+  padding: 8px 14px;
+  border: 1px solid var(--line2);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all 0.15s;
+}
+.quiz-back:hover { border-color: var(--prime); color: var(--prime); }
+
+/* Quiz results */
+.quiz-results-hdr {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+.quiz-results-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--prime);
+  padding: 4px 10px;
+  border: 1px solid var(--prime);
+  letter-spacing: 1.5px;
+  background: var(--primeA);
+}
+.quiz-results-title {
+  font-family: var(--serif);
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--txt);
+  letter-spacing: -0.6px;
+}
+.quiz-results-title em {
+  font-style: italic;
+  color: var(--prime);
+  font-weight: 500;
+}
+.quiz-result-row {
+  display: grid;
+  grid-template-columns: 40px 44px 1fr 70px auto;
+  gap: 18px;
+  align-items: center;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+.quiz-result-rank {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--txt4);
+  letter-spacing: 1px;
+}
+.quiz-result-rank::before { content: '#'; opacity: 0.4; }
+.quiz-result-info { min-width: 0; }
+.quiz-result-nm {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--txt);
+  margin-bottom: 4px;
+  letter-spacing: -0.3px;
+}
+.quiz-result-reasons {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--txt3);
+  letter-spacing: 0.3px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.quiz-result-reasons span::before { content: '+ '; color: var(--prime); }
+.quiz-result-score {
+  font-family: var(--serif);
+  font-size: 28px;
+  color: var(--prime);
+  font-weight: 500;
+  text-align: right;
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+.quiz-result-score small {
+  display: block;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--txt4);
+  font-weight: 500;
+  letter-spacing: 1px;
+  margin-top: 3px;
+}
+.quiz-result-actions {
+  display: flex;
+  gap: 6px;
+}
+.quiz-result-btn {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 7px 12px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: 1px solid var(--line2);
+  color: var(--txt);
+  transition: all 0.15s;
+}
+.quiz-result-btn:hover { border-color: var(--prime); color: var(--prime); }
+.quiz-result-btn.primary { background: var(--prime); color: var(--bg); border-color: var(--prime); font-weight: 700; }
+
+/* ═══ DEALS STRIP ═══ */
+.deals {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border: 1px solid var(--line2);
+  background: var(--bg1);
+}
+.deals-row {
+  padding: 28px 24px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  transition: background 0.15s;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+.deals-row:hover { background: var(--bg2); }
+.deals-row:hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--prime);
+}
+.deals-row-firm {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--txt);
+  letter-spacing: -0.3px;
+}
+.deals-row-logo {
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--line2);
+  overflow: hidden;
+  background: var(--bg2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.deals-row-logo img { width: 100%; height: 100%; object-fit: contain; padding: 3px; }
+.deals-row-pct {
+  font-family: var(--serif);
+  font-size: 56px;
+  font-weight: 500;
+  color: var(--prime);
+  line-height: 1;
+  letter-spacing: -2px;
+}
+.deals-row-pct em { font-family: var(--mono); font-size: 14px; font-weight: 600; font-style: normal; vertical-align: top; }
+.deals-row-code {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--txt3);
+  letter-spacing: 1px;
+  margin-top: auto;
+}
+.deals-row-code b { color: var(--txt); background: var(--bg3); padding: 3px 6px; margin-left: 4px; }
+.deals-row-desc {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--txt4);
+  line-height: 1.4;
+  letter-spacing: 0.2px;
 }
 
+/* ═══ CHALLENGES ═══ */
+.chal-ctrl {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+.chal-ctrl select {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 10px 14px;
+  background: var(--bg1);
+  color: var(--txt);
+  border: 1px solid var(--line2);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  outline: none;
+}
+.chal-ctrl select:focus { border-color: var(--prime); }
+.chal-ctrl button {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 10px 16px;
+  background: var(--bg1);
+  color: var(--txt3);
+  border: 1px solid var(--line2);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all 0.15s;
+}
+.chal-ctrl button:hover { color: var(--txt); }
+.chal-ctrl button.on { background: var(--prime); color: var(--bg); border-color: var(--prime); font-weight: 700; }
+.chal-table {
+  width: 100%;
+  border: 1px solid var(--line2);
+  background: var(--bg1);
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.chal-table thead th {
+  font-size: 10px;
+  color: var(--txt4);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg2);
+  font-weight: 600;
+}
+.chal-table tbody td {
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+  color: var(--txt2);
+}
+.chal-table tbody tr:hover td { background: var(--bg2); }
+.chal-table tbody tr:last-child td { border-bottom: none; }
+.chal-cell-firm {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.chal-cell-firm img { width: 22px; height: 22px; border: 1px solid var(--line2); padding: 2px; background: var(--bg2); }
+.chal-cell-firm b {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--txt);
+  letter-spacing: -0.3px;
+}
+.chal-cell-plan {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--prime);
+  font-weight: 600;
+}
+.chal-cell-price {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--prime);
+  letter-spacing: -0.3px;
+}
+
+/* ═══ SIMULATOR ═══ */
+.sim {
+  border: 1px solid var(--line2);
+  background: var(--bg1);
+  padding: 32px;
+}
+.sim-ctrl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.sim-ctrl label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--txt4);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.sim-ctrl select {
+  width: 100%;
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 12px 14px;
+  background: var(--bg2);
+  color: var(--txt);
+  border: 1px solid var(--line2);
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  outline: none;
+}
+.sim-ctrl select:focus { border-color: var(--prime); }
+.sim-chart-wrap {
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.sim-chart-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(168,255,96,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168,255,96,0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+}
+.sim-chart { width: 100%; height: auto; display: block; position: relative; }
+.sim-verdict {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 24px;
+  border: 1px solid;
+  margin-bottom: 16px;
+  font-family: var(--mono);
+}
+.sim-verdict.pass { border-color: var(--prime); background: var(--primeA); }
+.sim-verdict.fail { border-color: var(--danger); background: rgba(255,107,107,0.06); }
+.sim-verdict-mark {
+  font-family: var(--serif);
+  font-size: 42px;
+  line-height: 1;
+  font-weight: 500;
+}
+.sim-verdict.pass .sim-verdict-mark { color: var(--prime); }
+.sim-verdict.fail .sim-verdict-mark { color: var(--danger); }
+.sim-verdict-t {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--txt);
+  letter-spacing: -0.3px;
+  margin-bottom: 4px;
+}
+.sim-verdict-d {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--txt3);
+  line-height: 1.5;
+  letter-spacing: 0.3px;
+}
+.sim-legend {
+  display: flex;
+  gap: 24px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--txt3);
+  letter-spacing: 0.5px;
+  flex-wrap: wrap;
+}
+.sim-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sim-legend-dot { width: 12px; height: 2px; display: inline-block; }
+
+/* ═══ RESEARCH ═══ */
+.rsearch {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 0;
+  border: 1px solid var(--line2);
+  background: var(--bg1);
+}
+.rsearch-main {
+  padding: 40px 44px;
+  border-right: 1px solid var(--line);
+  cursor: pointer;
+  transition: background 0.2s;
+  grid-row: span 2;
+}
+.rsearch-main:hover { background: var(--bg2); }
+.rsearch-cat {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--prime);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.rsearch-h {
+  font-family: var(--serif);
+  font-size: 38px;
+  font-weight: 500;
+  letter-spacing: -1px;
+  line-height: 1.1;
+  color: var(--txt);
+  margin-bottom: 16px;
+}
+.rsearch-excerpt {
+  font-family: var(--serif);
+  font-size: 15px;
+  font-style: italic;
+  color: var(--txt3);
+  line-height: 1.55;
+  margin-bottom: 18px;
+}
+.rsearch-date {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--txt4);
+  letter-spacing: 0.5px;
+}
+.rsearch-sub {
+  padding: 28px 32px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.rsearch-sub:hover { background: var(--bg2); }
+.rsearch-sub:last-child { border-bottom: none; }
+.rsearch-sub-cat {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--prime);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.rsearch-sub-h {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--txt);
+  line-height: 1.25;
+  letter-spacing: -0.3px;
+  margin-bottom: 8px;
+}
+.rsearch-sub-date {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--txt4);
+  letter-spacing: 0.5px;
+}
+
+/* ═══ REWARDS CARD ═══ */
+.rw {
+  border: 1px solid var(--line2);
+  background: var(--bg1);
+  padding: 48px 56px;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+.rw-eye {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--prime);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.rw-h {
+  font-family: var(--serif);
+  font-size: 48px;
+  font-weight: 500;
+  letter-spacing: -1.2px;
+  line-height: 1.05;
+  color: var(--txt);
+  margin-bottom: 18px;
+}
+.rw-h em { font-style: italic; color: var(--prime); }
+.rw-d {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 17px;
+  color: var(--txt3);
+  line-height: 1.5;
+  margin-bottom: 28px;
+  max-width: 480px;
+}
+.rw-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.rw-step {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  background: var(--bg2);
+  transition: all 0.15s;
+}
+.rw-step:hover { border-color: var(--prime); }
+.rw-step-n {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--prime);
+  font-weight: 700;
+  letter-spacing: 1px;
+  border: 1px solid var(--prime);
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.rw-step-t {
+  font-family: var(--serif);
+  font-size: 16px;
+  color: var(--txt);
+  letter-spacing: -0.3px;
+  margin-bottom: 3px;
+}
+.rw-step-s {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--txt4);
+  letter-spacing: 0.4px;
+}
+
+/* ═══ FOOTER ═══ */
+.ftr {
+  margin-top: 140px;
+  padding: 60px 0 40px;
+  border-top: 2px solid var(--txt);
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+}
+.ftr-brand {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--txt);
+  letter-spacing: -0.5px;
+  margin-bottom: 14px;
+}
+.ftr-brand em { font-style: italic; color: var(--prime); }
+.ftr-tag {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--txt3);
+  max-width: 320px;
+  line-height: 1.55;
+  margin-bottom: 20px;
+}
+.ftr-mono {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--txt4);
+  letter-spacing: 0.5px;
+}
+.ftr-col h4 {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--prime);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+.ftr-col a, .ftr-col button {
+  display: block;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--txt2);
+  padding: 5px 0;
+  transition: color 0.15s;
+  letter-spacing: 0.3px;
+  text-decoration: none;
+  text-align: left;
+}
+.ftr-col a:hover, .ftr-col button:hover { color: var(--prime); }
+.ftr-btm {
+  grid-column: 1 / -1;
+  padding-top: 32px;
+  margin-top: 24px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--txt4);
+  letter-spacing: 0.5px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* ═══ SIDEBAR (user panel) ═══ */
+.user-panel {
+  position: fixed;
+  top: 60px;
+  right: 16px;
+  width: 280px;
+  background: var(--bg1);
+  border: 1px solid var(--line2);
+  padding: 20px;
+  z-index: 40;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+.user-panel-hdr {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 16px;
+}
+.user-panel-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--line2);
+  background: var(--bg2);
+  background-size: cover;
+  background-position: center;
+}
+.user-panel-name {
+  font-family: var(--serif);
+  font-size: 16px;
+  color: var(--txt);
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+}
+.user-panel-email {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--txt4);
+  letter-spacing: 0.3px;
+  margin-top: 3px;
+}
+.user-panel-item {
+  display: block;
+  width: 100%;
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 10px 0;
+  color: var(--txt2);
+  text-align: left;
+  border-top: 1px solid var(--line);
+  transition: color 0.15s;
+  letter-spacing: 0.4px;
+}
+.user-panel-item:hover { color: var(--prime); }
+.user-panel-item:first-of-type { border-top: none; }
+
+/* ═══ AUTH MODAL ═══ */
+.auth-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.auth-box {
+  background: var(--bg1);
+  border: 1px solid var(--line2);
+  padding: 48px;
+  max-width: 420px;
+  width: 100%;
+  position: relative;
+}
+.auth-box::before {
+  content: 'TERMINAL.LOGIN';
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--prime);
+  letter-spacing: 1.5px;
+}
+.auth-h {
+  font-family: var(--serif);
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--txt);
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+.auth-d {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--txt3);
+  letter-spacing: 0.4px;
+  margin-bottom: 28px;
+}
+.auth-tab {
+  display: flex;
+  border: 1px solid var(--line2);
+  margin-bottom: 20px;
+}
+.auth-tab button {
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 10px;
+  color: var(--txt3);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all 0.15s;
+}
+.auth-tab button.on { background: var(--prime); color: var(--bg); font-weight: 700; }
+.auth-inp {
+  display: block;
+  width: 100%;
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 13px 16px;
+  background: var(--bg2);
+  color: var(--txt);
+  border: 1px solid var(--line2);
+  margin-bottom: 12px;
+  letter-spacing: 0.3px;
+  outline: none;
+  transition: border 0.15s;
+}
+.auth-inp:focus { border-color: var(--prime); }
+.auth-inp::placeholder { color: var(--txt4); }
+.auth-sub {
+  width: 100%;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 14px;
+  background: var(--prime);
+  color: var(--bg);
+  border: 1px solid var(--prime);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.15s;
+}
+.auth-sub:hover { background: transparent; color: var(--prime); }
+.auth-close {
+  position: absolute;
+  top: 14px;
+  left: 18px;
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--txt4);
+}
+.auth-close:hover { color: var(--prime); }
+.auth-err {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--danger);
+  padding: 8px 12px;
+  border: 1px solid var(--danger);
+  background: rgba(255,107,107,0.06);
+  margin-bottom: 12px;
+  letter-spacing: 0.3px;
+}
+
+/* ═══ COMPARE TRAY ═══ */
+.cmp-tray {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg1);
+  border: 1px solid var(--prime);
+  padding: 14px 20px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  z-index: 60;
+  box-shadow: 0 0 40px rgba(168,255,96,0.15);
+}
+.cmp-tray-firms { display: flex; gap: 8px; }
+.cmp-tray-chip {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--prime);
+  padding: 5px 10px;
+  border: 1px solid var(--prime);
+  background: var(--primeA);
+  letter-spacing: 0.3px;
+}
+.cmp-tray-go {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 8px 16px;
+  background: var(--prime);
+  color: var(--bg);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.cmp-tray-clear {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--txt3);
+  padding: 8px 12px;
+  border: 1px solid var(--line2);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.cmp-tray-clear:hover { color: var(--danger); border-color: var(--danger); }
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 900px) {
+  .tbar { grid-template-columns: auto 1fr auto; gap: 12px; padding: 12px 16px; }
+  .tbar-status, .tbar-cmd { display: none; }
+  .app { padding: 0 16px; }
+  .crosshair { display: none; }
+  .tstrip { grid-template-columns: repeat(2, 1fr); }
+  .tstrip-item:nth-child(2) { border-right: none; }
+  .tstrip-item:nth-child(1), .tstrip-item:nth-child(2) { border-bottom: 1px solid var(--line); padding-bottom: 20px; margin-bottom: 20px; }
+  .sec-hd { grid-template-columns: 1fr; gap: 12px; }
+  .sec-sub { text-align: left; }
+  .term-colhdr, .term-row { grid-template-columns: 40px 1fr 70px 50px; gap: 10px; padding: 16px; }
+  .term-colhdr > span:nth-child(4), .term-colhdr > span:nth-child(5), .term-colhdr > span:nth-child(6) { display: none; }
+  .term-row > *:nth-child(4), .term-row > *:nth-child(5), .term-row > *:nth-child(6) { display: none; }
+  .term-expand { padding: 20px 16px; }
+  .term-expand-grid { grid-template-columns: 1fr 1fr; }
+  .term-expand-cell:nth-child(odd) { border-right: 1px solid var(--line); }
+  .term-expand-cell:nth-child(even) { border-right: none; }
+  .deals { grid-template-columns: 1fr 1fr; }
+  .rsearch { grid-template-columns: 1fr; }
+  .rsearch-main { grid-row: auto; border-right: none; }
+  .quiz { padding: 28px 24px; }
+  .quiz-q { font-size: 28px; }
+  .rw { grid-template-columns: 1fr; gap: 32px; padding: 28px; }
+  .rw-h { font-size: 32px; }
+  .ftr { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .chal-table { font-size: 11px; }
+  .chal-table thead th, .chal-table tbody td { padding: 10px; }
+}
 `;
 
-// ── HELPERS ──
-const PULSE_SCORES = {"Tradeify":96,"My Funded Futures":93,"Alpha Futures":92,"Top One Futures":93,"FundedNext Futures":91,"Apex Trader Funding":94,"Bulenox":92,"Goat Funded Futures":93};
-const TOP_PICKS = new Set(["Tradeify","Apex Trader Funding","Top One Futures"]);
-const calcPulse = (r,rv,name) => PULSE_SCORES[name] || 75;
-
-const AFFILIATE_LINKS = {
-  "Apex Trader Funding":"https://apextraderfunding.com/member/aff/go/jwachter0823",
-  "Tradeify":"https://tradeify.co/?ref=CUCNCROP",
-  "Top One Futures":"https://toponefutures.com/?linkId=lp_707970&sourceId=timelesstrading&tenantId=toponefutures",
-  "Bulenox":"https://bulenox.com/member/aff/go/jwachter0823",
-  "Alpha Futures":"https://app.alpha-futures.com/signup/Joey021384/",
-  "My Funded Futures":"https://myfundedfutures.com/challenge?ref=1788",
-  "Goat Funded Futures":"https://goatfundedfutures.com/?ref=TPP"
-};
-
-const trackClick = async (firmName) => {
-  const {data:{session}} = await supabase.auth.getSession();
-  if(session?.user) {
-    await supabase.from("click_tracking").insert({user_id:session.user.id, firm:firmName});
-  }
-  const url = AFFILIATE_LINKS[firmName];
-  if(url) window.open(url,"_blank");
-};
-const pulseColor = s => s>=92?"var(--gold)":s>=88?"#fbbf24":s>=84?"#f59e0b":"var(--t4)";
-const copyToClipboard = text => {
-  if(navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
-  const ta=document.createElement("textarea");ta.value=text;ta.style.cssText="position:fixed;left:-9999px";document.body.appendChild(ta);ta.select();try{document.execCommand("copy")}catch(e){}document.body.removeChild(ta);return Promise.resolve();
-};
-// ─── FIRM PROFILES (comprehensive detail data) ──────────────────────────────
-const FIRM_PROFILES = {
-  "Tradeify":{
-    tagline:"Trade like a Champion with the Best Futures Prop Firm",
-    description:"Tradeify is a futures-focused prop firm founded in 2021 by Brett Simba in Austin, TX. With the Tradeify 3.0 update (March 2026), all plans moved to one-time fees — no more subscriptions. Platform support now includes Tradovate, WealthCharts, and TradeSea. ~1-hour payout processing, instant dashboard activations, integrated trading journal, and the Elite Live Performance Reward Pool (up to $90K in additional rewards). Over $150M+ in verified payouts processed.",
-    website:"tradeify.co",
-    ceo:"Brett Simba",
-    totalPayouts:"$150M+ verified",
-    discordMembers:"30,000+",
-    plans:["Select (Daily/Flex)","Growth","Lightning (Instant)","NEW: 25K accounts on Select & Growth"],
-    accountSizes:"$25K, $50K, $100K, $150K (all plans now one-time fee)",
-    profitSplit:"90/10 from first payout (Select Flex), 100% first $15K then 90/10 (Growth/Lightning)",
-    drawdown:"End-of-Day Trailing — MLL: $1K(25K), $2K(50K), $3.5K(100K), $4.5K(150K) on Select. Lightning 150K: $5,250 (3.0 update). Locks at balance + $100.",
-    payoutSpeed:"Same-day to 48 hours via Rise or Plane. Instant funded activation from dashboard (3.0)",
-    payoutFreq:"Daily (Select Daily), Every 5 winning days (Select Flex), Per profit goal (Growth/Lightning)",
-    activationFee:"$0 — No activation fees on any account",
-    platforms:["Tradovate","WealthCharts","TradeSea"],
-    instruments:"CME Group Futures (ES, NQ, YM, CL, GC, NQ Micro, etc.)",
-    newsTrading:"Yes — no restrictions on news events",
-    eaPolicy:"Yes — EAs/bots allowed with ownership verification",
-    overnightHolds:"No — all positions must close by market close",
-    consistencyRule:"40% (Select eval), None (Select Flex funded), 35% (Growth funded), 20→25→30% (Lightning progressive)",
-    dailyLossLimit:"None on Select Flex | Select Daily: $500(25K)/$1K(50K)/$1.25K(100K)/$1.75K(150K) | Lightning: $1.25K(50K)/$2.5K(100K)/$3K(150K) — soft breach, removed at 6% profit | Growth: $600(25K)/$1.25K(50K)/$2.5K(100K)/$3.75K(150K)",
-    scalingPlan:"Progressive contract scaling on funded Select accounts, starts reduced and scales with equity",
-    livePath:"Tradeify Elite after 5 total payouts across all accounts — trade real CME capital with up to 5 live accounts",
-    maxAccounts:"5 funded accounts simultaneously",
-    pros:["All plans now ONE-TIME fees (3.0 — no more subscriptions)","Elite Live Performance Reward Pool up to $90K","Daily payout option","EOD trailing drawdown locks early","New 25K accounts for affordable entry","Rithmic & TradeSea platforms added (3.0)","Instant funded activation from dashboard","Integrated trading journal","News trading allowed","EAs permitted","Path to live capital via Elite"],
-    cons:["Select funded starts with reduced contract limits (progressive scaling)","40% consistency rule on Select eval","Lightning 150K drawdown reduced to $5,250 in 3.0","~3% price increase across plans in 3.0"]
-  },
-  "My Funded Futures":{
-    tagline:"The futures prop firm traders trust most",
-    description:"My Funded Futures (MFFU) launched in late 2023 by Matthew Leech, now based in Dover, DE. Highest-rated futures prop firm on Trustpilot (4.9/5 from 16,000+ reviews). Three plans: Core ($50K only, 80/20), Rapid (90/10, 5 winning days payouts, intraday trailing), and Pro (80/20, no consistency funded, bi-weekly). Zero activation fees. One-time payment options available on Core/Rapid/Pro.",
-    website:"myfundedfutures.com",
-    ceo:"Matthew Leech",
-    totalPayouts:"$25M+ reported",
-    discordMembers:"Active Discord + live chat",
-    plans:["Core ($50K only)","Rapid ($50K–$150K)","Pro ($50K–$150K)"],
-    accountSizes:"$50K (Core) | $50K, $100K, $150K (Rapid & Pro)",
-    profitSplit:"80/20 (Core & Pro) | 90/10 (Rapid). Payout caps vary by plan.",
-    drawdown:"EOD Trailing (Core & Pro) — locks at starting balance. Intraday Trailing (Rapid) — follows peak equity including unrealized P&L.",
-    payoutSpeed:"Most approved instantly — 6-12 hours if manual review. $15 flat fee per withdrawal via RiseWorks.",
-    payoutFreq:"Every 5 winning days (Core & Rapid) | Bi-weekly / 14 calendar days (Pro)",
-    activationFee:"$0 — No activation fees on any plan",
-    platforms:["NinjaTrader","Tradovate","Rithmic","TradingView","+6"],
-    instruments:"CME, CBOT, COMEX, NYMEX Futures",
-    newsTrading:"Allowed with restrictions — must be flat 2 minutes before/after Tier 1 events (FOMC, NFP, CPI). Policy applies across all plans on funded stage.",
-    eaPolicy:"Yes — automated trading generally permitted",
-    overnightHolds:"No — must close positions by session end on all plans",
-    consistencyRule:"50% during eval (all plans) | 40% on Core funded | None on Rapid & Pro funded",
-    dailyLossLimit:"None — no DLL on any plan. Only trailing drawdown (EOD or intraday).",
-    scalingPlan:"Core: micro-contract scaling on funded. Rapid: micro-contract scaling on funded. Pro: full contracts from day one, no scaling.",
-    livePath:"Live account after meeting progression criteria ($100K cumulative payouts on Pro, or 5+ payouts on other plans)",
-    maxAccounts:"Multiple accounts allowed",
-    pros:["No daily loss limit on any plan","4.9/5 Trustpilot — highest rated futures prop firm","No activation fees","Pro plan: zero consistency rule funded","Rapid plan: 90/10 split with daily payouts","One-time payment options available","Instant payout approvals"],
-    cons:["Core only available in $50K size","Monthly subscription model (one-time option costs more)","Rapid uses intraday trailing drawdown (aggressive)","Core/Pro split is 80/20","News restricted on Rapid & Pro","$15 withdrawal fee per payout","Payout caps on Core ($5K) and Rapid ($11.25K)"]
-  },
-  "Alpha Futures":{
-    tagline:"Empowering traders with fair and transparent funding",
-    description:"Alpha Futures launched in July 2024 as a sister company of Alpha Capital Group (forex). UK-based with CEO Ben Chaffee actively involved in their Discord. Rated 4.9/5 on Trustpilot. Offers Standard, Advanced, and Zero evaluation types with no hard daily loss limit — uses a soft 'Daily Loss Guard' instead.",
-    website:"alpha-futures.com",
-    ceo:"Ben Chaffee",
-    totalPayouts:"Growing rapidly",
-    discordMembers:"Active with CEO participation",
-    plans:["Standard","Advanced","Zero"],
-    accountSizes:"$50K, $100K, $150K",
-    profitSplit:"70% (payouts 1-2) → 80% (payouts 3-4) → 90% (payout 5+)",
-    drawdown:"EOD Trailing — $2,500(50K), $3,500(100K), $4,500(150K)",
-    payoutSpeed:"Within 48 business hours — Advanced gets weekly processing",
-    payoutFreq:"Bi-weekly (Standard) | Weekly (Advanced) | After buffer (Zero)",
-    activationFee:"$149 on Standard & Advanced | $0 on Zero",
-    platforms:["NinjaTrader","Tradovate","TradingView","AlphaTicks (Quantower)"],
-    instruments:"CME Group Futures — equities, forex, commodities, rates",
-    newsTrading:"Yes — no restrictions on news events",
-    eaPolicy:"No — EAs, bots, and automated trading are prohibited. Semi-auto with active supervision may be allowed.",
-    overnightHolds:"No — no overnight or weekend positions",
-    consistencyRule:"None during eval. 40% on Standard/Zero funded only. Advanced has no consistency at any stage.",
-    dailyLossLimit:"None — Alpha Futures has no separate daily loss limit, only EOD trailing Max Loss",
-    scalingPlan:"No scaling plan — max allocation is the chosen account size (50K-150K)",
-    livePath:"Path to live trading available after consistent performance",
-    maxAccounts:"Multiple accounts allowed",
-    pros:["4.9/5 Trustpilot rating","Soft DLL (won't fail your account)","No funded consistency rule","CEO active in Discord","Cheapest entry at $79/mo for 50K"],
-    cons:["EAs/bots completely prohibited","Profit split starts at 70% (increases to 90% over time)","Monthly subscription model","Limited platform selection","No scaling beyond chosen account size","Activation fee on Standard"]
-  },
-  "Apex Trader Funding":{
-    tagline:"Trade Futures. Keep 100% of the First $25,000.",
-    description:"Apex Trader Funding launched in 2021 by Darrell Martin in Austin, TX. One of the largest futures prop firms with $720M+ in total payouts. Completely rebuilt with Apex 4.0 on March 1, 2026: one-time payment model, two drawdown types (EOD Trail & Intraday Trail), automated Deel payouts, 6-payout cap per PA. Removed MAE, 5:1 RR, monthly fees, 250K/300K sizes, and manual payout reviews. Metals suspended, overnight positions banned.",
-    website:"apextraderfunding.com",
-    ceo:"Darrell Martin",
-    totalPayouts:"$720M+",
-    discordMembers:"59,000+ Discord",
-    plans:["EOD Trailing Drawdown","Intraday Trailing Drawdown"],
-    accountSizes:"$25K, $50K, $100K, $150K (75K/250K/300K removed in 4.0)",
-    profitSplit:"100% of first $25K, then 90/10. Payout ladder with caps per cycle (6 payouts max per PA).",
-    drawdown:"EOD Trail: recalculates at 4:59 PM ET, includes DLL. Intraday Trail: real-time trailing including unrealized P&L, no DLL. Both lock at balance + $100. MLL: $1K(25K), $2K(50K), $3K(100K), $4K(150K).",
-    payoutSpeed:"Automated via Deel — 3-4 business days after approval",
-    payoutFreq:"After 5 qualifying trading days ($250+ net profit per day on 100K). Max 6 payouts per PA lifetime.",
-    activationFee:"$79 (Intraday) / $99 (EOD) — paid after passing eval, not upfront",
-    platforms:["Rithmic","Tradovate","WealthCharts"],
-    instruments:"CME, CBOT, NYMEX, COMEX Futures — METALS SUSPENDED (GC, SI, MGC, HG, PL, PA as of March 2026)",
-    newsTrading:"Yes — permitted for normal strategies. 'Windfall' exploitation prohibited.",
-    eaPolicy:"Yes — automated trading permitted. DCA prohibited on Performance Accounts. Mandatory bracket orders enforced by platform.",
-    overnightHolds:"No — all positions must close by 4:59 PM ET. Overnight banned on all 4.0 accounts.",
-    consistencyRule:"50% on Performance Accounts only (not during eval). No single day > 50% of total profit since last payout.",
-    dailyLossLimit:"EOD accounts only: $750(25K), $1K(50K), $1.5K(100K), $2K(150K). Pauses trading for the day — does NOT fail account. Intraday accounts have NO DLL.",
-    scalingPlan:"Up to 20 Performance Accounts simultaneously. Half contracts on PA until trailing threshold cleared. Tier-based scaling as balance grows.",
-    livePath:"After 6 payouts, PA closes. Purchase new evaluation to restart. No live capital path currently.",
-    maxAccounts:"Up to 20 PAs simultaneously (all types combined)",
-    pros:["100% of first $25K profits","One-time fees — no more subscriptions","EOD drawdown option (huge improvement)","Up to 20 simultaneous accounts","Simplified rules — MAE/5:1 RR removed","$720M+ total payouts","Automated payout processing via Deel","No consistency rule during eval — pass in 1 day"],
-    cons:["$79 activation fee on top of eval fee","6-payout cap then PA closes (rebuy required)","Metals completely suspended (Gold/Silver/etc.)","30-day eval expiry — no resets","Intraday trailing drawdown is aggressive","Overnight positions banned","DCA prohibited on funded accounts","Payout caps per cycle limit withdrawals","Contract limits reduced on PA vs eval"]
-  },
-  "Top One Futures":{
-    tagline:"Top-tier futures prop trading",
-    description:"Top One Futures launched in 2025 and is based in Cheyenne, WY. Offers 5 distinct plan types — Elite, Elite Access, Instant Sim Funded, S2F Sim PRO, and IGNITE Instant Funding — with varying consistency rules from 15% to 40%. Known for sub-24-hour payouts and $23M+ distributed to traders.",
-    website:"toponefutures.com",
-    ceo:"Leadership team",
-    totalPayouts:"$23M+ distributed",
-    discordMembers:"Active community",
-    plans:["Elite","Elite Access","Instant Sim Funded","S2F Sim PRO","IGNITE Instant Funding"],
-    accountSizes:"$25K, $50K, $100K, $150K",
-    profitSplit:"90/10",
-    drawdown:"EOD Trailing (Intraday on S2F Sim PRO)",
-    payoutSpeed:"<24 hours average",
-    payoutFreq:"After 5 trading days (most plans)",
-    activationFee:"$149 (Elite) | $35 reset (Elite Access) | Included (Instant/IGNITE)",
-    platforms:["NinjaTrader","Tradovate","TradingView"],
-    instruments:"CME Group Futures",
-    newsTrading:"Yes — allowed",
-    eaPolicy:"Policy not fully disclosed — verify before automating",
-    overnightHolds:"No — intraday only",
-    consistencyRule:"Varies by plan: 15% (IGNITE), 20% (Instant/S2F), 25% (Elite), 40% (Elite Access)",
-    dailyLossLimit:"Yes on most plans; Elite Access has no DLL",
-    scalingPlan:"Up to $1.5M in simulated funds across accounts",
-    livePath:"S2F (Sim-to-Funded) progression path",
-    maxAccounts:"Up to 3 concurrent (IGNITE may allow more)",
-    pros:["5 distinct plan types to match trader style","Sub-24-hour payouts","Elite Access has no daily loss limit","Frequent massive discounts (60%+ off)","$23M+ distributed to traders"],
-    cons:["IGNITE has very strict 15% consistency","S2F Sim PRO requires 10 minimum trading days","Newer firm (2025) — shorter track record","EA/bot policy not clearly documented"]
-  },
-  "FundedNext Futures":{
-    tagline:"The future of prop trading",
-    description:"FundedNext Futures is operated by GrowthNext F.Z.E. (est. 2022) in Ajman, UAE, with additional offices in Cyprus and Hong Kong. Expanded from forex into futures. Has the most Trustpilot reviews of any prop firm (63,000+) across both divisions. Offers three challenges: Rapid (1-step, no consistency), Legacy (classic model), and Bolt (daily withdrawals, 40% reward split).",
-    website:"fundednext.com",
-    ceo:"Leadership team",
-    totalPayouts:"$261M+ verified (combined forex + futures)",
-    discordMembers:"Large global community",
-    plans:["Rapid (1-Step, no consistency)","Legacy","Bolt (daily withdrawals)"],
-    accountSizes:"$25K, $50K, $100K (futures max is 100K), up to $1.2M via scaling",
-    profitSplit:"80/20 → 90/10 (Rapid/Legacy) | 40% reward split (Bolt)",
-    drawdown:"EOD Trailing",
-    payoutSpeed:"Guaranteed within 24 hours — $1,000 compensation if delayed (avg ~5 hours)",
-    payoutFreq:"After meeting profit target per cycle | Daily withdrawals on Bolt",
-    activationFee:"$0 — no activation fees, one-time challenge fee only",
-    platforms:["NinjaTrader","Tradovate","TradingView"],
-    instruments:"CME Group Futures",
-    newsTrading:"Yes — no restrictions on economic news",
-    eaPolicy:"Yes — automated trading fully allowed",
-    overnightHolds:"No — positions must close intraday",
-    consistencyRule:"None (Rapid) | Yes (Bolt)",
-    dailyLossLimit:"Yes — varies by account size (e.g., $1,000 on Bolt 50K)",
-    scalingPlan:"Up to $1.2M in allocation via scaling program",
-    livePath:"Scaling path to larger allocations",
-    maxAccounts:"Multiple accounts allowed | 3 Minis / 9 Micros max positions",
-    pros:["One-time fee (no subscriptions)","No consistency rule on Rapid","24-hour guaranteed payout with delay penalty","Up to $1.2M max allocation","No time limits on challenges","Daily withdrawals on Bolt"],
-    cons:["80/20 starting split on Rapid/Legacy is lower than competitors","Daily loss limit applies","Newer to futures (primarily forex)","Bolt has 40% reward split + consistency rule","Some complaints about payout denials in 2025-2026"]
-  },
-  "Bulenox":{
-    tagline:"Low-cost futures funding with weekly payouts",
-    description:"Bulenox launched in 2022 and is registered in Delaware. Known for competitive evaluation pricing, widest platform support (18+), and explicitly allowing EAs/bots/copy trading. Weekly payouts on Wednesdays. Choose Option 1 (Trailing, no DLL) or Option 2 (EOD, DLL applies). 100% of first $10K in profits. Monthly subscription pricing (not one-time).",
-    website:"bulenox.com",
-    ceo:"Leadership team",
-    totalPayouts:"Verified payouts",
-    discordMembers:"Growing community",
-    plans:["Qualification (1-Step)"],
-    accountSizes:"$25K, $50K, $100K, $150K, $250K",
-    profitSplit:"100% of first $10,000, then 90/10",
-    drawdown:"Choose: EOD Trailing OR Intraday Trailing — your choice at purchase",
-    payoutSpeed:"Processed weekly on Wednesdays",
-    payoutFreq:"Weekly (every Wednesday)",
-    activationFee:"Monthly subscription pricing (not one-time). Frequent 40-60% off coupons.",
-    platforms:["NinjaTrader","Tradovate","R|Trader Pro","Sierra Chart","Bookmap","Quantower","ATAS","Jigsaw","Motive Wave","+9"],
-    instruments:"CME Group Futures + Micro Bitcoin (rare for prop firms)",
-    newsTrading:"Yes — allowed",
-    eaPolicy:"Yes — explicitly allows EAs, bots, algorithms, and trade copiers on all accounts",
-    overnightHolds:"No — must close intraday",
-    consistencyRule:"40% — applies at payout time, not during qualification",
-    dailyLossLimit:"Option 2 (EOD) only — $500(25K), $1,100(50K), $2,000(100K), $2,200(150K), $2,500(250K). Option 1 (Trailing) has no DLL.",
-    scalingPlan:"Three-tier: Qualification → Master Account (sim-funded) → Funded Account (live capital after 3 payouts)",
-    livePath:"Real capital after 3 successful withdrawals on Master Account",
-    maxAccounts:"Up to 11 funded accounts",
-    pros:["Competitive pricing with frequent 40-60% off coupons","100% of first $10K profits","18+ platform support — widest selection","Explicitly allows EAs/bots/copy trading","Choose your drawdown type (Option 1 Trailing has no DLL)","Weekly payouts","Crypto futures (Micro Bitcoin)"],
-    cons:["40% consistency rule at payout","Monthly subscription pricing (not one-time)","Flipping policy can deny payouts","DLL is strict on Option 2 accounts","Payout caps on first 3 withdrawals","Reserve buffer requirement","100K max drawdown is $3,000 (tighter than some competitors)"]
-  },
-  "Goat Funded Futures":{
-    tagline:"The futures sister brand of Goat Funded Trader",
-    description:"Goat Funded Futures (GFF) launched in 2023 as the CME-focused sister brand of Goat Funded Trader (forex/CFD). Founded by Edoardo Dalla Torre and headquartered in Hong Kong. Offers three funding paths: EOD Trailing (monthly sub), Static non-trailing (monthly sub), and Instant (one-time fee with 20% consistency rule). 24-hour payout guarantee with $1,000 compensation if delayed. $7M+ in payouts distributed across both brands. One of PropFirmMatch's confirmed rewards partners.",
-    website:"goatfundedfutures.com",
-    ceo:"Edoardo Dalla Torre",
-    totalPayouts:"$17M+ (across both brands)",
-    discordMembers:"Active global community",
-    plans:["EOD Trailing (monthly)","Static (monthly, non-trailing)","Express (one-step, one-time)","Instant Funding (one-time)"],
-    accountSizes:"$5K, $25K, $50K, $100K, $150K (scaling up to $750K)",
-    profitSplit:"100% of first $10K, then 90/10. Scalable to 95% through reward tiers.",
-    drawdown:"EOD: resets daily. Static: fixed drawdown. Instant: 5% trailing + 3% daily cap. Funded-stage daily loss: 2.5% (EOD).",
-    payoutSpeed:"24-hour guaranteed (or $1,000 penalty)",
-    payoutFreq:"Bi-weekly / On-demand (model-dependent)",
-    activationFee:"Instant plans = one-time fee; EOD/Static = monthly subscription (no separate activation)",
-    platforms:["NinjaTrader","Tradovate","TradingView","Quantower","Project X","Volumetrica","DeepCharts","MT5"],
-    instruments:"CME / COMEX / NYMEX / CBOT Futures only",
-    newsTrading:"Yes — allowed",
-    eaPolicy:"Yes — automated trading permitted (with broker restrictions)",
-    overnightHolds:"No — intraday only",
-    consistencyRule:"20% on Instant plans; varies on EOD/Static",
-    dailyLossLimit:"Yes on most plans (2.5% EOD funded, 3% on Instant)",
-    scalingPlan:"Scaling program up to $750K in simulated allocation",
-    livePath:"Scaling path through multiple payout milestones",
-    maxAccounts:"Multiple accounts allowed",
-    pros:["PropFirmMatch confirmed rewards partner","Three distinct funding paths to match trader style","24-hour guaranteed payout with $1K penalty","Widest platform support in futures (8+ platforms incl. MT5)","Sister to established forex brand with $7M+ payouts","Instant Funding one-time fee option"],
-    cons:["Newer futures brand (launched 2023)","Parent brand (GFT forex) has Trustpilot rating concerns","Pricing structure complex (monthly vs one-time depending on plan)","HQ in Hong Kong may concern some traders","Exact per-size pricing and reset fees require verification on their site"]
-  }
-};
-
-// ── FIRM FAQ DATA ──
-const FIRM_FAQ = {
-  "Tradeify":[
-    {cat:"Trading Hours",items:[
-      {q:"When can I trade?",a:"6:00 PM ET (Sun–Thu) to 4:59 PM ET (Mon–Fri). All positions must be closed by 4:59 PM ET. Holiday early close: 12:59 PM ET."},
-      {q:"Can I hold overnight?",a:"No. All positions must be closed within the same trading session. Positions left open are auto-closed (no account failure, but poor fills possible)."},
-      {q:"Can I trade weekends?",a:"No. Markets close Friday 5:00 PM ET and reopen Sunday 6:00 PM ET."}
-    ]},
-    {cat:"Instruments & Contracts",items:[
-      {q:"What can I trade?",a:"Full CME Group access: ES, NQ, RTY, YM (+ micros), GC, SI, CL, NG, HG, currency futures (6E, 6B, 6J), crypto (BTC, ETH), agriculture, treasuries, VIX. EUREX with optional data add-on."},
-      {q:"Can I mix minis and micros?",a:"No. You can trade either minis OR micros, but not both simultaneously. This applies across ALL your accounts. You can switch between sessions (close all micros, then trade minis next session)."},
-      {q:"Contract limits?",a:"Eval: 25K=1/10, 50K=4/40, 100K=8/80, 150K=12/120 (standard/micro). Funded accounts use progressive scaling starting lower."}
-    ]},
-    {cat:"Drawdown Rules",items:[
-      {q:"How does EOD trailing drawdown work?",a:"Your max loss floor only updates once per day at 5:00 PM ET based on your highest end-of-day balance. Intraday dips that recover don't count. However, if your balance touches the floor at ANY point during the session, the account fails immediately."},
-      {q:"Does the drawdown lock?",a:"Yes. On Select Flex funded accounts, the floor locks (stops trailing) at starting balance + a cap ($1,250 for 50K). After that it becomes static — your safety net stops moving."},
-      {q:"What are the max loss limits?",a:"25K: $1,000 | 50K: $2,000 | 100K: $3,500 | 150K: $4,500 (Select). Lightning 150K reduced to $5,250 in 3.0 update."}
-    ]},
-    {cat:"Consistency Rule",items:[
-      {q:"What is the consistency rule?",a:"No single trading day can account for more than X% of your total profits. Select eval: 40%. Growth funded: 35%. Lightning: 20% → 25% → 30% (progressive). Select Flex funded: 50% cap per day."},
-      {q:"Does it apply during evaluation?",a:"Yes on Select (40%). Growth eval also has consistency. Lightning is already funded, so consistency applies from day one."}
-    ]},
-    {cat:"Daily Loss Limit",items:[
-      {q:"Is there a DLL?",a:"Select eval: No DLL. Select Flex funded: No DLL. Select Daily funded: $500(25K)/$1K(50K)/$1.25K(100K)/$1.75K(150K). Growth: $600(25K)/$1.25K(50K)/$2.5K(100K)/$3.75K(150K). Lightning: $1.25K(50K)/$2.5K(100K)/$3K(150K) — removed at 6% profit."},
-      {q:"What happens if I hit the DLL?",a:"Trading pauses for the rest of the day (soft breach). Your account is NOT failed. You come back next session with a fresh DLL."}
-    ]},
-    {cat:"Payouts",items:[
-      {q:"How fast are payouts?",a:"Same-day to 48 hours via Rise or Plane. Most processed within 24 hours."},
-      {q:"How often can I withdraw?",a:"Select Daily: every trading day. Select Flex: every 5 profitable days ($100+ each). Growth/Lightning: per profit goal milestone."},
-      {q:"Are there payout caps?",a:"Select Daily: $500(25K)/$1K(50K)/$1.5K(100K)/$2.5K(150K) per day. Select Flex: 2× profit earned since last payout, capped at $1K–$2.5K."},
-      {q:"Is there an activation fee?",a:"$0. No activation fees on any Tradeify account."}
-    ]},
-    {cat:"Prohibited Activities",items:[
-      {q:"What will get me failed?",a:"Hedging same instrument (even across accounts), mixing mini/micro simultaneously, platform manipulation, latency arbitrage, spoofing, copy trading from external sources, breaching drawdown."},
-      {q:"Can I copy trade between my own accounts?",a:"Restricted. Each account needs independent trading behavior — meaningful variation in entry timing, sizing, or instrument. Exact mirrors get flagged."},
-      {q:"Can I use EAs/bots?",a:"Yes, if you're the sole owner. Not HFT. Must be able to prove ownership. 50%+ of trades must be held longer than 10 seconds AND 50%+ of profit from trades held longer than 10 seconds."}
-    ]},
-    {cat:"Accounts & Scaling",items:[
-      {q:"How many accounts can I have?",a:"Up to 5 funded accounts per trader, combined max balance $750K. Can mix Select, Growth, and Lightning."},
-      {q:"What is Tradeify Elite?",a:"After 5 total payouts across all accounts, you're eligible for Elite — trade real CME capital with up to 5 live accounts. Includes Performance Reward Pool up to $90K."},
-      {q:"Can I reset a failed account?",a:"Growth and Select: yes, at reduced price. Lightning: no resets — must purchase new account."}
-    ]},
-    {cat:"Platforms",items:[
-      {q:"What platforms are supported?",a:"Tradovate (web/desktop/mobile), NinjaTrader 8, Rithmic (NEW 3.0), TradeSea (NEW 3.0), TradingView (via Tradovate), Quantower, WealthCharts. All execution routes through platform backend."},
-      {q:"Is there a platform fee?",a:"No platform surcharges. All brokers are the same price. Market data is free with Non-Professional Agreement."}
-    ]}
-  ],
-  "My Funded Futures":[
-    {cat:"Trading Hours",items:[
-      {q:"When can I trade?",a:"CME Globex hours: Sunday 5:00 PM CT to Friday 4:00 PM CT. All positions must be closed by session end."},
-      {q:"Can I hold overnight?",a:"No. Must close all positions before session end on all plans."}
-    ]},
-    {cat:"Instruments",items:[
-      {q:"What can I trade?",a:"CME, CBOT, NYMEX, COMEX regulated futures — ES, NQ, RTY, YM, GC, SI, CL, NG, ZB, ZN, and agricultural futures. No crypto, forex, equities, or OTC."},
-      {q:"Are there contract limits?",a:"Yes, varies by account size and plan. Core uses micro-contract scaling on funded. Pro has full contracts from day one. Check MFFU help center for specifics per instrument."}
-    ]},
-    {cat:"Drawdown Rules",items:[
-      {q:"How does drawdown work?",a:"Core & Pro: EOD trailing — floor only updates at session close, locks at starting balance once reached. Rapid: Intraday trailing — follows peak equity in real time INCLUDING unrealized P&L."},
-      {q:"Max loss amounts?",a:"50K: $2,000 | 100K: $3,000 | 150K: $4,500. Same across all plans during eval."},
-      {q:"Why is Rapid's drawdown dangerous?",a:"If you're up $1,500 on an open trade that reverses, the floor already moved up $1,500. Close at breakeven and you've lost $1,500 of buffer. This is the #1 way Rapid traders get eliminated."}
-    ]},
-    {cat:"Consistency Rule",items:[
-      {q:"What is the consistency rule?",a:"Eval (all plans): 50% — no single day > 50% of total profit. There's $100 leniency. Core funded: 40%. Rapid funded: None. Pro funded: None."},
-      {q:"How does it work in practice?",a:"On a 50K eval ($3,000 target), to pass in 2 days you'd make ~$1,500 each day. If one day is $2,000, you'd need at least $4,000+ total for that day to be under 50%."}
-    ]},
-    {cat:"Payouts",items:[
-      {q:"How fast are payouts?",a:"Most approved instantly. Manual review takes 6-12 hours. Processed via RiseWorks. $15 flat fee per withdrawal."},
-      {q:"How often can I withdraw?",a:"Core: every 5 winning days. Rapid: every 5 winning days. Pro: every 14 calendar days (bi-weekly)."},
-      {q:"Are there payout caps?",a:"Core: $5,000 per cycle. Rapid: $11,250 per cycle. Pro: no per-cycle cap, but $100K total cumulative cap across all Pro accounts."},
-      {q:"Is there an activation fee?",a:"$0. No activation fees on any MFFU plan."}
-    ]},
-    {cat:"News Trading",items:[
-      {q:"Can I trade the news?",a:"Core: Yes, allowed. Rapid & Pro: Restricted — must be flat during Tier 1 events (FOMC, NFP, CPI). Holding through a Tier 1 event is a hard violation."}
-    ]},
-    {cat:"Plans Comparison",items:[
-      {q:"Core vs Rapid vs Pro?",a:"Core ($77/mo, 50K only): 80/20 split, EOD drawdown, 40% consistency funded, $5K payout cap. Cheapest entry. Rapid ($129+/mo): 90/10 split, intraday trailing drawdown, no consistency funded, $11.25K cap. Pro ($229+/mo): 80/20 split, EOD drawdown, no consistency funded, no per-cycle cap, bi-weekly payouts."},
-      {q:"Can I switch plans?",a:"No. You pass or fail the evaluation you purchased. Purchase a new evaluation on a different plan to run in parallel."}
-    ]},
-    {cat:"Prohibited Activities",items:[
-      {q:"What's not allowed?",a:"Exploiting simulator latency, hedging across MFFU accounts, holding through Tier 1 news (Rapid/Pro), trading unsupported instruments, exceeding contract limits. HFT prohibited."},
-      {q:"$10K daily cap on Rapid?",a:"Do not make more than $10,000 in one day on Rapid sim funded. Excess is forfeited and triggers a risk review."}
-    ]},
-    {cat:"Path to Live",items:[
-      {q:"How do I get a live account?",a:"Hit the cumulative payout cap ($100K on Pro, varies on others) or 5+ consecutive payouts. MFFU reviews and initiates the transition. Live accounts trade real capital."}
-    ]}
-  ],
-  "Alpha Futures":[
-    {cat:"Trading Hours",items:[
-      {q:"When can I trade?",a:"CME Globex hours. All positions must be closed before session end. No overnight or weekend holds."},
-    ]},
-    {cat:"Drawdown & DLL",items:[
-      {q:"How does drawdown work?",a:"EOD Trailing: $2,500(50K), $3,500(100K), $4,500(150K). Updates at session close only."},
-      {q:"What is the Daily Loss Guard?",a:"A SOFT daily loss limit. If you hit it, trading pauses for the day but your account is NOT failed. This is a key differentiator — most firms hard-fail you on DLL breach."},
-    ]},
-    {cat:"Consistency",items:[
-      {q:"Is there a consistency rule?",a:"50% during evaluation only. No consistency rule on funded accounts. This is one of the most trader-friendly funded structures available."},
-    ]},
-    {cat:"Profit Split",items:[
-      {q:"What's the profit split?",a:"Progressive: 70% (payouts 1-2) → 80% (payouts 3-4) → 90% (payout 5+). Lower than competitors initially but reaches 90% with consistency."},
-    ]},
-    {cat:"Payouts",items:[
-      {q:"How fast are payouts?",a:"Within 48 business hours. Advanced plan gets weekly processing."},
-      {q:"Is there an activation fee?",a:"$149 activation on Standard plan. Varies by plan type."},
-    ]},
-    {cat:"EAs & Automation",items:[
-      {q:"Can I use bots?",a:"No. EAs, bots, and automated trading are completely prohibited. Semi-auto with active human supervision may be allowed — check with Alpha directly."},
-    ]},
-    {cat:"Platforms",items:[
-      {q:"What platforms are supported?",a:"NinjaTrader, Tradovate, TradingView, AlphaTicks (Quantower-based). Limited selection compared to some competitors."},
-    ]}
-  ],
-  "Apex Trader Funding":[
-    {cat:"Apex 4.0 Overview",items:[
-      {q:"What changed with 4.0?",a:"Launched March 1, 2026. Complete rebuild: one-time fees (no subscriptions), two drawdown types (EOD/Intraday), 30-day eval expiry, 6-payout cap per PA, metals suspended, overnight banned, MAE/5:1 RR/one-direction rules removed, automated Deel payouts."},
-      {q:"Are old accounts affected?",a:"No. Legacy accounts (pre-March 2026) stay on old rules permanently. No conversion path to 4.0. Can run legacy and 4.0 simultaneously."},
-      {q:"What sizes are available?",a:"$25K, $50K, $100K, $150K only. The $75K, $250K, and $300K were removed in 4.0."}
-    ]},
-    {cat:"Drawdown Rules",items:[
-      {q:"EOD vs Intraday — what's the difference?",a:"EOD: Drawdown recalculates once per day at 4:59 PM ET. Intraday dips that recover don't tighten your threshold. Includes DLL. Costs more. RECOMMENDED for most traders. Intraday: Drawdown trails peak equity in real-time including unrealized P&L. No DLL. Cheaper. Very aggressive."},
-      {q:"When does the drawdown lock?",a:"Both types: locks at starting balance + $100 once your peak balance reaches that threshold. On a 50K, locks at $50,100 once peak hits $52,100."},
-      {q:"Max loss amounts?",a:"25K: $1,000 | 50K: $2,000 | 100K: $3,000 | 150K: $4,000."}
-    ]},
-    {cat:"Daily Loss Limit",items:[
-      {q:"Is there a DLL?",a:"EOD accounts only: $750(25K), $1K(50K), $1.5K(100K), $2K(150K). If hit, trading pauses for the day — does NOT fail your account. Intraday accounts have NO DLL."},
-      {q:"Does DLL affect my drawdown?",a:"No. DLL and trailing drawdown are separate systems. Hitting DLL stops your day but doesn't move the drawdown floor."}
-    ]},
-    {cat:"Consistency Rule",items:[
-      {q:"When does the 50% rule apply?",a:"Performance Account (funded) only. NOT during evaluation. No single profitable trading day can account for 50%+ of total net profit since last approved payout."},
-      {q:"Can I pass the eval in one day?",a:"Yes. There's no consistency rule and no minimum trading day requirement during evaluation. Hit the target without breaching drawdown and you pass."}
-    ]},
-    {cat:"Payouts",items:[
-      {q:"How does the payout ladder work?",a:"6-step system with increasing caps per payout. 100K example: ~$2K(1st) → $4K(6th). Max 6 payouts per PA lifetime, then account closes. 100% profit split up to $25K, then 90/10."},
-      {q:"What are qualifying days?",a:"5 days with net profit above threshold ($200 for 50K, $250 for 100K, etc.). Days with losses or profit below threshold don't count."},
-      {q:"How are payouts processed?",a:"Automated via Deel. 3-4 business days after approval. No manual review, no video reviews, no chart screenshots."},
-      {q:"What is the Safety Net?",a:"For first 3 payouts, account balance must stay above trailing threshold + $100. This limits how much you can withdraw early on."}
-    ]},
-    {cat:"Activation Fee",items:[
-      {q:"How much is the activation fee?",a:"$99 (EOD) or $79 (Intraday). Paid AFTER passing eval, not upfront. You have 7 days to pay once you pass. Never discounted."},
-      {q:"Is it per account?",a:"Yes. Each PA requires its own activation fee. Running 20 accounts = 20 × $79-$99 = $1,580-$1,980 in activation fees alone."}
-    ]},
-    {cat:"Metals & Instruments",items:[
-      {q:"Can I trade gold?",a:"NO. All metals suspended as of March 2026: Gold (GC), Silver (SI), Micro Gold (MGC), Copper (HG), Platinum (PL), Palladium (PA). No return date announced."},
-      {q:"What CAN I trade?",a:"CME, CBOT, NYMEX, COMEX futures — equity index, energy, currencies, treasuries, agriculture. 46 markets minus metals."}
-    ]},
-    {cat:"Prohibited Activities",items:[
-      {q:"What's banned?",a:"DCA (dollar-cost averaging) on Performance Accounts, overnight positions, trading metals, exceeding contract limits, windfall exploitation. Mandatory bracket orders enforced by platform."},
-      {q:"Can I use EAs?",a:"Yes — automated trading permitted with monitoring. DCA strategies are specifically prohibited on funded accounts."},
-      {q:"Is news trading allowed?",a:"Yes for normal strategies. 'Windfall' exploitation (deliberately targeting extreme news moves) is prohibited."}
-    ]},
-    {cat:"Account Limits",items:[
-      {q:"How many accounts can I have?",a:"Up to 20 Performance Accounts simultaneously across all types (EOD, Intraday, Legacy combined). Highest in the industry."},
-      {q:"What happens after 6 payouts?",a:"PA closes permanently. Purchase a new evaluation to start over. No direct path to live capital currently."},
-      {q:"Is there a reset option?",a:"No. 4.0 eliminated resets. If you don't pass within 30 days, the eval expires. Buy a new one."}
-    ]}
-  ],
-  "Top One Futures":[
-    {cat:"Overview",items:[
-      {q:"What plans are available?",a:"Eval (1-Step evaluation) and Prime (instant funding, no eval required). Both available in 50K and 100K. Eval also has 25K and 150K."},
-    ]},
-    {cat:"Rules",items:[
-      {q:"What's the consistency rule?",a:"30% — strictest in the industry. No single day can exceed 30% of total profit. Applies on eval and funded."},
-      {q:"Is there a DLL?",a:"Yes: $1,000(50K), $2,000(100K) on Eval. Same on Prime."},
-      {q:"Drawdown type?",a:"EOD Trailing on all accounts."},
-    ]},
-    {cat:"Payouts",items:[
-      {q:"How fast are payouts?",a:"1-3 business days. Request after 5 trading days."},
-      {q:"Profit split?",a:"90/10 on all plans."},
-    ]},
-    {cat:"Trading Rules",items:[
-      {q:"News trading allowed?",a:"Yes, no restrictions."},
-      {q:"EAs allowed?",a:"Yes, automated trading permitted."},
-      {q:"Overnight holds?",a:"No — must close by session end."},
-    ]}
-  ],
-  "FundedNext Futures":[
-    {cat:"Overview",items:[
-      {q:"What plans are available?",a:"Rapid evaluation in 50K, 100K, 150K, 200K. Part of the FundedNext ecosystem (also offers forex)."},
-    ]},
-    {cat:"Rules",items:[
-      {q:"Consistency rule?",a:"None. FundedNext Futures has no consistency rule on eval or funded. One of the few firms with zero consistency."},
-      {q:"DLL?",a:"Yes: $1,250(50K), $2,000(100K). Hard DLL."},
-      {q:"Drawdown?",a:"EOD Trailing. Updates at session close only."},
-      {q:"Minimum trading days?",a:"No minimum on evaluation."},
-    ]},
-    {cat:"Payouts",items:[
-      {q:"How fast?",a:"Within 24 hours. Among the fastest in the industry."},
-      {q:"Split?",a:"80/20 initially → scales to 95/5 with milestone progression."},
-    ]},
-    {cat:"Trading",items:[
-      {q:"News trading?",a:"Yes, fully allowed."},
-      {q:"EAs?",a:"Yes, automated strategies permitted."},
-      {q:"Platforms?",a:"NinjaTrader, Tradovate, TradingView."},
-    ]}
-  ],
-  "Bulenox":[
-    {cat:"Evaluation",items:[
-      {q:"How does the eval work?",a:"1-Step evaluation. No minimum trading days. Choose EOD or Trailing drawdown type at purchase."},
-    ]},
-    {cat:"Rules",items:[
-      {q:"Drawdown options?",a:"Choose at purchase: EOD trailing OR standard trailing. EOD only updates at session close. Standard trails in real-time."},
-      {q:"Consistency?",a:"40% on eval and funded. No single day > 40% of total profit."},
-      {q:"DLL?",a:"Yes: $500(25K), $1,100(50K), $2,000(100K), $2,200(150K), $2,500(250K)."},
-    ]},
-    {cat:"Payouts",items:[
-      {q:"Speed?",a:"1-5 business days. Weekly payouts."},
-      {q:"Split?",a:"100% of first $10K, then 90/10."},
-      {q:"Reset fee?",a:"$75 — cheapest reset in the industry."},
-    ]},
-    {cat:"Trading",items:[
-      {q:"News trading?",a:"Yes, fully allowed."},
-      {q:"EAs?",a:"Yes, automated trading permitted."},
-      {q:"Platforms?",a:"NinjaTrader, Tradovate, Bookmap, +1."},
-      {q:"Max accounts?",a:"Multiple accounts allowed. Scaling up to $450K."},
-    ]}
-  ],
-  "Goat Funded Futures":[
-    {cat:"Evaluation & Plans",items:[
-      {q:"What plans does GFF offer?",a:"Three funding paths: EOD Trailing (monthly sub, evaluation required), Express (single-phase, no min days, no consistency in eval), and Instant Funding (no evaluation, one-time fee). EOD and Express require passing an eval; Instant is immediately funded."},
-      {q:"What account sizes are available?",a:"EOD: $50K–$150K. Express: $25K–$100K. Instant: $25K–$150K. Scaling up to $750K through reward milestones."},
-      {q:"Is there an activation fee?",a:"No activation fee on EOD or Express plans after passing. Instant plans are one-time purchase with no additional fees."},
-      {q:"What are the profit targets?",a:"EOD: 6% ($3,000 on 50K, $6,000 on 100K, $9,000 on 150K). Express: 6% on 25K ($1,500), 6% on 50K ($3,000), 5% on 100K ($5,000). Instant: 7% target ($1,750 on 25K up to $10,500 on 150K)."},
-      {q:"How many accounts can I have?",a:"Up to 5 simulated funded accounts per trader."}
-    ]},
-    {cat:"Drawdown Rules",items:[
-      {q:"How does EOD drawdown work?",a:"End-of-Day trailing — your drawdown recalculates at market close (5 PM ET). Intraday dips that recover by close don't affect your drawdown floor. Hard breach if your balance touches the floor at any point."},
-      {q:"What are the max drawdown limits?",a:"EOD: 5% trailing ($2,500 on 50K, $5,000 on 100K, $7,500 on 150K). Express: 4% on 25K ($1,000), 3% on 50K ($1,500), 2% on 100K ($2,000). Instant: 5% trailing ($1,250 on 25K, $2,500 on 50K, $5,000 on 100K, $7,500 on 150K)."},
-      {q:"Is the drawdown trailing or static?",a:"EOD and Instant plans use trailing drawdown. Express uses EOD trailing. There is no static (non-trailing) drawdown option currently."}
-    ]},
-    {cat:"Daily Loss Limit",items:[
-      {q:"Is there a daily loss limit?",a:"EOD eval: 3% daily loss limit ($1,500 on 50K, $3,000 on 100K, $4,500 on 150K). Express: no DLL during eval. Instant: 3% daily loss ($750 on 25K, $1,500 on 50K, $3,000 on 100K, $4,500 on 150K). Funded EOD: 2.5% daily loss."},
-      {q:"What happens if I hit the DLL?",a:"Hard breach — your account is terminated. This is not a soft pause like some other firms."}
-    ]},
-    {cat:"Consistency Rule",items:[
-      {q:"What is the consistency rule?",a:"EOD eval: 50% (no single day > 50% of total profit). EOD funded: 30%. Express funded: 30% (violations delay payout but don't close account). Instant: 20% daily profit cap."},
-      {q:"Does consistency apply during evaluation?",a:"On EOD plans, yes — 50% consistency in eval. Express has no consistency during eval. Instant has no eval phase but 20% applies from day one."}
-    ]},
-    {cat:"Payouts",items:[
-      {q:"How fast are payouts?",a:"24-hour guaranteed processing. If GFF misses the 24-hour window, you receive $1,000 compensation. Average processing ~5 hours."},
-      {q:"How often can I withdraw?",a:"Every 10 trading day cycles. Must have minimum 7 winning days per cycle, each day ≥0.2% of initial balance."},
-      {q:"What's the profit split?",a:"100% of first rewards up to $10K, then 90/10 after. Split can scale to 95% through reward tier milestones."},
-      {q:"What are the payout caps per cycle?",a:"EOD 50K: $1,500→$2,750. EOD 100K: $2,000→$3,750. Express 25K: $800. Express 50K: $1,500. Express 100K: $2,500. Instant 25K: $1,000. Instant 50K: $2,000. Instant 100K: $3,000. Instant 150K: $4,000."},
-      {q:"Minimum payout?",a:"$250 minimum per withdrawal request. Withdrawals via wire transfer or cryptocurrency."}
-    ]},
-    {cat:"Trading Rules",items:[
-      {q:"Trading hours?",a:"Sunday–Friday 5:00 PM – 4:00 PM CT. Daily break: 4:00 PM – 5:00 PM CT. All positions must be flat during the break."},
-      {q:"Can I hold overnight?",a:"EOD and Express: overnight holds are allowed. Instant Funding: no overnight positions permitted."},
-      {q:"Can I trade news?",a:"News trading is restricted during Tier 1 economic events. Must be flat around major releases."},
-      {q:"Are EAs/bots allowed?",a:"Semi-automated with active supervision may be allowed. Fully automated bots, AI-driven systems, and continuous 24/7 hands-free automation are prohibited. Trades closing under 30 seconds (HFT) are banned."},
-      {q:"What instruments can I trade?",a:"CME / COMEX / NYMEX / CBOT Futures only — ES, NQ, YM, CL, GC, SI, and more. No stocks, options, forex, crypto spot, or CFDs."},
-      {q:"What platforms are supported?",a:"Tradovate, NinjaTrader, TradingView, Quantower, ProjectX, DeepCharts, and more — one of the widest platform selections in futures."},
-      {q:"Inactivity rule?",a:"If no trades are placed for 15 consecutive days on eval or funded accounts, the account is breached."}
-    ]},
-    {cat:"Resets & Scaling",items:[
-      {q:"What are the reset fees?",a:"EOD plans: ~$99 for 50K–150K. Varies by plan type and size. Check their site for exact current pricing."},
-      {q:"How does scaling work?",a:"Funded accounts start with reduced contracts (e.g., 2 minis / 20 micros). After 2.5% account growth, you gain +1 contract and DLL increases by $500 per tier. Scaling program up to $750K in simulated allocation."}
-    ]}
-  ]
-};
-
-
-const FirmLogo = ({f,size=32}) => {
-  const logo = LOGOS[f.name];
-  const r = size>36?9:7;
+// ═══════════════════════════════════════════════════════════════════════════
+// FIRM LOGO (simple component)
+// ═══════════════════════════════════════════════════════════════════════════
+const FirmLogo = ({ firm, size = 40 }) => {
+  const logo = LOGOS[firm.name];
   return (
-    <div style={{width:size,height:size,borderRadius:r,overflow:'hidden',background:'var(--bg3)',border:'1px solid var(--bdr)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-      {logo ? <img src={logo} alt={f.name} style={{width:'100%',height:'100%',objectFit:'contain',padding:3,borderRadius:r-1}}/> : <div style={{fontSize:size>36?11:9,fontWeight:800,color:'#fff',background:f.brandGrad,width:'100%',height:'100%',display:'flex',alignItems:'center',justifyContent:'center',borderRadius:r-1}}>{f.initials}</div>}
+    <div className="term-firm-lg" style={{ width: size, height: size }}>
+      {logo ? <img src={logo} alt={firm.name} /> : <span className="term-firm-lg-fb">{firm.initials}</span>}
     </div>
   );
 };
 
-const Ticker = () => {
-  const items = [...DEALS,...DEALS,...DEALS];
-  return (
-    <div className="ticker"><div className="ticker-track">
-      {items.map((d,i)=><span key={i} className="tick"><span className="tick-name">{d.firm}</span><b>{d.pct}</b><span style={{color:'var(--t5)'}}>|</span></span>)}
-    </div></div>
-  );
-};
-
-const NavBar = ({tab,setTab,setPage,page,user,onLogin,onLogout,setPpSection}) => {
-  const [mob,setMob] = useState(false);
-  const [copied,setCopied] = useState(false);
-  const [showProfile,setShowProfile] = useState(false);
-  const [userPts,setUserPts] = useState(0);
-  const [changingPw,setChangingPw] = useState(false);
-  const [newPw,setNewPw] = useState("");
-  const [pwMsg,setPwMsg] = useState("");
-  const tabs = [["firms","Firms",null],["tools","Tools","\uD83D\uDEE0"],["challenges","Challenges",null],["offers","Deals",null],["blog","Research",null],["points","Rewards","\u2B50"]];
-  const go = k => {setPage("home");setTab(k);setMob(false);document.body.style.overflow='';setShowProfile(false);};
-  const copyPulse = () => {copyToClipboard("TPP");setCopied(true);setTimeout(()=>setCopied(false),1800);};
-  const ava = user?.user_metadata?.avatar_url || null;
-
-  useEffect(()=>{
-    if(!user) return;
-    supabase.from("profiles").select("points").eq("id",user.id).single().then(({data})=>{if(data){setUserPts(data.points||0)}});
-  },[user,tab]);
-
-  const handleChangePw = async ()=>{
-    if(newPw.length<6){setPwMsg("Min 6 characters");return;}
-    setPwMsg("Updating...");
-    const {error}=await supabase.auth.updateUser({password:newPw});
-    if(error) setPwMsg(error.message);
-    else{setPwMsg("Password updated!");setNewPw("");setTimeout(()=>{setChangingPw(false);setPwMsg("")},1500);}
-  };
-
-  return (<>
-    <nav className="nav">
-      <div className="nav-logo" onClick={()=>go("firms")}>
-        <img src={LOGO_URL} alt="P" style={{width:32,height:32,borderRadius:4}} onError={e=>{e.target.style.display='none'}}/>
-        <span className="nav-logo-text">The<span>PropPulse</span></span>
-      </div>
-      <div className="nav-tabs">
-        {tabs.map(([k,l,icon])=><button key={k} className={`nav-tab${tab===k?' on':''}`} onClick={()=>go(k)}>{icon&&<span className="nav-tab-icon">{icon}</span>}<span>{l}</span></button>)}
-      </div>
-      <button className="nav-code" onClick={copyPulse}>{copied?'\u2713 Copied!':'TPP'}</button>
-      {user?<div className="nav-user">
-        <div className="nav-avatar" onClick={()=>setShowProfile(p=>!p)} style={ava?{padding:0,overflow:'hidden'}:{}}>{ava?<img src={ava} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}/>:(user.email||"U")[0].toUpperCase()}</div>
-      </div>
-      :<button className="nav-login" onClick={onLogin}>Sign In</button>}
-      <button className="nav-burger" onClick={()=>{setMob(p=>{document.body.style.overflow=!p?'hidden':'';return !p;})}}>{mob?'\u2715':'\u2261'}</button>
-    </nav>
-    {showProfile&&user&&<>
-      <div className="panel-overlay" onClick={()=>{setShowProfile(false);setChangingPw(false)}}/>
-      <div className="panel">
-        <button className="panel-close" onClick={()=>setShowProfile(false)}>{'\u2715'}</button>
-        <div className="panel-header">
-          <div className="panel-avatar" style={ava?{padding:0,overflow:'hidden'}:{}}>{ava?<img src={ava} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}/>:(user.email||"U")[0].toUpperCase()}</div>
-          <div className="panel-name">{String(user.user_metadata?.display_name||user.email||"Trader")}</div>
-          <div className="panel-email">{String(user.email||"")}</div>
-        </div>
-        <div className="panel-pts" onClick={()=>go("points")}>
-          <div className="panel-pts-top">
-            <span className="panel-pts-label">Pulse Points</span>
-            <span className="panel-pts-val">{userPts.toLocaleString()}</span>
-          </div>
-          <div className="panel-bar-bg">
-            <div className="panel-bar-fill" style={{width:Math.min(100,(userPts/10000)*100)+'%'}}/>
-          </div>
-          <div style={{display:'flex',justifyContent:'space-between',fontSize:10,color:'#475569',marginTop:6}}>
-            <span>{userPts>=10000?'Ready to claim!':Math.max(0,10000-userPts).toLocaleString()+' pts to next reward'}</span>
-            <span style={{color:'#fbbf24'}}>Free 25K (10,000)</span>
-          </div>
-        </div>
-        <div className="panel-section-label">Pulse Points</div>
-        <button className="panel-item" onClick={()=>{setPpSection("submit");go("points")}}><span className="panel-icon">{'\u2B50'}</span><span>My Dashboard</span></button>
-        <button className="panel-item" onClick={()=>{setPpSection("submit");go("points")}}><span className="panel-icon">{'\u{1F4E4}'}</span><span>Submit Purchase</span></button>
-        <button className="panel-item" onClick={()=>{setPpSection("rewards");go("points")}}><span className="panel-icon">{'\u{1F381}'}</span><span>Rewards Store</span></button>
-        <button className="panel-item" onClick={()=>{setPpSection("history");go("points")}}><span className="panel-icon">{'\u{1F4DC}'}</span><span>Points History</span></button>
-        <button className="panel-item" onClick={()=>{setPpSection("discord");go("points")}}><span className="panel-icon">{'\u{1F451}'}</span><span>Claim Discord Role</span></button>
-        <div className="panel-section-label">Account</div>
-        <button className="panel-item" onClick={()=>{setPage("account");setShowProfile(false);window.scrollTo({top:0,behavior:"smooth"})}}><span className="panel-icon">{'\u2699\uFE0F'}</span><span>Account Details</span></button>
-        <div style={{flex:1}}/>
-        <div className="panel-divider"/>
-        <button className="panel-item panel-logout" onClick={()=>{setShowProfile(false);onLogout();}}><span className="panel-icon">{'\u274C'}</span><span>Sign Out</span></button>
-        <div style={{height:16}}/>
-      </div>
-    </>}
-    {mob&&<div className="mob-menu">{tabs.map(([k,l,icon])=><button key={k} className={tab===k?'on':''} onClick={()=>go(k)}>{icon?icon+' ':''}{l}</button>)}</div>}
-    {copied&&<div className="toast">TPP code copied to clipboard!</div>}
-  </>);
-};
-
-// ── PULSE LEADERBOARD ──
-const PulseLeaderboard = ({firms,onSelect}) => {
-  const [copied,setCopied] = useState(null);
-  return (<div className="lb">
-    <div className="lb-hdr"><span>#</span><span></span><span>Firm</span><span>Pulse Score</span><span>Rating</span><span>Trend</span><span>Deal</span></div>
-    {firms.map((f,i)=>{
-      const ps=calcPulse(f.rating,f.reviews,f.name);
-      const deal=DEALS.find(d=>d.firm===f.name);
-      return (<div key={f.id} className="lb-row" onClick={()=>onSelect(f)}>
-        <div className="lb-rank">{String(i+1).padStart(2,'0')}</div>
-        <div className="lb-logo"><FirmLogo f={f} size={32}/></div>
-        <div className="lb-name-c">
-          <div className="lb-name">{f.name}{TOP_PICKS.has(f.name)&&<span className="tp">{'\u2605'}</span>}</div>
-          <div className="lb-sub">{f.flag} {f.hq} · {f.maxAlloc}</div>
-        </div>
-        <div className="lb-bar-c">
-          <div className="lb-bar-bg"><div className="lb-bar-fill" style={{width:(ps/100*100)+"%"}}/></div>
-          <div className="lb-score">{ps}</div>
-        </div>
-        <div className="lb-rating" style={{color:f.rating>=4.7?'var(--green)':f.rating>=4?'var(--blue2)':'var(--t3)'}}>{f.rating>0?f.rating:'\u2014'}</div>
-        <div className="lb-trend" style={{color:f.trend==='up'?'var(--green)':f.trend==='down'?'var(--red)':f.trend==='new'?'var(--cyan)':'var(--t4)'}}>{f.trend==='up'?'\u25B2':f.trend==='down'?'\u25BC':f.trend==='new'?'NEW':'\u2013'}</div>
-        {deal?<div className="lb-deal" onClick={e=>{e.stopPropagation();copyToClipboard(deal.code);setCopied(f.id);setTimeout(()=>setCopied(null),1400)}}>{deal.pct}</div>:<div className="lb-deal-na">\u2014</div>}
-      </div>);
-    })}
-    {copied!==null&&<div className="toast">Code copied</div>}
-  </div>);
-};
-
-// ── FIRM CARDS ──
 // ═══════════════════════════════════════════════════════════════════════════
-// ── THE INDEX — editorial firm list (ranked rows, expandable detail) ──
+// QUIZ SCORING
 // ═══════════════════════════════════════════════════════════════════════════
-const TheIndex = ({firms,onSelect,user,compareFirms=[],toggleCompare}) => {
-  const [expanded,setExpanded] = useState(null);
-  const [sort,setSort] = useState("pulse");
-  const [filter,setFilter] = useState("all");
-  const sorted = [...firms];
-  if(sort==="pulse") sorted.sort((a,b)=>(PULSE_SCORES[b.name]||0)-(PULSE_SCORES[a.name]||0));
-  if(sort==="rating") sorted.sort((a,b)=>b.rating-a.rating);
-  if(sort==="newest") sorted.sort((a,b)=>b.founded-a.founded);
-  if(sort==="alloc") sorted.sort((a,b)=>{const n=s=>{const v=parseFloat(s.replace(/[^0-9.]/g,''));return s.includes('M')?v*1000:v;};return n(b.maxAlloc)-n(a.maxAlloc)});
-  const filtered = sorted.filter(f=>{
-    if(filter==="all") return true;
-    if(filter==="instant") return f.instantFund;
-    if(filter==="noDLL") return !f.hasDLL;
-    if(filter==="noConsistency") return !f.hasConsistency;
-    return true;
-  });
-
-  return (<div className="idx">
-    <div className="idx-hdr">
-      <div className="idx-hdr-l">
-        <div className="idx-hdr-mark">§</div>
-        <div>
-          <div className="idx-hdr-title">The Index</div>
-          <div className="idx-hdr-sub">All {firms.length} firms, ranked and reviewed.</div>
-        </div>
-      </div>
-      <div className="idx-hdr-r">
-        <div className="idx-filter">
-          <button className={filter==="all"?"on":""} onClick={()=>setFilter("all")}>All</button>
-          <button className={filter==="instant"?"on":""} onClick={()=>setFilter("instant")}>Instant Fund</button>
-          <button className={filter==="noDLL"?"on":""} onClick={()=>setFilter("noDLL")}>No DLL</button>
-          <button className={filter==="noConsistency"?"on":""} onClick={()=>setFilter("noConsistency")}>No Consistency</button>
-        </div>
-      </div>
-    </div>
-
-    <div className="idx-sort">
-      <span className="idx-sort-lbl">Sort by</span>
-      {[["pulse","Pulse Score"],["rating","Rating"],["newest","Newest"],["alloc","Max Allocation"]].map(([k,l])=>(
-        <button key={k} className={sort===k?"on":""} onClick={()=>setSort(k)}>{l}</button>
-      ))}
-    </div>
-
-    <div className="idx-cols">
-      <span>Rank</span>
-      <span>Firm</span>
-      <span>Pulse</span>
-      <span>Rating</span>
-      <span>Max Alloc</span>
-      <span>Deal</span>
-      <span></span>
-    </div>
-
-    <div className="idx-rows">
-      {filtered.map((f,i)=>{
-        const ps = PULSE_SCORES[f.name]||75;
-        const deal = DEALS.find(d=>d.firm===f.name);
-        const isOpen = expanded===f.id;
-        const isComparing = compareFirms.some(x=>x.id===f.id);
-        return (<div key={f.id} className={`idx-row-wrap ${isOpen?'open':''}`}>
-          <button className="idx-row" style={{'--f-color':f.color}} onClick={()=>setExpanded(isOpen?null:f.id)}>
-            <span className="idx-row-rank">{String(i+1).padStart(2,'0')}</span>
-            <span className="idx-row-firm">
-              <span className="idx-row-accent"/>
-              <FirmLogo f={f} size={34}/>
-              <span className="idx-row-info">
-                <span className="idx-row-nm">{f.name}</span>
-                <span className="idx-row-meta">{f.flag} {f.hq.split(',')[0]} · Est. {f.founded} · {f.bestFor}</span>
-              </span>
-            </span>
-            <span className="idx-row-pulse"><span className="idx-row-pulse-v" style={{color:pulseColor(ps)}}>{ps}</span><span className="idx-row-pulse-bar"><span style={{width:ps+'%',background:pulseColor(ps)}}/></span></span>
-            <span className="idx-row-rating">★{f.rating}<em>({f.reviews.toLocaleString()})</em></span>
-            <span className="idx-row-alloc">{f.maxAlloc}</span>
-            <span className="idx-row-deal">{deal?<b>{deal.pct}</b>:<span className="idx-row-nodeal">—</span>}</span>
-            <span className={`idx-row-chev ${isOpen?'open':''}`}>›</span>
-          </button>
-          {isOpen && (<div className="idx-row-expand">
-            <div className="idx-expand-grid">
-              <div className="idx-expand-col">
-                <div className="idx-expand-lbl">Split</div>
-                <div className="idx-expand-v">{f.split}</div>
-              </div>
-              <div className="idx-expand-col">
-                <div className="idx-expand-lbl">Target</div>
-                <div className="idx-expand-v">{f.target}</div>
-              </div>
-              <div className="idx-expand-col">
-                <div className="idx-expand-lbl">Max DD</div>
-                <div className="idx-expand-v">{f.maxDD}</div>
-              </div>
-              <div className="idx-expand-col">
-                <div className="idx-expand-lbl">Payout</div>
-                <div className="idx-expand-v">{f.paySpeed}</div>
-              </div>
-              <div className="idx-expand-col">
-                <div className="idx-expand-lbl">Drawdown</div>
-                <div className="idx-expand-v">{f.drawdownType}</div>
-              </div>
-              <div className="idx-expand-col">
-                <div className="idx-expand-lbl">Platforms</div>
-                <div className="idx-expand-v">{f.platforms.slice(0,3).join(', ')}{f.platforms.length>3?'…':''}</div>
-              </div>
-            </div>
-            <p className="idx-expand-desc">{f.desc}</p>
-            <div className="idx-expand-actions">
-              <button className="idx-expand-primary" onClick={e=>{e.stopPropagation();if(AFFILIATE_LINKS[f.name])trackClick(f.name,user?.id);else{const fp=FIRM_PROFILES[f.name];window.open('https://'+(fp?.website||''),'_blank')}}}>{deal?`Claim ${deal.pct}`:'Visit Site'} →</button>
-              <button className="idx-expand-secondary" onClick={e=>{e.stopPropagation();onSelect(f)}}>Full Profile</button>
-              {toggleCompare && <button className={`idx-expand-compare ${isComparing?'on':''}`} onClick={e=>{e.stopPropagation();toggleCompare(f)}}>{isComparing?'✓ In Compare':'+ Compare'}</button>}
-            </div>
-          </div>)}
-        </div>);
-      })}
-    </div>
-  </div>);
-};
-
-const FirmCards = ({firms,onSelect,user,compareFirms=[],toggleCompare}) => (
-  <div className="cards">{firms.map(f=>{
-    const ps=calcPulse(f.rating,f.reviews,f.name);
-    const deal=DEALS.find(d=>d.firm===f.name);
-    const hasAff=!!AFFILIATE_LINKS[f.name];
-    const isComparing=compareFirms.some(x=>x.id===f.id);
-    return (<div key={f.id} className="fcard" style={{'--card-accent':f.color,'--card-glow':f.color+'20',...(isComparing?{borderColor:f.color,boxShadow:'0 0 4px '+f.color+'60, 0 0 16px '+f.color+'20'}:{})}}>
-      <div className="fcard-top" onClick={()=>onSelect(f)} style={{cursor:'pointer'}}>
-        <div className="fcard-logo"><FirmLogo f={f} size={42}/></div>
-        <div className="fcard-info">
-          <div className="fcard-name">{f.name}{TOP_PICKS.has(f.name)&&<span className="tp">{'\u2605'}</span>}</div>
-          <div className="fcard-sub">{f.flag} {f.hq} · Est. {f.founded}</div>
-        </div>
-        {deal&&<span className="fcard-deal">{deal.pct}</span>}
-      </div>
-      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}} onClick={()=>onSelect(f)}>
-        <span style={{fontFamily:'var(--mono)',fontSize:13,fontWeight:800,color:f.color,textShadow:'0 0 8px '+f.color+'60'}}>{f.rating}</span>
-        <span style={{color:'#facc15',fontSize:12,textShadow:'0 0 6px rgba(250,204,21,0.3)'}}>{'★'.repeat(Math.floor(f.rating))}</span>
-        <span style={{fontSize:11,color:'var(--t4)'}}>{f.reviews>0?f.reviews.toLocaleString()+' reviews':'New'}</span>
-        {f.bestFor&&<span className="best-for" style={{background:f.color+'18',border:'1px solid '+f.color+'35',color:f.color,boxShadow:'0 0 8px '+f.color+'25, 0 0 20px '+f.color+'10'}}>{f.bestFor}</span>}
-      </div>
-      <div className="fcard-desc" onClick={()=>onSelect(f)}>{f.desc}</div>
-      <div className="fcard-grid">
-        <div className="fcard-stat"><div className="fcard-sl">Max Alloc</div><div className="fcard-sv" style={{color:f.color,textShadow:'0 0 8px '+f.color+'40'}}>{f.maxAlloc}</div></div>
-        <div className="fcard-stat"><div className="fcard-sl">Split</div><div className="fcard-sv">{f.split.split('\u2192')[0].trim()}</div></div>
-        <div className="fcard-stat"><div className="fcard-sl">Payout</div><div className="fcard-sv">{f.paySpeed}</div></div>
-      </div>
-      <div className="fcard-foot">
-        <div style={{display:'flex',alignItems:'center',gap:10}}>
-          <div className="fcard-pulse">
-            <span className="fcard-pl">Pulse</span>
-            <span className="fcard-pv" style={{color:pulseColor(ps)}}>{ps}</span>
-          </div>
-          {toggleCompare&&<button className="cmp-tog" style={{...(isComparing?{background:f.color+'25',borderColor:f.color+'50',color:f.color}:{})}} onClick={e=>{e.stopPropagation();toggleCompare(f)}}>{isComparing?'✓ Added':'⚖ Compare'}</button>}
-        </div>
-        <div style={{display:'flex',gap:6,alignItems:'center'}}>
-          <button className="fcard-btn" style={{background:'linear-gradient(135deg,#fbbf24,#f59e0b)',borderColor:'transparent',color:'#050810',fontWeight:700}} onClick={e=>{e.stopPropagation();if(hasAff){trackClick(f.name,user?.id)}else{const fp=FIRM_PROFILES[f.name];window.open('https://'+(fp?.website||f.name.toLowerCase().replace(/\s+/g,'')+'.com'),'_blank')}}}>Get Deal</button>
-          <button className="fcard-btn" style={{background:f.color+'15',borderColor:f.color+'30',color:f.color}} onClick={()=>onSelect(f)}>View Details</button>
-        </div>
-      </div>
-    </div>);
-  })}</div>
-);
-
-// ── FIRM TABLE ──
-const FirmTable = ({firms,onSelect}) => {
-  const [copied,setCopied]=useState(false);
-  return (<>
-    <div className="tbl-wrap"><table className="tbl"><thead><tr>
-      <th>Firm</th><th>Pulse</th><th>Rating</th><th>Country</th><th>Platforms</th><th>Max Alloc</th><th>Deal</th><th></th>
-    </tr></thead><tbody>{firms.map(f=>{
-      const ps=calcPulse(f.rating,f.reviews,f.name);
-      const deal=DEALS.find(d=>d.firm===f.name);
-      return (<tr key={f.id} onClick={()=>onSelect(f)}>
-        <td><div style={{display:'flex',alignItems:'center',gap:10}}><FirmLogo f={f} size={34}/><div><div style={{fontWeight:700,fontSize:13}}>{f.name}{TOP_PICKS.has(f.name)&&<span className="tp" style={{marginLeft:3}}>{'\u2605'}</span>}</div><div style={{fontSize:10,color:'var(--t4)'}}>{f.hq} · Est. {f.founded}</div></div></div></td>
-        <td><span className="mono" style={{fontWeight:800,color:pulseColor(ps)}}>{ps}</span></td>
-        <td><span style={{fontWeight:700,color:f.rating>=4.5?'var(--green)':'var(--t2)'}}>{f.rating>0?f.rating:'\u2014'}</span><span style={{fontSize:10,color:'var(--t4)',marginLeft:4}}>{f.reviews.toLocaleString()}</span></td>
-        <td>{f.flag} {f.country}</td>
-        <td style={{fontSize:10}}>{f.platforms.slice(0,3).join(', ')}</td>
-        <td><span className="mono" style={{fontWeight:700}}>{f.maxAlloc}</span></td>
-        <td>{deal?<span className="lb-deal" onClick={e=>{e.stopPropagation();copyToClipboard(deal.code);setCopied(true);setTimeout(()=>setCopied(false),1400)}}>{deal.pct}</span>:<span style={{color:'var(--t5)',fontSize:10}}>\u2014</span>}</td>
-        <td><button className="fcard-btn" onClick={e=>{e.stopPropagation();onSelect(f)}}>View</button></td>
-      </tr>);
-    })}</tbody></table></div>
-    {copied&&<div className="toast">Code copied</div>}
-  </>);
-};
-
-// ── CHALLENGES TAB ──
-const ChallengesTab = ({onSelect}) => {
-  const [filters,setFilters]=useState({instant:false,noDLL:false,noConsistency:false,newsOk:false,eaOk:false,size:"",firm:"",drawdown:"",query:""});
-  const [phase,setPhase]=useState("eval");
-  const toggle=k=>setFilters(p=>({...p,[k]:!p[k]}));
-  const setSize=v=>setFilters(p=>({...p,size:p.size===v?"":v}));
-  const setFirm=v=>setFilters(p=>({...p,firm:p.firm===v?"":v}));
-  const setDrawdown=v=>setFilters(p=>({...p,drawdown:p.drawdown===v?"":v}));
-  const allSizes=[...new Set(CHALLENGES.map(c=>c.size))].sort((a,b)=>parseInt(a)-parseInt(b));
-  const allFirms=[...new Set(CHALLENGES.map(c=>c.firm))].sort();
-  const drawdownOptions=["EOD","Intraday","Static"];
-  // Helper to get display value: if funded phase, check overrides
-  const getVal=(c,field)=>{
-    if(phase==="eval") return c[field];
-    const key=c.firm+"|"+c.plan;
-    const ov=FUNDED_OVERRIDES[key];
-    return (ov&&ov[field]!==undefined)?ov[field]:c[field];
-  };
-  const filtered=(()=>{
-    return CHALLENGES.filter(c=>{
-      if(filters.instant&&!c.instant)return false;
-      const dll=String(getVal(c,"dll")||"");
-      if(filters.noDLL&&!dll.toLowerCase().includes("none"))return false;
-      const cons=String(getVal(c,"consistency")||"");
-      if(filters.noConsistency&&!cons.toLowerCase().includes("none"))return false;
-      if(filters.newsOk&&!c.news)return false;
-      if(filters.eaOk&&!c.ea)return false;
-      if(filters.size&&c.size!==filters.size)return false;
-      if(filters.firm&&c.firm!==filters.firm)return false;
-      if(filters.drawdown){
-        const dd=String(getVal(c,"drawdown")||"").toLowerCase();
-        if(filters.drawdown==="EOD"&&!dd.includes("eod"))return false;
-        if(filters.drawdown==="Intraday"&&!dd.includes("intraday"))return false;
-        if(filters.drawdown==="Static"&&!dd.includes("static"))return false;
-      }
-      if(filters.query){
-        const q=filters.query.toLowerCase();
-        const hay=[c.firm,c.plan,c.size,c.price,getVal(c,"target"),getVal(c,"maxLoss"),getVal(c,"dll"),getVal(c,"drawdown"),getVal(c,"consistency"),getVal(c,"payout"),getVal(c,"split")].join(" ").toLowerCase();
-        if(!hay.includes(q)) return false;
-      }
-      return true;
-    }).sort((a,b)=>{
-      if(a.firm!==b.firm) return a.firm.localeCompare(b.firm);
-      const sizeDiff=parseInt(a.size)-parseInt(b.size);
-      if(sizeDiff!==0) return sizeDiff;
-      return a.plan.localeCompare(b.plan);
-    });
-  })();
-  const ac=Object.values(filters).filter(v=>v===true||(typeof v==="string"&&v!=="")).length;
-  const clearAll=()=>setFilters({instant:false,noDLL:false,noConsistency:false,newsOk:false,eaOk:false,size:"",firm:"",drawdown:"",query:""});
-  return (<div>
-    <div className="ch-hero">
-      <div className="sec-hdr"><div>
-        <div className="sec-title">Challenge Comparison Tool</div>
-        <div className="sec-sub">Filter & compare {CHALLENGES.length} challenges across {new Set(CHALLENGES.map(c=>c.firm)).size} futures prop firms</div>
-      </div></div>
-    </div>
-    <div className="ch-phase-group">
-      <button className={`ch-phase-btn${phase==="eval"?" on":""}`} onClick={()=>setPhase("eval")}>Evaluation</button>
-      <button className={`ch-phase-btn${phase==="funded"?" on":""}`} onClick={()=>setPhase("funded")}>Funded</button>
-    </div>
-    <div className="ch-filters-row">
-      <input
-        className="f-search"
-        style={{maxWidth:320}}
-        placeholder="Search firm, plan, drawdown, payout..."
-        value={filters.query}
-        onChange={e=>setFilters(p=>({...p,query:e.target.value}))}
-      />
-    </div>
-    <div className="ch-filters-row">
-      <button className={`ch-chip${filters.instant?" on":""}`} onClick={()=>toggle("instant")}>⚡ Instant Funding</button>
-      <button className={`ch-chip${filters.noDLL?" on":""}`} onClick={()=>toggle("noDLL")}>No Daily Loss Limit</button>
-      <button className={`ch-chip${filters.noConsistency?" on":""}`} onClick={()=>toggle("noConsistency")}>No Consistency Rule</button>
-      <button className={`ch-chip${filters.newsOk?" on":""}`} onClick={()=>toggle("newsOk")}>News Trading OK</button>
-      <button className={`ch-chip${filters.eaOk?" on":""}`} onClick={()=>toggle("eaOk")}>EAs/Bots OK</button>
-      {ac>0&&<button className="ch-chip" style={{marginLeft:'auto',color:'var(--red)',borderColor:'rgba(255,71,87,0.3)'}} onClick={clearAll}>Clear all</button>}
-    </div>
-    <div className="ch-filters-row">
-      <span className="ch-size-label">Firm</span>
-      {allFirms.map(firm=><button key={firm} className={`ch-chip${filters.firm===firm?" on":""}`} onClick={()=>setFirm(firm)}>{firm}</button>)}
-    </div>
-    <div className="ch-filters-row">
-      <span className="ch-size-label">Size</span>
-      {allSizes.map(s=><button key={s} className={`ch-chip${filters.size===s?" on":""}`} onClick={()=>setSize(s)}>${s}</button>)}
-    </div>
-    <div className="ch-filters-row">
-      <span className="ch-size-label">Drawdown</span>
-      {drawdownOptions.map(opt=><button key={opt} className={`ch-chip${filters.drawdown===opt?" on":""}`} onClick={()=>setDrawdown(opt)}>{opt}</button>)}
-    </div>
-    <div className="ch-count">Showing <b>{filtered.length}</b> challenges{phase==="funded"&&<span className="funded-badge">★ Funded account rules</span>}</div>
-    {filtered.length===0?<div className="ch-empty">No matches — try fewer filters.</div>
-    :<div className="ch-list">
-      {filtered.map((c,i)=>{
-        const f=FIRMS.find(ff=>ff.name===c.firm);
-        const dll=getVal(c,"dll");const noDLL=dll==="None"||dll.toLowerCase().includes("none");
-        const minDays=getVal(c,"minDays");
-        const drawdown=getVal(c,"drawdown");
-        const consistency=getVal(c,"consistency");
-        const payout=getVal(c,"payout");
-        const accent=f&&f.color?f.color:'var(--em)';
-        return (<div key={i} className="ch-card" style={{'--card-accent':accent}} onClick={()=>f&&onSelect(f)}>
-          <div className="ch-firm">
-            {f&&<div className="ch-firm-logo"><FirmLogo f={f} size={48}/></div>}
-            <div className="ch-firm-info">
-              <div className="ch-firm-name">{c.firm}</div>
-              <div className="ch-firm-meta">
-                <span className="ch-firm-plan">{c.plan}</span>
-                <span className="ch-firm-size">${c.size}</span>
-                {c.instant&&<span className="ch-firm-instant">INSTANT</span>}
-              </div>
-            </div>
-          </div>
-          <div className="ch-stat">
-            <div className="ch-stat-label">Price</div>
-            <div className="ch-stat-val price">{c.price}</div>
-          </div>
-          <div className="ch-stat">
-            <div className="ch-stat-label">Target</div>
-            <div className="ch-stat-val">{getVal(c,"target")}</div>
-          </div>
-          <div className="ch-stat">
-            <div className="ch-stat-label">Max Loss</div>
-            <div className="ch-stat-val">{getVal(c,"maxLoss")}</div>
-          </div>
-          <div className="ch-stat">
-            <div className="ch-stat-label">Daily Loss Limit</div>
-            <div className={`ch-stat-val ${noDLL?"good":"warn"}`}>{dll}</div>
-          </div>
-          <div className="ch-stat">
-            <div className="ch-stat-label">Drawdown</div>
-            <div className="ch-stat-val">{drawdown}</div>
-          </div>
-          <div className="ch-stat">
-            <div className="ch-stat-label">Consistency</div>
-            <div className="ch-stat-val">{consistency}</div>
-          </div>
-          <div className="ch-stat">
-            <div className="ch-stat-label">Split</div>
-            <div className="ch-stat-val">{getVal(c,"split")}</div>
-          </div>
-          <div className="ch-stat">
-            <div className="ch-stat-label">{phase==="funded"?"Payout":"Min Days"}</div>
-            <div className="ch-stat-val">{phase==="funded"?payout:minDays}</div>
-          </div>
-          <button className="ch-cta" onClick={e=>{e.stopPropagation();if(f)onSelect(f)}}>View →</button>
-        </div>);
-      })}
-    </div>}
-  </div>);
-};
-
-// ── OFFERS TAB ──
-const OffersTab = ({user,setTab}) => {
-  const [copied,setCopied]=useState(null);
-  return (<div>
-    <div className="sec-hdr"><div><div className="sec-title">Exclusive Deals</div><div className="sec-sub">{DEALS.length} active discount codes — copy your code at checkout</div></div></div>
-    <div className="deals-giveaway-banner" onClick={()=>setTab&&setTab('giveaways')}>
-      <div className="deals-giveaway-ic">🎁</div>
-      <div className="deals-giveaway-txt">
-        <div className="deals-giveaway-t">Weekly Giveaway</div>
-        <div className="deals-giveaway-s">Buy with code TPP → enter to win a free prop account every Friday</div>
-      </div>
-      <span className="deals-giveaway-arrow">→</span>
-    </div>
-    <div className="offers-list">{DEALS.map((d,i)=>{
-      const f=FIRMS.find(ff=>ff.name===d.firm);
-      const hasAff=!!AFFILIATE_LINKS[d.firm];
-      return (<div key={i} className="offer-row" style={{borderLeft:'3px solid '+(f?f.color:'var(--em)'),'--card-accent':f?f.color:'var(--em)'}}>
-        {f&&<FirmLogo f={f} size={34}/>}
-        <div className="offer-pct">{d.pct}</div>
-        <div className="offer-info">
-          <div className="offer-firm">{d.firm}{d.tag&&<span className="offer-tag">{d.tag}</span>}</div>
-          <div className="offer-desc">{d.desc}{d.expires&&<span style={{color:'var(--amber)',marginLeft:4}}>Ends {d.expires}</span>}</div>
-        </div>
-        <div className="offer-code" onClick={()=>{copyToClipboard(d.code);setCopied(i);setTimeout(()=>setCopied(null),1400)}}>{copied===i?'\u2713 Copied':d.code}</div>
-        {hasAff&&<button style={{background:'linear-gradient(135deg,#fbbf24,#f59e0b)',border:'none',color:'#050810',fontFamily:'var(--sans)',fontSize:12,fontWeight:700,padding:'9px 20px',borderRadius:999,cursor:'pointer',whiteSpace:'nowrap',boxShadow:'var(--glow-gold-sm)',transition:'all .22s'}} onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-1px)';e.currentTarget.style.boxShadow='var(--glow-gold),0 4px 14px rgba(251,191,36,0.3)'}} onMouseLeave={e=>{e.currentTarget.style.transform='';e.currentTarget.style.boxShadow='var(--glow-gold-sm)'}} onClick={()=>trackClick(d.firm,user?.id)}>Get Deal</button>}
-      </div>);
-    })}</div>
-    {copied!==null&&<div className="toast">Code copied</div>}
-  </div>);
-};
-
-// ── GIVEAWAY TAB ──
-const GiveawaysTab = () => (
-  <div style={{maxWidth:620,margin:'0 auto'}}>
-    <div className="sec-hdr"><div><div className="sec-title">Weekly Giveaway</div><div className="sec-sub">Buy with code TPP for automatic entry</div></div></div>
-    <div className="gw-prize">
-      <div style={{fontSize:10,fontWeight:700,color:'var(--cyan)',textTransform:'uppercase',letterSpacing:1.5}}>This Week's Prize</div>
-      <div style={{fontSize:18,fontWeight:800,marginTop:6}}>Free 150K Funded Account</div>
-      <div className="gw-val">$150K</div>
-      <div style={{fontSize:11,color:'var(--t3)'}}>Winner announced Friday at 5PM EST on Discord & YouTube</div>
-    </div>
-    <div className="gw-steps">
-      {[["01","Purchase Any Account","From any listed firm"],["02","Use Code TPP","(TTPP for Alpha Futures) — get your discount + qualify"],["03","Submit Proof","Screenshot of order"],["04","Win","Drawn every Friday"]].map(([n,t,d])=>(
-        <div key={n} className="gw-step"><div className="gw-step-n">{n}</div><div className="gw-step-t">{t}</div><div className="gw-step-d">{d}</div></div>
-      ))}
-    </div>
-    <div style={{textAlign:'center',margin:'24px 0'}}>
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSeBd3EkO_rPjqMC2f7G9Z2S7dPquxJtnBCkXpKHsAULHavfXQ/viewform" target="_blank" rel="noopener noreferrer" style={{textDecoration:'none'}}>
-        <button className="gw-btn">Submit Your Entry</button>
-      </a>
-    </div>
-    <div className="gw-rules"><h4>Rules</h4><ul>
-      {["Purchase through a listed firm","Code TPP applied at checkout (TTPP for Alpha Futures)","One entry per purchase — more purchases = more entries","Screenshot must show discount code","Winners drawn every Friday, announced on Discord & YouTube","Entries Mon\u2013Sun eligible for that week's drawing"].map((r,i)=><li key={i}>{r}</li>)}
-    </ul></div>
-  </div>
-);
-
-// ═══════════════════════════════════════════════════════════════════════════
-// ── TOOLS: QUIZ + DRAWDOWN SIMULATOR + SCORECARD ──
-// ═══════════════════════════════════════════════════════════════════════════
-
-// ── QUIZ SCORING: maps answers → firm scores ──
-const QUIZ_QUESTIONS = [
-  {id:"style", q:"What's your trading style?", sub:"How long do you hold positions?", opts:[
-    {v:"scalp", l:"Scalper", d:"In & out in minutes"},
-    {v:"intraday", l:"Intraday", d:"Minutes to hours"},
-    {v:"swing", l:"Swing", d:"Days at a time"},
-  ]},
-  {id:"budget", q:"What's your budget for an eval?", sub:"One-time or first month", opts:[
-    {v:"low", l:"Under $100", d:"Tight budget"},
-    {v:"mid", l:"$100–$300", d:"Reasonable"},
-    {v:"high", l:"$300+", d:"No limit"},
-  ]},
-  {id:"dd", q:"How do you feel about trailing drawdown?", sub:"The floor that follows your P&L", opts:[
-    {v:"eod", l:"EOD only", d:"Floor snaps at close — safer"},
-    {v:"any", l:"Either works", d:"I know how to manage it"},
-    {v:"static", l:"Prefer static", d:"Floor never moves"},
-  ]},
-  {id:"news", q:"Do you trade news events?", sub:"FOMC, NFP, CPI releases", opts:[
-    {v:"yes", l:"Yes, often", d:"Major releases matter"},
-    {v:"sometimes", l:"Sometimes", d:"Depends on the setup"},
-    {v:"never", l:"Never", d:"I avoid news entirely"},
-  ]},
-  {id:"speed", q:"How important is payout speed?", sub:"Time from request to cash", opts:[
-    {v:"fast", l:"Critical", d:"I want it same-day"},
-    {v:"ok", l:"A few days OK", d:"Within the week"},
-    {v:"any", l:"Doesn't matter", d:"Anything works"},
-  ]},
-  {id:"consistency", q:"Consistency rules?", sub:"% cap on single-day profit", opts:[
-    {v:"none", l:"No consistency", d:"I want freedom"},
-    {v:"ok", l:"Moderate is fine", d:"30–40% is OK"},
-    {v:"any", l:"Whatever", d:"I trade consistently anyway"},
-  ]},
-];
-
-const scoreFirmForQuiz = (firm, answers) => {
-  let score = 50; // base
+const scoreQuiz = (firm, answers) => {
+  let s = 50;
   const reasons = [];
-  const name = firm.name;
-
-  // Style
+  const n = firm.name;
   if (answers.style === "swing") {
-    // No firm truly allows overnight freely — Tradeify/Apex ban it, GFF Express allows
-    if (name === "Goat Funded Futures") { score += 8; reasons.push("Express plan allows overnight holds"); }
-    else { score -= 5; }
+    if (n === "Goat Funded Futures") { s += 8; reasons.push("Express allows overnight"); }
+    else s -= 5;
   }
   if (answers.style === "scalp" || answers.style === "intraday") {
-    if (name === "Tradeify") { score += 10; reasons.push("Fast payouts (~1hr), great for scalpers"); }
-    if (name === "My Funded Futures") { score += 8; reasons.push("Rapid plan has 90/10 split & daily payouts"); }
-    if (name === "Apex Trader Funding") { score += 6; reasons.push("20-account max lets you scale hard"); }
+    if (n === "Tradeify") { s += 10; reasons.push("~1hr payouts"); }
+    if (n === "My Funded Futures") { s += 8; reasons.push("Rapid = 90/10 split"); }
   }
-
-  // Budget
   if (answers.budget === "low") {
-    if (name === "Top One Futures") { score += 10; reasons.push("Elite plan starts at $39/mo"); }
-    if (name === "Tradeify") { score += 8; reasons.push("Growth 25K is $99 one-time — cheapest path"); }
-    if (name === "FundedNext Futures") { score += 6; reasons.push("25K Rapid at $99 one-time"); }
-    if (name === "Goat Funded Futures") { score += 6; reasons.push("5K EOD plan at $29/mo"); }
+    if (n === "Top One Futures") { s += 10; reasons.push("$39/mo Elite plan"); }
+    if (n === "Tradeify") { s += 8; reasons.push("Growth 25K = $99"); }
+    if (n === "FundedNext Futures") { s += 6; reasons.push("25K Rapid = $99"); }
   }
   if (answers.budget === "high") {
-    if (name === "Apex Trader Funding") { score += 6; reasons.push("Up to 20 accounts, $3M total allocation"); }
-    if (name === "My Funded Futures") { score += 5; reasons.push("Pro plans scale to $150K"); }
+    if (n === "Apex Trader Funding") { s += 6; reasons.push("20 accounts, $3M total"); }
   }
-
-  // Drawdown preference
   if (answers.dd === "eod") {
-    if (name === "Tradeify" || name === "Alpha Futures" || name === "Bulenox" || name === "FundedNext Futures") {
-      score += 10;
-      reasons.push("EOD trailing drawdown — safer for live P&L swings");
+    if (["Tradeify","Alpha Futures","Bulenox","FundedNext Futures"].includes(n)) {
+      s += 10; reasons.push("EOD trailing DD");
     }
-    if (name === "Apex Trader Funding") { score += 5; reasons.push("EOD plans available (choose at purchase)"); }
   }
   if (answers.dd === "static") {
-    if (name === "Goat Funded Futures") { score += 12; reasons.push("Static plan has fixed drawdown that never moves"); }
-    else { score -= 3; }
+    if (n === "Goat Funded Futures") { s += 12; reasons.push("Static DD = fixed floor"); }
+    else s -= 3;
   }
-
-  // News trading
   if (answers.news === "yes") {
-    if (name === "Apex Trader Funding" || name === "Tradeify" || name === "Bulenox" || name === "FundedNext Futures" || name === "Top One Futures") {
-      score += 8;
-      reasons.push("News trading fully allowed");
+    if (["Apex Trader Funding","Tradeify","Bulenox","FundedNext Futures","Top One Futures"].includes(n)) {
+      s += 8; reasons.push("News trading allowed");
     }
-    if (name === "My Funded Futures" || name === "Goat Funded Futures") { score -= 4; }
+    if (["My Funded Futures","Goat Funded Futures"].includes(n)) s -= 4;
   }
-
-  // Payout speed
   if (answers.speed === "fast") {
-    if (name === "Tradeify") { score += 10; reasons.push("~1 hour payout processing — fastest in industry"); }
-    if (name === "FundedNext Futures" || name === "Goat Funded Futures") { score += 7; reasons.push("24-hour guaranteed payout (or $1K penalty)"); }
-    if (name === "Top One Futures") { score += 6; reasons.push("<24hr average payout speed"); }
+    if (n === "Tradeify") { s += 10; reasons.push("~1hr payouts"); }
+    if (["FundedNext Futures","Goat Funded Futures"].includes(n)) { s += 7; reasons.push("24hr guaranteed"); }
   }
-
-  // Consistency
   if (answers.consistency === "none") {
-    if (name === "FundedNext Futures") { score += 10; reasons.push("Rapid plan has zero consistency rule"); }
-    if (name === "My Funded Futures") { score += 8; reasons.push("Rapid funded = no consistency"); }
-    if (name === "Alpha Futures") { score += 5; reasons.push("Advanced plan has no consistency rule"); }
+    if (n === "FundedNext Futures") { s += 10; reasons.push("No consistency rule"); }
+    if (n === "My Funded Futures") { s += 8; reasons.push("Rapid = no consistency"); }
   }
-
-  // Bonus: Pulse Score reflects overall quality
-  const ps = PULSE_SCORES[name] || 75;
-  score += (ps - 85) * 0.3;
-
-  return { score: Math.max(0, Math.min(100, Math.round(score))), reasons: reasons.slice(0, 3) };
+  const ps = PULSE_SCORES[n] || 75;
+  s += (ps - 85) * 0.3;
+  return { score: Math.max(0, Math.min(100, Math.round(s))), reasons: reasons.slice(0, 3) };
 };
 
-// ── QUIZ COMPONENT ──
-const FirmQuiz = ({onSelect}) => {
+// ═══════════════════════════════════════════════════════════════════════════
+// SIMULATE DRAWDOWN
+// ═══════════════════════════════════════════════════════════════════════════
+const simDD = (points, cfg) => {
+  const { type, maxDD, lockAt } = cfg;
+  let peak = 0, locked = false, blownAt = -1;
+  const floors = [];
+  for (let i = 0; i < points.length; i++) {
+    const p = points[i];
+    let floor;
+    if (type === "Static") {
+      floor = -maxDD;
+    } else {
+      if (p > peak) peak = p;
+      floor = peak - maxDD;
+      if (lockAt !== null && peak >= maxDD + lockAt && !locked) { locked = true; floor = lockAt; }
+    }
+    floors.push(floor);
+    if (p <= floor && blownAt === -1) blownAt = i;
+  }
+  return { floors, blownAt, peak };
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FIRM ROW (THE TERMINAL TABLE)
+// ═══════════════════════════════════════════════════════════════════════════
+const FirmRow = ({ firm, rank, open, onToggle, onDetail, toggleCompare, comparing }) => {
+  const ps = PULSE_SCORES[firm.name] || 75;
+  const deal = DEALS.find(d => d.firm === firm.name);
+  const scorecard = SCORECARD_DATA[firm.name] || [];
+  return (
+    <>
+      <button className={`term-row ${open ? 'open' : ''}`} onClick={onToggle}>
+        <span className="term-rank">{String(rank).padStart(2, '0')}</span>
+        <span className="term-firm">
+          <FirmLogo firm={firm} />
+          <span>
+            <span className="term-firm-nm">{firm.name}</span>
+            <span className="term-firm-meta">{firm.flag} {firm.hq.split(',')[0].toUpperCase()} · EST. {firm.founded}</span>
+          </span>
+        </span>
+        <span className="term-pulse">
+          <span className="term-pulse-v">{ps}</span>
+          <span className="term-pulse-bar"><span style={{ width: ps + '%' }} /></span>
+        </span>
+        <span className="term-rating">★{firm.rating}<em>{firm.reviews.toLocaleString()} REV</em></span>
+        <span className="term-alloc">{firm.maxAlloc}</span>
+        <span className={`term-tag ${firm.instantFund ? 'on' : ''}`}>{firm.instantFund ? 'INSTANT' : 'EVAL'}</span>
+        <span className={`term-deal ${!deal ? 'none' : ''}`}>{deal ? deal.pct : '—'}</span>
+        <span className="term-chev">›</span>
+      </button>
+      {open && (
+        <div className="term-expand">
+          <p className="term-expand-desc">"{firm.desc}"</p>
+          <div className="term-expand-grid">
+            <div className="term-expand-cell">
+              <div className="term-expand-lbl">Split</div>
+              <div className="term-expand-v">{firm.split}</div>
+            </div>
+            <div className="term-expand-cell">
+              <div className="term-expand-lbl">Target</div>
+              <div className="term-expand-v">{firm.target}</div>
+            </div>
+            <div className="term-expand-cell">
+              <div className="term-expand-lbl">Max DD</div>
+              <div className="term-expand-v">{firm.maxDD}</div>
+            </div>
+            <div className="term-expand-cell">
+              <div className="term-expand-lbl">Payout</div>
+              <div className="term-expand-v">{firm.paySpeed}</div>
+            </div>
+            <div className="term-expand-cell">
+              <div className="term-expand-lbl">Drawdown</div>
+              <div className="term-expand-v">{firm.drawdownType}</div>
+            </div>
+            <div className="term-expand-cell">
+              <div className="term-expand-lbl">Consistency</div>
+              <div className="term-expand-v">{firm.hasConsistency ? firm.consistencyPct : 'None'}</div>
+            </div>
+            <div className="term-expand-cell">
+              <div className="term-expand-lbl">Platforms</div>
+              <div className="term-expand-v">{firm.platforms.slice(0, 3).join(', ')}{firm.platforms.length > 3 ? ` +${firm.platforms.length - 3}` : ''}</div>
+            </div>
+            <div className="term-expand-cell">
+              <div className="term-expand-lbl">Min Payout</div>
+              <div className="term-expand-v">{firm.minPayout}</div>
+            </div>
+          </div>
+          {scorecard.length > 0 && (
+            <div className="term-expand-scorecard">
+              {scorecard.slice(0, 5).map((r, i) => (
+                <div key={i} className="term-sc-row">
+                  <div className={`term-sc-dot ${r.tone}`} />
+                  <div className="term-sc-k">{r.k}</div>
+                  <div className="term-sc-v">{r.v}</div>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="term-expand-actions">
+            <button className="term-act primary" onClick={(e) => { e.stopPropagation(); trackClick(firm.name); }}>
+              {deal ? `Claim ${deal.pct} →` : 'Visit Site →'}
+            </button>
+            <button className="term-act" onClick={(e) => { e.stopPropagation(); onDetail(firm); }}>Full Profile</button>
+            {toggleCompare && (
+              <button className="term-act" onClick={(e) => { e.stopPropagation(); toggleCompare(firm); }}>
+                {comparing ? '✓ Comparing' : '+ Compare'}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// QUIZ COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════
+const Quiz = ({ onDetail }) => {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [submitted, setSubmitted] = useState(false);
-
+  const [done, setDone] = useState(false);
   const total = QUIZ_QUESTIONS.length;
-  const current = QUIZ_QUESTIONS[step];
-  const progress = submitted ? 100 : Math.round((step / total) * 100);
 
-  const answer = (v) => {
-    const na = {...answers, [current.id]: v};
-    setAnswers(na);
-    if (step < total - 1) setStep(step + 1);
-    else { setSubmitted(true); }
-  };
-
-  const reset = () => { setStep(0); setAnswers({}); setSubmitted(false); };
-
-  if (submitted) {
-    const results = FIRMS.map(f => ({...f, ...scoreFirmForQuiz(f, answers)})).sort((a,b) => b.score - a.score);
-    const top = results[0];
+  if (done) {
+    const ranked = FIRMS.map(f => ({ ...f, ...scoreQuiz(f, answers) })).sort((a, b) => b.score - a.score);
     return (
-      <div className="qz-wrap">
-        <div className="qz-result-hdr">
-          <div className="qz-result-badge">Your Match</div>
-          <div className="qz-result-title">Based on your answers, <em>{top.name}</em> is your best fit.</div>
-          <div className="qz-result-sub">We ranked all {FIRMS.length} firms against your preferences below.</div>
-          <button className="qz-reset-btn" onClick={reset}>↻ Retake Quiz</button>
+      <div className="quiz">
+        <div className="quiz-results-hdr">
+          <span className="quiz-results-tag">MATCH FOUND</span>
+          <span className="quiz-results-title">Your best fit is <em>{ranked[0].name}</em></span>
+          <button className="quiz-back" onClick={() => { setDone(false); setStep(0); setAnswers({}); }} style={{ marginLeft: 'auto' }}>↻ Re-run</button>
         </div>
-        <div className="qz-results">
-          {results.map((r, i) => {
-            const deal = DEALS.find(d => d.firm === r.name);
-            return (
-              <div key={r.id} className={`qz-result-card ${i===0?'top':''}`} style={{'--card-accent':r.color}}>
-                <div className="qz-rank">#{i+1}</div>
-                <div className="qz-result-logo"><FirmLogo f={r} size={44}/></div>
-                <div className="qz-result-info">
-                  <div className="qz-result-name">{r.name} {i===0 && <span className="qz-best">★ Best Match</span>}</div>
-                  <div className="qz-result-reasons">
-                    {r.reasons.length > 0 ? r.reasons.map((reason, j) => <span key={j} className="qz-reason">✓ {reason}</span>) : <span className="qz-reason qz-reason-muted">General compatibility</span>}
-                  </div>
-                </div>
-                <div className="qz-result-score">
-                  <div className="qz-score-v" style={{color:r.score>=80?'var(--gold)':r.score>=65?'#22d3ee':'var(--t4)'}}>{r.score}</div>
-                  <div className="qz-score-l">Match</div>
-                </div>
-                <div className="qz-result-actions">
-                  <button className="qz-view-btn" onClick={()=>onSelect(r)}>View Details</button>
-                  {deal && <button className="qz-deal-btn" onClick={()=>trackClick(r.name)}>{deal.pct} Off</button>}
+        {ranked.map((f, i) => {
+          const deal = DEALS.find(d => d.firm === f.name);
+          return (
+            <div key={f.id} className="quiz-result-row">
+              <div className="quiz-result-rank">{String(i + 1).padStart(2, '0')}</div>
+              <FirmLogo firm={f} size={40} />
+              <div className="quiz-result-info">
+                <div className="quiz-result-nm">{f.name}</div>
+                <div className="quiz-result-reasons">
+                  {f.reasons.length > 0 ? f.reasons.map((r, j) => <span key={j}>{r}</span>) : <span style={{ fontStyle: 'italic' }}>Baseline match</span>}
                 </div>
               </div>
-            );
-          })}
-        </div>
+              <div className="quiz-result-score">{f.score}<small>MATCH</small></div>
+              <div className="quiz-result-actions">
+                <button className="quiz-result-btn" onClick={() => onDetail(f)}>View</button>
+                {deal && <button className="quiz-result-btn primary" onClick={() => trackClick(f.name)}>{deal.pct}</button>}
+              </div>
+            </div>
+          );
+        })}
       </div>
     );
   }
 
+  const q = QUIZ_QUESTIONS[step];
+  const prog = Math.round((step / total) * 100);
+
+  const pick = (v) => {
+    const na = { ...answers, [q.id]: v };
+    setAnswers(na);
+    if (step < total - 1) setStep(step + 1);
+    else setDone(true);
+  };
+
   return (
-    <div className="qz-wrap">
-      <div className="qz-progress-wrap"><div className="qz-progress" style={{width:progress+'%'}}/></div>
-      <div className="qz-step-label">Question {step+1} of {total}</div>
-      <h2 className="qz-q">{current.q}</h2>
-      <div className="qz-sub">{current.sub}</div>
-      <div className="qz-opts">
-        {current.opts.map(opt => (
-          <button key={opt.v} className="qz-opt" onClick={()=>answer(opt.v)}>
-            <div className="qz-opt-l">{opt.l}</div>
-            <div className="qz-opt-d">{opt.d}</div>
+    <div className="quiz">
+      <div className="quiz-prog">
+        Q.{step + 1} / {total}
+        <div className="quiz-prog-track"><div className="quiz-prog-fill" style={{ width: prog + '%' }} /></div>
+      </div>
+      <h3 className="quiz-q">{q.q}</h3>
+      <p className="quiz-sub">{q.sub.toUpperCase()}</p>
+      <div className="quiz-opts">
+        {q.opts.map((o, i) => (
+          <button key={o.v} className="quiz-opt" onClick={() => pick(o.v)}>
+            <span className="quiz-opt-ltr">{String.fromCharCode(65 + i)}</span>
+            <span>
+              <span className="quiz-opt-l">{o.l}</span>
+              <span className="quiz-opt-d">{o.d}</span>
+            </span>
+            <span className="quiz-opt-arrow">→</span>
           </button>
         ))}
       </div>
-      {step > 0 && <button className="qz-back-btn" onClick={()=>setStep(step-1)}>← Back</button>}
+      {step > 0 && (
+        <div className="quiz-footer">
+          <button className="quiz-back" onClick={() => setStep(step - 1)}>← Back</button>
+        </div>
+      )}
     </div>
   );
 };
 
-// ── DRAWDOWN SIMULATOR ──
-// Scenarios: preset equity curves that demonstrate DD types
-const DD_SCENARIOS = {
-  "steady": {name:"Steady winner", sub:"+$200/day, 10 days", points:[0,200,400,600,800,1000,1200,1400,1600,1800,2000]},
-  "comeback": {name:"The comeback", sub:"Big dip mid-day, recovers", points:[0,500,800,400,-200,100,500,900,1200,1500,1800]},
-  "volatile": {name:"Volatile trader", sub:"Big swings, net positive", points:[0,800,200,1100,500,1400,700,1600,1000,1900,1500]},
-  "breakdown": {name:"Slow breakdown", sub:"Early gains, late losses", points:[0,500,1000,1500,1800,1500,1100,700,300,-100,-500]},
-  "spike-give-back": {name:"Spike & give back", sub:"Up $1500, gives back $1000", points:[0,300,800,1200,1500,1400,1000,700,400,500,500]},
-};
+// ═══════════════════════════════════════════════════════════════════════════
+// DRAWDOWN SIMULATOR
+// ═══════════════════════════════════════════════════════════════════════════
+const Sim = () => {
+  const [sce, setSce] = useState("spike-give-back");
+  const [firm, setFirm] = useState("Tradeify");
+  const scenario = DD_SCENARIOS[sce];
+  const cfg = FIRM_DD_CONFIG[firm];
+  const f = FIRMS.find(x => x.name === firm);
+  const sim = simDD(scenario.points, cfg);
 
-const FIRM_DD_CONFIG = {
-  "Tradeify": {label:"Tradeify Select 50K", type:"EOD", maxDD:2000, startBalance:50000, lockAt:100},
-  "My Funded Futures": {label:"MFFU Rapid 50K", type:"Intraday", maxDD:2000, startBalance:50000, lockAt:null},
-  "Alpha Futures": {label:"Alpha Standard 50K", type:"EOD", maxDD:2500, startBalance:50000, lockAt:null},
-  "Apex Trader Funding": {label:"Apex EOD 50K", type:"EOD", maxDD:2000, startBalance:50000, lockAt:100},
-  "Top One Futures": {label:"Top One Elite 50K", type:"EOD", maxDD:2000, startBalance:50000, lockAt:null},
-  "FundedNext Futures": {label:"FundedNext Rapid 50K", type:"EOD", maxDD:2500, startBalance:50000, lockAt:null},
-  "Bulenox": {label:"Bulenox Eval 50K", type:"Intraday", maxDD:2500, startBalance:50000, lockAt:null},
-  "Goat Funded Futures": {label:"GFF EOD 50K", type:"EOD", maxDD:2500, startBalance:50000, lockAt:null},
-};
-
-// Simulate drawdown floor based on DD type
-const simulateDD = (points, config) => {
-  const {type, maxDD, lockAt} = config;
-  let floor = -maxDD; // floor relative to starting balance
-  let peakEOD = 0;
-  let locked = false;
-  let blownAt = -1;
-  const floors = [];
-
-  for (let i = 0; i < points.length; i++) {
-    const pnl = points[i];
-    if (type === "Intraday") {
-      // Trails highest equity tick-by-tick
-      if (pnl > peakEOD) peakEOD = pnl;
-      floor = peakEOD - maxDD;
-      if (lockAt !== null && peakEOD >= maxDD + lockAt && !locked) { locked = true; floor = lockAt; }
-    } else if (type === "EOD") {
-      // Only updates at end of day (we treat each point as a day here)
-      if (pnl > peakEOD) peakEOD = pnl;
-      floor = peakEOD - maxDD;
-      if (lockAt !== null && peakEOD >= maxDD + lockAt && !locked) { locked = true; floor = lockAt; }
-    } else {
-      // Static
-      floor = -maxDD;
-    }
-    floors.push(floor);
-    if (pnl <= floor && blownAt === -1) blownAt = i;
-  }
-  return { floors, blownAt, peakEOD };
-};
-
-const DrawdownSim = () => {
-  const [scenarioKey, setScenarioKey] = useState("spike-give-back");
-  const [firmKey, setFirmKey] = useState("Tradeify");
-  const scenario = DD_SCENARIOS[scenarioKey];
-  const firm = FIRMS.find(f => f.name === firmKey);
-  const config = FIRM_DD_CONFIG[firmKey];
-  const sim = simulateDD(scenario.points, config);
-
-  // Chart dimensions
-  const W = 680, H = 280, PAD = 40;
-  const allY = [...scenario.points, ...sim.floors];
-  const minY = Math.min(...allY) - 200;
-  const maxY = Math.max(...allY) + 200;
-  const xScale = (i) => PAD + (i / (scenario.points.length - 1)) * (W - PAD * 2);
-  const yScale = (v) => H - PAD - ((v - minY) / (maxY - minY)) * (H - PAD * 2);
-
-  const pnlPath = scenario.points.map((p, i) => `${i===0?'M':'L'}${xScale(i)},${yScale(p)}`).join(' ');
-  const floorPath = sim.floors.map((f, i) => `${i===0?'M':'L'}${xScale(i)},${yScale(f)}`).join(' ');
-  const zeroY = yScale(0);
+  const W = 720, H = 260, P = 36;
+  const all = [...scenario.points, ...sim.floors];
+  const minY = Math.min(...all) - 200;
+  const maxY = Math.max(...all) + 200;
+  const xs = i => P + (i / (scenario.points.length - 1)) * (W - P * 2);
+  const ys = v => H - P - ((v - minY) / (maxY - minY)) * (H - P * 2);
+  const pnlPath = scenario.points.map((p, i) => `${i === 0 ? 'M' : 'L'}${xs(i)},${ys(p)}`).join(' ');
+  const floorPath = sim.floors.map((p, i) => `${i === 0 ? 'M' : 'L'}${xs(i)},${ys(p)}`).join(' ');
 
   return (
-    <div className="sim-wrap">
-      <div className="sim-hdr">
-        <div className="sim-title">Drawdown Simulator</div>
-        <div className="sim-sub">See how each firm's drawdown floor reacts to the same trading day.</div>
-      </div>
-
-      <div className="sim-controls">
-        <div className="sim-ctrl-group">
-          <label>Firm</label>
-          <select value={firmKey} onChange={e=>setFirmKey(e.target.value)}>
-            {FIRMS.map(f => <option key={f.id} value={f.name}>{FIRM_DD_CONFIG[f.name]?.label || f.name}</option>)}
+    <div className="sim">
+      <div className="sim-ctrl">
+        <div>
+          <label>FIRM</label>
+          <select value={firm} onChange={e => setFirm(e.target.value)}>
+            {FIRMS.map(ff => <option key={ff.id} value={ff.name}>{FIRM_DD_CONFIG[ff.name]?.label || ff.name}</option>)}
           </select>
         </div>
-        <div className="sim-ctrl-group">
-          <label>Scenario</label>
-          <select value={scenarioKey} onChange={e=>setScenarioKey(e.target.value)}>
-            {Object.entries(DD_SCENARIOS).map(([k,v]) => <option key={k} value={k}>{v.name}</option>)}
+        <div>
+          <label>SCENARIO</label>
+          <select value={sce} onChange={e => setSce(e.target.value)}>
+            {Object.entries(DD_SCENARIOS).map(([k, v]) => <option key={k} value={k}>{v.name}</option>)}
           </select>
         </div>
       </div>
-
       <div className="sim-chart-wrap">
         <svg viewBox={`0 0 ${W} ${H}`} className="sim-chart">
-          {/* zero line */}
-          <line x1={PAD} y1={zeroY} x2={W-PAD} y2={zeroY} stroke="rgba(255,255,255,0.08)" strokeDasharray="3 3"/>
-          <text x={PAD-5} y={zeroY+3} fill="rgba(255,255,255,0.3)" fontSize="10" textAnchor="end">$0</text>
-          {/* floor path (danger zone) */}
-          <path d={`${floorPath} L${xScale(scenario.points.length-1)},${H-PAD} L${PAD},${H-PAD} Z`} fill="rgba(239,68,68,0.08)"/>
-          <path d={floorPath} fill="none" stroke="#ef4444" strokeWidth="2" strokeDasharray="6 4"/>
-          {/* P&L path */}
-          <path d={pnlPath} fill="none" stroke={firm?.color||'#22d3ee'} strokeWidth="3"/>
-          {/* blown marker */}
+          <line x1={P} y1={ys(0)} x2={W - P} y2={ys(0)} stroke="rgba(255,255,255,0.1)" strokeDasharray="4 4" />
+          <path d={`${floorPath} L${xs(scenario.points.length - 1)},${H - P} L${P},${H - P} Z`} fill="rgba(255,107,107,0.06)" />
+          <path d={floorPath} fill="none" stroke="#ff6b6b" strokeWidth="1.5" strokeDasharray="6 4" />
+          <path d={pnlPath} fill="none" stroke={f?.color || '#a8ff60'} strokeWidth="2.5" />
           {sim.blownAt >= 0 && (
             <g>
-              <circle cx={xScale(sim.blownAt)} cy={yScale(scenario.points[sim.blownAt])} r="8" fill="#ef4444"/>
-              <text x={xScale(sim.blownAt)} y={yScale(scenario.points[sim.blownAt])-14} fill="#ef4444" fontSize="11" fontWeight="700" textAnchor="middle">BLOWN</text>
+              <circle cx={xs(sim.blownAt)} cy={ys(scenario.points[sim.blownAt])} r="6" fill="#ff6b6b" />
+              <text x={xs(sim.blownAt)} y={ys(scenario.points[sim.blownAt]) - 14} fill="#ff6b6b" fontSize="11" fontWeight="700" textAnchor="middle" fontFamily="var(--mono)">BLOWN</text>
             </g>
           )}
-          {/* labels */}
-          <text x={W-PAD} y={yScale(scenario.points[scenario.points.length-1])-8} fill={firm?.color||'#22d3ee'} fontSize="10" fontWeight="700" textAnchor="end">P&L</text>
-          <text x={W-PAD} y={yScale(sim.floors[sim.floors.length-1])+16} fill="#ef4444" fontSize="10" fontWeight="700" textAnchor="end">Floor</text>
         </svg>
       </div>
-
-      <div className="sim-result" style={{background:sim.blownAt>=0?'rgba(239,68,68,0.1)':'rgba(34,197,94,0.1)',borderColor:sim.blownAt>=0?'rgba(239,68,68,0.3)':'rgba(34,197,94,0.3)'}}>
-        {sim.blownAt >= 0 ? (
-          <>
-            <div className="sim-result-icon" style={{color:'#ef4444'}}>✗</div>
-            <div>
-              <div className="sim-result-title" style={{color:'#ef4444'}}>Account Blown</div>
-              <div className="sim-result-desc">Balance hit the drawdown floor on day {sim.blownAt+1}. This is how {firmKey}'s {config.type.toLowerCase()} trailing drawdown bites.</div>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="sim-result-icon" style={{color:'#22c55e'}}>✓</div>
-            <div>
-              <div className="sim-result-title" style={{color:'#22c55e'}}>Survived</div>
-              <div className="sim-result-desc">Account made it through. Peak: ${sim.peakEOD.toLocaleString()}. Floor held at ${sim.floors[sim.floors.length-1].toLocaleString()}.</div>
-            </div>
-          </>
-        )}
-      </div>
-
-      <div className="sim-legend">
-        <div><span className="sim-legend-dot" style={{background:firm?.color||'#22d3ee'}}/>Your equity (P&L)</div>
-        <div><span className="sim-legend-dot" style={{background:'#ef4444'}}/>Drawdown floor (you blow here)</div>
-        <div className="sim-legend-info">Type: <b>{config.type}</b> · Max DD: <b>${config.maxDD.toLocaleString()}</b>{config.lockAt ? <> · Locks at +${config.lockAt}</> : null}</div>
-      </div>
-    </div>
-  );
-};
-
-// ── TOOLS TAB (container) ──
-const ToolsTab = ({onSelect}) => {
-  const [tool, setTool] = useState("quiz");
-  return (
-    <div>
-      <div className="sec-hdr"><div><div className="sec-title">Trader Tools</div><div className="sec-sub">Built specifically for futures prop traders</div></div></div>
-      <div className="tools-switch">
-        <button className={`tools-switch-btn ${tool==='quiz'?'on':''}`} onClick={()=>setTool('quiz')}>
-          <span className="tools-switch-ic">🎯</span>
-          <span>Find My Firm</span>
-          <span className="tools-switch-sub">6-question match quiz</span>
-        </button>
-        <button className={`tools-switch-btn ${tool==='sim'?'on':''}`} onClick={()=>setTool('sim')}>
-          <span className="tools-switch-ic">📉</span>
-          <span>Drawdown Sim</span>
-          <span className="tools-switch-sub">See your floor move</span>
-        </button>
-      </div>
-      {tool === "quiz" && <FirmQuiz onSelect={onSelect}/>}
-      {tool === "sim" && <DrawdownSim/>}
-    </div>
-  );
-};
-
-// ── FINE PRINT SCORECARD (used in firm detail pages) ──
-const SCORECARD_DATA = {
-  "Tradeify": [
-    {k:"Activation Fee", tone:"green", v:"$0 — none on any plan"},
-    {k:"Data Feed Required", tone:"yellow", v:"Depends on platform"},
-    {k:"Platform Fees", tone:"green", v:"No platform fee on Tradovate/WealthCharts/TradeSea"},
-    {k:"Reset Cost", tone:"green", v:"~$60–$99 depending on plan"},
-    {k:"Payout Ladder", tone:"green", v:"No caps — withdraw as earned"},
-    {k:"Consistency Rule", tone:"yellow", v:"40% on Select eval / none on Flex funded"},
-    {k:"Trailing Type", tone:"green", v:"EOD trailing (safer) — locks at balance + $100"},
-    {k:"Country Restrictions", tone:"green", v:"Open to most countries"},
-  ],
-  "My Funded Futures": [
-    {k:"Activation Fee", tone:"green", v:"$0 — none on any plan"},
-    {k:"Data Feed Required", tone:"yellow", v:"Depends on platform"},
-    {k:"Platform Fees", tone:"green", v:"No platform fee on most supported platforms"},
-    {k:"Reset Cost", tone:"yellow", v:"$84–$477 (varies by plan/size)"},
-    {k:"Payout Ladder", tone:"yellow", v:"Core capped at $5K, Rapid at $11.25K per cycle"},
-    {k:"Consistency Rule", tone:"yellow", v:"50% eval / 40% Core funded / none Rapid/Pro"},
-    {k:"Trailing Type", tone:"red", v:"Rapid uses INTRADAY trailing (aggressive)"},
-    {k:"Country Restrictions", tone:"green", v:"Open to most countries"},
-  ],
-  "Alpha Futures": [
-    {k:"Activation Fee", tone:"red", v:"$149 on Standard & Advanced ($0 on Zero)"},
-    {k:"Data Feed Required", tone:"yellow", v:"Depends on platform"},
-    {k:"Platform Fees", tone:"green", v:"No platform fee"},
-    {k:"Reset Cost", tone:"yellow", v:"$59–$199 (varies by size)"},
-    {k:"Payout Ladder", tone:"red", v:"Tiered split 70→80→90% (first 2 payouts at 70%)"},
-    {k:"Consistency Rule", tone:"yellow", v:"40% on Standard/Zero funded only"},
-    {k:"Trailing Type", tone:"green", v:"EOD trailing only"},
-    {k:"Country Restrictions", tone:"green", v:"Open globally (UK-based)"},
-  ],
-  "Apex Trader Funding": [
-    {k:"Activation Fee", tone:"red", v:"$79 Intraday / $99 EOD — ongoing"},
-    {k:"Data Feed Required", tone:"red", v:"Required — extra monthly cost"},
-    {k:"Platform Fees", tone:"yellow", v:"Platform subscription often required"},
-    {k:"Reset Cost", tone:"red", v:"No resets in 4.0 — must rebuy eval"},
-    {k:"Payout Ladder", tone:"red", v:"Max 6 payouts per PA lifetime — then account closes"},
-    {k:"Consistency Rule", tone:"yellow", v:"50% on funded only"},
-    {k:"Trailing Type", tone:"yellow", v:"Choose EOD or Intraday at purchase"},
-    {k:"Country Restrictions", tone:"green", v:"Open to most countries"},
-  ],
-  "Top One Futures": [
-    {k:"Activation Fee", tone:"yellow", v:"$149 on Elite plans (none on others)"},
-    {k:"Data Feed Required", tone:"yellow", v:"Depends on platform"},
-    {k:"Platform Fees", tone:"green", v:"No platform fee on most platforms"},
-    {k:"Reset Cost", tone:"green", v:"$35–$149 (cheap on Elite Access)"},
-    {k:"Payout Ladder", tone:"green", v:"No hard caps"},
-    {k:"Consistency Rule", tone:"yellow", v:"15–40% depending on plan"},
-    {k:"Trailing Type", tone:"yellow", v:"Mostly EOD, S2F Pro uses Intraday"},
-    {k:"Country Restrictions", tone:"green", v:"Open to most countries"},
-  ],
-  "FundedNext Futures": [
-    {k:"Activation Fee", tone:"green", v:"$0 — no activation fees"},
-    {k:"Data Feed Required", tone:"green", v:"No separate data fee"},
-    {k:"Platform Fees", tone:"green", v:"No platform fee"},
-    {k:"Reset Cost", tone:"yellow", v:"$91.99–$95"},
-    {k:"Payout Ladder", tone:"green", v:"Guaranteed 24-hour payout + $1K penalty if delayed"},
-    {k:"Consistency Rule", tone:"green", v:"None on Rapid funded"},
-    {k:"Trailing Type", tone:"green", v:"EOD trailing"},
-    {k:"Country Restrictions", tone:"yellow", v:"UAE-based, check restrictions"},
-  ],
-  "Bulenox": [
-    {k:"Activation Fee", tone:"green", v:"$0 — monthly subscription model"},
-    {k:"Data Feed Required", tone:"yellow", v:"Depends on platform"},
-    {k:"Platform Fees", tone:"green", v:"No platform fee on most platforms"},
-    {k:"Reset Cost", tone:"green", v:"Cheap resets — one of the lowest"},
-    {k:"Payout Ladder", tone:"green", v:"100% of first $10K then 90/10"},
-    {k:"Consistency Rule", tone:"yellow", v:"40% on eval and funded"},
-    {k:"Trailing Type", tone:"green", v:"Choose EOD or Trailing at purchase"},
-    {k:"Country Restrictions", tone:"green", v:"Open to most countries"},
-  ],
-  "Goat Funded Futures": [
-    {k:"Activation Fee", tone:"green", v:"$0 on EOD/Static plans"},
-    {k:"Data Feed Required", tone:"yellow", v:"Depends on platform"},
-    {k:"Platform Fees", tone:"green", v:"No platform fee"},
-    {k:"Reset Cost", tone:"yellow", v:"~$99 on EOD plans"},
-    {k:"Payout Ladder", tone:"green", v:"24-hour guaranteed + $1K penalty if late"},
-    {k:"Consistency Rule", tone:"yellow", v:"20–50% depending on plan"},
-    {k:"Trailing Type", tone:"yellow", v:"EOD / Static / Intraday (varies by plan)"},
-    {k:"Country Restrictions", tone:"yellow", v:"Hong Kong-based — check restrictions"},
-  ],
-};
-
-const FinePrintScorecard = ({firm}) => {
-  const rows = SCORECARD_DATA[firm.name];
-  if (!rows) return null;
-  const greenCount = rows.filter(r => r.tone === "green").length;
-  return (
-    <div className="scorecard">
-      <div className="scorecard-hdr">
+      <div className={`sim-verdict ${sim.blownAt >= 0 ? 'fail' : 'pass'}`}>
+        <span className="sim-verdict-mark">{sim.blownAt >= 0 ? '✗' : '✓'}</span>
         <div>
-          <div className="scorecard-title">Fine Print Scorecard</div>
-          <div className="scorecard-sub">The hidden stuff every trader should check</div>
-        </div>
-        <div className="scorecard-score">
-          <div className="scorecard-score-v">{greenCount}<span>/{rows.length}</span></div>
-          <div className="scorecard-score-l">green flags</div>
+          <div className="sim-verdict-t">{sim.blownAt >= 0 ? 'Account Terminated' : 'Account Survived'}</div>
+          <div className="sim-verdict-d">
+            {sim.blownAt >= 0
+              ? `Balance hit the drawdown floor on day ${sim.blownAt + 1}. This is how ${firm}'s ${cfg.type.toLowerCase()} trailing drawdown bites.`
+              : `Peak: $${sim.peak.toLocaleString()} · Final floor: $${sim.floors[sim.floors.length - 1].toLocaleString()}`}
+          </div>
         </div>
       </div>
-      <div className="scorecard-rows">
-        {rows.map((r,i) => (
-          <div key={i} className={`scorecard-row tone-${r.tone}`}>
-            <div className="scorecard-dot"/>
-            <div className="scorecard-k">{r.k}</div>
-            <div className="scorecard-v">{r.v}</div>
-          </div>
-        ))}
+      <div className="sim-legend">
+        <span><i className="sim-legend-dot" style={{ background: f?.color || 'var(--prime)' }} />EQUITY (P&L)</span>
+        <span><i className="sim-legend-dot" style={{ background: '#ff6b6b' }} />DRAWDOWN FLOOR</span>
+        <span style={{ marginLeft: 'auto' }}>TYPE: <b style={{ color: 'var(--prime)' }}>{cfg.type.toUpperCase()}</b> · MAX: <b style={{ color: 'var(--prime)' }}>${cfg.maxDD.toLocaleString()}</b></span>
       </div>
     </div>
   );
 };
 
-// ── BLOG TAB ──
-const BlogTab = ({onSelect,setTab}) => {
-  const catColor = c => ({Industry:'#a855f7',Comparison:'#0ea5e9',Strategy:'#06b6d4',News:'#06b6d4',Guide:'#ffbe0b',Education:'#ff6b6b'}[c]||'#06b6d4');
+// ═══════════════════════════════════════════════════════════════════════════
+// AUTH MODAL
+// ═══════════════════════════════════════════════════════════════════════════
+const Auth = ({ onClose, onAuth }) => {
+  const [mode, setMode] = useState("signin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState(null);
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setBusy(true); setErr(null);
+    try {
+      if (mode === "signin") {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        onAuth(data.user);
+      } else {
+        const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { username } } });
+        if (error) throw error;
+        if (data.user) onAuth(data.user);
+      }
+    } catch (e) {
+      setErr(e.message || "Something went wrong.");
+    }
+    setBusy(false);
+  };
+
   return (
-  <div>
-    <div className="sec-hdr">
-      <div><div className="sec-title">Research & Analysis</div><div className="sec-sub">Data-driven insights for prop traders</div></div>
-      {setTab && <button className="research-videos-btn" onClick={()=>setTab('videos')}>▶ Watch Videos</button>}
+    <div className="auth-bg" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="auth-box">
+        <button className="auth-close" onClick={onClose}>✕</button>
+        <h2 className="auth-h">{mode === "signin" ? "Welcome Back" : "Create Account"}</h2>
+        <p className="auth-d">{mode === "signin" ? "Sign in to track your picks and earn PulsePoints." : "Join the community. Earn points. Get deals."}</p>
+        <div className="auth-tab">
+          <button className={mode === "signin" ? "on" : ""} onClick={() => setMode("signin")}>Sign In</button>
+          <button className={mode === "signup" ? "on" : ""} onClick={() => setMode("signup")}>Sign Up</button>
+        </div>
+        <form onSubmit={submit}>
+          {err && <div className="auth-err">{err}</div>}
+          {mode === "signup" && (
+            <input className="auth-inp" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} required />
+          )}
+          <input className="auth-inp" type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
+          <input className="auth-inp" type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
+          <button type="submit" className="auth-sub" disabled={busy}>
+            {busy ? "Loading..." : (mode === "signin" ? "Access Terminal" : "Create Account")}
+          </button>
+        </form>
+      </div>
     </div>
-    <div className="blog-grid">{BLOG.map(p=>{
-      const cc = catColor(p.cat);
-      return (
-      <div key={p.id} className="blog-card" style={{'--card-accent':cc,'--card-glow':cc+'20',borderLeft:'3px solid '+cc}} onClick={()=>onSelect(p)}>
-        <div className="blog-cat" style={{color:cc,textShadow:'0 0 8px '+cc+'50'}}>{p.cat}</div>
-        <div className="blog-title">{p.title}</div>
-        <div className="blog-excerpt">{p.excerpt}</div>
-        <div className="blog-date">{p.date} · {p.time} read</div>
-      </div>);
-    })}</div>
-  </div>);
+  );
 };
 
-// ── VIDEOS TAB ──
-const VideosTab = () => {
-  const [vFilter,setVFilter]=useState("all");
-  const firms=["all",...new Set(VIDEOS.filter(v=>v.firm).map(v=>v.firm))];
-  const cats=["all",...new Set(VIDEOS.map(v=>v.cat))];
-  const filtered=VIDEOS.filter(v=>{
-    if(vFilter!=="all"&&v.firm!==vFilter&&v.cat!==vFilter) return false;
+// ═══════════════════════════════════════════════════════════════════════════
+// CHALLENGES TABLE (compact)
+// ═══════════════════════════════════════════════════════════════════════════
+const ChallengesTable = () => {
+  const [firm, setFirm] = useState("");
+  const [size, setSize] = useState("");
+  const [instant, setInstant] = useState(false);
+
+  const filtered = CHALLENGES.filter(c => {
+    if (firm && c.firm !== firm) return false;
+    if (size && c.size !== size) return false;
+    if (instant && !c.instant) return false;
     return true;
   });
-  const isPlaceholder=id=>id.startsWith("PLACEHOLDER");
-  return (<div>
-    <div className="sec-hdr"><div>
-      <div className="sec-title">{'\u{1F3AC}'} Trading Videos & Education</div>
-      <div className="sec-sub">Curated videos on prop firms, futures trading strategies, and risk management</div>
-    </div>
-      <a href="https://www.youtube.com/@ThePropPulse" target="_blank" rel="noopener" style={{display:'inline-flex',alignItems:'center',gap:6,background:'#ff0000',color:'#fff',fontSize:11,fontWeight:700,padding:'8px 18px',borderRadius:999,textDecoration:'none',boxShadow:'0 0 8px rgba(255,0,0,0.3)',transition:'all .22s'}}>
-        {'\u25B6'} Subscribe on YouTube
-      </a>
-    </div>
-    <div style={{display:'flex',gap:4,flexWrap:'wrap',marginBottom:16}}>
-      <button className={`f-btn ${vFilter==="all"?"on":""}`} onClick={()=>setVFilter("all")}>All</button>
-      {[...new Set(VIDEOS.filter(v=>v.firm).map(v=>v.firm))].map(f=><button key={f} className={`f-btn ${vFilter===f?"on":""}`} onClick={()=>setVFilter(f)}>{f}</button>)}
-      {[...new Set(VIDEOS.map(v=>v.cat))].map(c=><button key={c} className={`f-btn ${vFilter===c?"on":""}`} onClick={()=>setVFilter(c)} style={{fontStyle:'italic'}}>{c}</button>)}
-    </div>
-    {filtered.length===0?<div style={{textAlign:'center',padding:40,color:'var(--t4)'}}>No videos match this filter.</div>
-    :<div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(340px,100%),1fr))',gap:14}}>
-      {filtered.map((v,i)=>{
-        const f=v.firm?FIRMS.find(ff=>ff.name===v.firm):null;
-        return (<div key={i} className="review-card" style={{background:'var(--glass)',border:'1px solid var(--bdr2)',borderRadius:14,overflow:'hidden'}}>
-          {/* Video embed / thumbnail */}
-          <div style={{position:'relative',paddingBottom:'56.25%',background:'var(--bg3)'}}>
-            {isPlaceholder(v.id)?
-              <div style={{position:'absolute',inset:0,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:8}}>
-                <div style={{fontSize:40,opacity:0.3}}>{'\u{1F3AC}'}</div>
-                <div style={{fontSize:12,color:'var(--t4)',fontWeight:600}}>Coming Soon</div>
-              </div>
-            :<iframe
-              src={"https://www.youtube.com/embed/"+v.id}
-              style={{position:'absolute',top:0,left:0,width:'100%',height:'100%',border:'none'}}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              title={v.title}
-            />}
-          </div>
-          {/* Info */}
-          <div style={{padding:'14px 16px'}}>
-            <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:6}}>
-              {f&&<span style={{fontSize:9,fontWeight:700,color:f.color,background:f.color+'15',border:'1px solid '+f.color+'25',padding:'2px 7px',borderRadius:4}}>{f.name}</span>}
-              <span style={{fontSize:9,fontWeight:600,color:'var(--t4)',background:'var(--bg3)',padding:'2px 7px',borderRadius:4}}>{v.cat}</span>
-              {v.duration&&<span style={{fontSize:9,fontFamily:'var(--mono)',color:'var(--t4)',marginLeft:'auto'}}>{v.duration}</span>}
-            </div>
-            <div style={{fontSize:14,fontWeight:700,color:'var(--t1)',lineHeight:1.35}}>{v.title}</div>
-            <div style={{fontSize:11,color:'var(--t4)',marginTop:4}}>{v.date}</div>
-          </div>
-        </div>);
-      })}
-    </div>}
-  </div>);
-};
 
-// ── BLOG POST PAGE ──
-const BlogPostPage = ({post,goBack}) => {
-  if(!post) return null;
-  const paras = post.body.split("\n\n");
-  return (<div className="wrap" style={{maxWidth:700,margin:'0 auto',paddingTop:32}}>
-    <button className="det-back" onClick={goBack}>{'\u2190'} Back to Research</button>
-    <div style={{marginTop:8}}>
-      <div className="blog-cat" style={{marginBottom:10,display:'inline-block'}}>{post.cat}</div>
-      <h1 style={{fontFamily:'var(--sans)',fontSize:28,fontWeight:800,lineHeight:1.3,margin:'8px 0 12px',letterSpacing:'-.3px'}}>{post.title}</h1>
-      <div style={{display:'flex',gap:10,fontSize:11,color:'var(--t4)',marginBottom:24,paddingBottom:16,borderBottom:'1px solid var(--bdr)'}}>
-        <span>ThePropPulse</span><span>·</span><span>{post.date}</span><span>·</span><span>{post.time} read</span>
-      </div>
-      <div className="blog-body">
-        {paras.map((p,i)=>{
-          if(p.startsWith("**")&&p.endsWith("**")) return <h2 key={i} className="blog-h2">{p.replace(/\*\*/g,"")}</h2>;
-          const fmt=p.split("**").map((s,j)=>j%2===1?<strong key={j}>{s}</strong>:<span key={j}>{s}</span>);
-          return <p key={i} className="blog-p">{fmt}</p>;
-        })}
-      </div>
-      <div style={{marginTop:32,padding:20,background:'var(--bg1)',border:'1px solid var(--bdr2)',borderRadius:12,textAlign:'center'}}>
-        <div style={{fontSize:15,fontWeight:700,marginBottom:4}}>Ready to get funded?</div>
-        <div style={{fontSize:12,color:'var(--t3)',marginBottom:12}}>Use code <b style={{color:'var(--cyan)',fontFamily:'var(--mono)'}}>TPP</b> (or <b style={{color:'var(--cyan)',fontFamily:'var(--mono)'}}>TTPP</b> for Alpha Futures) at any firm for an exclusive discount.</div>
-        <button className="gw-btn" style={{fontSize:13,padding:'10px 24px'}} onClick={goBack}>Compare All Firms</button>
-      </div>
-    </div>
-  </div>);
-};
+  const firms = [...new Set(CHALLENGES.map(c => c.firm))];
+  const sizes = [...new Set(CHALLENGES.map(c => c.size))].sort((a, b) => parseInt(a) - parseInt(b));
 
-// ── DETAIL PAGE ──
-// ── FIRM FAQ SECTION ──
-const FirmFAQSection = ({firm}) => {
-  const [showFAQ,setShowFAQ]=useState(false);
-  const [search,setSearch]=useState("");
-  const [openQ,setOpenQ]=useState(null);
-  const faq=FIRM_FAQ[firm.name]||[];
-  const filtered=search.trim()?faq.map(cat=>({...cat,items:cat.items.filter(i=>i.q.toLowerCase().includes(search.toLowerCase())||i.a.toLowerCase().includes(search.toLowerCase()))})).filter(cat=>cat.items.length>0):faq;
-  const fc=firm.color||'var(--em)';
-  return (<>
-    <button className="faq-btn" onClick={()=>setShowFAQ(!showFAQ)} style={{borderColor:showFAQ?fc:undefined}}>
-      <span style={{fontSize:18}}>{showFAQ?'▼':'📋'}</span>
-      {showFAQ?'Hide Full Rules & FAQ':'Full Rules & FAQ — Everything You Need to Know'}
-    </button>
-    {showFAQ&&<div className="faq-wrap">
-      <input className="faq-search" placeholder={"Search "+firm.name+" rules & FAQ..."} value={search} onChange={e=>setSearch(e.target.value)}/>
-      {filtered.length===0&&<div style={{textAlign:'center',padding:24,color:'var(--t4)',fontSize:13}}>No results for "{search}"</div>}
-      {filtered.map((cat,ci)=><div key={ci} className="faq-cat">
-        <div className="faq-cat-title">{cat.cat}</div>
-        {cat.items.map((item,qi)=>{
-          const key=ci+'-'+qi;
-          const isOpen=openQ===key;
-          return (<div key={qi} className="faq-item" style={isOpen?{borderColor:fc+'40',background:fc+'08'}:{}}>
-            <div className="faq-q" onClick={()=>setOpenQ(isOpen?null:key)}>
-              {item.q}
-              <span style={isOpen?{transform:'rotate(180deg)'}:{}}>▾</span>
-            </div>
-            {isOpen&&<div className="faq-a">{item.a}</div>}
-          </div>);
-        })}
-      </div>)}
-    </div>}
-  </>);
-};
-
-const DetailPage = ({firm,goBack}) => {
-  const [copied,setCopied]=useState(false);
-  if(!firm) return null;
-  const deal=DEALS.find(d=>d.firm===firm.name);
-  const profile=FIRM_PROFILES[firm.name];
-  const firmCh=CHALLENGES.filter(c=>c.firm===firm.name);
-  const ps=calcPulse(firm.rating,firm.reviews,firm.name);
-
-  const fc = firm.color || 'var(--em)';
-  const SectionTitle=({icon,children})=>(<div className="det-sec-title"><span style={{fontSize:16}}>{icon}</span><span style={{color:fc,textShadow:'0 0 8px '+fc+'40'}}>{children}</span></div>);
-  const InfoRow=({label,value,highlight})=>(<div className="info-row"><span className="info-label">{label}</span><span className={`info-val${highlight?' hl':''}`} style={highlight?{color:fc,textShadow:'0 0 6px '+fc+'30'}:{}}>{value}</span></div>);
-
-  return (<div className="wrap det">
-    <button className="det-back" onClick={goBack}>{'\u2190'} Back to All Firms</button>
-    <div className="det-hero">
-      <FirmLogo f={firm} size={56}/>
-      <div style={{flex:1}}>
-        <div className="det-name" style={{color:fc,textShadow:'0 0 12px '+fc+'30'}}>{firm.name}{TOP_PICKS.has(firm.name)&&<span className="tp" style={{marginLeft:6,fontSize:12}}>{'\u2605'}</span>}</div>
-        <div className="det-sub">{firm.flag} {firm.hq} · Est. {firm.founded}{profile&&<> · <a href={'https://'+profile.website} target="_blank" rel="noopener" style={{color:fc}}>{profile.website}</a></>}</div>
-        <div style={{display:'flex',alignItems:'center',gap:10,marginTop:8,flexWrap:'wrap'}}>
-          <div className="det-pulse-badge" style={{borderColor:fc+'30'}}><span className="det-pulse-lbl">Pulse</span><span className="det-pulse-v" style={{color:pulseColor(ps)}}>{ps}</span></div>
-          <span style={{fontFamily:'var(--mono)',fontSize:13,fontWeight:800,color:fc,textShadow:'0 0 8px '+fc+'50'}}>{firm.rating>0?firm.rating:'\u2014'}</span>
-          <span style={{color:'#facc15',fontSize:12,textShadow:'0 0 6px rgba(250,204,21,0.3)'}}>{'★'.repeat(Math.floor(firm.rating))}</span>
-          <span style={{fontSize:11,color:'var(--t4)'}}>{firm.reviews.toLocaleString()} reviews</span>
-        </div>
-      </div>
-    </div>
-
-    {deal&&<div className="det-deal" style={{borderLeft:'3px solid '+fc}}>
-      <span style={{fontFamily:'var(--mono)',fontSize:18,fontWeight:800,color:'var(--gold)',textShadow:'var(--glow-gold)'}}>{deal.pct}</span>
-      <div><span style={{color:'var(--t3)',fontSize:12}}>Code </span><b style={{fontFamily:'var(--mono)',fontSize:14,color:fc}}>{deal.code}</b></div>
-      <div style={{display:'flex',gap:6,marginLeft:'auto'}}>
-        <button className="fcard-btn" style={{background:fc+'15',borderColor:fc+'30',color:fc}} onClick={()=>{copyToClipboard(deal.code);setCopied(true);setTimeout(()=>setCopied(false),1500)}}>{copied?'\u2713 Copied':'Copy Code'}</button>
-        {AFFILIATE_LINKS[firm.name]&&<button className="fcard-btn" style={{background:'linear-gradient(135deg,#fbbf24,#f59e0b)',borderColor:'transparent',color:'#050810',fontWeight:700}} onClick={()=>trackClick(firm.name)}>Get This Deal {'\u2192'}</button>}
-      </div>
-    </div>}
-
-    {profile?<>
-      <div className="det-desc" style={{marginBottom:20,borderLeft:'3px solid '+fc}}>
-        <div style={{fontFamily:'var(--sans)',fontStyle:'italic',color:fc,fontSize:14,marginBottom:6,textShadow:'0 0 8px '+fc+'30'}}>"{profile.tagline}"</div>
-        {profile.description}
-      </div>
-
-      <SectionTitle icon="📊">Quick Stats</SectionTitle>
-      <div className="det-grid">
-        {[["Account Sizes",profile.accountSizes],["Max Allocation",firm.maxAlloc],["Total Payouts",profile.totalPayouts],["Plans",profile.plans.join(", ")],["Platforms",profile.platforms.slice(0,4).join(", ")],["Founded",firm.founded+" · "+firm.hq]].map(([l,v],idx)=>(
-          <div className="det-stat" key={l} style={{borderTop:'2px solid '+(idx===0?fc:idx===1?'var(--gold)':idx===2?'var(--em)':'var(--bdr)')}}><div className="det-stat-l" style={idx<3?{color:fc}:{}}>{l}</div><div className="det-stat-v">{v}</div></div>
-        ))}
-      </div>
-
-      <SectionTitle icon="💰">Payout Structure</SectionTitle>
-      <div className="det-section" style={{borderLeft:'3px solid '+fc}}>
-        <InfoRow label="Profit Split" value={profile.profitSplit} highlight/>
-        <InfoRow label="Payout Speed" value={profile.payoutSpeed}/>
-        <InfoRow label="Payout Frequency" value={profile.payoutFreq}/>
-        <InfoRow label="Activation Fee" value={profile.activationFee}/>
-        <InfoRow label="Path to Live" value={profile.livePath}/>
-      </div>
-
-      {firmCh.length>0&&<>
-        <SectionTitle icon="🏆">Challenge Plans & Pricing</SectionTitle>
-        <div className="ch-wrap"><table className="tbl" style={{minWidth:800}}><thead><tr>
-          <th>Plan</th><th>Size</th><th>Price</th><th>Target</th><th>Max Loss</th><th>DLL</th><th>Consistency</th><th>Split</th><th>Payout</th>
-        </tr></thead><tbody>{firmCh.map((c,i)=>(
-          <tr key={i}>
-            <td style={{fontWeight:600}}>{c.plan}{c.instant&&<span style={{color:'var(--cyan)',marginLeft:3}}>INSTANT</span>}</td>
-            <td className="mono" style={{color:'var(--cyan)'}}>${c.size}</td>
-            <td style={{fontWeight:600}}>{c.price}</td>
-            <td className="mono">{c.target}</td>
-            <td className="mono">{c.maxLoss}</td>
-            <td>{c.dll==="None"||c.dll.toLowerCase().includes("none")?<span className="good">{c.dll}</span>:<span className="warn">{c.dll}</span>}</td>
-            <td>{c.consistency.toLowerCase().includes("none")?<span className="good">{c.consistency}</span>:<span className="warn">{c.consistency}</span>}</td>
-            <td>{c.split}</td>
-            <td>{c.payout}</td>
-          </tr>
-        ))}</tbody></table></div>
-      </>}
-
-      <SectionTitle icon="📋">Trading Rules</SectionTitle>
-      <div className="det-section" style={{borderLeft:'3px solid '+fc}}>
-        <InfoRow label="Drawdown Type" value={profile.drawdown}/>
-        <InfoRow label="Daily Loss Limit" value={profile.dailyLossLimit}/>
-        <InfoRow label="Consistency Rule" value={profile.consistencyRule}/>
-        <InfoRow label="News Trading" value={profile.newsTrading}/>
-        <InfoRow label="EAs / Bots" value={profile.eaPolicy} highlight/>
-        <InfoRow label="Overnight Holds" value={profile.overnightHolds}/>
-        <InfoRow label="Scaling Plan" value={profile.scalingPlan}/>
-        <InfoRow label="Max Accounts" value={profile.maxAccounts}/>
-        <InfoRow label="Instruments" value={profile.instruments}/>
-      </div>
-
-      <div className="det-pc">
-        <div style={{background:'var(--bg1)',border:'1px solid var(--bdr)',borderRadius:10,padding:16,borderTop:'2px solid var(--green)'}}>
-          <h4 style={{color:'var(--green)',fontSize:13,fontWeight:700,marginBottom:8,textShadow:'0 0 8px rgba(16,185,129,0.3)'}}>Pros</h4>
-          {profile.pros.map((p,i)=><div key={i} style={{fontSize:12,color:'var(--t2)',padding:'4px 0',paddingLeft:16,position:'relative'}}><span style={{position:'absolute',left:0,color:'var(--green)',textShadow:'0 0 4px rgba(16,185,129,0.4)'}}>+</span>{p}</div>)}
-        </div>
-        <div style={{background:'var(--bg1)',border:'1px solid var(--bdr)',borderRadius:10,padding:16,borderTop:'2px solid var(--amber)'}}>
-          <h4 style={{color:'var(--amber)',fontSize:13,fontWeight:700,marginBottom:8,textShadow:'0 0 8px rgba(255,190,11,0.3)'}}>Considerations</h4>
-          {profile.cons.map((c,i)=><div key={i} style={{fontSize:12,color:'var(--t2)',padding:'4px 0',paddingLeft:16,position:'relative'}}><span style={{position:'absolute',left:0,color:'var(--amber)',textShadow:'0 0 4px rgba(255,190,11,0.4)'}}>–</span>{c}</div>)}
-        </div>
-      </div>
-
-      {/* FAQ Section */}
-      {SCORECARD_DATA[firm.name]&&<FinePrintScorecard firm={firm}/>}
-      {FIRM_FAQ[firm.name]&&<FirmFAQSection firm={firm}/>}
-    </>:<div className="det-desc">{firm.desc}</div>}
-  </div>);
-};
-
-// ── FOOTER ──
-// ── NEWSLETTER ──
-const Newsletter = () => {
-  const [email,setEmail]=useState("");
-  const [status,setStatus]=useState(null); // null | "sending" | "success" | "error"
-  const handleSubmit=async(e)=>{
-    e.preventDefault();
-    if(!email.trim()||!email.includes("@"))return;
-    setStatus("sending");
-    try{
-      const {error}=await supabase.from("newsletter").insert({email:email.trim().toLowerCase()});
-      if(error&&error.code==="23505"){setStatus("success");return;} // already subscribed
-      if(error)throw error;
-      setStatus("success");
-    }catch(err){
-      console.error(err);
-      setStatus("success"); // show success anyway to avoid exposing errors
-    }
-  };
   return (
-    <div className="nl-section">
-      <div className="nl-inner">
-        <h3>Never Miss a <span>Deal</span></h3>
-        <p>Get notified when firms drop new promos, rules change, or we're giving away free accounts. No spam — just alpha.</p>
-        {status==="success"?
-          <div className="nl-success">✓ You're in! Check your inbox for the good stuff.</div>
-        :
-          <form className="nl-form" onSubmit={handleSubmit}>
-            <input className="nl-input" type="email" placeholder="your@email.com" value={email} onChange={e=>setEmail(e.target.value)} required/>
-            <button className="nl-btn" type="submit" disabled={status==="sending"}>{status==="sending"?"Joining...":"Join Free"}</button>
-          </form>
-        }
-        <div className="nl-pills">
-          <span className="nl-pill">New deals & promos</span>
-          <span className="nl-pill">Rule changes</span>
-          <span className="nl-pill">Weekly giveaways</span>
-          <span className="nl-pill">No spam</span>
-        </div>
+    <>
+      <div className="chal-ctrl">
+        <select value={firm} onChange={e => setFirm(e.target.value)}>
+          <option value="">ALL FIRMS</option>
+          {firms.map(f => <option key={f} value={f}>{f}</option>)}
+        </select>
+        <select value={size} onChange={e => setSize(e.target.value)}>
+          <option value="">ALL SIZES</option>
+          {sizes.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+        <button className={instant ? "on" : ""} onClick={() => setInstant(!instant)}>Instant Only</button>
       </div>
-    </div>
+      <div style={{ overflow: 'auto' }}>
+        <table className="chal-table">
+          <thead>
+            <tr>
+              <th>Firm / Plan</th>
+              <th>Size</th>
+              <th>Target</th>
+              <th>Max Loss</th>
+              <th>DLL</th>
+              <th>Drawdown</th>
+              <th>Split</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.slice(0, 40).map((c, i) => {
+              const f = FIRMS.find(ff => ff.name === c.firm);
+              return (
+                <tr key={i}>
+                  <td>
+                    <div className="chal-cell-firm">
+                      {f && <img src={LOGOS[f.name]} alt="" />}
+                      <div>
+                        <b>{c.firm}</b>
+                        <div className="chal-cell-plan">{c.plan}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{c.size}</td>
+                  <td>{c.target}</td>
+                  <td>{c.maxLoss}</td>
+                  <td>{c.dll}</td>
+                  <td>{c.drawdown}</td>
+                  <td>{c.split}</td>
+                  <td className="chal-cell-price">{c.price}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      {filtered.length > 40 && (
+        <p style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--txt4)', textAlign: 'center', padding: 16, letterSpacing: 0.5 }}>
+          SHOWING 40 OF {filtered.length} RESULTS · REFINE FILTERS FOR MORE
+        </p>
+      )}
+    </>
   );
 };
 
-const Footer = ({setPage,setTab}) => (
-  <footer className="foot"><div className="wrap"><div className="foot-in">
-    <div className="foot-brand"><div className="foot-brand-n">The<span>PropPulse</span></div><div className="foot-brand-d">Your futures prop firm command center. Compare, track, and find the right firm.</div></div>
-    <div className="foot-col"><h4>Platform</h4><a onClick={()=>{setPage("home");setTab("firms")}}>Firms</a><a onClick={()=>{setPage("home");setTab("challenges")}}>Challenges</a><a onClick={()=>{setPage("home");setTab("offers")}}>Offers</a><a onClick={()=>{setPage("home");setTab("giveaways")}}>Giveaway</a><a onClick={()=>{setPage("home");setTab("points")}}>Pulse Points</a></div>
-    <div className="foot-col"><h4>Resources</h4><a onClick={()=>{setPage("home");setTab("blog")}}>Research</a><a onClick={()=>{setPage("home");setTab("videos")}}>Videos</a><a>FAQ</a></div>
-    <div className="foot-col"><h4>Company</h4><a>About</a><a>Contact</a><a>Privacy</a><a>Terms</a></div>
-  </div><div className="foot-bot">© 2026 ThePropPulse.com — Not financial advice. Data for informational purposes only.</div></div></footer>
-);
+// ═══════════════════════════════════════════════════════════════════════════
+// MAIN APP
+// ═══════════════════════════════════════════════════════════════════════════
+export default function App() {
+  const [user, setUser] = useState(null);
+  const [showAuth, setShowAuth] = useState(false);
+  const [showPanel, setShowPanel] = useState(false);
+  const [openFirm, setOpenFirm] = useState(null);
+  const [compareFirms, setCompareFirms] = useState([]);
+  const [sort, setSort] = useState("pulse");
+  const [filter, setFilter] = useState("all");
+  const [time, setTime] = useState(new Date());
 
-// ── AUTH MODAL ──
-const AuthModal = ({onClose,onAuth}) => {
-  const [mode,setMode]=useState("login");
-  const [email,setEmail]=useState("");
-  const [pass,setPass]=useState("");
-  const [name,setName]=useState("");
-  const [err,setErr]=useState("");
-  const [loading,setLoading]=useState(false);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => setUser(session?.user || null));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => setUser(session?.user || null));
+    return () => subscription.unsubscribe();
+  }, []);
 
-  const handleSubmit = async () => {
-    setErr("");setLoading(true);
-    try {
-      if(mode==="signup"){
-        const {data,error}=await supabase.auth.signUp({email,password:pass,options:{data:{display_name:name}}});
-        if(error) throw error;
-        if(data.user){
-          await supabase.from("profiles").update({display_name:name}).eq("id",data.user.id);
-          onAuth(data.user);onClose();
-        }
-      } else {
-        const {data,error}=await supabase.auth.signInWithPassword({email,password:pass});
-        if(error) throw error;
-        onAuth(data.user);onClose();
-      }
-    } catch(e){setErr(e.message)}
-    setLoading(false);
+  useEffect(() => {
+    const t = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const logout = async () => { await supabase.auth.signOut(); setUser(null); setShowPanel(false); };
+
+  const toggleCompare = (f) => {
+    setCompareFirms(prev =>
+      prev.find(x => x.id === f.id) ? prev.filter(x => x.id !== f.id) :
+      prev.length < 4 ? [...prev, f] : prev
+    );
   };
 
-  return (<div className="auth-overlay" onClick={onClose}>
-    <div className="auth-modal" onClick={e=>e.stopPropagation()}>
-      <button className="auth-close" onClick={onClose}>{'\u2715'}</button>
-      <h2>{mode==="login"?"Welcome Back":"Join"} <span>Pulse Points</span></h2>
-      <p>{mode==="login"?"Sign in to track your points":"Sign up and start earning free accounts"}</p>
-      {err&&<div className="auth-err">{err}</div>}
-      {mode==="signup"&&<input className="auth-input" placeholder="Display name" value={name} onChange={e=>setName(e.target.value)}/>}
-      <input className="auth-input" type="email" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)}/>
-      <input className="auth-input" type="password" placeholder="Password" value={pass} onChange={e=>setPass(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handleSubmit()}/>
-      <button className="auth-btn" onClick={handleSubmit} disabled={loading}>{loading?"Loading...":mode==="login"?"Sign In":"Create Account"}</button>
-      <div className="auth-toggle">
-        {mode==="login"?<>Don't have an account? <button onClick={()=>{setMode("signup");setErr("")}}>Sign up</button></>
-        :<>Already have an account? <button onClick={()=>{setMode("login");setErr("")}}>Sign in</button></>}
-      </div>
-    </div>
-  </div>);
-};
-
-// ── ACCOUNT DETAILS PAGE ──
-const AccountPage = ({user,goBack,onUserUpdate}) => {
-  const [profile,setProfile]=useState(null);
-  const [displayName,setDisplayName]=useState("");
-  const [nameMsg,setNameMsg]=useState("");
-  const [nameSaving,setNameSaving]=useState(false);
-  const [newPw,setNewPw]=useState("");
-  const [confirmPw,setConfirmPw]=useState("");
-  const [pwMsg,setPwMsg]=useState("");
-  const [pwSaving,setPwSaving]=useState(false);
-  const [avatarUploading,setAvatarUploading]=useState(false);
-  const [avatarMsg,setAvatarMsg]=useState("");
-  const [rewards,setRewards]=useState([]);
-  const fileRef=useRef(null);
-
-  const loadProfile=useCallback(async()=>{
-    if(!user)return;
-    const {data:p}=await supabase.from("profiles").select("*").eq("id",user.id).single();
-    if(p){setProfile(p);setDisplayName(p.display_name||user.user_metadata?.display_name||"");}
-    const {data:r}=await supabase.from("rewards").select("*").eq("user_id",user.id).order("created_at",{ascending:false}).limit(5);
-    setRewards(r||[]);
-  },[user]);
-
-  useEffect(()=>{loadProfile()},[loadProfile]);
-
-  const tier=getLoyaltyTier(profile?.total_earned||0);
-  const nextTier=getNextTier(profile?.total_earned||0);
-  const pts=profile?.points||0;
-
-  const handleNameSave=async()=>{
-    if(!displayName.trim()){setNameMsg("Name cannot be empty");return;}
-    setNameSaving(true);setNameMsg("");
-    try{
-      await supabase.from("profiles").update({display_name:displayName.trim()}).eq("id",user.id);
-      await supabase.auth.updateUser({data:{display_name:displayName.trim()}});
-      setNameMsg("Display name updated!");
-      setTimeout(()=>setNameMsg(""),2000);
-    }catch(e){setNameMsg("Error: "+e.message);}
-    setNameSaving(false);
-  };
-
-  const handlePwSave=async()=>{
-    if(newPw.length<6){setPwMsg("Minimum 6 characters");return;}
-    if(newPw!==confirmPw){setPwMsg("Passwords don't match");return;}
-    setPwSaving(true);setPwMsg("");
-    const {error}=await supabase.auth.updateUser({password:newPw});
-    if(error){setPwMsg(error.message);}
-    else{setPwMsg("Password updated! You can now sign in with your new password.");setNewPw("");setConfirmPw("");}
-    setPwSaving(false);
-  };
-
-  const handleAvatarUpload=async(e)=>{
-    const file=e.target.files?.[0];
-    if(!file)return;
-    if(!file.type.startsWith("image/")){setAvatarMsg("Please select an image file");return;}
-    if(file.size>2*1024*1024){setAvatarMsg("Image must be under 2MB");return;}
-    setAvatarUploading(true);setAvatarMsg("");
-    try{
-      const ext=file.name.split(".").pop();
-      const path=user.id+"/avatar."+ext;
-      const {error:upErr}=await supabase.storage.from("avatars").upload(path,file,{upsert:true});
-      if(upErr) throw upErr;
-      const {data:urlData}=supabase.storage.from("avatars").getPublicUrl(path);
-      const avatarUrl=urlData.publicUrl+"?t="+Date.now();
-      await supabase.from("profiles").update({avatar_url:avatarUrl}).eq("id",user.id);
-      const {data:updated}=await supabase.auth.updateUser({data:{avatar_url:avatarUrl}});
-      if(updated?.user&&onUserUpdate) onUserUpdate(updated.user);
-      setAvatarMsg("Avatar updated!");
-      loadProfile();
-      setTimeout(()=>setAvatarMsg(""),2000);
-    }catch(err){
-      setAvatarMsg("Upload failed — make sure the 'avatars' storage bucket exists in Supabase");
-    }
-    setAvatarUploading(false);
-  };
-
-  if(!user) return null;
-
-  return (<div className="acct-page">
-    <button className="acct-back" onClick={goBack}>{'\u2190'} Back to Dashboard</button>
-
-    <h2 style={{fontSize:22,fontWeight:800,color:'var(--t1)',marginBottom:24}}>Account <span style={{color:'var(--em)'}}>Details</span></h2>
-
-    {/* Profile Card */}
-    <div className="acct-card">
-      <h3>{'\u{1F464}'} Profile</h3>
-      <div className="acct-avatar-wrap">
-        <div className="acct-avatar">
-          {profile?.avatar_url?<img src={profile.avatar_url} alt="avatar"/>:(user.email||"U")[0].toUpperCase()}
-        </div>
-        <div>
-          <button className="acct-avatar-upload" onClick={()=>fileRef.current?.click()}>{avatarUploading?"Uploading...":"Change Photo"}</button>
-          <input ref={fileRef} type="file" accept="image/*" style={{display:'none'}} onChange={handleAvatarUpload}/>
-          {avatarMsg&&<div className="acct-msg" style={{color:avatarMsg.includes("updated")?'var(--green)':'var(--red)'}}>{avatarMsg}</div>}
-          <div style={{fontSize:10,color:'var(--t5)',marginTop:4}}>JPG, PNG — max 2MB</div>
-        </div>
-      </div>
-      <div className="acct-field">
-        <label>Display Name</label>
-        <input className="acct-input" value={displayName} onChange={e=>setDisplayName(e.target.value)} placeholder="Your display name"/>
-      </div>
-      <div className="acct-field">
-        <label>Email</label>
-        <input className="acct-input" value={user.email||""} disabled style={{opacity:.6,cursor:'not-allowed'}}/>
-      </div>
-      <div style={{display:'flex',alignItems:'center',gap:10}}>
-        <button className="acct-save" onClick={handleNameSave} disabled={nameSaving}>{nameSaving?"Saving...":"Save Changes"}</button>
-        {nameMsg&&<span className="acct-msg" style={{color:nameMsg.includes("updated")?'var(--green)':'var(--red)'}}>{nameMsg}</span>}
-      </div>
-    </div>
-
-    {/* Password Card */}
-    <div className="acct-card">
-      <h3>{'\u{1F512}'} Change Password</h3>
-      <div className="acct-field">
-        <label>New Password</label>
-        <input className="acct-input" type="password" value={newPw} onChange={e=>setNewPw(e.target.value)} placeholder="Min 6 characters"/>
-      </div>
-      <div className="acct-field">
-        <label>Confirm Password</label>
-        <input className="acct-input" type="password" value={confirmPw} onChange={e=>setConfirmPw(e.target.value)} placeholder="Re-enter new password" onKeyDown={e=>e.key==="Enter"&&handlePwSave()}/>
-      </div>
-      <div style={{display:'flex',alignItems:'center',gap:10}}>
-        <button className="acct-save" onClick={handlePwSave} disabled={pwSaving}>{pwSaving?"Updating...":"Update Password"}</button>
-        {pwMsg&&<span className="acct-msg" style={{color:pwMsg.includes("updated")?'var(--green)':'var(--red)'}}>{pwMsg}</span>}
-      </div>
-    </div>
-
-    {/* Tier & Points Summary */}
-    <div className="acct-card">
-      <h3>{'\u{1F3C6}'} Rewards Summary</h3>
-      <div className="acct-tier-banner" style={{border:'1px solid '+tier.color+'30'}}>
-        <div className="acct-tier-icon">{tier.icon}</div>
-        <div className="acct-tier-info">
-          <div className="acct-tier-name" style={{color:tier.color,textShadow:tier.glow}}>{tier.name}</div>
-          <div className="acct-tier-pts">{nextTier?((nextTier.min-(profile?.total_earned||0)).toLocaleString()+" pts to "+nextTier.name):"Max tier reached!"}</div>
-        </div>
-        <div style={{textAlign:'right'}}>
-          <div style={{fontFamily:'var(--mono)',fontSize:20,fontWeight:800,color:'var(--gold)',textShadow:'var(--glow-gold-sm)'}}>{pts.toLocaleString()}</div>
-          <div style={{fontSize:10,color:'var(--t5)'}}>Available Points</div>
-        </div>
-      </div>
-      <div className="acct-stat-grid">
-        <div className="acct-stat"><b style={{color:'var(--gold)'}}>{(profile?.total_earned||0).toLocaleString()}</b><small>Total Earned</small></div>
-        <div className="acct-stat"><b style={{color:'var(--em)'}}>{profile?.rewards_claimed||0}</b><small>Rewards Claimed</small></div>
-        <div className="acct-stat"><b style={{color:'var(--green)'}}>{tier.bonus>0?"+"+tier.bonus.toLocaleString():"—"}</b><small>Tier Bonus</small></div>
-        <div className="acct-stat"><b style={{color:'#a78bfa'}}>{profile?.discord_username||"—"}</b><small>Discord</small></div>
-      </div>
-    </div>
-
-    {/* Recent Rewards */}
-    {rewards.length>0&&<div className="acct-card">
-      <h3>{'\u{1F381}'} Recent Rewards</h3>
-      {rewards.map((r,i)=><div key={i} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'10px 0',borderBottom:i<rewards.length-1?'1px solid var(--bdr)':'none'}}>
-        <div>
-          <div style={{fontSize:13,fontWeight:600,color:'var(--t1)'}}>{r.reward_name}</div>
-          <div style={{fontSize:10,color:'var(--t5)'}}>{new Date(r.created_at).toLocaleDateString()}</div>
-        </div>
-        <div style={{fontSize:11,fontWeight:700,padding:'4px 10px',borderRadius:6,background:r.status==="fulfilled"?'rgba(16,185,129,0.1)':r.status==="pending"?'rgba(251,191,36,0.1)':'rgba(255,71,87,0.1)',color:r.status==="fulfilled"?'var(--green)':r.status==="pending"?'var(--gold)':'var(--red)'}}>{r.status}</div>
-      </div>)}
-    </div>}
-  </div>);
-};
-
-// ── PULSE POINTS TAB ──
-const POINT_VALUES = {"25K":50,"50K":100,"75K":125,"100K":150,"150K":200,"200K":250,"250K":300,"300K":350};
-const REWARD_TIERS = [
-  {name:"Free 25K Trading Plan",pts:10000,desc:"Fulfilled at a participating partner firm",type:"eval",evalSize:"25K",icon:"\u{1F4CA}",tier:"bronze",cat:"eval"},
-  {name:"Free 50K Trading Plan",pts:15000,desc:"Fulfilled at a participating partner firm",type:"eval",evalSize:"50K",icon:"\u{1F4CA}",tier:"bronze",cat:"eval"},
-  {name:"Free 75K Trading Plan",pts:25000,desc:"Fulfilled at a participating partner firm",type:"eval",evalSize:"75K",icon:"\u{1F525}",tier:"silver",cat:"eval"},
-  {name:"Free 100K Trading Plan",pts:30000,desc:"Fulfilled at a participating partner firm",type:"eval",evalSize:"100K",icon:"\u{1F525}",tier:"silver",cat:"eval"},
-  {name:"Free 150K Trading Plan",pts:35000,desc:"Fulfilled at a participating partner firm",type:"eval",evalSize:"150K",icon:"\u{1F48E}",tier:"gold",cat:"eval"},
-  {name:"Free 200K Trading Plan",pts:40000,desc:"Fulfilled at a participating partner firm",type:"eval",evalSize:"200K",icon:"\u{1F48E}",tier:"gold",cat:"eval"},
-  {name:"Free 250K Trading Plan",pts:45000,desc:"Fulfilled at a participating partner firm",type:"eval",evalSize:"250K",icon:"\u{1F451}",tier:"diamond",cat:"eval"},
-  {name:"Free 300K Trading Plan",pts:50000,desc:"Fulfilled at a participating partner firm",type:"eval",evalSize:"300K",icon:"\u{1F451}",tier:"diamond",cat:"eval"},
-  {name:"Instant Funded 25K",pts:50000,desc:"Skip the eval — funded plan at a partner firm",type:"eval",evalSize:"25K",icon:"\u26A1",tier:"diamond",cat:"instant"},
-  {name:"Instant Funded 50K",pts:70000,desc:"Skip the eval — funded plan at a partner firm",type:"eval",evalSize:"50K",icon:"\u26A1",tier:"diamond",cat:"instant"},
-  {name:"Instant Funded 100K",pts:90000,desc:"Skip the eval — funded plan at a partner firm",type:"eval",evalSize:"100K",icon:"\u{1F680}",tier:"diamond",cat:"instant"},
-  {name:"Instant Funded 150K",pts:110000,desc:"Skip the eval — funded plan at a partner firm",type:"eval",evalSize:"150K",icon:"\u{1F680}",tier:"diamond",cat:"instant"},
-];
-const LOYALTY_TIERS = [
-  {name:"Bronze",min:0,max:4999,color:"#cd7f32",glow:"0 0 8px rgba(205,127,50,0.4)",icon:"\u{1F949}",bonus:0},
-  {name:"Silver",min:5000,max:14999,color:"#c0c0c0",glow:"0 0 8px rgba(192,192,192,0.4)",icon:"\u{1F948}",bonus:500},
-  {name:"Gold",min:15000,max:34999,color:"#fbbf24",glow:"0 0 12px rgba(251,191,36,0.5),0 0 24px rgba(251,191,36,0.2)",icon:"\u{1F947}",bonus:1500},
-  {name:"Platinum",min:35000,max:59999,color:"#e5e4e2",glow:"0 0 10px rgba(229,228,226,0.5),0 0 20px rgba(229,228,226,0.2)",icon:"\u{2B50}",bonus:3000},
-  {name:"Diamond",min:60000,max:99999,color:"#67e8f9",glow:"0 0 12px rgba(103,232,249,0.5),0 0 28px rgba(103,232,249,0.2)",icon:"\u{1F48E}",bonus:5000},
-  {name:"Master",min:100000,max:174999,color:"#a78bfa",glow:"0 0 12px rgba(167,139,250,0.5),0 0 28px rgba(167,139,250,0.2)",icon:"\u{1F3C6}",bonus:8000},
-  {name:"Grandmaster",min:175000,max:299999,color:"#f472b6",glow:"0 0 12px rgba(244,114,182,0.5),0 0 28px rgba(244,114,182,0.2)",icon:"\u{1F525}",bonus:12000},
-  {name:"Legend",min:300000,max:499999,color:"#fb923c",glow:"0 0 14px rgba(251,146,60,0.6),0 0 32px rgba(251,146,60,0.25)",icon:"\u{26A1}",bonus:20000},
-  {name:"Mythic",min:500000,max:999999,color:"#f43f5e",glow:"0 0 16px rgba(244,63,94,0.6),0 0 36px rgba(244,63,94,0.25)",icon:"\u{1F480}",bonus:35000},
-  {name:"Immortal",min:1000000,max:Infinity,color:"#fef08a",glow:"0 0 20px rgba(254,240,138,0.7),0 0 40px rgba(254,240,138,0.3),0 0 80px rgba(254,240,138,0.1)",icon:"\u{1F451}",bonus:75000},
-];
-const getLoyaltyTier = (totalEarned) => LOYALTY_TIERS.find(t=>totalEarned>=t.min&&totalEarned<=t.max)||LOYALTY_TIERS[0];
-const getNextTier = (totalEarned) => LOYALTY_TIERS.find(t=>totalEarned<t.min)||null;
-
-const BONUS_TASKS = [
-  {key:"follow_x",label:"Follow us on X",pts:150,icon:"\u{1D54F}",url:"https://x.com/PropPulseMedia",color:"#1d9bf0"},
-  {key:"sub_youtube",label:"Subscribe on YouTube",pts:150,icon:"\u25B6",url:"https://www.youtube.com/@ThePropPulse",color:"#ff0000"},
-  {key:"join_discord",label:"Join our Discord",pts:100,icon:"\u{1F4AC}",url:"https://discord.gg/pP9vfJ7WqK",color:"#5865f2"},
-];
-
-const PulsePointsTab = ({user,onLogin,ppSection,setPpSection}) => {
-  const [profile,setProfile]=useState(null);
-  const [subs,setSubs]=useState([]);
-  const [history,setHistory]=useState([]);
-  const [rewards,setRewards]=useState([]);
-  const [ppTab,setPpTab]=useState("submit");
-  const [firm,setFirm]=useState("");
-  const [accSize,setAccSize]=useState("");
-  const [notes,setNotes]=useState("");
-  const [screenshot,setScreenshot]=useState("");
-  const [submitting,setSubmitting]=useState(false);
-  const [submitMsg,setSubmitMsg]=useState("");
-  const [adminSubs,setAdminSubs]=useState([]);
-  const [clicks,setClicks]=useState([]);
-  const [claimModal,setClaimModal]=useState(null);
-  const [claimForm,setClaimForm]=useState({});
-  const [claimSubmitting,setClaimSubmitting]=useState(false);
-  const [adminRewards,setAdminRewards]=useState([]);
-  const [adminTab,setAdminTab]=useState("submissions");
-  const [rewardFilter,setRewardFilter]=useState("pending");
-  const [adminNoteId,setAdminNoteId]=useState(null);
-  const [adminNote,setAdminNote]=useState("");
-  const [rewardCat,setRewardCat]=useState("eval");
-  const [completedTasks,setCompletedTasks]=useState([]);
-  const [adminBonusTasks,setAdminBonusTasks]=useState([]);
-  const [discordUser,setDiscordUser]=useState("");
-  const [discordStatus,setDiscordStatus]=useState(null);
-
-  const loadData = useCallback(async ()=>{
-    if(!user) return;
-    const {data:p}=await supabase.from("profiles").select("*").eq("id",user.id).single();
-    setProfile(p);
-    if(p?.discord_username) setDiscordUser(p.discord_username);
-    const {data:s}=await supabase.from("submissions").select("*").eq("user_id",user.id).order("created_at",{ascending:false});
-    setSubs(s||[]);
-    const {data:h}=await supabase.from("points_history").select("*").eq("user_id",user.id).order("created_at",{ascending:false});
-    setHistory(h||[]);
-    const {data:r}=await supabase.from("rewards").select("*").eq("user_id",user.id).order("created_at",{ascending:false});
-    setRewards(r||[]);
-    const {data:c}=await supabase.from("click_tracking").select("*").eq("user_id",user.id).order("clicked_at",{ascending:false}).limit(50);
-    setClicks(c||[]);
-    const {data:bt}=await supabase.from("bonus_tasks").select("*").eq("user_id",user.id);
-    setCompletedTasks((bt||[]).filter(t=>t.status==="approved"||t.status==="pending").map(t=>({key:t.task_key,status:t.status})));
-    if(p&&p.is_admin){
-      const {data:as}=await supabase.from("submissions").select("*").order("created_at",{ascending:false});
-      setAdminSubs(as||[]);
-      const {data:ar}=await supabase.from("rewards").select("*").order("created_at",{ascending:false});
-      setAdminRewards(ar||[]);
-      const {data:abt}=await supabase.from("bonus_tasks").select("*").order("completed_at",{ascending:false});
-      setAdminBonusTasks(abt||[]);
-    }
-  },[user]);
-
-  useEffect(()=>{loadData()},[loadData]);
-
-  useEffect(()=>{
-    if(!ppSection) return;
-    if(ppSection==="discord"){
-      setTimeout(()=>{document.getElementById("discord-role-claim")?.scrollIntoView({behavior:"smooth",block:"center"})},400);
-    } else {
-      setPpTab(ppSection);
-    }
-    setPpSection(null);
-  },[ppSection,setPpSection]);
-
-  const handleSubmit = async () => {
-    if(!firm||!accSize){setSubmitMsg("Select a firm and account size");return;}
-    if(!screenshot){setSubmitMsg("Screenshot required — upload proof of purchase to submit");return;}
-    setSubmitting(true);setSubmitMsg("");
-    const pts=POINT_VALUES[accSize]||100;
-    const hasClick=clicks.some(c=>c.firm===firm);
-    const {error}=await supabase.from("submissions").insert({user_id:user.id,firm,account_size:accSize,notes:(hasClick?"[CLICK VERIFIED] ":"")+(screenshot?"[HAS SCREENSHOT] ":"")+notes,points_awarded:pts,screenshot_url:screenshot||null});
-    if(error){setSubmitMsg("Error: "+error.message);}
-    else{setSubmitMsg("Submitted! "+(hasClick?"Click verified — faster approval!":"We'll review and credit your points shortly."));setFirm("");setAccSize("");setNotes("");setScreenshot("");}
-    setSubmitting(false);loadData();
-  };
-
-  const handleApprove = async (sub) => {
-    await supabase.from("submissions").update({status:"approved",reviewed_by:user.id,reviewed_at:new Date().toISOString()}).eq("id",sub.id);
-    await supabase.from("points_history").insert({user_id:sub.user_id,amount:sub.points_awarded,reason:"Purchase: "+sub.firm+" "+sub.account_size,submission_id:sub.id});
-    const {data:p}=await supabase.from("profiles").select("points,total_earned").eq("id",sub.user_id).single();
-    if(p) await supabase.from("profiles").update({points:(p.points||0)+sub.points_awarded,total_earned:(p.total_earned||0)+sub.points_awarded}).eq("id",sub.user_id);
-    loadData();
-  };
-
-  const handleReject = async (sub) => {
-    await supabase.from("submissions").update({status:"rejected",reviewed_by:user.id,reviewed_at:new Date().toISOString()}).eq("id",sub.id);
-    loadData();
-  };
-
-  const claimReward = (reward) => {
-    if(!profile||profile.points<reward.pts) return;
-    setClaimForm({});
-    setClaimModal(reward);
-  };
-
-  const submitClaim = async () => {
-    if(!claimModal||!profile) return;
-    const r=claimModal;
-    if(r.type==="eval"&&!claimForm.firm) return;
-    setClaimSubmitting(true);
-    const details=JSON.stringify({...claimForm,type:r.type,evalSize:r.evalSize||null,cat:r.cat||"eval"});
-    const {error}=await supabase.from("rewards").insert({user_id:user.id,reward_name:r.name,points_cost:r.pts,fulfillment_details:details,user_email:user.email,status:"pending"});
-    if(error){alert("Failed to claim: "+error.message);setClaimSubmitting(false);setClaimModal(null);return;}
-    await supabase.from("points_history").insert({user_id:user.id,amount:-r.pts,reason:"Reward: "+r.name});
-    await supabase.from("profiles").update({points:profile.points-r.pts,rewards_claimed:(profile.rewards_claimed||0)+1}).eq("id",user.id);
-    setClaimSubmitting(false);setClaimModal(null);setClaimForm({});loadData();
-  };
-
-  const handleRewardStatus = async (rw,newStatus) => {
-    const updates={status:newStatus};
-    if(newStatus==="fulfilled"){updates.fulfilled_by=user.id;updates.fulfilled_at=new Date().toISOString();}
-    if(adminNote&&adminNoteId===rw.id) updates.admin_notes=adminNote;
-    const {error}=await supabase.from("rewards").update(updates).eq("id",rw.id);
-    if(error){console.error("Reward update error:",error);alert("Update failed: "+error.message);return;}
-    setAdminNoteId(null);setAdminNote("");loadData();
-  };
-
-  const saveAdminNote = async (rw) => {
-    const {error}=await supabase.from("rewards").update({admin_notes:adminNote}).eq("id",rw.id);
-    if(error){console.error("Note save error:",error);alert("Save failed: "+error.message);return;}
-    setAdminNoteId(null);setAdminNote("");loadData();
-  };
-
-  const [taskScreenshot,setTaskScreenshot]=useState("");
-  const [taskSubmitting,setTaskSubmitting]=useState("");
-  const [taskMsg,setTaskMsg]=useState("");
-
-  const claimTask = async (task) => {
-    if(completedTasks.some(t=>t.key===task.key)) return;
-    if(task.url) window.open(task.url,"_blank");
-  };
-
-  const submitTaskProof = async (task) => {
-    if(!taskScreenshot){setTaskMsg("Upload a screenshot first");return;}
-    setTaskSubmitting(task.key);setTaskMsg("");
-    const {error}=await supabase.from("bonus_tasks").insert({user_id:user.id,task_key:task.key,points_awarded:task.pts,status:"pending",screenshot_url:taskScreenshot});
-    if(error){setTaskMsg("Error: "+error.message);setTaskSubmitting("");return;}
-    setTaskMsg("Submitted! We'll review and credit your points.");
-    setTaskScreenshot("");setTaskSubmitting("");loadData();
-  };
-
-  const handleApproveTask = async (bt) => {
-    await supabase.from("bonus_tasks").update({status:"approved"}).eq("id",bt.id);
-    await supabase.from("points_history").insert({user_id:bt.user_id,amount:bt.points_awarded,reason:"Bonus: "+bt.task_key});
-    const {data:p}=await supabase.from("profiles").select("points,total_earned").eq("id",bt.user_id).single();
-    if(p) await supabase.from("profiles").update({points:(p.points||0)+bt.points_awarded,total_earned:(p.total_earned||0)+bt.points_awarded}).eq("id",bt.user_id);
-    loadData();
-  };
-
-  const handleRejectTask = async (bt) => {
-    await supabase.from("bonus_tasks").update({status:"rejected"}).eq("id",bt.id);
-    loadData();
-  };
-
-  if(!user) return (<div className="pp-login-prompt">
-    <div style={{fontSize:48,marginBottom:12}}>{'\u2B50'}</div>
-    <h3>Earn <span style={{color:'var(--gold)',textShadow:'var(--glow-gold-sm)'}}>Pulse Points</span></h3>
-    <p>Earn Pulse Points from qualifying purchases (code TPP / TTPP for Alpha Futures), social engagement, reviews, and referrals. Redeem points for free trading plans — ThePropPulse purchases the evaluation on your behalf from a participating partner firm.</p>
-    <button className="auth-btn" style={{maxWidth:200,margin:'0 auto'}} onClick={onLogin}>Sign In / Sign Up</button>
-    <div style={{marginTop:24}}>
-      <div className="pp-card"><h3>How It Works</h3>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:10}}>
-          <div style={{textAlign:'center',padding:12}}><div style={{fontSize:24,marginBottom:6}}>1{'\uFE0F'}{'\u20E3'}</div><div style={{fontSize:13,fontWeight:600,color:'var(--t2)'}}>Buy with code TPP</div><div style={{fontSize:11,color:'var(--t4)',marginTop:4}}>(TTPP for Alpha Futures)</div></div>
-          <div style={{textAlign:'center',padding:12}}><div style={{fontSize:24,marginBottom:6}}>2{'\uFE0F'}{'\u20E3'}</div><div style={{fontSize:13,fontWeight:600,color:'var(--t2)'}}>Upload Proof</div><div style={{fontSize:11,color:'var(--t4)',marginTop:4}}>Screenshot of purchase</div></div>
-          <div style={{textAlign:'center',padding:12}}><div style={{fontSize:24,marginBottom:6}}>3{'\uFE0F'}{'\u20E3'}</div><div style={{fontSize:13,fontWeight:600,color:'var(--t2)'}}>Earn Points</div><div style={{fontSize:11,color:'var(--t4)',marginTop:4}}>50-350 pts per purchase</div></div>
-          <div style={{textAlign:'center',padding:12}}><div style={{fontSize:24,marginBottom:6}}>{'\u{1F3C6}'}</div><div style={{fontSize:13,fontWeight:600,color:'var(--t2)'}}>Unlock Rewards</div><div style={{fontSize:11,color:'var(--t4)',marginTop:4}}>Free trading plans at partner firms</div></div>
-        </div>
-      </div>
-      <div style={{marginTop:16}}>
-        <div style={{fontSize:13,fontWeight:700,color:'var(--em)',textAlign:'center',marginBottom:12,textShadow:'var(--glow-sm)'}}>Reward Tiers</div>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(200px,100%),1fr))',gap:8}}>
-          {REWARD_TIERS.map((r,i)=><div key={i} style={{background:'var(--glass)',border:'1px solid var(--bdr2)',borderRadius:10,padding:'14px 16px',textAlign:'center'}}>
-            <div style={{fontSize:20,marginBottom:4}}>{r.icon}</div>
-            <div style={{fontSize:12,fontWeight:700,color:'var(--t2)'}}>{r.name}</div>
-            <div style={{fontFamily:'var(--mono)',fontSize:16,fontWeight:800,color:'var(--gold)',textShadow:'var(--glow-gold-sm)',marginTop:4}}>{r.pts.toLocaleString()}</div>
-            <div style={{fontSize:10,color:'var(--t4)'}}>points</div>
-          </div>)}
-        </div>
-      </div>
-    </div>
-  </div>);
-
-  const tier=getLoyaltyTier(profile?.total_earned||0);
-  const nextTier=getNextTier(profile?.total_earned||0);
-  const tierProg=nextTier?((profile?.total_earned||0)-tier.min)/(nextTier.min-tier.min)*100:100;
-
-  return (<div className="pp">
-    {/* ── BALANCE + TIER HEADER ── */}
-    <div className="pp-hdr-grid" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginBottom:20}}>
-      {/* Balance Card */}
-      <div style={{background:'linear-gradient(135deg,rgba(6,182,212,0.08),rgba(251,191,36,0.06))',border:'1px solid rgba(251,191,36,0.15)',borderRadius:16,padding:'24px 20px',position:'relative',overflow:'hidden'}}>
-        <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:'linear-gradient(90deg,var(--em),var(--gold),var(--em))',boxShadow:'0 0 20px rgba(251,191,36,0.4)'}}/>
-        <div style={{position:'absolute',top:'50%',right:'-30px',transform:'translateY(-50%)',fontSize:100,opacity:0.04,fontWeight:900}}>{'\u2B50'}</div>
-        <div style={{fontSize:11,fontWeight:700,color:'var(--em)',textTransform:'uppercase',letterSpacing:1,marginBottom:8,textShadow:'var(--glow-sm)'}}>Your Points Balance</div>
-        <div style={{fontFamily:'var(--mono)',fontSize:42,fontWeight:900,color:'var(--gold)',textShadow:'0 0 8px rgba(251,191,36,0.6),0 0 24px rgba(251,191,36,0.3),0 0 48px rgba(251,191,36,0.15)',lineHeight:1,marginBottom:8,animation:'pulsGlow 3s ease-in-out infinite'}}>{(profile?.points||0).toLocaleString()}</div>
-        <div style={{display:'flex',gap:20,fontSize:11,color:'var(--t4)'}}>
-          <span>Earned: <b style={{color:'var(--gold)'}}>{(profile?.total_earned||0).toLocaleString()}</b></span>
-          <span>Claimed: <b style={{color:'var(--em)'}}>{profile?.rewards_claimed||0}</b></span>
-        </div>
-      </div>
-
-      {/* Tier Card */}
-      <div style={{background:'var(--glass)',border:'1px solid '+tier.color+'30',borderRadius:16,padding:'24px 20px',position:'relative',overflow:'hidden'}}>
-        <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:tier.color,boxShadow:tier.glow}}/>
-        <div style={{position:'absolute',top:'50%',right:'-20px',transform:'translateY(-50%)',fontSize:80,opacity:0.06}}>{tier.icon}</div>
-        <div style={{fontSize:11,fontWeight:700,color:tier.color,textTransform:'uppercase',letterSpacing:1,marginBottom:6}}>Loyalty Tier</div>
-        <div style={{fontSize:28,fontWeight:900,color:tier.color,textShadow:tier.glow,display:'flex',alignItems:'center',gap:8,marginBottom:10}}>{tier.icon} {tier.name}</div>
-        {nextTier?<>
-          <div style={{height:6,background:'var(--bg4)',borderRadius:3,overflow:'hidden',marginBottom:6}}>
-            <div style={{height:'100%',background:'linear-gradient(90deg,'+tier.color+','+nextTier.color+'80)',borderRadius:3,width:tierProg+'%',transition:'width .8s ease',boxShadow:'0 0 8px '+tier.color+'80'}}/>
-          </div>
-          <div style={{display:'flex',justifyContent:'space-between',fontSize:10,color:'var(--t4)'}}>
-            <span>{((profile?.total_earned||0)-tier.min).toLocaleString()} / {(nextTier.min-tier.min).toLocaleString()}</span>
-            <span style={{color:nextTier.color}}>{nextTier.icon} {nextTier.name}</span>
-          </div>
-        </>:<div style={{fontSize:11,color:tier.color,fontWeight:600}}>Max tier reached!</div>}
-      </div>
-    </div>
-
-    {/* Discord Role Claim */}
-    <div id="discord-role-claim" style={{marginTop:16,background:'var(--glass)',border:'1px solid rgba(251,191,36,0.15)',borderRadius:14,padding:'20px',position:'relative',overflow:'hidden'}}>
-      <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:'linear-gradient(90deg,#fbbf24,#f59e0b,#d97706)',boxShadow:'0 0 12px rgba(251,191,36,0.4)'}}/>
-      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
-        <span style={{fontSize:18}}>👑</span>
-        <span style={{fontSize:14,fontWeight:700,color:'var(--gold)',textShadow:'0 0 10px rgba(251,191,36,0.5), 0 0 20px rgba(251,191,36,0.2)'}}>Claim Your Discord Role</span>
-      </div>
-      <p style={{fontSize:12,color:'var(--t4)',marginBottom:12,lineHeight:1.6}}>
-        Your tier: <span style={{color:tier.color,fontWeight:700,textShadow:tier.glow}}>{tier.icon} {tier.name}</span> — claim the matching role in our Discord server to flex your rank!
-      </p>
-      {discordStatus==="success"?
-        <div style={{display:'flex',alignItems:'center',gap:8,padding:'12px 16px',background:'rgba(16,185,129,0.1)',border:'1px solid rgba(16,185,129,0.2)',borderRadius:8}}>
-          <span style={{color:'var(--green)',fontWeight:700,fontSize:13}}>✓ Role claimed!</span>
-          <span style={{fontSize:12,color:'var(--t4)'}}>Discord: {profile?.discord_username}</span>
-          <span style={{fontSize:12,fontWeight:700,color:tier.color,textShadow:tier.glow}}>{tier.name}</span>
-        </div>
-      :discordStatus==="error"?
-        <div style={{padding:'10px 14px',background:'rgba(255,71,87,0.1)',border:'1px solid rgba(255,71,87,0.2)',borderRadius:8,fontSize:12,color:'var(--red)',marginBottom:10}}>
-          Could not assign role. Make sure you've joined the ThePropPulse Discord server first and your username is correct.
-        </div>
-      :null}
-      {discordStatus!=="success"&&<div style={{display:'flex',gap:8,alignItems:'center'}}>
-        <input style={{flex:1,background:'var(--bg3)',border:'1px solid var(--bdr2)',borderRadius:8,padding:'11px 14px',color:'var(--t1)',fontFamily:'var(--sans)',fontSize:13,outline:'none'}} placeholder="Your Discord username (e.g. joey123)" value={discordUser} onChange={e=>setDiscordUser(e.target.value)}/>
-        <button style={{background:'linear-gradient(135deg,#fbbf24,#d97706)',color:'#000',fontFamily:'var(--sans)',fontSize:13,fontWeight:700,padding:'12px 26px',border:'none',borderRadius:999,cursor:'pointer',boxShadow:'var(--glow-gold-sm)',transition:'all .22s',whiteSpace:'nowrap'}} disabled={!discordUser.trim()||discordStatus==="claiming"} onClick={async()=>{
-          if(!discordUser.trim())return;
-          setDiscordStatus("claiming");
-          try{
-            await supabase.from("profiles").update({discord_username:discordUser.trim()}).eq("id",user.id);
-            const res=await fetch("https://fabulous-enjoyment-production-4f2b.up.railway.app/claim-role",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({discord_username:discordUser.trim(),tier:tier.name,user_id:user.id})});
-            if(res.ok){setDiscordStatus("success");loadData();}
-            else{setDiscordStatus("error");}
-          }catch(e){
-            await supabase.from("profiles").update({discord_username:discordUser.trim()}).eq("id",user.id);
-            setDiscordStatus("success");loadData();
-          }
-        }}>{discordStatus==="claiming"?"Claiming...":"Claim Role"}</button>
-      </div>}
-      {discordStatus!=="success"&&<div style={{fontSize:10,color:'var(--t5)',marginTop:8}}>Must be a member of the <a href="https://discord.gg/pP9vfJ7WqK" target="_blank" rel="noopener" style={{color:'var(--gold)',textDecoration:'underline'}}>ThePropPulse Discord</a> first</div>}
-    </div>
-
-    {/* Per-Firm Points Breakdown */}
-    {subs.filter(s=>s.status==="approved").length>0&&<div style={{marginTop:24,marginBottom:16}}>
-      <div style={{fontSize:13,fontWeight:700,color:'var(--em2)',marginBottom:10,display:'flex',alignItems:'center',gap:6,textShadow:'0 0 8px rgba(6,182,212,0.15)'}}>
-        <span style={{fontSize:16}}>📊</span> Points by Firm
-      </div>
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))',gap:12}}>
-        {(()=>{
-          const firmMap={};
-          subs.filter(s=>s.status==="approved").forEach(s=>{
-            if(!firmMap[s.firm])firmMap[s.firm]={pts:0,count:0};
-            firmMap[s.firm].pts+=(s.points_awarded||0);
-            firmMap[s.firm].count++;
-          });
-          return Object.entries(firmMap).sort((a,b)=>b[1].pts-a[1].pts).map(([name,data])=>{
-            const f=FIRMS.find(ff=>ff.name===name);
-            const fc=f?f.color:'var(--em)';
-            return (<div key={name} style={{
-              background:'var(--glass)',
-              border:'1px solid '+fc+'25',
-              borderRadius:12,
-              padding:'14px 16px',
-              position:'relative',
-              overflow:'hidden',
-              transition:'all .25s',
-              cursor:'default',
-              borderTop:'2px solid '+fc,
-              boxShadow:'0 0 8px '+fc+'15, 0 0 20px '+fc+'08'
-            }}
-            onMouseOver={e=>{e.currentTarget.style.boxShadow='0 0 12px '+fc+'40, 0 0 30px '+fc+'20, 0 0 60px '+fc+'10';e.currentTarget.style.transform='translateY(-3px)'}}
-            onMouseOut={e=>{e.currentTarget.style.boxShadow='0 0 8px '+fc+'15, 0 0 20px '+fc+'08';e.currentTarget.style.transform='translateY(0)'}}
-            >
-              <div style={{position:'absolute',top:'-10px',right:'-10px',fontSize:50,opacity:0.04,fontWeight:900}}>{f?.initials||'?'}</div>
-              <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:8}}>
-                {f&&<FirmLogo f={f} size={22}/>}
-                <span style={{fontSize:12,fontWeight:700,color:fc,textShadow:'0 0 6px '+fc+'40'}}>{name}</span>
-              </div>
-              <div style={{fontFamily:'var(--mono)',fontSize:20,fontWeight:900,color:'var(--gold)',textShadow:'var(--glow-gold-sm)',lineHeight:1}}>{data.pts.toLocaleString()}</div>
-              <div style={{fontSize:10,color:'var(--t4)',marginTop:4}}>{data.count} purchase{data.count!==1?'s':''} verified</div>
-            </div>);
-          });
-        })()}
-      </div>
-    </div>}
-
-    <div className="pp-tabs">
-      <button className={`pp-tab ${ppTab==="submit"?"on":""}`} onClick={()=>setPpTab("submit")}>Submit Purchase</button>
-      <button className={`pp-tab ${ppTab==="earn"?"on":""}`} onClick={()=>setPpTab("earn")}>Earn More</button>
-      <button className={`pp-tab ${ppTab==="history"?"on":""}`} onClick={()=>setPpTab("history")}>History</button>
-      <button className={`pp-tab ${ppTab==="rewards"?"on":""}`} onClick={()=>setPpTab("rewards")}>Rewards</button>
-      {profile?.is_admin&&<button className={`pp-tab ${ppTab==="admin"?"on":""}`} onClick={()=>setPpTab("admin")} style={{borderColor:'rgba(255,71,87,0.3)',color:ppTab==="admin"?'var(--red)':'var(--t4)'}}>Admin</button>}
-    </div>
-
-    {ppTab==="submit"&&<div className="pp-card">
-      <h3>Submit a Purchase</h3>
-      <p style={{fontSize:12,color:'var(--t4)',marginBottom:12}}>Bought an evaluation with code TPP (TTPP for Alpha Futures)? Submit it here to earn points.</p>
-      <div className="pp-form">
-        <label>Firm</label>
-        <select value={firm} onChange={e=>setFirm(e.target.value)}>
-          <option value="">Select firm...</option>
-          {FIRMS.map(f=><option key={f.name} value={f.name}>{f.name}</option>)}
-        </select>
-        {firm&&<div style={{fontSize:11,marginTop:4,padding:'6px 10px',borderRadius:6,background:clicks.some(c=>c.firm===firm)?'rgba(16,185,129,0.1)':'rgba(255,190,11,0.08)',border:'1px solid '+(clicks.some(c=>c.firm===firm)?'rgba(16,185,129,0.2)':'rgba(255,190,11,0.15)'),color:clicks.some(c=>c.firm===firm)?'var(--green)':'var(--gold)'}}>
-          {clicks.some(c=>c.firm===firm)?'\u2705 Click verified — you visited '+firm+' through our link '+(() => {const c=clicks.find(cc=>cc.firm===firm);return c?new Date(c.clicked_at).toLocaleDateString():''})():'\u26A0\uFE0F No click tracked for this firm yet. Visit the firm through our site first for faster verification.'}
-        </div>}
-        <label>Account Size</label>
-        <select value={accSize} onChange={e=>setAccSize(e.target.value)}>
-          <option value="">Select size...</option>
-          {Object.keys(POINT_VALUES).map(s=><option key={s} value={s}>{s} ({POINT_VALUES[s]} pts)</option>)}
-        </select>
-        <label>Proof of Purchase <span style={{color:'var(--red)'}}>*</span> (order confirmation or email screenshot)</label>
-        <input type="file" accept="image/*" onChange={async e=>{
-          const file=e.target.files?.[0];
-          if(!file)return;
-          setSubmitMsg("Uploading...");
-          const ext=file.name.split('.').pop();
-          const path=user.id+'/'+Date.now()+'.'+ext;
-          const {error}=await supabase.storage.from('screenshots').upload(path,file);
-          if(error){setSubmitMsg("Upload error: "+error.message);return;}
-          const {data:u}=supabase.storage.from('screenshots').getPublicUrl(path);
-          setScreenshot(u.publicUrl);
-          setSubmitMsg("Screenshot uploaded!");
-        }} style={{fontSize:12,color:'var(--t3)',marginBottom:4}}/>
-        {screenshot&&<div style={{fontSize:11,color:'var(--green)',marginBottom:4}}>{'\u2705'} Screenshot attached</div>}
-        <label>Order # or Notes (optional)</label>
-        <input className="auth-input" placeholder="Order confirmation number, email used, etc." value={notes} onChange={e=>setNotes(e.target.value)} style={{marginBottom:0}}/>
-        {submitMsg&&!submitMsg.includes("Upload")&&<div style={{fontSize:12,marginTop:8,color:submitMsg.includes("Error")?'var(--red)':'var(--green)'}}>{submitMsg}</div>}
-        <button className="pp-submit" onClick={handleSubmit} disabled={submitting||!screenshot}>{submitting?"Submitting...":!screenshot?"Upload Screenshot to Submit":"Submit for Points"}</button>
-      </div>
-    </div>}
-
-    {ppTab==="submit"&&subs.length>0&&<div className="pp-card" style={{marginTop:12}}>
-      <h3>Your Submissions</h3>
-      {subs.map(s=><div key={s.id} className="pp-row">
-        <div><div style={{fontSize:13,fontWeight:600}}>{s.firm}</div><div style={{fontSize:11,color:'var(--t4)'}}>{s.account_size} · {new Date(s.created_at).toLocaleDateString()}</div></div>
-        <div style={{display:'flex',alignItems:'center',gap:10}}>
-          <span style={{fontFamily:'var(--mono)',fontSize:12,color:'var(--gold)'}}>+{s.points_awarded}</span>
-          <span className={`pp-status ${s.status}`}>{s.status}</span>
-        </div>
-      </div>)}
-    </div>}
-
-    {ppTab==="earn"&&<>
-      <div className="pp-card" style={{marginBottom:16}}>
-        <h3 style={{display:'flex',alignItems:'center',gap:8}}>{'\u{1F3AF}'} <span style={{background:'linear-gradient(135deg,var(--em2),var(--gold))',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Bonus Tasks</span>
-          <span style={{marginLeft:'auto',fontFamily:'var(--mono)',fontSize:12,color:completedTasks.length>=BONUS_TASKS.length?'var(--green)':'var(--t4)'}}>{completedTasks.filter(t=>t.status==="approved").length}/{BONUS_TASKS.length}</span>
-        </h3>
-        <p style={{fontSize:12,color:'var(--t4)',marginBottom:12}}>Complete tasks and upload proof to earn bonus points. We'll review and credit within 48 hours.</p>
-        <div style={{height:4,background:'var(--bg4)',borderRadius:2,overflow:'hidden',marginBottom:16}}>
-          <div style={{height:'100%',background:'linear-gradient(90deg,var(--em),var(--gold))',borderRadius:2,width:(completedTasks.filter(t=>t.status==="approved").length/BONUS_TASKS.length*100)+'%',transition:'width .5s ease',boxShadow:'0 0 8px rgba(251,191,36,0.4)'}}/>
-        </div>
-        <div style={{display:'grid',gap:10}}>
-          {BONUS_TASKS.map(task=>{
-            const ct=completedTasks.find(t=>t.key===task.key);
-            const done=ct?.status==="approved";
-            const pending=ct?.status==="pending";
-            return (<div key={task.key} className="task-card" style={{background:done?'rgba(16,185,129,0.06)':pending?'rgba(251,191,36,0.04)':'var(--bg3)',border:'1px solid '+(done?'rgba(16,185,129,0.2)':pending?'rgba(251,191,36,0.15)':task.color+'20'),borderRadius:12,padding:'16px 18px'}}>
-              <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:done||pending?0:12}}>
-                <div style={{width:42,height:42,borderRadius:10,background:task.color+'18',border:'1px solid '+task.color+'30',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,flexShrink:0,boxShadow:'0 0 8px '+task.color+'20'}}>{done?'\u2713':task.icon}</div>
-                <div style={{flex:1}}>
-                  <div style={{fontSize:14,fontWeight:700,color:done?'var(--green)':pending?'var(--gold)':'var(--t1)'}}>{task.label}</div>
-                  <div style={{fontFamily:'var(--mono)',fontSize:12,fontWeight:700,color:done?'var(--green)':pending?'var(--gold)':'var(--t4)',marginTop:2}}>
-                    {done?'\u2713 +'+task.pts+' earned':pending?'\u23F3 Pending review — +'+task.pts+' pts':'+'+task.pts+' pts'}
-                  </div>
-                </div>
-                {!done&&!pending&&<button style={{fontSize:11,fontWeight:700,color:task.color,background:task.color+'12',border:'1px solid '+task.color+'25',padding:'7px 16px',borderRadius:999,cursor:'pointer',whiteSpace:'nowrap',transition:'all .22s'}} onClick={()=>claimTask(task)}>Visit {'\u2197'}</button>}
-              </div>
-              {!done&&!pending&&<div style={{marginTop:12,padding:'12px',background:'var(--bg2)',borderRadius:8,border:'1px solid var(--bdr)'}}>
-                <div style={{fontSize:11,fontWeight:600,color:'var(--t3)',marginBottom:6}}>Upload proof (screenshot of following/subscribing/joining)</div>
-                <input type="file" accept="image/*" onChange={async e=>{
-                  const file=e.target.files?.[0];if(!file)return;
-                  setTaskMsg("Uploading...");
-                  const ext=file.name.split('.').pop();
-                  const path=user.id+'/task_'+task.key+'_'+Date.now()+'.'+ext;
-                  const {error}=await supabase.storage.from('screenshots').upload(path,file);
-                  if(error){setTaskMsg("Upload error: "+error.message);return;}
-                  const {data:u}=supabase.storage.from('screenshots').getPublicUrl(path);
-                  setTaskScreenshot(u.publicUrl);setTaskMsg("Screenshot uploaded!");
-                }} style={{fontSize:11,color:'var(--t3)',marginBottom:6}}/>
-                {taskScreenshot&&<div style={{fontSize:11,color:'var(--green)',marginBottom:6}}>{'\u2705'} Screenshot attached</div>}
-                {taskMsg&&<div style={{fontSize:11,color:taskMsg.includes("Error")?'var(--red)':'var(--green)',marginBottom:6}}>{taskMsg}</div>}
-                <button style={{background:'linear-gradient(135deg,var(--em),#0891b2)',color:'#050810',fontSize:11,fontWeight:700,padding:'8px 20px',border:'none',borderRadius:999,cursor:'pointer',boxShadow:'var(--glow-sm)',transition:'all .22s'}} onClick={()=>submitTaskProof(task)} disabled={taskSubmitting===task.key||!taskScreenshot}>{taskSubmitting===task.key?"Submitting...":"Submit Proof for +"+task.pts+" pts"}</button>
-              </div>}
-            </div>);
-          })}
-        </div>
-      </div>
-
-      {/* Tier Roadmap */}
-      <div className="pp-card">
-        <h3 style={{display:'flex',alignItems:'center',gap:8}}>{'\u{1F3C6}'} <span style={{background:'linear-gradient(135deg,var(--em2),var(--gold))',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Loyalty Tier Roadmap</span></h3>
-        <p style={{fontSize:12,color:'var(--t4)',marginBottom:14}}>Earn bonus points when you reach each tier!</p>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(160px,100%),1fr))',gap:6}}>
-          {LOYALTY_TIERS.map((t,i)=>{
-            const earned=profile?.total_earned||0;
-            const reached=earned>=t.min;
-            return (<div key={i} className={"tier-card tc-"+t.name.toLowerCase()} style={{background:reached?t.color+'12':'var(--bg3)',border:'1px solid '+(reached?t.color+'40':'var(--bdr)'),borderRadius:10,padding:'12px 14px',textAlign:'center',opacity:reached?1:0.7,boxShadow:reached?'0 0 6px '+t.color+'40,0 0 16px '+t.color+'25,0 0 36px '+t.color+'12':'none'}}>
-              <div style={{fontSize:22,filter:reached?'drop-shadow(0 0 6px '+t.color+'60)':'grayscale(0.5) opacity(0.5)'}}>{t.icon}</div>
-              <div style={{fontSize:12,fontWeight:700,color:reached?t.color:'var(--t4)',marginTop:4}}>{t.name}</div>
-              <div style={{fontFamily:'var(--mono)',fontSize:10,color:'var(--t4)',marginTop:2}}>{t.min.toLocaleString()}+</div>
-              {t.bonus>0&&<div style={{fontFamily:'var(--mono)',fontSize:10,fontWeight:700,color:reached?'var(--green)':'var(--gold)',marginTop:3}}>+{t.bonus.toLocaleString()} bonus</div>}
-            </div>);
-          })}
-        </div>
-      </div>
-    </>}
-
-    {ppTab==="history"&&<div className="pp-card">
-      <h3>Points History</h3>
-      {history.length===0?<p style={{fontSize:12,color:'var(--t4)'}}>No points yet. Submit a purchase to get started!</p>
-      :history.map(h=><div key={h.id} className="pp-row">
-        <div style={{fontSize:13,color:'var(--t2)'}}>{h.reason}</div>
-        <span style={{fontFamily:'var(--mono)',fontSize:13,fontWeight:700,color:h.amount>0?'var(--gold)':'var(--red)'}}>{h.amount>0?"+":""}{h.amount}</span>
-      </div>)}
-    </div>}
-
-    {ppTab==="rewards"&&<>
-      {/* How It Works — Fulfillment Disclosure */}
-      <div className="pp-card" style={{marginBottom:16,background:'linear-gradient(135deg,rgba(6,182,212,0.06),rgba(251,191,36,0.03))',border:'1px solid rgba(34,211,238,0.25)'}}>
-        <h3 style={{display:'flex',alignItems:'center',gap:6}}>{'\u{2139}\uFE0F'} <span style={{background:'linear-gradient(135deg,var(--em2),var(--gold))',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>How Pulse Rewards Work</span></h3>
-        <p style={{fontSize:13,color:'var(--t2)',lineHeight:1.6,marginTop:8}}>
-          Pulse Points are ThePropPulse's platform loyalty currency. Earn points through <b style={{color:'var(--em)'}}>qualifying purchases with code TPP</b>, plus <b style={{color:'var(--em)'}}>social engagement</b>, <b style={{color:'var(--em)'}}>reviews</b>, and <b style={{color:'var(--em)'}}>referrals</b>.
-        </p>
-        <p style={{fontSize:13,color:'var(--t2)',lineHeight:1.6,marginTop:8}}>
-          When you redeem, <b style={{color:'var(--gold)'}}>ThePropPulse purchases a new evaluation on your behalf</b> at a participating partner firm — funded by our commission pool, not a rebate on your original purchase.
-        </p>
-        <div style={{marginTop:12,padding:'14px 16px',background:'linear-gradient(135deg,rgba(6,182,212,0.08),rgba(251,191,36,0.04))',border:'1px solid rgba(34,211,238,0.3)',borderRadius:12,fontSize:12,color:'var(--t2)',lineHeight:1.6}}>
-          <div style={{fontSize:11,fontWeight:700,color:'var(--em)',textTransform:'uppercase',letterSpacing:1,marginBottom:8,textShadow:'var(--glow-sm)'}}>{'\u{1F91D}'} Participating Partner Firms ({FIRMS.filter(f=>f.rewardsRedeemable).length})</div>
-          <div style={{display:'flex',flexWrap:'wrap',gap:6,marginBottom:8}}>
-            {FIRMS.filter(f=>f.rewardsRedeemable).map(f=>(
-              <span key={f.id} style={{display:'inline-flex',alignItems:'center',gap:6,padding:'5px 12px',background:f.color+'18',border:'1px solid '+f.color+'40',borderRadius:999,fontSize:12,fontWeight:700,color:f.color}}>
-                {'\u2713'} {f.name}
-              </span>
-            ))}
-          </div>
-          <div style={{fontSize:11,color:'var(--t4)',fontStyle:'italic'}}>
-            Rewards are only redeemable at the partner firms above. Other listed firms' affiliate Terms prohibit third-party rewards programs and are not eligible.
-          </div>
-        </div>
-      </div>
-
-      {/* Earn Points Table */}
-      <div className="pp-card" style={{marginBottom:16}}>
-        <h3 style={{display:'flex',alignItems:'center',gap:6}}>{'\u{1F4B0}'} <span style={{background:'linear-gradient(135deg,var(--em2),var(--gold))',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Points Per Purchase</span></h3>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(90px,1fr))',gap:6,marginTop:12}}>
-          {Object.entries(POINT_VALUES).map(([size,pts])=>(
-            <div key={size} style={{background:'var(--bg3)',border:'1px solid var(--bdr)',borderRadius:8,padding:'10px 8px',textAlign:'center'}}>
-              <div style={{fontFamily:'var(--mono)',fontSize:14,fontWeight:800,color:'var(--em)',textShadow:'var(--glow-sm)'}}>{size}</div>
-              <div style={{fontFamily:'var(--mono)',fontSize:12,fontWeight:700,color:'var(--gold)',marginTop:2}}>+{pts}</div>
-            </div>
-          ))}
-        </div>
-        <p style={{fontSize:11,color:'var(--t4)',marginTop:10,fontStyle:'italic'}}>Plus bonus points for social tasks, reviews, and referrals — see the Earn More tab.</p>
-      </div>
-
-      {/* Category Tabs */}
-      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16}}>
-        <div style={{fontSize:13,fontWeight:700,color:'var(--em)',display:'flex',alignItems:'center',gap:6,textShadow:'var(--glow-sm)'}}>{'\u{1F381}'} Unlock Rewards</div>
-        <div style={{marginLeft:'auto',display:'flex',gap:4}}>
-          <button className={`f-btn ${rewardCat==="eval"?"on":""}`} onClick={()=>setRewardCat("eval")} style={{fontSize:11}}>{'\u{1F4CA}'} Evaluations</button>
-          <button className={`f-btn ${rewardCat==="instant"?"on":""}`} onClick={()=>setRewardCat("instant")} style={rewardCat==="instant"?{fontSize:11,background:'rgba(34,211,238,0.15)',borderColor:'rgba(34,211,238,0.3)',color:'var(--em)'}:{fontSize:11}}>{'\u26A1'} Instant Funding</button>
-        </div>
-      </div>
-
-      {/* Rewards Grid */}
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(190px,100%),1fr))',gap:10,marginBottom:16}}>
-        {REWARD_TIERS.filter(r=>r.cat===rewardCat).map((r,i)=>{
-          const pts=profile?.points||0;
-          const canClaim=pts>=r.pts;
-          const progress=Math.min(100,(pts/r.pts)*100);
-          const tierData=LOYALTY_TIERS.find(t=>t.name.toLowerCase()===r.tier)||LOYALTY_TIERS[0];
-          const isInstant=r.cat==="instant";
-          const accentColor=isInstant?'rgba(34,211,238,':'rgba(251,191,36,';
-          return (<div key={i} className={"rw-card"+(isInstant?" instant":"")+(canClaim?"":" locked-"+r.tier)} style={{
-            background:canClaim?'linear-gradient(135deg,'+accentColor+'0.1),'+accentColor+'0.04))':'linear-gradient(135deg,'+tierData.color+'08,'+tierData.color+'03)',
-            border:'1px solid '+(canClaim?accentColor+'0.35)':tierData.color+'20'),
-            borderRadius:14,padding:'20px 16px',textAlign:'center',
-            cursor:canClaim?'pointer':'default',
-            boxShadow:canClaim?'0 0 4px '+accentColor+'0.3),0 0 16px '+accentColor+'0.15),0 0 40px '+accentColor+'0.06)':'0 0 3px '+tierData.color+'30,0 0 12px '+tierData.color+'15,0 0 30px '+tierData.color+'08',
-          }} onClick={()=>canClaim&&claimReward(r)}>
-            {/* Top glow bar */}
-            <div style={{position:'absolute',top:0,left:0,right:0,height:canClaim?3:1,background:canClaim?'linear-gradient(90deg,transparent,'+(isInstant?'var(--em)':'var(--gold)')+',transparent)':'linear-gradient(90deg,transparent,'+tierData.color+'40,transparent)',boxShadow:canClaim?'0 0 20px '+accentColor+'0.6)':'none'}}/>
-            {/* Background glow for claimable */}
-            {canClaim&&<div style={{position:'absolute',top:'-40%',left:'50%',transform:'translateX(-50%)',width:250,height:250,background:'radial-gradient(circle,'+accentColor+'0.15) 0%,transparent 55%)',borderRadius:'50%',pointerEvents:'none',animation:'pulsGlow 3s ease-in-out infinite'}}/>}
-            {/* Tier badge */}
-            <div style={{position:'absolute',top:8,right:8,fontSize:8,fontWeight:700,color:tierData.color,background:tierData.color+'15',border:'1px solid '+tierData.color+'25',padding:'2px 6px',borderRadius:4,textTransform:'uppercase',letterSpacing:.5}}>{tierData.icon} {r.tier}</div>
-            {/* Instant badge */}
-            {isInstant&&<div style={{position:'absolute',top:8,left:8,fontSize:8,fontWeight:700,color:'var(--em)',background:'rgba(34,211,238,0.12)',border:'1px solid rgba(34,211,238,0.25)',padding:'2px 6px',borderRadius:4,textTransform:'uppercase',letterSpacing:.5}}>{'\u26A1'} INSTANT</div>}
-            {/* Icon */}
-            <div style={{fontSize:36,marginBottom:6,marginTop:isInstant?8:0,filter:canClaim?'drop-shadow(0 0 8px '+accentColor+'0.4))':'grayscale(0.5) opacity(0.6)'}}>{r.icon}</div>
-            {/* Points cost */}
-            <div style={{fontFamily:'var(--mono)',fontSize:22,fontWeight:900,color:canClaim?(isInstant?'var(--em)':'var(--gold)'):'var(--t3)',textShadow:canClaim?'0 0 8px '+accentColor+'0.6),0 0 20px '+accentColor+'0.3)':'none',marginBottom:2}}>{r.pts.toLocaleString()}</div>
-            <div style={{fontSize:9,color:'var(--t4)',fontWeight:600,textTransform:'uppercase',letterSpacing:.8,marginBottom:8}}>points</div>
-            {/* Name */}
-            <div style={{fontSize:13,fontWeight:700,color:canClaim?'var(--t1)':'var(--t3)',marginBottom:3}}>{r.name}</div>
-            <div style={{fontSize:10,color:'var(--t4)',marginBottom:12,lineHeight:1.4}}>{r.desc}</div>
-            {/* Progress bar */}
-            <div style={{height:4,background:'var(--bg4)',borderRadius:2,overflow:'hidden',marginBottom:6}}>
-              <div style={{height:'100%',background:canClaim?'linear-gradient(90deg,'+(isInstant?'var(--em),#67e8f9':'var(--gold),#fde68a')+')':'linear-gradient(90deg,'+tierData.color+'80,'+tierData.color+'40)',borderRadius:2,width:Math.min(100,progress)+'%',transition:'width .5s ease',boxShadow:canClaim?'0 0 6px '+accentColor+'0.4)':'none'}}/>
-            </div>
-            <div style={{fontSize:10,color:'var(--t4)',fontFamily:'var(--mono)'}}>
-              {canClaim
-                ?<span style={{color:isInstant?'var(--em)':'var(--gold)',fontWeight:700,textShadow:isInstant?'var(--glow-sm)':'var(--glow-gold-sm)'}}>{'\u2713'} READY TO CLAIM</span>
-                :<span>{(r.pts-pts).toLocaleString()} more needed</span>}
-            </div>
-            {/* Claim button */}
-            {canClaim&&<button style={{marginTop:10,background:isInstant?'linear-gradient(135deg,#22d3ee,#0891b2)':'linear-gradient(135deg,#fbbf24,#f59e0b)',color:'#050810',fontFamily:'var(--sans)',fontSize:12,fontWeight:700,padding:'9px 24px',border:'none',borderRadius:999,cursor:'pointer',boxShadow:isInstant?'var(--glow-sm)':'var(--glow-gold-sm)',transition:'all .22s'}} onClick={e=>{e.stopPropagation();claimReward(r)}}>Claim Reward</button>}
-            {/* Lock icon */}
-            {!canClaim&&<div style={{fontSize:14,color:'var(--t5)',marginTop:6}}>{'\u{1F512}'}</div>}
-          </div>);
-        })}
-      </div>
-
-      {/* Claimed Rewards History */}
-      {rewards.length>0&&<div className="pp-card" style={{marginTop:16}}>
-        <h3>Your Claimed Rewards</h3>
-        {rewards.map(rw=>{
-          let det={};try{det=rw.fulfillment_details?JSON.parse(rw.fulfillment_details):{};}catch(e){}
-          const statusColors={pending:'var(--gold)',processing:'var(--em)',fulfilled:'var(--green)',rejected:'var(--red)'};
-          const statusLabels={pending:'Pending Review',processing:'Being Fulfilled',fulfilled:'Fulfilled \u2713',rejected:'Rejected'};
-          return (<div key={rw.id} style={{padding:'14px 0',borderBottom:'1px solid var(--bdr)'}}>
-            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}}>
-              <div>
-                <div style={{fontSize:14,fontWeight:700,color:'var(--t1)'}}>{rw.reward_name}</div>
-                <div style={{fontSize:11,color:'var(--t4)',marginTop:2}}>
-                  {det.type==="eval"&&<>Firm: <b style={{color:'var(--t2)'}}>{det.firm}</b> &middot; </>}
-                  {new Date(rw.created_at).toLocaleDateString()}
-                </div>
-              </div>
-              <div style={{display:'flex',alignItems:'center',gap:8}}>
-                <span style={{fontFamily:'var(--mono)',fontSize:11,color:'var(--gold)'}}>-{rw.points_cost.toLocaleString()} pts</span>
-                <span style={{fontFamily:'var(--mono)',fontSize:10,fontWeight:700,padding:'3px 10px',borderRadius:5,background:(statusColors[rw.status]||'var(--t4)')+'15',color:statusColors[rw.status]||'var(--t4)',border:'1px solid '+(statusColors[rw.status]||'var(--t4)')+'30'}}>{statusLabels[rw.status]||rw.status}</span>
-              </div>
-            </div>
-            {rw.admin_notes&&<div style={{fontSize:11,color:'var(--t3)',marginTop:6,padding:'6px 10px',background:'var(--bg3)',borderRadius:6,borderLeft:'2px solid var(--em)'}}>{'\u{1F4AC}'} {rw.admin_notes}</div>}
-          </div>);
-        })}
-      </div>}
-    </>}
-
-    {claimModal&&<div className="auth-overlay" onClick={()=>setClaimModal(null)}><div className="auth-modal" onClick={e=>e.stopPropagation()} style={{maxWidth:440}}>
-      <button className="auth-close" onClick={()=>setClaimModal(null)}>{'\u2715'}</button>
-      <h2 style={{fontSize:18}}>Claim <span>{claimModal.name}</span></h2>
-      <p style={{marginBottom:16}}>This will deduct <b style={{color:'var(--gold)'}}>{claimModal.pts} points</b> from your balance.</p>
-
-      {claimModal.type==="eval"&&<>
-        <div style={{fontSize:12,fontWeight:600,color:'var(--t3)',marginBottom:5}}>Which firm do you want your {claimModal.evalSize} {claimModal.cat==="instant"?"instant funded":"evaluation"} account from?</div>
-        <select className="pp-form" value={claimForm.firm||""} onChange={e=>setClaimForm(p=>({...p,firm:e.target.value}))} style={{width:'100%',background:'var(--bg3)',border:'1px solid var(--bdr2)',borderRadius:8,padding:'10px 14px',color:'var(--t1)',fontFamily:'var(--sans)',fontSize:13,marginBottom:10}}>
-          <option value="">Select a participating partner firm...</option>
-          {FIRMS.filter(f=>f.rewardsRedeemable).map(f=><option key={f.name} value={f.name}>{f.name}</option>)}
-        </select>
-        <div style={{fontSize:10,color:'var(--t4)',marginTop:-6,marginBottom:10,fontStyle:'italic'}}>Only partner firms whose Terms permit third-party rewards are listed here.</div>
-        <div style={{fontSize:12,fontWeight:600,color:'var(--t3)',marginBottom:5}}>Email for this firm (we'll send the account here)</div>
-        <input className="auth-input" placeholder={user?.email||"your@email.com"} value={claimForm.email||""} onChange={e=>setClaimForm(p=>({...p,email:e.target.value}))}/>
-        <div style={{fontSize:10,color:'var(--t4)',marginTop:2}}>Leave blank to use your account email ({user?.email})</div>
-      </>}
-
-      <div style={{fontSize:11,color:'var(--t4)',margin:'10px 0',padding:'8px 12px',background:'var(--bg3)',borderRadius:6,lineHeight:1.6}}>
-        {'\u2139\uFE0F'} ThePropPulse will purchase the evaluation on your behalf from the selected partner firm, funded by our commission pool. Processing within <b style={{color:'var(--em)'}}>48 hours</b>. You'll see status updates here and receive credentials at <b style={{color:'var(--t2)'}}>{user?.email}</b>.
-      </div>
-
-      <button className="auth-btn" onClick={submitClaim} disabled={claimSubmitting||!claimForm.firm}>
-        {claimSubmitting?"Processing...":"Confirm — Spend "+claimModal.pts.toLocaleString()+" Points"}
-      </button>
-    </div></div>}
-
-    {ppTab==="admin"&&profile?.is_admin&&<>
-      <div style={{display:'flex',gap:4,marginBottom:16}}>
-        <button className={`f-btn ${adminTab==="submissions"?"on":""}`} onClick={()=>setAdminTab("submissions")}>Purchase Submissions ({adminSubs.filter(s=>s.status==="pending").length} pending)</button>
-        <button className={`f-btn ${adminTab==="rewards"?"on":""}`} style={adminTab==="rewards"?{borderColor:'rgba(251,191,36,0.3)',background:'rgba(251,191,36,0.1)',color:'var(--gold)'}:{}} onClick={()=>setAdminTab("rewards")}>{'\u{1F381}'} Reward Claims ({adminRewards.filter(r=>r.status==="pending").length} pending)</button>
-        <button className={`f-btn ${adminTab==="tasks"?"on":""}`} onClick={()=>setAdminTab("tasks")}>{'\u{1F3AF}'} Bonus Tasks ({adminBonusTasks.filter(t=>t.status==="pending").length} pending)</button>
-      </div>
-
-      {adminTab==="submissions"&&<div className="pp-card">
-        <h3 style={{color:'var(--red)'}}>Purchase Submissions</h3>
-        {adminSubs.filter(s=>s.status==="pending").length===0&&<p style={{fontSize:12,color:'var(--t4)'}}>No pending submissions.</p>}
-        {adminSubs.map(s=><div key={s.id} className="pp-row" style={{flexWrap:'wrap'}}>
-          <div style={{flex:1,minWidth:200}}>
-            <div style={{fontSize:13,fontWeight:600,display:'flex',alignItems:'center',gap:6}}>
-              {s.firm} · {s.account_size}
-              {s.notes?.includes("[CLICK VERIFIED]")&&<span style={{fontSize:9,background:'rgba(16,185,129,0.15)',color:'var(--green)',padding:'2px 6px',borderRadius:4,fontWeight:700}}>CLICK VERIFIED</span>}
-              {s.notes?.includes("[HAS SCREENSHOT]")&&<span style={{fontSize:9,background:'rgba(6,182,212,0.15)',color:'var(--em)',padding:'2px 6px',borderRadius:4,fontWeight:700}}>HAS PROOF</span>}
-            </div>
-            <div style={{fontSize:11,color:'var(--t4)'}}>{s.user_id.slice(0,8)}... · {new Date(s.created_at).toLocaleDateString()}{s.notes&&" · "+s.notes.replace("[CLICK VERIFIED] ","").replace("[HAS SCREENSHOT] ","")}</div>
-            {s.screenshot_url&&<a href={s.screenshot_url} target="_blank" rel="noopener" style={{fontSize:11,color:'var(--em)',display:'inline-block',marginTop:4}}>View Screenshot {'\u2192'}</a>}
-          </div>
-          <div style={{display:'flex',alignItems:'center',gap:6}}>
-            <span className={`pp-status ${s.status}`}>{s.status}</span>
-            <span style={{fontFamily:'var(--mono)',fontSize:11,color:'var(--gold)'}}>+{s.points_awarded}</span>
-            {s.status==="pending"&&<>
-              <button style={{background:'rgba(16,185,129,0.15)',border:'1px solid rgba(16,185,129,0.3)',color:'var(--green)',fontSize:11,fontWeight:700,padding:'4px 10px',borderRadius:5,cursor:'pointer'}} onClick={()=>handleApprove(s)}>Approve</button>
-              <button style={{background:'rgba(255,71,87,0.15)',border:'1px solid rgba(255,71,87,0.3)',color:'var(--red)',fontSize:11,fontWeight:700,padding:'4px 10px',borderRadius:5,cursor:'pointer'}} onClick={()=>handleReject(s)}>Reject</button>
-            </>}
-          </div>
-        </div>)}
-      </div>}
-
-      {adminTab==="rewards"&&<>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:8,marginBottom:16}}>
-          {[["pending","Pending","\u{1F7E1}"],["processing","Processing","\u{1F535}"],["fulfilled","Fulfilled","\u2705"],["all","All","\u{1F4CB}"]].map(([k,l,icon])=>{
-            const cnt=k==="all"?adminRewards.length:adminRewards.filter(r=>r.status===k).length;
-            return (<div key={k} onClick={()=>setRewardFilter(k)} style={{background:rewardFilter===k?'var(--emA2)':'var(--glass)',border:'1px solid '+(rewardFilter===k?'var(--bdr3)':'var(--bdr)'),borderRadius:10,padding:'12px 14px',cursor:'pointer',textAlign:'center',transition:'all .15s'}}>
-              <div style={{fontSize:16}}>{icon}</div>
-              <div style={{fontFamily:'var(--mono)',fontSize:20,fontWeight:800,color:rewardFilter===k?'var(--em)':'var(--t1)',marginTop:4}}>{cnt}</div>
-              <div style={{fontSize:10,color:'var(--t4)',fontWeight:600,textTransform:'uppercase',letterSpacing:.5}}>{l}</div>
-            </div>);
-          })}
-        </div>
-
-        <div className="pp-card">
-          <h3 style={{color:'var(--gold)',display:'flex',alignItems:'center',gap:8}}>{'\u{1F381}'} Reward Fulfillment Queue</h3>
-          {(rewardFilter==="all"?adminRewards:adminRewards.filter(r=>r.status===rewardFilter)).length===0&&<p style={{fontSize:12,color:'var(--t4)',padding:12}}>No {rewardFilter==="all"?"":rewardFilter} rewards.</p>}
-          {(rewardFilter==="all"?adminRewards:adminRewards.filter(r=>r.status===rewardFilter)).map(rw=>{
-            let det={};try{det=rw.fulfillment_details?JSON.parse(rw.fulfillment_details):{};}catch(e){}
-            const statusColors={pending:'var(--gold)',processing:'var(--em)',fulfilled:'var(--green)',rejected:'var(--red)'};
-            return (<div key={rw.id} style={{padding:'16px 0',borderBottom:'1px solid var(--bdr)'}}>
-              <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',flexWrap:'wrap',gap:8}}>
-                <div style={{flex:1,minWidth:220}}>
-                  <div style={{fontSize:14,fontWeight:700,color:'var(--t1)',display:'flex',alignItems:'center',gap:6}}>
-                    <span>{det.type==="eval"?"\u{1F4CA}":det.type==="merch"?"\u{1F455}":det.type==="call"?"\u{1F4DE}":"\u{1F381}"}</span>
-                    {rw.reward_name}
-                    <span style={{fontFamily:'var(--mono)',fontSize:10,fontWeight:700,padding:'2px 8px',borderRadius:4,background:(statusColors[rw.status]||'var(--t4)')+'15',color:statusColors[rw.status]||'var(--t4)',border:'1px solid '+(statusColors[rw.status]||'var(--t4)')+'30',textTransform:'uppercase'}}>{rw.status}</span>
-                  </div>
-                  <div style={{fontSize:11,color:'var(--t4)',marginTop:4}}>
-                    <b style={{color:'var(--t2)'}}>{rw.user_email||rw.user_id.slice(0,12)+"..."}</b> &middot; {new Date(rw.created_at).toLocaleDateString()} {new Date(rw.created_at).toLocaleTimeString()} &middot; <span style={{color:'var(--gold)'}}>{rw.points_cost} pts</span>
-                  </div>
-
-                  <div style={{marginTop:8,padding:'10px 12px',background:'var(--bg3)',borderRadius:8,border:'1px solid var(--bdr)'}}>
-                    <div style={{fontSize:10,fontWeight:700,color:'var(--em)',textTransform:'uppercase',letterSpacing:.8,marginBottom:6}}>Fulfillment Details</div>
-                    {det.type==="eval"&&<>
-                      <div style={{fontSize:12,color:'var(--t2)',lineHeight:1.8}}>
-                        <b>Firm:</b> {det.firm||"Not specified"}<br/>
-                        <b>Account Size:</b> {det.evalSize||"N/A"}<br/>
-                        <b>Email:</b> {det.email||rw.user_email||"Use account email"}
-                      </div>
-                    </>}
-                    {det.type==="merch"&&<>
-                      <div style={{fontSize:12,color:'var(--t2)',lineHeight:1.8}}>
-                        <b>Name:</b> {det.shipName}<br/>
-                        <b>Address:</b> {det.address}, {det.city}, {det.state} {det.zip} {det.country||"US"}<br/>
-                        <b>Shirt Size:</b> {det.shirtSize||"Not specified"}
-                      </div>
-                    </>}
-                    {det.type==="call"&&<>
-                      <div style={{fontSize:12,color:'var(--t2)',lineHeight:1.8}}>
-                        <b>Discord:</b> {det.discord}<br/>
-                        <b>Timezone:</b> {det.timezone||"Not specified"}<br/>
-                        <b>Availability:</b> {det.availability||"Not specified"}<br/>
-                        <b>Focus:</b> {det.focus||"General"}
-                      </div>
-                    </>}
-                    {!det.type&&<div style={{fontSize:11,color:'var(--t4)'}}>No fulfillment details (legacy claim)</div>}
-                  </div>
-
-                  {rw.admin_notes&&<div style={{fontSize:11,color:'var(--t3)',marginTop:6,padding:'6px 10px',background:'rgba(6,182,212,0.05)',borderRadius:6,borderLeft:'2px solid var(--em)'}}>{'\u{1F4AC}'} {rw.admin_notes}</div>}
-                </div>
-
-                <div style={{display:'flex',flexDirection:'column',gap:4,minWidth:130}}>
-                  {rw.status==="pending"&&<>
-                    <button style={{background:'rgba(6,182,212,0.15)',border:'1px solid rgba(6,182,212,0.3)',color:'var(--em)',fontSize:11,fontWeight:700,padding:'8px 14px',borderRadius:999,cursor:'pointer',width:'100%',transition:'all .22s'}} onClick={()=>handleRewardStatus(rw,"processing")}>Mark Processing</button>
-                    <button style={{background:'rgba(255,71,87,0.1)',border:'1px solid rgba(255,71,87,0.2)',color:'var(--red)',fontSize:11,fontWeight:700,padding:'8px 14px',borderRadius:999,cursor:'pointer',width:'100%',transition:'all .22s'}} onClick={()=>handleRewardStatus(rw,"rejected")}>Reject</button>
-                  </>}
-                  {rw.status==="processing"&&<>
-                    <button style={{background:'rgba(16,185,129,0.15)',border:'1px solid rgba(16,185,129,0.3)',color:'var(--green)',fontSize:11,fontWeight:700,padding:'8px 14px',borderRadius:999,cursor:'pointer',width:'100%',transition:'all .22s'}} onClick={()=>handleRewardStatus(rw,"fulfilled")}>{'\u2713'} Mark Fulfilled</button>
-                    <button style={{background:'rgba(255,71,87,0.1)',border:'1px solid rgba(255,71,87,0.2)',color:'var(--red)',fontSize:11,fontWeight:700,padding:'8px 14px',borderRadius:999,cursor:'pointer',width:'100%',transition:'all .22s'}} onClick={()=>handleRewardStatus(rw,"rejected")}>Reject</button>
-                  </>}
-                  {rw.status==="fulfilled"&&<div style={{fontSize:10,color:'var(--green)',textAlign:'center',padding:6}}>{'\u2713'} Fulfilled {rw.fulfilled_at?new Date(rw.fulfilled_at).toLocaleDateString():""}</div>}
-                  <button style={{background:'none',border:'1px solid var(--bdr)',color:'var(--t4)',fontSize:10,fontWeight:600,padding:'5px 10px',borderRadius:5,cursor:'pointer',width:'100%'}} onClick={()=>{setAdminNoteId(adminNoteId===rw.id?null:rw.id);setAdminNote(rw.admin_notes||"")}}>{adminNoteId===rw.id?"Cancel":"\u{270F}\uFE0F Add Note"}</button>
-                  {adminNoteId===rw.id&&<div style={{display:'flex',gap:4}}>
-                    <input style={{flex:1,background:'var(--bg3)',border:'1px solid var(--bdr2)',borderRadius:5,padding:'5px 8px',color:'var(--t1)',fontFamily:'var(--sans)',fontSize:11}} placeholder="Admin note..." value={adminNote} onChange={e=>setAdminNote(e.target.value)}/>
-                    <button style={{background:'var(--emA2)',border:'1px solid var(--bdr3)',color:'var(--em)',fontSize:10,fontWeight:700,padding:'5px 8px',borderRadius:5,cursor:'pointer'}} onClick={()=>saveAdminNote(rw)}>Save</button>
-                  </div>}
-                </div>
-              </div>
-            </div>);
-          })}
-        </div>
-      </>}
-
-      {adminTab==="tasks"&&<div className="pp-card">
-        <h3 style={{color:'var(--em)'}}>{'\u{1F3AF}'} Bonus Task Submissions</h3>
-        {adminBonusTasks.filter(t=>t.status==="pending").length===0&&<p style={{fontSize:12,color:'var(--t4)',padding:8}}>No pending task submissions.</p>}
-        {adminBonusTasks.filter(t=>t.status==="pending").map(bt=>(
-          <div key={bt.id} className="pp-row" style={{flexWrap:'wrap',gap:8}}>
-            <div style={{flex:1,minWidth:200}}>
-              <div style={{fontSize:13,fontWeight:700,color:'var(--t1)'}}>{bt.task_key.replace(/_/g," ").replace(/\b\w/g,c=>c.toUpperCase())}</div>
-              <div style={{fontSize:11,color:'var(--t4)'}}>{bt.user_id.slice(0,8)}... · {new Date(bt.completed_at).toLocaleDateString()} · <span style={{color:'var(--gold)'}}>+{bt.points_awarded} pts</span></div>
-              {bt.screenshot_url&&<a href={bt.screenshot_url} target="_blank" rel="noopener" style={{fontSize:11,color:'var(--em)',display:'inline-block',marginTop:4}}>View Screenshot {'\u2192'}</a>}
-            </div>
-            <div style={{display:'flex',gap:4}}>
-              <button style={{background:'rgba(16,185,129,0.15)',border:'1px solid rgba(16,185,129,0.3)',color:'var(--green)',fontSize:11,fontWeight:700,padding:'5px 12px',borderRadius:5,cursor:'pointer'}} onClick={()=>handleApproveTask(bt)}>Approve</button>
-              <button style={{background:'rgba(255,71,87,0.15)',border:'1px solid rgba(255,71,87,0.3)',color:'var(--red)',fontSize:11,fontWeight:700,padding:'5px 12px',borderRadius:5,cursor:'pointer'}} onClick={()=>handleRejectTask(bt)}>Reject</button>
-            </div>
-          </div>
-        ))}
-        {adminBonusTasks.filter(t=>t.status!=="pending").length>0&&<>
-          <div style={{fontSize:11,fontWeight:700,color:'var(--t4)',marginTop:16,marginBottom:8,textTransform:'uppercase',letterSpacing:.8}}>History</div>
-          {adminBonusTasks.filter(t=>t.status!=="pending").map(bt=>(
-            <div key={bt.id} className="pp-row">
-              <div><div style={{fontSize:12,fontWeight:600}}>{bt.task_key.replace(/_/g," ")}</div><div style={{fontSize:10,color:'var(--t4)'}}>{bt.user_id.slice(0,8)}... · {new Date(bt.completed_at).toLocaleDateString()}</div></div>
-              <span className={`pp-status ${bt.status}`}>{bt.status}</span>
-            </div>
-          ))}
-        </>}
-      </div>}
-    </>}
-  </div>);
-};
-
-// ── APP ──────────────────────────────────────────────────────────────────────
-// ── COMPARE OVERLAY ──
-const CompareOverlayLegacy = ({firms,onClose}) => {
-  const [cmpSize,setCmpSize]=useState("50K");
-  const sizes=["25K","50K","100K","150K"];
-  const cols=firms.length;
-  const gridCols=`140px repeat(${cols},1fr)`;
-  // For each firm, find the best matching challenge at chosen size (prefer standard plan)
-  const getCh=(f)=>{
-    const matches=CHALLENGES.filter(c=>c.firm===f.name&&c.size===cmpSize);
-    return matches.find(c=>c.standard)||matches[0]||null;
-  };
-  const rows=[
-    {label:"Pulse Score",fn:(f)=>({v:String(calcPulse(f.rating,f.reviews,f.name)),n:calcPulse(f.rating,f.reviews,f.name)}),best:"max",fromFirm:true},
-    {label:"Rating",fn:(f)=>({v:f.rating+"/5 ("+f.reviews.toLocaleString()+")",n:f.rating}),best:"max",fromFirm:true},
-    {label:"Plan",fn:(_,c)=>({v:c?c.plan:"—"}),fromFirm:false},
-    {label:"Price",fn:(_,c)=>({v:c?c.price:"—"}),fromFirm:false},
-    {label:"Profit Target",fn:(_,c)=>({v:c?c.target:"—"}),fromFirm:false},
-    {label:"Max Drawdown",fn:(_,c)=>({v:c?c.maxLoss:"—"}),fromFirm:false},
-    {label:"Daily Loss Limit",fn:(_,c)=>({v:c?c.dll:"—"}),fromFirm:false},
-    {label:"Drawdown Type",fn:(_,c)=>({v:c?c.drawdown:"—"}),fromFirm:false},
-    {label:"Consistency",fn:(_,c)=>({v:c?c.consistency:"—"}),fromFirm:false},
-    {label:"Profit Split",fn:(_,c)=>({v:c?c.split:"—"}),fromFirm:false},
-    {label:"Min Days",fn:(_,c)=>({v:c?c.minDays:"—"}),fromFirm:false},
-    {label:"Payout",fn:(_,c)=>({v:c?c.payout:"—"}),fromFirm:false},
-    {label:"News Trading",fn:(_,c)=>({v:c?(c.news?"✓ Yes":"✗ No"):"—"}),fromFirm:false},
-    {label:"EAs / Bots",fn:(_,c)=>({v:c?(c.ea?"✓ Yes":"✗ No"):"—"}),fromFirm:false},
-    {label:"Payout Speed",fn:(f)=>({v:f.paySpeed}),fromFirm:true},
-    {label:"Current Deal",fn:(f)=>{const d=DEALS.find(x=>x.firm===f.name);return {v:d?d.pct+" w/ code "+d.code:"—"}},fromFirm:true},
-  ];
-  return (<div className="cmp-overlay" onClick={onClose}>
-    <div className="cmp-modal" onClick={e=>e.stopPropagation()}>
-      <div className="cmp-header">
-        <div>
-          <h2>Compare <span>{cols} Firms</span></h2>
-          <div style={{display:'flex',gap:4,marginTop:8}}>
-            {sizes.map(s=><button key={s} className={`f-btn ${cmpSize===s?"on":""}`} style={{padding:'4px 12px',fontSize:11}} onClick={()=>setCmpSize(s)}>{s}</button>)}
-          </div>
-        </div>
-        <button className="cmp-close" onClick={onClose}>✕</button>
-      </div>
-      <div style={{overflowX:'auto'}}>
-      <div className="cmp-grid" style={{minWidth:cols*220+140}}>
-        <div className="cmp-row" style={{display:'grid',gridTemplateColumns:gridCols}}>
-          <div className="cmp-label" style={{background:'transparent',borderRight:'1px solid var(--bdr)'}}/>
-          {firms.map(f=>{const ch=getCh(f);return <div key={f.id} className="cmp-firm-hdr">
-            <FirmLogo f={f} size={36}/>
-            <div className="cmp-firm-name" style={{color:f.color}}>{f.name}</div>
-            <div style={{fontSize:11,color:'var(--t4)',marginTop:2}}>{ch?ch.plan+" "+cmpSize:<span style={{color:'var(--red)',fontSize:10}}>No {cmpSize} plan</span>}</div>
-            <div className="cmp-firm-pulse" style={{color:pulseColor(calcPulse(f.rating,f.reviews,f.name)),textShadow:'var(--glow-gold-sm)'}}>{calcPulse(f.rating,f.reviews,f.name)}</div>
-            {AFFILIATE_LINKS[f.name]?<button className="cmp-deal-btn" onClick={()=>trackClick(f.name)}>Get Deal</button>:<button className="cmp-deal-btn" style={{background:'var(--emA2)',color:'var(--em)',boxShadow:'none'}} onClick={()=>{const fp=FIRM_PROFILES[f.name];window.open('https://'+(fp?.website||''),'_blank')}}>Visit Site</button>}
-          </div>})}
-        </div>
-        {rows.map((r,ri)=><div key={ri} className="cmp-row" style={{display:'grid',gridTemplateColumns:gridCols}}>
-          <div className="cmp-label">{r.label}</div>
-          {firms.map(f=>{
-            const ch=getCh(f);
-            const res=r.fn(f,ch);
-            const isGood=res.v&&(res.v.includes("✓")||res.v==="None");
-            const isBad=res.v&&res.v.includes("✗");
-            return <div key={f.id} className="cmp-cell" style={{...(isGood?{color:'var(--green)',fontWeight:600}:isBad?{color:'var(--red)'}:{})}}>{res.v||"—"}</div>;
-          })}
-        </div>)}
-      </div>
-      </div>
-    </div>
-  </div>);
-};
-
-void CompareOverlayLegacy;
-
-const COMPARE_SIZES = ["25K","50K","100K","150K"];
-const getComparePlans = (firmName,size) => CHALLENGES.filter(c=>c.firm===firmName&&c.size===size);
-const getCompareDefaultPlan = (firmName,size) => {
-  const matches = getComparePlans(firmName,size);
-  return matches.find(c=>c.standard)?.plan || matches[0]?.plan || "";
-};
-const getCompareField = (challenge,phase,field) => {
-  if(!challenge) return "—";
-  if(phase==="eval") return challenge[field] ?? "—";
-  const key = `${challenge.firm}|${challenge.plan}`;
-  const override = FUNDED_OVERRIDES[key];
-  return override && override[field] !== undefined ? override[field] : (challenge[field] ?? "—");
-};
-const parseMoneyLike = (value) => {
-  if(!value || value==="—" || /n\/a/i.test(value)) return null;
-  const match = String(value).replace(/,/g,"").match(/\$?(\d+(?:\.\d+)?)(K|M)?/i);
-  if(!match) return null;
-  let num = parseFloat(match[1]);
-  const unit = (match[2]||"").toUpperCase();
-  if(unit==="K") num*=1000;
-  if(unit==="M") num*=1000000;
-  return num;
-};
-const parsePercentLike = (value) => {
-  if(!value || value==="—" || /varies/i.test(value)) return null;
-  const match = String(value).match(/(\d+(?:\.\d+)?)\s*%/);
-  return match ? parseFloat(match[1]) : null;
-};
-const parseDaysLike = (value) => {
-  if(!value || value==="—" || /varies/i.test(value)) return null;
-  if(/none|no min|n\/a/i.test(value)) return 0;
-  const match = String(value).match(/(\d+(?:\.\d+)?)/);
-  return match ? parseFloat(match[1]) : null;
-};
-const scoreDrawdown = (value) => {
-  if(!value || value==="—") return null;
-  const text = String(value).toLowerCase();
-  if(text.includes("static")) return 4;
-  if(text.includes("eod")) return 3;
-  if(text.includes("intraday")) return 1;
-  if(text.includes("trailing")) return 2;
-  return null;
-};
-const scorePayoutSpeed = (value) => {
-  if(!value || value==="—") return null;
-  const text = String(value).toLowerCase();
-  if(text.includes("15 minute")) return 0.01;
-  if(text.includes("<24") || text.includes("within 24") || text.includes("24 hr") || text.includes("next business day")) return 1;
-  if(text.includes("daily")) return 1.5;
-  if(text.includes("weekly") || text.includes("5 winning")) return 5;
-  if(text.includes("bi-weekly")) return 14;
-  const dayMatch = text.match(/(\d+(?:\.\d+)?)\s*day/);
-  if(dayMatch) return parseFloat(dayMatch[1]);
-  const hourMatch = text.match(/(\d+(?:\.\d+)?)\s*(?:hr|hour)/);
-  if(hourMatch) return parseFloat(hourMatch[1]) / 24;
-  return null;
-};
-const compareCellTone = (rowKey,value) => {
-  const text = String(value || "").toLowerCase();
-  if(rowKey==="dll") return text.includes("none") ? "good" : "";
-  if(rowKey==="drawdown") return text.includes("static") || text.includes("eod") ? "good" : text.includes("intraday") ? "bad" : "";
-  if(rowKey==="consistency") return text.includes("none") ? "good" : "";
-  if(rowKey==="news" || rowKey==="ea") return text.includes("yes") ? "good" : text.includes("no") ? "bad" : "";
-  return "";
-};
-const pickBest = (items,selector,mode="max") => {
-  const scored = items.map(item=>({item,val:selector(item)})).filter(x=>x.val!==null&&x.val!==undefined&&!Number.isNaN(x.val));
-  if(!scored.length) return null;
-  return scored.reduce((best,current)=>{
-    if(mode==="min") return current.val<best.val ? current : best;
-    return current.val>best.val ? current : best;
-  }).item;
-};
-const CompareOverlay = ({firms,onClose}) => {
-  const [cmpSize,setCmpSize]=useState("50K");
-  const [cmpPhase,setCmpPhase]=useState("eval");
-  const [planByFirm,setPlanByFirm]=useState(()=>Object.fromEntries(firms.map(f=>[f.id,getCompareDefaultPlan(f.name,"50K")])));
-  const cols=firms.length;
-  const gridCols=`170px repeat(${cols},minmax(220px,1fr))`;
-
-  useEffect(()=>{
-    setPlanByFirm(prev=>{
-      const next={...prev};
-      firms.forEach(f=>{
-        const options=getComparePlans(f.name,cmpSize);
-        if(!options.length){next[f.id]="";return;}
-        if(!options.some(opt=>opt.plan===next[f.id])) next[f.id]=getCompareDefaultPlan(f.name,cmpSize);
-      });
-      return next;
-    });
-  },[cmpSize,firms]);
-
-  const compared = firms.map(f=>{
-    const options=getComparePlans(f.name,cmpSize);
-    const selectedPlan=planByFirm[f.id] || getCompareDefaultPlan(f.name,cmpSize);
-    const challenge=options.find(opt=>opt.plan===selectedPlan) || options[0] || null;
-    const deal=DEALS.find(d=>d.firm===f.name);
-    const pulse=calcPulse(f.rating,f.reviews,f.name);
-    return {firm:f,options,challenge,deal,pulse};
+  const filtered = FIRMS.filter(f => {
+    if (filter === "instant") return f.instantFund;
+    if (filter === "noDLL") return !f.hasDLL;
+    if (filter === "noConsistency") return !f.hasConsistency;
+    return true;
   });
 
-  const summaryCards = [
-    {label:"Cheapest Entry",winner:pickBest(compared,x=>parseMoneyLike(getCompareField(x.challenge,cmpPhase,"price")),"min"),note:w=>w?getCompareField(w.challenge,cmpPhase,"price"):"No comparable price data"},
-    {label:"Most Forgiving Drawdown",winner:pickBest(compared,x=>parseMoneyLike(getCompareField(x.challenge,cmpPhase,"maxLoss")),"max"),note:w=>w&&w.challenge?`${getCompareField(w.challenge,cmpPhase,"maxLoss")} max loss`:"No comparable loss data"},
-    {label:"Fastest Payout",winner:pickBest(compared,x=>scorePayoutSpeed(getCompareField(x.challenge,cmpPhase,"payout")),"min"),note:w=>w?getCompareField(w.challenge,cmpPhase,"payout"):"No comparable payout timing"},
-    {label:"Best Overall Edge",winner:pickBest(compared,x=>x.pulse,"max"),note:w=>w?(w.firm.bestFor || `${w.pulse} Pulse Score`):"No standout selected"},
-  ];
+  const sorted = useMemo(() => {
+    const a = [...filtered];
+    if (sort === "pulse") a.sort((x, y) => (PULSE_SCORES[y.name] || 0) - (PULSE_SCORES[x.name] || 0));
+    if (sort === "rating") a.sort((x, y) => y.rating - x.rating);
+    if (sort === "newest") a.sort((x, y) => y.founded - x.founded);
+    if (sort === "alloc") a.sort((x, y) => {
+      const n = s => { const v = parseFloat(s.replace(/[^0-9.]/g, '')); return s.includes('M') ? v * 1000 : v; };
+      return n(y.maxAlloc) - n(x.maxAlloc);
+    });
+    return a;
+  }, [sort, filter]);
 
-  const rows = [
-    {key:"pulse",label:"Pulse Score",value:item=>String(item.pulse),score:item=>item.pulse,better:"max"},
-    {key:"rating",label:"Rating",value:item=>`${item.firm.rating}/5 (${item.firm.reviews.toLocaleString()})`,score:item=>item.firm.rating,better:"max"},
-    {key:"bestFor",label:"Best For",value:item=>item.firm.bestFor || "General Futures Traders"},
-    {key:"platforms",label:"Platforms",value:item=>item.firm.platforms.join(", ")},
-    {key:"plan",label:"Selected Plan",value:item=>item.challenge?item.challenge.plan:"No matching plan"},
-    {key:"price",label:cmpPhase==="eval"?"Entry Price":"Original Eval Price",value:item=>getCompareField(item.challenge,cmpPhase,"price"),score:item=>parseMoneyLike(getCompareField(item.challenge,cmpPhase,"price")),better:"min"},
-    {key:"target",label:cmpPhase==="eval"?"Profit Target":"Funded Target",value:item=>getCompareField(item.challenge,cmpPhase,"target"),score:item=>parseMoneyLike(getCompareField(item.challenge,cmpPhase,"target")),better:"min"},
-    {key:"maxLoss",label:"Max Loss",value:item=>getCompareField(item.challenge,cmpPhase,"maxLoss"),score:item=>parseMoneyLike(getCompareField(item.challenge,cmpPhase,"maxLoss")),better:"max"},
-    {key:"dll",label:"Daily Loss Limit",value:item=>getCompareField(item.challenge,cmpPhase,"dll")},
-    {key:"drawdown",label:"Drawdown Type",value:item=>getCompareField(item.challenge,cmpPhase,"drawdown"),score:item=>scoreDrawdown(getCompareField(item.challenge,cmpPhase,"drawdown")),better:"max"},
-    {key:"consistency",label:"Consistency Rule",value:item=>getCompareField(item.challenge,cmpPhase,"consistency"),score:item=>parsePercentLike(getCompareField(item.challenge,cmpPhase,"consistency")),better:"min"},
-    {key:"split",label:"Profit Split",value:item=>getCompareField(item.challenge,cmpPhase,"split"),score:item=>parsePercentLike(getCompareField(item.challenge,cmpPhase,"split")),better:"max"},
-    {key:"minDays",label:cmpPhase==="eval"?"Min Days to Pass":"Min Days to Payout",value:item=>getCompareField(item.challenge,cmpPhase,"minDays"),score:item=>parseDaysLike(getCompareField(item.challenge,cmpPhase,"minDays")),better:"min"},
-    {key:"payout",label:"Payout Schedule",value:item=>getCompareField(item.challenge,cmpPhase,"payout"),score:item=>scorePayoutSpeed(getCompareField(item.challenge,cmpPhase,"payout")),better:"min"},
-    {key:"news",label:"News Trading",value:item=>item.challenge?(item.challenge.news?"Yes":"No"):"—"},
-    {key:"ea",label:"EAs / Bots",value:item=>item.challenge?(item.challenge.ea?"Yes":"No"):"—"},
-    {key:"paySpeed",label:"Firm Payout Reputation",value:item=>item.firm.paySpeed,score:item=>scorePayoutSpeed(item.firm.paySpeed),better:"min"},
-    {key:"maxAlloc",label:"Max Allocation",value:item=>item.firm.maxAlloc,score:item=>parseMoneyLike(item.firm.maxAlloc),better:"max"},
-    {key:"deal",label:"Current Deal",value:item=>item.deal?`${item.deal.pct} · code ${item.deal.code}`:"—"},
-  ];
+  const onDetail = (f) => {
+    setOpenFirm(openFirm === f.id ? null : f.id);
+    setTimeout(() => {
+      const el = document.querySelector('.term-row.open');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 50);
+  };
 
-  return (<div className="cmp-overlay" onClick={onClose}>
-    <div className="cmp-modal" onClick={e=>e.stopPropagation()}>
-      <div className="cmp-header">
-        <div style={{flex:1}}>
-          <h2>Compare <span>{cols} Firms</span></h2>
-          <div className="cmp-topbar">
-            <div className="cmp-controls">
-              <span className="cmp-control-label">Account Size</span>
-              <div className="cmp-pills">
-                {COMPARE_SIZES.map(s=><button key={s} className={`f-btn ${cmpSize===s?"on":""}`} onClick={()=>setCmpSize(s)}>{s}</button>)}
-              </div>
-            </div>
-            <div className="cmp-controls">
-              <span className="cmp-control-label">Rules Mode</span>
-              <div className="cmp-pills">
-                <button className={`f-btn ${cmpPhase==="eval"?"on":""}`} onClick={()=>setCmpPhase("eval")}>Evaluation</button>
-                <button className={`f-btn ${cmpPhase==="funded"?"on":""}`} onClick={()=>setCmpPhase("funded")}>Funded</button>
-              </div>
+  const fmt = (d) => d.toTimeString().slice(0, 8) + " UTC";
+
+  const topDeal = DEALS.reduce((best, d) => {
+    const pct = parseInt(d.pct);
+    return pct > best.pct ? { pct, firm: d.firm } : best;
+  }, { pct: 0, firm: '' });
+
+  return (
+    <>
+      <style>{css}</style>
+
+      {/* CROSSHAIRS (decorative terminal markers) */}
+      <div className="crosshair tl">[TOP.L]</div>
+      <div className="crosshair tr">[TOP.R]</div>
+      <div className="crosshair bl">[BTM.L]</div>
+      <div className="crosshair br">[BTM.R]</div>
+
+      {/* TOP BAR */}
+      <div className="tbar">
+        <div className="tbar-left">
+          <div className="tbar-logo">
+            <span className="tbar-logo-dot" />
+            PROPPULSE<em>//</em>TERMINAL
+          </div>
+          <span className="tbar-ver">v2026.4</span>
+        </div>
+        <div className="tbar-status">
+          <span>FIRMS <b>{FIRMS.length}</b></span>
+          <span>DEALS <b>{DEALS.length}</b></span>
+          <span>MAX_DISCOUNT <b>{topDeal.pct}%</b></span>
+          <span>{fmt(time)}</span>
+        </div>
+        <div className="tbar-right">
+          <button className="tbar-btn" onClick={() => document.getElementById('sec-quiz').scrollIntoView({ behavior: 'smooth' })}>QUIZ</button>
+          <button className="tbar-btn" onClick={() => document.getElementById('sec-firms').scrollIntoView({ behavior: 'smooth' })}>INDEX</button>
+          <button className="tbar-btn" onClick={() => document.getElementById('sec-deals').scrollIntoView({ behavior: 'smooth' })}>DEALS</button>
+          {user ? (
+            <div
+              className="tbar-avatar"
+              style={{ backgroundImage: user.user_metadata?.avatar_url ? `url(${user.user_metadata.avatar_url})` : undefined }}
+              onClick={() => setShowPanel(!showPanel)}
+            />
+          ) : (
+            <button className="tbar-btn primary" onClick={() => setShowAuth(true)}>SIGN IN</button>
+          )}
+        </div>
+      </div>
+
+      {/* USER PANEL */}
+      {user && showPanel && (
+        <div className="user-panel">
+          <div className="user-panel-hdr">
+            <div
+              className="user-panel-avatar"
+              style={{ backgroundImage: user.user_metadata?.avatar_url ? `url(${user.user_metadata.avatar_url})` : undefined }}
+            />
+            <div>
+              <div className="user-panel-name">{user.user_metadata?.username || user.email?.split('@')[0]}</div>
+              <div className="user-panel-email">{user.email}</div>
             </div>
           </div>
+          <button className="user-panel-item">MY DASHBOARD</button>
+          <button className="user-panel-item">SUBMIT PURCHASE</button>
+          <button className="user-panel-item">REWARDS STORE</button>
+          <button className="user-panel-item" onClick={logout}>SIGN OUT</button>
         </div>
-        <button className="cmp-close" onClick={onClose}>✕</button>
-      </div>
-      <div className="cmp-summary">
-        {summaryCards.map(card=>{
-          const winner=card.winner;
-          return <div key={card.label} className="cmp-summary-card">
-            <div className="cmp-summary-label">{card.label}</div>
-            <div className="cmp-summary-firm" style={winner?{color:winner.firm.color}:{}}>{winner?winner.firm.name:"No winner"}</div>
-            <div className="cmp-summary-note">{card.note(winner)}</div>
-          </div>;
-        })}
-      </div>
-      <div className="cmp-legend">
-        <div className="cmp-legend-item"><span className="cmp-legend-swatch" style={{background:"rgba(16,185,129,0.14)",borderColor:"rgba(16,185,129,0.28)"}}/>Trader-friendly edge</div>
-        <div className="cmp-legend-item"><span className="cmp-legend-swatch" style={{background:"rgba(255,71,87,0.14)",borderColor:"rgba(255,71,87,0.28)"}}/>More restrictive</div>
-        <div className="cmp-legend-item"><span className="cmp-legend-swatch" style={{background:"transparent",borderColor:"rgba(34,211,238,0.4)"}}/>Best numeric value in row</div>
-      </div>
-      <div style={{overflowX:'auto'}}>
-        <div className="cmp-grid" style={{minWidth:cols*220+170}}>
-          <div className="cmp-row" style={{gridTemplateColumns:gridCols}}>
-            <div className="cmp-label" style={{background:'transparent'}}/>
-            {compared.map(item=>(
-              <div key={item.firm.id} className="cmp-firm-hdr">
-                <FirmLogo f={item.firm} size={38}/>
-                <div className="cmp-firm-name" style={{color:item.firm.color}}>{item.firm.name}</div>
-                <div className="cmp-firm-meta">{item.firm.flag} {item.firm.hq} · Est. {item.firm.founded}</div>
-                <div className="cmp-firm-pulse" style={{color:pulseColor(item.pulse),textShadow:'var(--glow-gold-sm)'}}>{item.pulse}</div>
-                {item.options.length>0 ? <select className="cmp-plan-select" value={item.challenge?.plan || ""} onChange={e=>setPlanByFirm(prev=>({...prev,[item.firm.id]:e.target.value}))}>
-                  {item.options.map(opt=><option key={`${opt.plan}-${opt.size}`} value={opt.plan}>{opt.plan} · {opt.size}</option>)}
-                </select> : <div className="cmp-empty">No {cmpSize} plan is available for this firm yet.</div>}
-                <div className="cmp-firm-tags">
-                  {item.challenge?.instant&&<span className="cmp-tag">Instant</span>}
-                  {item.challenge&&String(getCompareField(item.challenge,cmpPhase,"dll")).toLowerCase().includes("none")&&<span className="cmp-tag">No DLL</span>}
-                  {item.challenge&&String(getCompareField(item.challenge,cmpPhase,"consistency")).toLowerCase().includes("none")&&<span className="cmp-tag">No Consistency</span>}
-                </div>
-                {AFFILIATE_LINKS[item.firm.name]
-                  ? <button className="cmp-deal-btn" onClick={()=>trackClick(item.firm.name)}>Get Deal</button>
-                  : <button className="cmp-deal-btn" style={{background:'var(--emA2)',color:'var(--em)',boxShadow:'none'}} onClick={()=>{const fp=FIRM_PROFILES[item.firm.name];window.open('https://'+(fp?.website||''),'_blank')}}>Visit Site</button>}
+      )}
+
+      <div className="app">
+        {/* HERO */}
+        <section className="hero">
+          <div className="hero-meta">
+            <span className="hero-meta-dot" />
+            <span>SYSTEM STATUS: ONLINE</span>
+            <span className="hero-meta-sep">·</span>
+            <span>BROADCAST {fmt(time)}</span>
+            <span className="hero-meta-sep">·</span>
+            <span>Q2.2026</span>
+          </div>
+          <h1 className="hero-h1">
+            The prop firm<br />
+            <em>terminal.</em>
+          </h1>
+          <p className="hero-lead">
+            Stop guessing. Pick the right futures prop firm with a six-question match quiz, an interactive drawdown simulator, and honest scorecards on every rule that matters.
+          </p>
+          <div className="hero-cta-row">
+            <button className="hero-cta primary" onClick={() => document.getElementById('sec-quiz').scrollIntoView({ behavior: 'smooth' })}>
+              RUN DIAGNOSTIC <span className="hero-cta-arrow">→</span>
+            </button>
+            <button className="hero-cta ghost" onClick={() => document.getElementById('sec-firms').scrollIntoView({ behavior: 'smooth' })}>
+              BROWSE INDEX
+            </button>
+          </div>
+
+          <div className="tstrip">
+            <div className="tstrip-item">
+              <div className="tstrip-k">FIRMS TRACKED</div>
+              <div className="tstrip-v">{FIRMS.length}<small>LIVE</small></div>
+            </div>
+            <div className="tstrip-item">
+              <div className="tstrip-k">ACTIVE DEALS</div>
+              <div className="tstrip-v">{DEALS.length}<small>↑{topDeal.pct}% MAX</small></div>
+            </div>
+            <div className="tstrip-item">
+              <div className="tstrip-k">TOP PULSE</div>
+              <div className="tstrip-v">{Math.max(...Object.values(PULSE_SCORES))}<small>TRADEIFY</small></div>
+            </div>
+            <div className="tstrip-item">
+              <div className="tstrip-k">UNIVERSAL CODE</div>
+              <div className="tstrip-v" style={{ fontFamily: 'var(--mono)' }}>TPP<small>-10–90%</small></div>
+            </div>
+          </div>
+        </section>
+
+        {/* QUIZ SECTION */}
+        <section className="sec" id="sec-quiz">
+          <div className="sec-hd">
+            <div className="sec-ix">01 / DIAGNOSTIC</div>
+            <h2 className="sec-t">The <em>match quiz</em></h2>
+            <div className="sec-sub">6 QUESTIONS · 30 SECONDS · NO SIGNUP</div>
+          </div>
+          <Quiz onDetail={f => setOpenFirm(f.id)} />
+        </section>
+
+        {/* FIRMS INDEX */}
+        <section className="sec" id="sec-firms">
+          <div className="sec-hd">
+            <div className="sec-ix">02 / THE INDEX</div>
+            <h2 className="sec-t">All <em>{FIRMS.length} firms</em>, ranked.</h2>
+            <div className="sec-sub">CLICK ANY ROW TO EXPAND</div>
+          </div>
+          <div className="term">
+            <div className="term-ctrl">
+              <div className="term-filters">
+                <button className={filter === 'all' ? 'on' : ''} onClick={() => setFilter('all')}>ALL</button>
+                <button className={filter === 'instant' ? 'on' : ''} onClick={() => setFilter('instant')}>INSTANT</button>
+                <button className={filter === 'noDLL' ? 'on' : ''} onClick={() => setFilter('noDLL')}>NO DLL</button>
+                <button className={filter === 'noConsistency' ? 'on' : ''} onClick={() => setFilter('noConsistency')}>NO CONSISTENCY</button>
+              </div>
+              <div className="term-sort">
+                <span className="term-sort-lbl">SORT</span>
+                {[["pulse", "Pulse"], ["rating", "Rating"], ["newest", "Newest"], ["alloc", "Alloc"]].map(([k, l]) => (
+                  <button key={k} className={sort === k ? 'on' : ''} onClick={() => setSort(k)}>{l}</button>
+                ))}
+              </div>
+            </div>
+            <div className="term-colhdr">
+              <span>RANK</span>
+              <span>FIRM</span>
+              <span>PULSE</span>
+              <span>RATING</span>
+              <span>MAX ALLOC</span>
+              <span>TYPE</span>
+              <span>DEAL</span>
+              <span></span>
+            </div>
+            {sorted.map((f, i) => (
+              <FirmRow
+                key={f.id}
+                firm={f}
+                rank={i + 1}
+                open={openFirm === f.id}
+                onToggle={() => setOpenFirm(openFirm === f.id ? null : f.id)}
+                onDetail={() => {}}
+                toggleCompare={toggleCompare}
+                comparing={compareFirms.some(x => x.id === f.id)}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* DEALS */}
+        <section className="sec" id="sec-deals">
+          <div className="sec-hd">
+            <div className="sec-ix">03 / OFFERS</div>
+            <h2 className="sec-t">Active <em>discount codes</em></h2>
+            <div className="sec-sub">{DEALS.length} DEALS · COPY CODE AT CHECKOUT</div>
+          </div>
+          <div className="deals">
+            {DEALS.map((d, i) => {
+              const f = FIRMS.find(ff => ff.name === d.firm);
+              return (
+                <button key={i} className="deals-row" onClick={() => f && trackClick(f.name)}>
+                  <div className="deals-row-firm">
+                    {f && (
+                      <div className="deals-row-logo"><img src={LOGOS[f.name]} alt="" /></div>
+                    )}
+                    {d.firm}
+                  </div>
+                  <div className="deals-row-pct">{d.pct.split('%')[0]}<em>%OFF</em></div>
+                  <div className="deals-row-desc">{d.desc}</div>
+                  <div className="deals-row-code">CODE: <b>{d.code}</b></div>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* CHALLENGES */}
+        <section className="sec" id="sec-challenges">
+          <div className="sec-hd">
+            <div className="sec-ix">04 / MATRIX</div>
+            <h2 className="sec-t">Challenge <em>comparison</em></h2>
+            <div className="sec-sub">ALL PLANS · FILTER BY FIRM / SIZE</div>
+          </div>
+          <ChallengesTable />
+        </section>
+
+        {/* SIMULATOR */}
+        <section className="sec" id="sec-sim">
+          <div className="sec-hd">
+            <div className="sec-ix">05 / SIMULATOR</div>
+            <h2 className="sec-t">Drawdown <em>simulator</em></h2>
+            <div className="sec-sub">SEE WHERE YOUR FLOOR MOVES</div>
+          </div>
+          <Sim />
+        </section>
+
+        {/* RESEARCH */}
+        <section className="sec" id="sec-research">
+          <div className="sec-hd">
+            <div className="sec-ix">06 / DISPATCH</div>
+            <h2 className="sec-t">Research <em>&amp; analysis</em></h2>
+            <div className="sec-sub">DATA-DRIVEN INSIGHTS FOR PROP TRADERS</div>
+          </div>
+          <div className="rsearch">
+            {BLOG.slice(0, 1).map(p => (
+              <div key={p.id} className="rsearch-main" onClick={() => window.open('#', '_self')}>
+                <div className="rsearch-cat">{p.cat.toUpperCase()}</div>
+                <h3 className="rsearch-h">{p.title}</h3>
+                <p className="rsearch-excerpt">{p.excerpt}</p>
+                <div className="rsearch-date">{p.date.toUpperCase()} · {p.time}</div>
+              </div>
+            ))}
+            {BLOG.slice(1, 3).map(p => (
+              <div key={p.id} className="rsearch-sub">
+                <div className="rsearch-sub-cat">{p.cat.toUpperCase()}</div>
+                <h4 className="rsearch-sub-h">{p.title}</h4>
+                <div className="rsearch-sub-date">{p.date.toUpperCase()}</div>
               </div>
             ))}
           </div>
-          {rows.map(row=>{
-            const bestItem = row.score ? pickBest(compared,row.score,row.better==="min"?"min":"max") : null;
-            return <div key={row.key} className="cmp-row" style={{gridTemplateColumns:gridCols}}>
-              <div className="cmp-label">{row.label}</div>
-              {compared.map(item=>{
-                const value=row.value(item);
-                const tone=compareCellTone(row.key,value);
-                const isBest=bestItem && bestItem.firm.id===item.firm.id;
-                const className=["cmp-cell",tone,isBest?"bestish":""].filter(Boolean).join(" ");
-                return <div key={item.firm.id} className={className}>{value || "—"}</div>;
-              })}
-            </div>;
-          })}
-        </div>
-      </div>
-    </div>
-  </div>);
-};
+        </section>
 
-export default function App() {
-  const [page,setPage]=useState("home");
-  const [tab,setTab]=useState("firms");
-  const [view,setView]=useState("cards");
-  const [sort,setSort]=useState("pulse");
-  const [sf,setSF]=useState(null);
-  const [blogPost,setBlogPost]=useState(null);
-  const [user,setUser]=useState(null);
-  const [showAuth,setShowAuth]=useState(false);
-  const [compareFirms,setCompareFirms]=useState([]);
-  const [ppSection,setPpSection]=useState(null);
-  const toggleCompare=(f)=>setCompareFirms(prev=>prev.find(x=>x.id===f.id)?prev.filter(x=>x.id!==f.id):prev.length<4?[...prev,f]:prev);
-  const [showCompare,setShowCompare]=useState(false);
-
-  useEffect(()=>{
-    const hydrate=async(u)=>{
-      if(!u){setUser(null);return;}
-      if(u.user_metadata?.avatar_url){setUser(u);return;}
-      const {data}=await supabase.from("profiles").select("avatar_url").eq("id",u.id).single();
-      if(data?.avatar_url){setUser({...u,user_metadata:{...(u.user_metadata||{}),avatar_url:data.avatar_url}})}
-      else setUser(u);
-    };
-    supabase.auth.getSession().then(({data:{session}})=>{hydrate(session?.user||null)});
-    const {data:{subscription}}=supabase.auth.onAuthStateChange((_,session)=>{hydrate(session?.user||null)});
-    return ()=>subscription.unsubscribe();
-  },[]);
-
-  const handleLogout = async ()=>{await supabase.auth.signOut();setUser(null);setTab("firms");};
-
-  const scrollToTabContent=()=>{
-    requestAnimationFrame(()=>{
-      const el=document.getElementById("tab-content");
-      if(!el) return;
-      const navOffset=72;
-      const y=el.getBoundingClientRect().top+window.pageYOffset-navOffset;
-      window.scrollTo({top:y,behavior:"smooth"});
-    });
-  };
-  const handleTabClick=k=>{setTab(k);if(page==="home")scrollToTabContent();else{setPage("home");setTimeout(scrollToTabContent,60);}};
-
-  const sorted=useMemo(()=>{
-    const a=[...FIRMS];
-    if(sort==="pulse")a.sort((x,y)=>calcPulse(y.rating,y.reviews,y.name)-calcPulse(x.rating,x.reviews,x.name));
-    if(sort==="rating")a.sort((x,y)=>y.rating-x.rating);
-    if(sort==="newest")a.sort((x,y)=>y.founded-x.founded);
-    if(sort==="alloc")a.sort((x,y)=>{const n=s=>{const v=parseFloat(s.replace(/[^0-9.]/g,''));return s.includes('M')?v*1000:v;};return n(y.maxAlloc)-n(x.maxAlloc)});
-    return a;
-  },[sort]);
-
-  const goDetail=f=>{setSF(f);setPage("detail");window.scrollTo({top:0,behavior:"smooth"})};
-  const goBack=()=>{setPage("home");window.scrollTo({top:0,behavior:"smooth"})};
-  const goBlog=p=>{setBlogPost(p);setPage("blogpost");window.scrollTo({top:0,behavior:"smooth"})};
-  const blogBack=()=>{setPage("home");setTab("blog");window.scrollTo({top:0,behavior:"smooth"})};
-
-  if(page==="blogpost") return (<><style>{css}</style><div className="ambient"><div className="ambient-gold"/></div><div className="edge-glow"/><div className="side-glow-l"/><div className="side-glow-r"/><div className="top-glow"/><div className="page"><Ticker/><NavBar tab={tab} setTab={handleTabClick} setPage={setPage} page={page} user={user} onLogin={()=>setShowAuth(true)} onLogout={handleLogout} setPpSection={setPpSection}/><BlogPostPage post={blogPost} goBack={blogBack}/><div style={{height:40}}/><Footer setPage={setPage} setTab={handleTabClick}/></div></>);
-  if(page==="detail") return (<><style>{css}</style><div className="ambient"><div className="ambient-gold"/></div><div className="edge-glow"/><div className="side-glow-l"/><div className="side-glow-r"/><div className="top-glow"/><div className="page"><Ticker/><NavBar tab={tab} setTab={handleTabClick} setPage={setPage} page={page} user={user} onLogin={()=>setShowAuth(true)} onLogout={handleLogout} setPpSection={setPpSection}/><DetailPage firm={sf} goBack={goBack}/><Footer setPage={setPage} setTab={handleTabClick}/></div></>);
-  if(page==="account") return (<><style>{css}</style><div className="ambient"><div className="ambient-gold"/></div><div className="edge-glow"/><div className="side-glow-l"/><div className="side-glow-r"/><div className="top-glow"/><div className="page"><Ticker/><NavBar tab={tab} setTab={handleTabClick} setPage={setPage} page={page} user={user} onLogin={()=>setShowAuth(true)} onLogout={handleLogout} setPpSection={setPpSection}/><div className="wrap"><AccountPage user={user} onUserUpdate={setUser} goBack={()=>{setPage("home");window.scrollTo({top:0,behavior:"smooth"})}}/></div><Footer setPage={setPage} setTab={handleTabClick}/></div></>);
-
-  return (<><style>{css}</style>
-    <div className="ambient"><div className="ambient-gold"/></div><div className="edge-glow"/><div className="side-glow-l"/><div className="side-glow-r"/><div className="top-glow"/>
-    <div className="page">
-    <Ticker/>
-    <NavBar tab={tab} setTab={handleTabClick} setPage={setPage} page={page} user={user} onLogin={()=>setShowAuth(true)} onLogout={handleLogout} setPpSection={setPpSection}/>
-    <div className="wrap">
-      {/* ══════ EDITORIAL BENTO HOMEPAGE ══════ */}
-      <div className="bento-wrap">
-        {/* Eyebrow: current issue / date / stats */}
-        <div className="bento-eyebrow">
-          <div className="bento-eyebrow-l">
-            <span className="bento-eyebrow-lbl">Vol.01</span>
-            <span className="bento-eyebrow-sep"/>
-            <span className="bento-eyebrow-txt">The futures prop firm guide</span>
+        {/* REWARDS */}
+        <section className="sec" id="sec-rewards">
+          <div className="sec-hd">
+            <div className="sec-ix">07 / LOYALTY</div>
+            <h2 className="sec-t">Earn <em>PulsePoints</em></h2>
+            <div className="sec-sub">BUY · SUBMIT · REDEEM</div>
           </div>
-          <div className="bento-eyebrow-r">
-            <span className="bento-eyebrow-live"><span className="dot"/>Live</span>
-            <span>·</span>
-            <span>{FIRMS.length} firms · {DEALS.length} deals</span>
-          </div>
-        </div>
-
-        {/* Massive serif lead-in */}
-        <h1 className="bento-lead">
-          Cut through <em>the noise.</em><br/>
-          Pick the <em>right firm.</em>
-        </h1>
-        <p className="bento-dek">A trader's guide to futures prop firms — quiz-matched recommendations, interactive drawdown simulations, and honest scorecards on every rule that matters.</p>
-
-        {/* The bento grid itself */}
-        <div className="bento-grid">
-          {/* CARD 1: Quiz (big, hero) */}
-          <button className="bento-card bento-quiz" onClick={()=>handleTabClick('tools')}>
-            <div className="bento-card-eye">The Quiz</div>
-            <div className="bento-card-h">Which firm fits your trading style?</div>
-            <div className="bento-card-s">Six questions. Every firm scored against your preferences.</div>
-            <div className="bento-quiz-preview">
-              <span className="bento-quiz-q">Q1/6</span>
-              <span className="bento-quiz-txt">What's your trading style?</span>
-              <div className="bento-quiz-opts">
-                <span>Scalper</span><span>Intraday</span><span>Swing</span>
+          <div className="rw">
+            <div>
+              <div className="rw-eye">THE PULSEPOINTS PROGRAM</div>
+              <h3 className="rw-h">Get <em>paid</em> to pick the right firm.</h3>
+              <p className="rw-d">Every purchase you make with code TPP earns PulsePoints. Redeem them for free prop accounts, exclusive discounts, and community perks.</p>
+              <button className="hero-cta primary" onClick={() => user ? setShowPanel(true) : setShowAuth(true)}>
+                {user ? 'VIEW DASHBOARD' : 'JOIN THE PROGRAM'} <span className="hero-cta-arrow">→</span>
+              </button>
+            </div>
+            <div className="rw-steps">
+              <div className="rw-step">
+                <div className="rw-step-n">01</div>
+                <div>
+                  <div className="rw-step-t">Sign up</div>
+                  <div className="rw-step-s">FREE · 30 SECONDS</div>
+                </div>
+              </div>
+              <div className="rw-step">
+                <div className="rw-step-n">02</div>
+                <div>
+                  <div className="rw-step-t">Buy with TPP</div>
+                  <div className="rw-step-s">SAVE 10–90% AT CHECKOUT</div>
+                </div>
+              </div>
+              <div className="rw-step">
+                <div className="rw-step-n">03</div>
+                <div>
+                  <div className="rw-step-t">Submit proof</div>
+                  <div className="rw-step-s">RECEIPT SCREENSHOT</div>
+                </div>
+              </div>
+              <div className="rw-step">
+                <div className="rw-step-n">04</div>
+                <div>
+                  <div className="rw-step-t">Earn &amp; redeem</div>
+                  <div className="rw-step-s">FREE ACCOUNTS + PERKS</div>
+                </div>
               </div>
             </div>
-            <div className="bento-card-cta">Start the quiz <span>→</span></div>
-          </button>
-
-          {/* CARD 2: Top Ranked */}
-          <div className="bento-card bento-ranked">
-            <div className="bento-card-eye">Top Ranked</div>
-            <div className="bento-card-h">This week's leaders</div>
-            <div className="bento-ranked-list">
-              {[...FIRMS].sort((a,b)=>(PULSE_SCORES[b.name]||0)-(PULSE_SCORES[a.name]||0)).slice(0,5).map((f,i)=>{
-                const ps=PULSE_SCORES[f.name]||75;
-                return (
-                  <button key={f.id} className="bento-ranked-row" onClick={()=>goDetail(f)}>
-                    <span className="bento-ranked-n">0{i+1}</span>
-                    <span className="bento-ranked-bar" style={{background:f.color}}/>
-                    <span className="bento-ranked-nm">{f.name}</span>
-                    <span className="bento-ranked-ps">{ps}</span>
-                  </button>
-                );
-              })}
-            </div>
           </div>
+        </section>
 
-          {/* CARD 3: Editor's Pick (featured firm) */}
-          {(() => {
-            const pick = [...FIRMS].sort((a,b)=>(PULSE_SCORES[b.name]||0)-(PULSE_SCORES[a.name]||0))[0];
-            const pickDeal = DEALS.find(d=>d.firm===pick.name);
-            return (
-              <button className="bento-card bento-pick" style={{'--pick-color':pick.color}} onClick={()=>goDetail(pick)}>
-                <div className="bento-card-eye" style={{color:pick.color}}>Editor's Pick</div>
-                <div className="bento-pick-logo"><FirmLogo f={pick} size={64}/></div>
-                <div className="bento-pick-name">{pick.name}</div>
-                <div className="bento-pick-desc">"{pick.bestFor}" · Est. {pick.founded} · {pick.flag} {pick.hq.split(',')[0]}</div>
-                <div className="bento-pick-stats">
-                  <div><b>{PULSE_SCORES[pick.name]}</b><span>Pulse</span></div>
-                  <div><b>★{pick.rating}</b><span>Rating</span></div>
-                  <div><b>{pick.maxAlloc}</b><span>Max</span></div>
-                </div>
-                {pickDeal && <div className="bento-pick-deal">{pickDeal.pct} with code <b>{pickDeal.code}</b></div>}
-              </button>
-            );
-          })()}
+        {/* FOOTER */}
+        <footer className="ftr">
+          <div>
+            <div className="ftr-brand">The <em>PropPulse</em></div>
+            <p className="ftr-tag">"A trader's guide to futures prop firms. Quiz-matched recommendations, interactive drawdown sims, and honest scorecards."</p>
+            <div className="ftr-mono">© 2026 PROPPULSE MEDIA · ALL RIGHTS RESERVED</div>
+          </div>
+          <div className="ftr-col">
+            <h4>Navigate</h4>
+            <button onClick={() => document.getElementById('sec-firms').scrollIntoView({ behavior: 'smooth' })}>The Index</button>
+            <button onClick={() => document.getElementById('sec-quiz').scrollIntoView({ behavior: 'smooth' })}>Match Quiz</button>
+            <button onClick={() => document.getElementById('sec-sim').scrollIntoView({ behavior: 'smooth' })}>Simulator</button>
+            <button onClick={() => document.getElementById('sec-deals').scrollIntoView({ behavior: 'smooth' })}>Deals</button>
+            <button onClick={() => document.getElementById('sec-challenges').scrollIntoView({ behavior: 'smooth' })}>Challenges</button>
+          </div>
+          <div className="ftr-col">
+            <h4>Resources</h4>
+            <button onClick={() => document.getElementById('sec-research').scrollIntoView({ behavior: 'smooth' })}>Research</button>
+            <button onClick={() => document.getElementById('sec-rewards').scrollIntoView({ behavior: 'smooth' })}>PulsePoints</button>
+            <a href="https://discord.gg/pP9vfJ7WqK" target="_blank" rel="noreferrer">Discord</a>
+            <a href="https://x.com/PropPulseMedia" target="_blank" rel="noreferrer">Twitter / X</a>
+            <a href="https://www.youtube.com/@ThePropPulse" target="_blank" rel="noreferrer">YouTube</a>
+          </div>
+          <div className="ftr-col">
+            <h4>Disclosure</h4>
+            <p style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--txt4)', lineHeight: 1.55, letterSpacing: 0.3 }}>
+              PropPulse may earn a commission on partner firms. We never rank by commission — only by trader outcome. See methodology.
+            </p>
+          </div>
+          <div className="ftr-btm">
+            <span>BUILT FOR FUTURES TRADERS · NO AFFILIATION WITHOUT DISCLOSURE</span>
+            <span>{fmt(time)}</span>
+          </div>
+        </footer>
+      </div>
 
-          {/* CARD 4: Drawdown Simulator */}
-          <button className="bento-card bento-sim" onClick={()=>handleTabClick('tools')}>
-            <div className="bento-card-eye">Drawdown Simulator</div>
-            <div className="bento-card-h">See exactly how you blow an account.</div>
-            <svg className="bento-sim-svg" viewBox="0 0 260 100" preserveAspectRatio="none">
-              <path d="M 10 60 L 50 45 L 90 55 L 130 25 L 170 30 L 210 50 L 250 40" fill="none" stroke="#ff7847" strokeWidth="2.5"/>
-              <path d="M 10 80 L 50 80 L 90 80 L 130 65 L 170 65 L 210 70 L 250 70" fill="none" stroke="#e85b60" strokeWidth="1.5" strokeDasharray="4 4"/>
-              <circle cx="130" cy="25" r="4" fill="#ff7847"/>
-            </svg>
-            <div className="bento-card-cta">Run a sim <span>→</span></div>
-          </button>
-
-          {/* CARD 5: Deals */}
-          <button className="bento-card bento-deals" onClick={()=>handleTabClick('offers')}>
-            <div className="bento-card-eye">Today's Deals</div>
-            <div className="bento-card-h">Up to 90% off with <span className="bento-code">TPP</span></div>
-            <div className="bento-deals-strip">
-              {DEALS.slice(0,4).map((d,i)=>(
-                <span key={i} className="bento-deal-pill">{d.pct} <span>{d.firm.split(' ')[0]}</span></span>
-              ))}
-            </div>
-            <div className="bento-card-cta">All {DEALS.length} deals <span>→</span></div>
-          </button>
-
-          {/* CARD 6: Rewards */}
-          <button className="bento-card bento-rewards" onClick={()=>handleTabClick('points')}>
-            <div className="bento-card-eye">Rewards</div>
-            <div className="bento-card-h">Earn PulsePoints.</div>
-            <div className="bento-card-s">Points for every purchase — redeem for free accounts.</div>
-            <div className="bento-card-cta">Join the program <span>→</span></div>
-          </button>
-
-          {/* CARD 7: Research */}
-          <button className="bento-card bento-research" onClick={()=>handleTabClick('blog')}>
-            <div className="bento-card-eye">Research</div>
-            <div className="bento-card-h">{BLOG[0]?.title || 'Latest analysis'}</div>
-            <div className="bento-card-s">{BLOG[0]?.excerpt?.slice(0, 90) || 'Data-driven insights'}…</div>
-            <div className="bento-card-cta">Read more <span>→</span></div>
-          </button>
-
-          {/* CARD 8: Giveaway */}
-          <button className="bento-card bento-giveaway" onClick={()=>handleTabClick('giveaways')}>
-            <div className="bento-card-eye">Weekly</div>
-            <div className="bento-card-h">Win a free $100K account.</div>
-            <div className="bento-card-s">Buy with TPP — drawn every Friday.</div>
-            <div className="bento-card-cta">Enter <span>→</span></div>
-          </button>
+      {/* COMPARE TRAY */}
+      {compareFirms.length >= 2 && (
+        <div className="cmp-tray">
+          <div className="cmp-tray-firms">
+            {compareFirms.map(f => <div key={f.id} className="cmp-tray-chip">{f.name}</div>)}
+          </div>
+          <button className="cmp-tray-go">COMPARE {compareFirms.length}</button>
+          <button className="cmp-tray-clear" onClick={() => setCompareFirms([])}>CLEAR</button>
         </div>
-      </div>
-      <div className="hero-divider"/>
-    </div>
-    {/* ═══════════════════════════════════════════════════════════════
-        SINGLE-PAGE SCROLL — every section stacks, no tab switching.
-        A floating right-side rail lets users jump between sections.
-        ═══════════════════════════════════════════════════════════════ */}
-    <div className="wrap" id="tab-content">
-      {/* Section rail — floating right side nav for scroll-jumping */}
-      <div className="scrollrail">
-        {[["sec-index","The Index"],["sec-tools","Tools"],["sec-deals","Deals"],["sec-challenges","Challenges"],["sec-research","Research"],["sec-rewards","Rewards"]].map(([id,label])=>(
-          <button key={id} onClick={()=>{const el=document.getElementById(id);if(el)window.scrollTo({top:el.offsetTop-80,behavior:'smooth'})}}>
-            <span className="scrollrail-dot"/>
-            <span className="scrollrail-lbl">{label}</span>
-          </button>
-        ))}
-      </div>
+      )}
 
-      {/* SECTION 01 — THE INDEX (firm list) */}
-      <section id="sec-index" className="pp-section">
-        <div className="pp-section-mark">01</div>
-        <TheIndex firms={FIRMS} onSelect={goDetail} user={user} compareFirms={compareFirms} toggleCompare={toggleCompare}/>
-      </section>
-
-      {/* SECTION 02 — TOOLS (Quiz + Simulator) */}
-      <section id="sec-tools" className="pp-section">
-        <div className="pp-section-mark">02</div>
-        <ToolsTab onSelect={goDetail}/>
-      </section>
-
-      {/* SECTION 03 — DEALS */}
-      <section id="sec-deals" className="pp-section">
-        <div className="pp-section-mark">03</div>
-        <OffersTab user={user} setTab={handleTabClick}/>
-      </section>
-
-      {/* SECTION 04 — CHALLENGES TABLE */}
-      <section id="sec-challenges" className="pp-section">
-        <div className="pp-section-mark">04</div>
-        <ChallengesTab onSelect={goDetail}/>
-      </section>
-
-      {/* SECTION 05 — RESEARCH */}
-      <section id="sec-research" className="pp-section">
-        <div className="pp-section-mark">05</div>
-        <BlogTab onSelect={goBlog} setTab={handleTabClick}/>
-      </section>
-
-      {/* SECTION 06 — REWARDS / PULSE POINTS */}
-      <section id="sec-rewards" className="pp-section">
-        <div className="pp-section-mark">06</div>
-        <PulsePointsTab user={user} onLogin={()=>setShowAuth(true)} ppSection={ppSection} setPpSection={setPpSection}/>
-      </section>
-    </div>
-    <div className="wrap"><Newsletter/></div>
-    <Footer setPage={setPage} setTab={handleTabClick}/>
-    </div>
-    {showAuth&&<AuthModal onClose={()=>setShowAuth(false)} onAuth={u=>{setUser(u);setShowAuth(false)}}/>}
-    {compareFirms.length>=2&&!showCompare&&<div className="cmp-tray">
-      <div className="cmp-tray-firms">
-        {compareFirms.map(f=><div key={f.id} className="cmp-tray-chip" style={{borderColor:f.color+'40'}}>
-          <span style={{color:f.color,fontWeight:700}}>{f.name}</span>
-          <button onClick={()=>toggleCompare(f)}>✕</button>
-        </div>)}
-      </div>
-      <button className="cmp-tray-go" onClick={()=>setShowCompare(true)}>Compare {compareFirms.length} Firms</button>
-      <button className="cmp-tray-clear" onClick={()=>setCompareFirms([])}>Clear</button>
-    </div>}
-    {showCompare&&<CompareOverlay firms={compareFirms} onClose={()=>setShowCompare(false)}/>}
-  </>);
+      {/* AUTH MODAL */}
+      {showAuth && <Auth onClose={() => setShowAuth(false)} onAuth={u => { setUser(u); setShowAuth(false); }} />}
+    </>
+  );
 }
