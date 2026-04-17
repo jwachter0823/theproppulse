@@ -964,6 +964,98 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 .research-videos-btn:hover{background:rgba(239,68,68,0.18);border-color:#ef4444;color:#fff;transform:translateY(-1px);box-shadow:0 0 16px rgba(239,68,68,0.35)}
 
 /* ══════════════════════════════════════════════════════════════════
+   ─── SINGLE-PAGE SCROLL LAYOUT ───
+   ══════════════════════════════════════════════════════════════════ */
+.pp-section{position:relative;padding:100px 0 60px;border-top:1px solid var(--bdr);scroll-margin-top:80px}
+.pp-section:first-of-type{border-top:none;padding-top:40px}
+.pp-section-mark{position:absolute;top:56px;right:0;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--t5);letter-spacing:2px;background:var(--bg);padding:0 8px;pointer-events:none}
+
+/* Right-side floating scroll rail */
+.scrollrail{position:fixed;right:32px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:50;padding:16px 12px;background:var(--glass2);backdrop-filter:blur(12px);border:1px solid var(--bdr);border-radius:4px}
+.scrollrail button{display:flex;align-items:center;gap:10px;background:transparent;border:none;color:var(--t4);font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.4px;padding:6px 4px;cursor:pointer;transition:color .2s;text-align:right}
+.scrollrail button:hover{color:var(--t1)}
+.scrollrail-dot{width:6px;height:6px;border-radius:50%;background:var(--t5);transition:all .2s;flex-shrink:0;order:2}
+.scrollrail button:hover .scrollrail-dot{background:var(--em);box-shadow:0 0 10px var(--em)}
+.scrollrail-lbl{order:1}
+@media(max-width:900px){
+  .scrollrail{display:none}
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ─── THE INDEX — editorial firm list ───
+   ══════════════════════════════════════════════════════════════════ */
+.idx{max-width:1280px;margin:0 auto;padding:64px 0 40px;border-top:1px solid var(--bdr)}
+.idx-hdr{display:flex;align-items:flex-end;justify-content:space-between;padding-bottom:24px;border-bottom:2px solid var(--t1);margin-bottom:28px;gap:32px;flex-wrap:wrap}
+.idx-hdr-l{display:flex;align-items:baseline;gap:20px}
+.idx-hdr-mark{font-family:var(--serif);font-size:72px;font-style:italic;color:var(--em);font-weight:400;line-height:.8}
+.idx-hdr-title{font-family:var(--serif);font-size:44px;font-weight:400;color:var(--t1);letter-spacing:-1.2px;line-height:1;margin-bottom:4px}
+.idx-hdr-sub{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--t3);font-weight:400}
+.idx-filter{display:flex;gap:0;flex-wrap:wrap;border:1px solid var(--bdr2);border-radius:2px;overflow:hidden}
+.idx-filter button{background:transparent;border:none;color:var(--t3);font-family:var(--sans);font-size:11px;font-weight:600;padding:10px 16px;cursor:pointer;transition:all .18s;letter-spacing:.3px;border-right:1px solid var(--bdr2)}
+.idx-filter button:last-child{border-right:none}
+.idx-filter button:hover{background:var(--bg2);color:var(--t1)}
+.idx-filter button.on{background:var(--t1);color:var(--bg)}
+.idx-sort{display:flex;align-items:center;gap:6px;margin-bottom:14px;font-family:var(--sans);padding:4px 0}
+.idx-sort-lbl{font-size:11px;color:var(--t5);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-right:10px}
+.idx-sort button{background:transparent;border:none;color:var(--t4);font-size:12px;font-weight:500;padding:6px 12px;cursor:pointer;transition:color .18s;font-family:inherit;letter-spacing:.2px;border-bottom:1px solid transparent}
+.idx-sort button:hover{color:var(--t1)}
+.idx-sort button.on{color:var(--em);border-bottom-color:var(--em)}
+
+.idx-cols{display:grid;grid-template-columns:56px 1fr 140px 120px 120px 90px 32px;gap:20px;padding:12px 0;border-bottom:1px solid var(--bdr);font-family:var(--sans);font-size:10px;font-weight:700;color:var(--t5);text-transform:uppercase;letter-spacing:1.4px}
+
+.idx-rows{display:flex;flex-direction:column}
+.idx-row-wrap{border-bottom:1px solid var(--bdr);transition:all .2s}
+.idx-row-wrap:hover{background:var(--bg1)}
+.idx-row-wrap.open{background:var(--bg1);border-bottom-color:var(--t4)}
+.idx-row{display:grid;grid-template-columns:56px 1fr 140px 120px 120px 90px 32px;gap:20px;align-items:center;padding:18px 0;width:100%;background:transparent;border:none;cursor:pointer;text-align:left;font-family:inherit;color:inherit}
+.idx-row-rank{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--t5);letter-spacing:1px}
+.idx-row-firm{display:flex;align-items:center;gap:14px;min-width:0;position:relative}
+.idx-row-accent{position:absolute;left:-12px;top:0;bottom:0;width:3px;background:var(--f-color);opacity:0;transition:opacity .2s}
+.idx-row:hover .idx-row-accent,.idx-row-wrap.open .idx-row-accent{opacity:1}
+.idx-row-info{min-width:0}
+.idx-row-nm{display:block;font-family:var(--serif);font-size:22px;font-weight:400;letter-spacing:-.4px;color:var(--t1);line-height:1.1;margin-bottom:4px}
+.idx-row-meta{display:block;font-size:11px;color:var(--t4);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.idx-row-pulse{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.idx-row-pulse-v{font-family:var(--serif);font-size:24px;font-weight:400;letter-spacing:-.3px;line-height:1}
+.idx-row-pulse-bar{display:block;width:100%;max-width:120px;height:2px;background:var(--bdr);border-radius:0;overflow:hidden}
+.idx-row-pulse-bar span{display:block;height:100%}
+.idx-row-rating{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--t2);letter-spacing:-.2px}
+.idx-row-rating em{display:block;font-style:normal;font-size:10px;color:var(--t5);font-weight:500;margin-top:3px}
+.idx-row-alloc{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--t2)}
+.idx-row-deal b{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--em);background:var(--emA);border:1px solid var(--bdr3);padding:4px 8px;border-radius:2px;letter-spacing:.3px}
+.idx-row-nodeal{color:var(--t5);font-size:14px}
+.idx-row-chev{font-size:24px;color:var(--t4);line-height:1;transition:transform .2s;text-align:center}
+.idx-row-chev.open{transform:rotate(90deg);color:var(--em)}
+.idx-row:hover .idx-row-chev{color:var(--t1)}
+
+.idx-row-expand{padding:0 0 32px 76px;animation:idxExpand .3s ease-out}
+@keyframes idxExpand{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.idx-expand-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:24px;padding:20px 0;border-top:1px solid var(--bdr);margin-bottom:20px}
+.idx-expand-col{min-width:0}
+.idx-expand-lbl{font-size:10px;font-weight:700;color:var(--t5);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px}
+.idx-expand-v{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--t1);line-height:1.45}
+.idx-expand-desc{font-family:var(--serif);font-style:italic;font-size:16px;color:var(--t3);line-height:1.55;margin-bottom:22px;max-width:820px}
+.idx-expand-actions{display:flex;gap:10px;flex-wrap:wrap}
+.idx-expand-primary{background:var(--em);color:var(--bg);border:1px solid var(--em);font-family:var(--sans);font-size:13px;font-weight:700;padding:11px 22px;border-radius:2px;cursor:pointer;transition:all .18s;letter-spacing:.2px}
+.idx-expand-primary:hover{background:#ff8a5e;border-color:#ff8a5e;transform:translateY(-1px);box-shadow:0 4px 16px rgba(255,120,71,0.3)}
+.idx-expand-secondary{background:transparent;color:var(--t1);border:1px solid var(--bdr2);font-family:var(--sans);font-size:13px;font-weight:600;padding:11px 22px;border-radius:2px;cursor:pointer;transition:all .18s;letter-spacing:.2px}
+.idx-expand-secondary:hover{border-color:var(--t1);background:var(--bg3)}
+.idx-expand-compare{background:transparent;color:var(--t3);border:1px solid var(--bdr);font-family:var(--sans);font-size:12px;font-weight:600;padding:11px 18px;border-radius:2px;cursor:pointer;transition:all .18s;letter-spacing:.2px}
+.idx-expand-compare:hover{color:var(--t1);border-color:var(--t3)}
+.idx-expand-compare.on{background:var(--emA);color:var(--em);border-color:var(--em)}
+
+@media(max-width:980px){
+  .idx-cols{display:none}
+  .idx-row{grid-template-columns:40px 1fr auto;gap:12px}
+  .idx-row-pulse,.idx-row-rating,.idx-row-alloc,.idx-row-deal{display:none}
+  .idx-row-nm{font-size:18px}
+  .idx-row-expand{padding-left:0}
+  .idx-expand-grid{grid-template-columns:1fr 1fr;gap:16px}
+  .idx-hdr{flex-direction:column;align-items:flex-start}
+  .idx-hdr-title{font-size:32px}
+}
+
+/* ══════════════════════════════════════════════════════════════════
    ─── BENTO EDITORIAL HOMEPAGE ───
    ══════════════════════════════════════════════════════════════════ */
 .bento-wrap{padding:56px 0 40px;max-width:1280px;margin:0 auto;position:relative}
@@ -2002,6 +2094,125 @@ const PulseLeaderboard = ({firms,onSelect}) => {
 };
 
 // ── FIRM CARDS ──
+// ═══════════════════════════════════════════════════════════════════════════
+// ── THE INDEX — editorial firm list (ranked rows, expandable detail) ──
+// ═══════════════════════════════════════════════════════════════════════════
+const TheIndex = ({firms,onSelect,user,compareFirms=[],toggleCompare}) => {
+  const [expanded,setExpanded] = useState(null);
+  const [sort,setSort] = useState("pulse");
+  const [filter,setFilter] = useState("all");
+  const sorted = [...firms];
+  if(sort==="pulse") sorted.sort((a,b)=>(PULSE_SCORES[b.name]||0)-(PULSE_SCORES[a.name]||0));
+  if(sort==="rating") sorted.sort((a,b)=>b.rating-a.rating);
+  if(sort==="newest") sorted.sort((a,b)=>b.founded-a.founded);
+  if(sort==="alloc") sorted.sort((a,b)=>{const n=s=>{const v=parseFloat(s.replace(/[^0-9.]/g,''));return s.includes('M')?v*1000:v;};return n(b.maxAlloc)-n(a.maxAlloc)});
+  const filtered = sorted.filter(f=>{
+    if(filter==="all") return true;
+    if(filter==="instant") return f.instantFund;
+    if(filter==="noDLL") return !f.hasDLL;
+    if(filter==="noConsistency") return !f.hasConsistency;
+    return true;
+  });
+
+  return (<div className="idx">
+    <div className="idx-hdr">
+      <div className="idx-hdr-l">
+        <div className="idx-hdr-mark">§</div>
+        <div>
+          <div className="idx-hdr-title">The Index</div>
+          <div className="idx-hdr-sub">All {firms.length} firms, ranked and reviewed.</div>
+        </div>
+      </div>
+      <div className="idx-hdr-r">
+        <div className="idx-filter">
+          <button className={filter==="all"?"on":""} onClick={()=>setFilter("all")}>All</button>
+          <button className={filter==="instant"?"on":""} onClick={()=>setFilter("instant")}>Instant Fund</button>
+          <button className={filter==="noDLL"?"on":""} onClick={()=>setFilter("noDLL")}>No DLL</button>
+          <button className={filter==="noConsistency"?"on":""} onClick={()=>setFilter("noConsistency")}>No Consistency</button>
+        </div>
+      </div>
+    </div>
+
+    <div className="idx-sort">
+      <span className="idx-sort-lbl">Sort by</span>
+      {[["pulse","Pulse Score"],["rating","Rating"],["newest","Newest"],["alloc","Max Allocation"]].map(([k,l])=>(
+        <button key={k} className={sort===k?"on":""} onClick={()=>setSort(k)}>{l}</button>
+      ))}
+    </div>
+
+    <div className="idx-cols">
+      <span>Rank</span>
+      <span>Firm</span>
+      <span>Pulse</span>
+      <span>Rating</span>
+      <span>Max Alloc</span>
+      <span>Deal</span>
+      <span></span>
+    </div>
+
+    <div className="idx-rows">
+      {filtered.map((f,i)=>{
+        const ps = PULSE_SCORES[f.name]||75;
+        const deal = DEALS.find(d=>d.firm===f.name);
+        const isOpen = expanded===f.id;
+        const isComparing = compareFirms.some(x=>x.id===f.id);
+        return (<div key={f.id} className={`idx-row-wrap ${isOpen?'open':''}`}>
+          <button className="idx-row" style={{'--f-color':f.color}} onClick={()=>setExpanded(isOpen?null:f.id)}>
+            <span className="idx-row-rank">{String(i+1).padStart(2,'0')}</span>
+            <span className="idx-row-firm">
+              <span className="idx-row-accent"/>
+              <FirmLogo f={f} size={34}/>
+              <span className="idx-row-info">
+                <span className="idx-row-nm">{f.name}</span>
+                <span className="idx-row-meta">{f.flag} {f.hq.split(',')[0]} · Est. {f.founded} · {f.bestFor}</span>
+              </span>
+            </span>
+            <span className="idx-row-pulse"><span className="idx-row-pulse-v" style={{color:pulseColor(ps)}}>{ps}</span><span className="idx-row-pulse-bar"><span style={{width:ps+'%',background:pulseColor(ps)}}/></span></span>
+            <span className="idx-row-rating">★{f.rating}<em>({f.reviews.toLocaleString()})</em></span>
+            <span className="idx-row-alloc">{f.maxAlloc}</span>
+            <span className="idx-row-deal">{deal?<b>{deal.pct}</b>:<span className="idx-row-nodeal">—</span>}</span>
+            <span className={`idx-row-chev ${isOpen?'open':''}`}>›</span>
+          </button>
+          {isOpen && (<div className="idx-row-expand">
+            <div className="idx-expand-grid">
+              <div className="idx-expand-col">
+                <div className="idx-expand-lbl">Split</div>
+                <div className="idx-expand-v">{f.split}</div>
+              </div>
+              <div className="idx-expand-col">
+                <div className="idx-expand-lbl">Target</div>
+                <div className="idx-expand-v">{f.target}</div>
+              </div>
+              <div className="idx-expand-col">
+                <div className="idx-expand-lbl">Max DD</div>
+                <div className="idx-expand-v">{f.maxDD}</div>
+              </div>
+              <div className="idx-expand-col">
+                <div className="idx-expand-lbl">Payout</div>
+                <div className="idx-expand-v">{f.paySpeed}</div>
+              </div>
+              <div className="idx-expand-col">
+                <div className="idx-expand-lbl">Drawdown</div>
+                <div className="idx-expand-v">{f.drawdownType}</div>
+              </div>
+              <div className="idx-expand-col">
+                <div className="idx-expand-lbl">Platforms</div>
+                <div className="idx-expand-v">{f.platforms.slice(0,3).join(', ')}{f.platforms.length>3?'…':''}</div>
+              </div>
+            </div>
+            <p className="idx-expand-desc">{f.desc}</p>
+            <div className="idx-expand-actions">
+              <button className="idx-expand-primary" onClick={e=>{e.stopPropagation();if(AFFILIATE_LINKS[f.name])trackClick(f.name,user?.id);else{const fp=FIRM_PROFILES[f.name];window.open('https://'+(fp?.website||''),'_blank')}}}>{deal?`Claim ${deal.pct}`:'Visit Site'} →</button>
+              <button className="idx-expand-secondary" onClick={e=>{e.stopPropagation();onSelect(f)}}>Full Profile</button>
+              {toggleCompare && <button className={`idx-expand-compare ${isComparing?'on':''}`} onClick={e=>{e.stopPropagation();toggleCompare(f)}}>{isComparing?'✓ In Compare':'+ Compare'}</button>}
+            </div>
+          </div>)}
+        </div>);
+      })}
+    </div>
+  </div>);
+};
+
 const FirmCards = ({firms,onSelect,user,compareFirms=[],toggleCompare}) => (
   <div className="cards">{firms.map(f=>{
     const ps=calcPulse(f.rating,f.reviews,f.name);
@@ -4507,33 +4718,56 @@ export default function App() {
       </div>
       <div className="hero-divider"/>
     </div>
+    {/* ═══════════════════════════════════════════════════════════════
+        SINGLE-PAGE SCROLL — every section stacks, no tab switching.
+        A floating right-side rail lets users jump between sections.
+        ═══════════════════════════════════════════════════════════════ */}
     <div className="wrap" id="tab-content">
-
-      <div className="ctabs">
-        {[["firms","Firms",null],["tools","Tools","\uD83D\uDEE0"],["challenges","Challenges",null],["offers","Deals",null],["blog","Research",null],["points","Rewards","\u2B50"]].map(([k,l,icon])=>(
-          <button key={k} className={`ctab${tab===k?' on':''}`} onClick={()=>handleTabClick(k)}>
-            {icon&&<span className="ctab-icon">{icon}</span>}
-            <span>{l}</span>
+      {/* Section rail — floating right side nav for scroll-jumping */}
+      <div className="scrollrail">
+        {[["sec-index","The Index"],["sec-tools","Tools"],["sec-deals","Deals"],["sec-challenges","Challenges"],["sec-research","Research"],["sec-rewards","Rewards"]].map(([id,label])=>(
+          <button key={id} onClick={()=>{const el=document.getElementById(id);if(el)window.scrollTo({top:el.offsetTop-80,behavior:'smooth'})}}>
+            <span className="scrollrail-dot"/>
+            <span className="scrollrail-lbl">{label}</span>
           </button>
         ))}
       </div>
 
-      {tab==="firms"&&<>
-        <div className="filters" style={{marginBottom:16,justifyContent:'center'}}>
-          <button className={`f-btn ${sort==="pulse"?"on":""}`} onClick={()=>setSort("pulse")}>Pulse Score</button>
-          <button className={`f-btn ${sort==="rating"?"on":""}`} onClick={()=>setSort("rating")}>Top Rated</button>
-          <button className={`f-btn ${sort==="newest"?"on":""}`} onClick={()=>setSort("newest")}>Newest</button>
-          <button className={`f-btn ${sort==="alloc"?"on":""}`} onClick={()=>setSort("alloc")}>Highest Alloc</button>
-        </div>
-        <FirmCards firms={sorted} onSelect={goDetail} user={user} compareFirms={compareFirms} toggleCompare={toggleCompare}/>
-      </>}
-      {tab==="tools"&&<ToolsTab onSelect={goDetail}/>}
-      {tab==="challenges"&&<ChallengesTab onSelect={goDetail}/>}
-      {tab==="offers"&&<OffersTab user={user} setTab={handleTabClick}/>}
-      {tab==="giveaways"&&<GiveawaysTab/>}
-      {tab==="blog"&&<BlogTab onSelect={goBlog} setTab={handleTabClick}/>}
-      {tab==="videos"&&<VideosTab/>}
-      {tab==="points"&&<PulsePointsTab user={user} onLogin={()=>setShowAuth(true)} ppSection={ppSection} setPpSection={setPpSection}/>}
+      {/* SECTION 01 — THE INDEX (firm list) */}
+      <section id="sec-index" className="pp-section">
+        <div className="pp-section-mark">01</div>
+        <TheIndex firms={FIRMS} onSelect={goDetail} user={user} compareFirms={compareFirms} toggleCompare={toggleCompare}/>
+      </section>
+
+      {/* SECTION 02 — TOOLS (Quiz + Simulator) */}
+      <section id="sec-tools" className="pp-section">
+        <div className="pp-section-mark">02</div>
+        <ToolsTab onSelect={goDetail}/>
+      </section>
+
+      {/* SECTION 03 — DEALS */}
+      <section id="sec-deals" className="pp-section">
+        <div className="pp-section-mark">03</div>
+        <OffersTab user={user} setTab={handleTabClick}/>
+      </section>
+
+      {/* SECTION 04 — CHALLENGES TABLE */}
+      <section id="sec-challenges" className="pp-section">
+        <div className="pp-section-mark">04</div>
+        <ChallengesTab onSelect={goDetail}/>
+      </section>
+
+      {/* SECTION 05 — RESEARCH */}
+      <section id="sec-research" className="pp-section">
+        <div className="pp-section-mark">05</div>
+        <BlogTab onSelect={goBlog} setTab={handleTabClick}/>
+      </section>
+
+      {/* SECTION 06 — REWARDS / PULSE POINTS */}
+      <section id="sec-rewards" className="pp-section">
+        <div className="pp-section-mark">06</div>
+        <PulsePointsTab user={user} onLogin={()=>setShowAuth(true)} ppSection={ppSection} setPpSection={setPpSection}/>
+      </section>
     </div>
     <div className="wrap"><Newsletter/></div>
     <Footer setPage={setPage} setTab={handleTabClick}/>
